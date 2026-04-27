@@ -326,8 +326,9 @@ Let $\mathbf{C} \subseteq \mathbf{S}$ be a cause set,
 $\mathbf{W} \subseteq \mathbf{V}$ be a set of possible witnesses. $\mathbf{C} = \mathbf{c}^\star$ is causally 
 responsible for $Y = y^\star$ in $(M, \mathbf{u})$  
 just in case there is a $\mathbf{T}$ (an actual witness set to be held fixed) s.t. $\mathbf{T} \subseteq \mathbf{W}, \mathbf{T} \cap \mathbf{C} = \emptyset$  
+and $(M, \mathbf{u}) \models \mathbf{C}=\mathbf{c}^\star, Y=y^\star$
 and  $(M, \mathbf{u})[\mathbf{C} \leftarrow \mathbf{c}', \mathbf{T} \leftarrow \mathbf{t}^\star] \not\models Y = y^\star,$
-for some \(\mathbf{c}'\) 
+for some \(\mathbf{c}'\)
 distinct everywhere from  \(\mathbf{c}^\star\), where no proper subset of \(\mathbf{C}\) satisfies this property.
 \end{definition}
 
@@ -520,27 +521,6 @@ Unlike actual causality, \ourapproach does not ask whether \emph{some} witness s
 Unlike PNS, it inherits the context-sensitivity of actual causality through this integration.
 The formal definitions in Section~\ref{sec:causal_impact} make this expectation precise --- but the intuition is the one we have just seen: \ourapproach inherits the witness mechanism of actual causality and the probabilistic language of PN/PNS, and combines them into a tractable estimation problem.
 
-\begin{comment}
-\begin{enumerate}
-\item PN/PS/PNS were on the right path about going probabilistic and looking also at the sufficiency worlds. 
-
-\item Conditioning, and especially conditioning on the outcome was a source of trouble (we were asked to condition on what we knew did not happen, and the latter led us to an undefined value). It's probably healthier to condition and train a model beforehand to opereate with an informed model, of course, but to use counterfactual tooling to explicate notions related to impact.
-
-\item In general, conditioning on the outcome lead to bias. Consider
-a simple two-node model with independent $X, Y \sim Bern(0.5)$. If it so happens that $Y=1$, conditioning on the states of $X, Y$, and intervening on $X=1$ will always lead to $Y=1$, suggesting high sufficiency. If $Y=0$, intervening with $X=0$ will always lead to $Y=0$, suggesting high necessity. So it seems wiser to leave the outcome of interest unconditioned and evaluate what happens to it under different interventional regimes.
-
-\item Conditioning also doesn't seem to be a sufficient tool for context fixing, and it seems that the definition of actual causality is more on the right path by requiring that witnesses be intervened on rather than conditioned on. 
-\end{enumerate}
-
-
-
-There are, however, some directions in which we will depart from those approaches. While we do agree that bringing witness nodes (contexts) into the picture to break symmetries is a great idea, and they should be intervened rather than conditioned on, we will depart from the way they are used in actual causality in some respects. For one thing, this definition is formulated in terms of an existential quantifier: it is enough that one actual context being kept fixed validates the counterfactual dependency. We will prefer a more subtle approach where information from counterfactual dependencies across different witness sets is used and integrated using probability distributions. After all, the mere existence of a context in which a counterfactual dependency arises might come about in importantly different ways. The context might have been a very rare combination of background factors leading to a very unlikely accidental dependency, or it might have been the presence of obvious factors everyone should expect to be present. This should make a difference to the responsibility attribution.  
-
-
-
-
-So, there are some further tasks ahead of us: we need to make sure that we can break the symmetries we already discussed by incorporating search through witnesses in a way analogous to the one used in actual causality, and we need to allow for continuous variables, both as inputs and as outcomes. Moreover, we need to ensure that the resulting notion of responsibility is computationally feasible as models become realistically large. All of this while being Bayesian and probabilistic about our causal impact estimates. This is what we will be moving towards. 
-\end{comment}
 
 
 
@@ -569,7 +549,7 @@ V_i := f_i(\mathbf{Pa}_i, U_i), \qquad i = 1,\dots,n,
 \]
 with \(\mathbf{Pa}_i \subseteq \mathbf{V}\setminus\{V_i\}\) denoting the parents of \(V_i\).
 The distribution \(P_{\mathbf{U}}\) is a probability measure on $\dom(\mathbf{U})$,
-and the assignments in \(\mathbf{F}\) are assumed to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).
+and the assignments in \(\mathbf{F}\) are assumed to be acyclic and to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).
 \end{definition}
 
 \begin{definition}[Interventions]
@@ -727,7 +707,7 @@ For any measurable $A\subseteq\dom(Y)$ and exogenous realization $\mathbf{u}$, t
 P_k^{s}(A\mid\mathbf{u})
 &=
 \sum_{\mathbf{C}\in 2^{\mathbf{S}}_{k}}
-\sum_{\mathbf{T}\in 2^{\mathbf{W}}}
+\sum_{\substack{\mathbf{T}\in 2^{\mathbf{W}}\\\mathbf{T}\cap\mathbf{C}=\emptyset}}
 P\!\left(Y\in A \mid \mathbf{u},
 \mathrm{do}\!\left(\mathbf{C}=\mathbf{s}^\star\!\mid_{\mathbf{C}},
 \mathbf{T}=\mathbf{w}^\star\!\mid_{\mathbf{T}}\right)\right)
@@ -736,11 +716,11 @@ P\!\left(Y\in A \mid \mathbf{u},
 P_k^{n}(A\mid\mathbf{u})
 &=
 \sum_{\mathbf{C}\in 2^{\mathbf{S}}_{k}}
-\sum_{\mathbf{T}\in 2^{\mathbf{W}}}
+\sum_{\substack{\mathbf{T}\in 2^{\mathbf{W}}\\\mathbf{T}\cap\mathbf{C}=\emptyset}}
 \int
 P\!\left(Y\in A \mid \mathbf{u},
 \mathrm{do}\!\left(\mathbf{C}=\mathbf{c}',\mathbf{T}=\mathbf{w}^\star\!\mid_{\mathbf{T}}\right)\right)
-\,\Delta_{\mathbf{C}}(\mathbf{s}^\star)(d\mathbf{c}')
+\Delta_{\mathbf{C}}(\mathbf{s}^\star)(d\mathbf{c}')
 \,p_s^\Gamma(\mathbf{C})\,p_w^\Gamma(\mathbf{T}).
 \end{align}
 
@@ -806,11 +786,11 @@ Then the expected causal impact reduces to
 =
 \mathbb{P}(Y^n=0,\,Y^s=1),
 \]
-which conceptually coincides with Pearl’s probability of necessity and sufficiency (PNS). The alignment is \emph{exact} when $\mathbf{S} = \{X_k\}$, $\mathbf{W}=\emptyset$, and $\dom(X_k)={0,1}$ where, factually, $x_k^\star=1$.
+which conceptually coincides with Pearl’s probability of necessity and sufficiency (PNS). The alignment is \emph{exact} when $\mathbf{S} = \{X_k\}$, $\mathbf{W}=\emptyset$, and $\dom(X_k)=\{0,1\}$ where, factually, $x_k^\star=1$.
 \end{example}
 
 \begin{example}[Absolute Difference Impact Score] \label{ex:absolute_score}
-We can develop an analogous measure for continuous outcomes where we increase attribution with distance from the factual value $y^\star$ in the necessity world decrease impact with distance to the factual value in the sufficiency world.
+We can develop an analogous measure for continuous outcomes where we increase attribution with distance from the factual value $y^\star$ in the necessity world and decrease impact with distance to the factual value in the sufficiency world.
 \begin{align*}
 ci(y^s, y^n, y^\star) & = \vert y^n - y^\star \vert   - \vert y^s - y ^\star \vert. 
 \end{align*}
@@ -873,18 +853,6 @@ Two somewhat more subtle desiderata are as follows:
 \end{align*}
 \noindent they capture the intuition that responsibility should be higher for variables that are closer to the outcome in the causal graph.
 
-\todo{put in tagged environ for easier crossref}
-% \begin{tabular}{lp{9cm}}
-% DXY & $X$ should be attributed some responsibility for $Y$,\\
-% DMY & $M$ should be attributed some responsibility for $Y$,\\
-% DMXY & $M$ should be more responsibility for $Y$ as it is closer to $Y$ in the causal graph,\\
-% DYX & No responsibility should be attributed to $Y$ for $X$,\\
-% DMX & No responsibility should be attributed to $M$ for $X$,\\
-% DYM & No responsibility should be attributed to $Y$ for $M$,\\
-% DXM & Some responsibility should be attributed to $X$ for $M$,\\
-% DMXY &  More responsibility should be attached to $M$ than to $X$ for $Y$, as $M$ is closer to $X$ in the causal graph.\\
-% DYX & No responsibility for $X$ should be attributed to $Y$ or $M$.
-% \end{tabular}
 
 \noindent The key \textbf{distributional facts} that we will use are as follows:
 \begin{align}
