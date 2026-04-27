@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: plainnat.bst
+Database file #1: references.bib
+Warning--I didn't find a database entry for "heskes2020causal"
+Warning--I didn't find a database entry for "shapley1953value"
+Warning--empty publisher in pearl2022probabilities
+You've used 15 entries,
+            2773 wiz_defined-function locations,
+            721 strings with 8438 characters,
+and the built_in function-call counts, 7567 in all, are:
+= -- 725
+> -- 374
+< -- 16
++ -- 126
+- -- 111
+* -- 598
+:= -- 1149
+add.period$ -- 66
+call.type$ -- 15
+change.case$ -- 79
+chr.to.int$ -- 15
+cite$ -- 31
+duplicate$ -- 357
+empty$ -- 618
+format.name$ -- 138
+if$ -- 1620
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 17
+newline$ -- 101
+num.names$ -- 64
+pop$ -- 140
+preamble$ -- 1
+purify$ -- 65
+quote$ -- 0
+skip$ -- 282
+stack$ -- 0
+substring$ -- 318
+swap$ -- 63
+text.length$ -- 6
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 155
+warning$ -- 1
+while$ -- 71
+width$ -- 0
+write$ -- 243
+(There were 3 warnings)

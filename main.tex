@@ -1,0 +1,993 @@
+\documentclass[anon,12pt]{clear2026} % Anonymized submission
+% \documentclass[final,12pt]{clear2025} % Final submission
+% \documentclass[final,12pt,noproceedings]{clear2025} % Final submission for those who opt out of the proceedings; they should use clear2025-extended-abstract.tex for their extended abstract
+
+% --- PACKAGES ---
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{attempt}{Attempt}
+
+\usepackage[capitalise]{cleveref}
+\usepackage{amsfonts}
+\usepackage{bbm}
+
+\usepackage[font=small]{caption}
+
+\newtheorem*{theoremacpositive}{Theorem \ref{th:ac->positive} (Formal)}
+\newtheorem*{theoremcihalpern}{Theorem \ref{th:ci_halpern} (Formal)}
+
+\usepackage{tikz}
+\usetikzlibrary{bayesnet}
+
+\usetikzlibrary{shapes,decorations,arrows,calc,arrows.meta,fit,positioning}
+\tikzset{
+    -Latex,auto,node distance =0.5 cm and 0.5 cm,semithick,
+    state/.style ={ellipse, draw, minimum width = 0.7 cm},
+    point/.style = {circle, draw, inner sep=0.04cm,fill,node contents={}},
+    bidirected/.style={Latex-Latex,dashed},
+    el/.style = {inner sep=2pt, align=left, sloped}
+}
+
+
+\let\todo\relax
+\usepackage[colorinlistoftodos]{todonotes}
+\presetkeys{todonotes}{inline}{}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\sisetup{group-separator = {,}}
+
+
+\tikzset{%
+  zeroarrow/.style = {-stealth,dashed},
+  onearrow/.style = {-stealth,solid},
+  c/.style = {circle,draw,solid,minimum width=2em,
+        minimum height=2em},
+  r/.style = {rectangle,draw,solid,minimum width=2em,
+        minimum height=2em}
+}
+
+\makeatletter
+\DeclareRobustCommand{\varname}[1]{\begingroup\newmcodes@\mathit{#1}\endgroup}
+\makeatother
+
+\newcommand{\midlinewidth}{1.0pt}
+\newcommand{\incmidlinewidth}{1.7pt}
+\newcommand{\middist}{20pt}
+\newcommand{\halfdist}{13pt}
+\newcommand{\pn}{\ensuremath{\mathit{PN}}}
+\newcommand{\ps}{\ensuremath{\mathit{PS}}}
+\newcommand{\pns}{\ensuremath{\mathit{PNS}}}
+
+\definecolor{petroil2} {RGB} {36, 165, 175}
+\definecolor{gold2} {RGB} {255, 130, 0}
+
+% # CODE SNIPPET STYLE (settings borrowed from Edward ICLR paper)
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+
+\definecolor{strings}{rgb}{.624,.251,.259}
+\definecolor{keywords}{rgb}{.224,.451,.686}
+\definecolor{comment}{rgb}{.322,.451,.322}
+
+\lstdefinelanguage{python}{
+  morekeywords={from, import, as, for, in, while, def, return, 
+  =, +, -, /, *, lambda},
+  % keywords=[2]{build_toy_dataset, neural_network, __init__},
+  keywords=[3]{sample, param, module, Marginal, Posterior, Trace, Poutine, Distribution},
+  morecomment=[l]{\#},
+  morecomment=[s]{"""}{"""},
+  morestring=[b]',
+  morestring=[b]",
+  alsoletter={<>=-+/*},
+  sensitive=true
+}
+
+\usepackage[most]{tcolorbox}
+\newtcolorbox{docode}[1][]{
+    colback=gray!20,        % background color
+    colframe=black,         % border color
+    width=0.9\textwidth,    % box width
+    arc=4mm,                % rounded corners
+    boxrule=0.5pt,          % border thickness
+    left=2em,               % left padding
+    enhanced,
+    fontupper=\ttfamily,    % font inside the box
+    #1                      % allow optional overrides
+}
+
+
+
+\lstset{
+  language=python,
+  keywordstyle=\color{BrickRed}\bfseries\ttfamily,
+  keywordstyle=[2]\color{Violet}\ttfamily,
+  keywordstyle=[3]\color{keywords}\ttfamily,
+  commentstyle=\color{comment}\ttfamily,
+  stringstyle=\color{strings}\ttfamily,
+  basicstyle=\fontsize{8pt}{8.25pt}\selectfont\ttfamily,
+  basewidth=0.5em,
+  % numbers=left,
+  % numberstyle=\tiny,
+  % stepnumber=1,
+  columns=fixed,
+  xleftmargin=2ex,%0.25in,
+  % firstnumber=1,
+  showstringspaces=false,
+  mathescape=true,
+  keepspaces=True,
+  tabsize=2
+}
+\renewcommand{\texttt}[1]{\lstinline[basicstyle=\fontsize{8pt}{8.25pt}\selectfont\ttfamily]{#1}}
+
+
+\usepackage{xcolor}   % for colors
+\newcommand{\CITE}{\colorbox{green!30}{\textbf{CITE}}}
+\newcommand{\TODO}{\colorbox{orange!30}{\textbf{TODO}}}
+\newcommand{\ourapproach}{PCI }
+\newcommand{\Ourapproach}{PCI}
+\newcommand{\dom}{\operatorname{dom}\,}
+\usepackage{hyperref}
+
+% Configure hyperlinks
+\hypersetup{
+    colorlinks=true,      % use colored text for links
+    linkcolor=blue,       % color of internal links (sections, TOC)
+    urlcolor=blue,        % color of URLs
+    citecolor=blue,       % color of citations
+    filecolor=blue        % color of file links
+}
+
+\title[Explainable]{A Computationally Feasible Framework for  Causal Probabilistic Explanation}
+\usepackage{times}
+% Use \Name{Author Name} to specify the name.
+% If the surname contains spaces, enclose the surname
+% in braces, e.g. \Name{John {Smith Jones}} similarly
+% if the name has a "von" part, e.g \Name{Jane {de Winter}}.
+% If the first letter in the forenames is a diacritic
+% enclose the diacritic in braces, e.g. \Name{{\'E}louise Smith}
+
+% Two authors with the same address
+% \clearauthor{\Name{Author Name1} \Email{abc@sample.com}\and
+%  \Name{Author Name2} \Email{xyz@sample.com}\\
+%  \addr Address}
+
+% Three or more authors with the same address:
+% \clearauthor{\Name{Author Name1} \Email{an1@sample.com}\\
+%  \Name{Author Name2} \Email{an2@sample.com}\\
+%  \Name{Author Name3} \Email{an3@sample.com}\\
+%  \addr Address}
+
+% Authors with different addresses:
+%Rafal
+%Andy
+%Sam
+%Dan
+%Jack
+%Poorva
+%Drew
+%Eli
+
+
+
+% \clearauthor{%
+%  \Name{Rafal Urbaniak} \Email{rafal@basis.ai} \\
+%  \Name{Eli Bingham} \Email{eli@basis.ai}\\
+%  \addr{Basis Research Institute}\\
+%  \Name{Poorva Garg} \Email{poorvagarg@cs.ucla.edu}\\
+%  \addr{University of California, Los Angeles} \\
+%  \Name{Jack Feser} \Email{jack@basis.ai} \\
+%  \Name{Daniel Waxman} \Email{dan@basis.ai} \\
+%  \addr{Basis Research Institute}
+% }
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}%
+  Causal attribution and explanation are mainstays of philosophical, scientific, and policy analysis. Some current frameworks, however, such as actual causality, suffer from an inability to scale causal reasoning to large problems, while attribution methods that do scale---such as SHAP or LIME---are not causally aware. To address this two-fold problem, we present Probabilistic Causal Impact (\Ourapproach). Inspired by Halpern and Pearl's actual causality and Pearl's probability of necessary and sufficient causation, \ourapproach provides tractable causal explanations in causal probabilistic machine learning models. By the same token, \ourapproach provides explanations for events in the world, insofar as the model adequately represents real mechanisms. By re-conceptualizing explanation as an estimation problem on an expanded, causal probabilistic model, \ourapproach allows for the use of well-established approximation algorithms, unlocking computationally tractable, truly causal explanations for large models. We test \ourapproach on scaled-up, but canonical test cases for actual causation involving overdetermination and undercutting, finding that we recover results deemed intuitive by the literature, and illustrate that the correct behavior is preserved in the continuous version of the problem. We apply \ourapproach to a real-life causal spatio-temporal model with complex machine-learned components trained on millions of data points. In this setting, we compare \ourapproach to the non-causal (yet scalable) attribution method SHAP, and find that our approach yields explanations that agree with domain expert opinion, while SHAP does not. 
+ 
+  
+  % %
+\end{abstract}
+
+\begin{keywords}%
+  Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency
+\end{keywords}
+
+
+\section{Introduction}
+\label{sec:intro}
+
+Causal attribution is a central reasoning task in many important problems, such as gauging the efficacy of medical treatments \citep{Shepherd2024}, pinpointing drivers of economic growth \citep{CheshireMagrini2009}, root cause analysis in automated systems \citep{Papageorgiou2022}, or assessing the impact of public policy \citep{HeckmanPinto2022CausalPolicyAnalysis}. In general, we may want to understand why an adverse outcome occurred to prevent it from happening again, or understand how and why a predicted, counterfactual positive outcome can be brought about. However, in the absence of scalable, formal causal attribution tools, analysts often resort to either ad-hoc methods, such as mechanistic reasoning and finding strong correlation, historical comparison, domain expertise, or non-causal attribution like Granger causality \citep{Granger1969} and SHAP \citep{lundberg2017unified}. Even researchers with an advanced command of statistical and experimental methods may not possess a thorough understanding of how to ascribe cause \citep{Shepherd2024}, and would thus benefit from scalable automation. Here we present a tool for accurate and tractable causal attribution that can be applied to a wide array of causal, probabilistic, machine-learned models.
+
+Current methods for causal attribution that focus on token-level explanations of particular events, such as actual causality \citep{actualCausalityHalpern}, involve intractable combinatorics without clear approximating machinery \citep{eiterComplexityResultsStructurebased2002}. Explanation methods that \textit{do} scale are either non-causal \citep{lundberg2017unified} or amount to local, gradient-based sensitivity analyses \citep{butler2022differential}. For example, \citeauthor{lundberg2017unified}'s SHAP method may assign high attribution to a feature simply because it correlates with a true cause, not because altering said feature would change the outcome. \citeauthor{butler2022differential} in their Differential Causal Effect (DCE) rely on gradients for attribution, which requires model differentiability, and does not capture effects that require more than infinitesimal changes in potential causes (admittedly,  the authors are only after rates of change of treatment, which is conceptually different from responsibility attribution).
+
+In contrast, we introduce probabilistic causal impacts (\Ourapproach), which exploit probabilistic understandings of context and causation to frame attribution as a turnkey estimation problem. In particular, we generalize Pearl's formulation of the ``probability of necessary and sufficient causation'' \citep{pearl2022probabilities} for arbitrary variable domains, and additionally incorporate causal context in the form of ``witnesses'' as understood by actual causality researchers \citep{actualCausalityHalpern}. Inspired by the study of ``descriptive normality'' \citep{Halpern2015-HALGCA, icardNormalityActualCausal2017} — how statistical probabilities of counterfactuals influence causal attributions — we characterize attribution as the expectation of a customizable causal impact function taken with respect to user-defined distributions that assign probabilities to counterfactual worlds. \ourapproach combines a variety of intuitions from the literature, including taking expectations over exogenous inputs (cf. \cite{actualCausalityHalpern} on ``blame'', def. 6.2.1; and implicitly by \citeauthor{pearl2022probabilities}'s \citeyearpar{pearl2022probabilities} probabilities of causation), weighting by the probability of alternative values for the supposed cause \cite[def. 8]{Beckers2015CombiningPC},
+%\TODO find more here), 
+aggregating the probabilities of all valid witness worlds \cite[\S 6.2]{Beckers2015CombiningPC}, or weighting by the complexity of the least complex witness set \cite[on ``responsibility'', def. 6.1.6]{actualCausalityHalpern}. In Appendix \ref{app:conceptual}, we discuss related concepts in more detail. Unfortunately, taken individually, none of these existing approaches achieves the scalability and generality required for modern causal attribution needs, thereby necessitating the development of \Ourapproach.
+
+The mathematical and computational tooling we develop in this paper is designed for a wide range of causal probabilistic models; we place no strong requirements on the form of the model, distributions, structural equations, or types of variables that can be used. Indeed, such models can comprise standard machine learning components like neural networks or Gaussian processes. With this breadth of application, and the turnkey nature of our measure of causal attribution, \ourapproach\ hopes to provide \textit{truly} \textit{causal} attribution and explanation tooling for a wide array of users and applications.
+
+To validate and better understand the approach, and to 
+illustrate how our method scales to far larger models than does exact actual causality computation, we take the following steps:
+
+\todo{revise this list once paper done}
+\begin{enumerate}[itemsep=0pt, topsep=0pt, parsep=0pt]
+    \item  We draw theoretical connections to existing (but intractable) attribution strategy, actual causality in Section \ref{sec:th_ac}, where we prove that, under certain constraints, the diagnoses offered by actual causality and by \ourapproach coincide. 
+    
+    \item In Section \ref{sec:ac_benchmark}, we test \ourapproach\ on scaled-up, but canonical failure cases for actual causation involving overdetermination and undercutting, finding that we recover results deemed intuitive by the literature, 
+    
+    \item In Section \ref{sec:con_benchmark}  we  point also to the correct behavior in the continuous version of the problem.
+
+\item  We also delegate a more extensive conceptual discussion of the relation between \ourapproach, actual causality, and probabilities of necessity, sufficiency and necessity and sufficiency to Appendix \ref{app:conceptual}.
+
+\item In Section \ref{sec:avm} we describe results on a causal spatio-temporal model with complex machine-learned components trained on millions of data points. In this setting, we compare to the non-causal but scalable attribution method SHAP, and find that our approach yields explanations which agree with domain expert opinion, while SHAP does not.
+
+
+\item Additionally, in Appendix \ref{app:DCE}, we  compare the local, sensitivity-analysis-style attribution from  \cite{butler2022differential}, demonstrating cases where \ourapproach\ better reveals causality.
+
+%TODO maybe add when ready
+%To demonstrate application breadth, we %also include an attribution application %for a continuous-time dynamical system %involving an epidemiological model.
+
+\end{enumerate}
+
+
+
+\section{Causal Impact: motivations}\label{sec:motivations}
+
+The central difficulty in causal attribution is not computing counterfactuals --- it is knowing which counterfactuals to compute, and recognising when a cause is blocked by context rather than absent altogether.
+The closest predecessors of this approach, taken individually, fail to capture this: actual causality handles context sensitivity but is computationally intractable and not general enough;
+the probability of necessity and sufficiency scales well, but lacks context sensitivity.
+This section builds intuition for both limitations through a running example, setting up the design choices that motivate \ourapproach in Section~\ref{sec:causal_impact}.
+
+\subsection{Actual Causality}
+
+Consider the following (deterministic, discrete) model:
+
+\begin{example}[Bob at Old Boys' Club Bank]
+Bob applied for a home mortgage loan with the local branch of Old Boys’ Club Bank (OBCB), and his application was denied.
+The OBCB policy requires applicants to pass a credit score check, but it only performs this check if the applicant is male; all non-male applicants are rejected outright. \label{ex:obcb} Thus, the procedure is:
+\begin{align*}
+\varname{check} &= (\varname{gender} = \text{male}) \\[4pt]
+\varname{check-failed} &= \varname{check} \land (\varname{credit} = \text{bad}) \\[4pt]
+\varname{loan} &= \lnot \varname{check-failed} \land (\varname{gender} = \text{male})
+\end{align*}
+\end{example}
+
+\noindent Why was Bob’s loan application denied?
+An intuitive explanation is that his credit was bad---had it been good, the outcome would have been different.
+In contrast, his gender does not appear to be responsible for the rejection: had it been different,
+his application still would have been denied (albeit this time due to $\varname{check}=F$).
+
+This suggests a counterfactual approach to feature responsibility attribution: perhaps we can identify the features responsible for a particular outcome by asking counterfactual questions---would the outcome have been different if a specific feature had a different value? 
+This is called the \textit{but-for clause}: Bob wouldn’t have been denied the loan but for his bad credit.
+
+Concretely, consider a model $M$ with \emph{exogenous variables} $\mathbf{U}$, which are the source of stochasticity, and \emph{endogenous variables} $\mathbf{V}$,  which are influenced by other variables in the model. 
+Let $\mathbf{S} \subseteq \mathbf{V}$ be the variables we suspect to be causally responsible (call them \emph{causal suspects}), and 
+$Y \in  \mathbf{V}$ be an outcome of interest. 
+Suppose we consider only one suspect $S \in \mathbf{S}$ and mark factual values with $^\star$. 
+Under a setting $\mathbf{U} = \mathbf{u}$ of the exogenous variables, $M$ produces $S = s^\star$ and $Y = y^\star$, denoted $(M, \mathbf{u}) \models S=s^\star, Y=y^\star$.
+We call this the \emph{factual} scenario.
+An intervened model where a variable $S$ is set to an alternative value $s'$ is denoted $(M, \mathbf{u})[S \leftarrow s']$.
+
+A first attempt at defining a counterfactual notion of causal responsibility is:
+\begin{definition}[But-for, single]
+$S=s^\star$ is causally responsible for  $Y=y^\star$  in $(M, \mathbf{u})$ if and only if $(M, \mathbf{u}) \models S=s^\star, Y=y^\star$ and $(M, \mathbf{u})[S \leftarrow s'] \not \models Y=y^\star$ for some $s' \neq s^\star$.
+\end{definition}
+
+\noindent 
+In a given context, $S$ is causally responsible for an outcome only when intervening on $S$ with some alternative value would change that outcome. 
+Bob’s credit score satisfies this condition: had his credit score been higher, the loan might have been approved. 
+However, this cause test is too coarse.
+
+Consider another case:
+\begin{example}[Alice at OBCB] 
+Alice is a woman with bad credit.
+She applies for a loan with OBCB and is rejected.
+\end{example}
+\noindent Why was Alice denied the loan?
+Under the but-for clause for single cause candidates, neither her gender nor her credit score are responsible.
+No matter how high her credit score, her application would still have been denied because the bank does not loan to women.
+Had her gender been different, she would still have been denied for having bad credit.
+
+To address this example, we could consider sets of factors as causes:
+\begin{attempt}[But-for, sets]
+Variables $\mathbf{C}\subseteq \mathbf{S}$ with factual values $\mathbf{C} = \mathbf{c}^\star$ 
+are causally responsible for $Y = y^\star$ in $(M, \mathbf{u})$ if and only if 
+$(M, \mathbf{u}) \models \mathbf{C} = \mathbf{c}^\star, Y = y^\star$ and $(M, \mathbf{u})[\mathbf{C} \leftarrow \mathbf{c'}] \not \models Y= y ^\star$ for some $\mathbf{c'}$ everywhere different from $\mathbf{c}^\star$, where no proper subset of $\mathbf{C}$ has this property. 
+\end{attempt}
+
+\noindent The minimality condition reflects our preference for explanations that include only relevant properties.
+
+Under this generalization, the set  $\mathbf{c}^\star = \{\varname{gender}=\text{female}, \varname{credit}=\text{bad}\}$
+ is jointly responsible for Alice's application being denied because 
+ there exists $\mathbf{c}' = \{\varname{gender}=\text{male}, \varname{credit}=\text{good}\}$ that would change the decision
+and $\mathbf{c}^\star$ is minimal. But what can we say about the individual features? 
+We could say that the whole set bears responsibility but individual features do not, or that any feature in a cause set is partially and equally accountable.
+Both approaches have issues, as they imply the features are equally responsible.
+This conflicts with our intuition: OBCB did not evaluate Alice’s credit score, so her denial was caused by her gender.\footnote{
+Examples of this sort, involving both over-determination and undercutting of causal impact, abound. 
+Suppose Jim is both stabbed and poisoned and dies as a result. 
+Because stabbing works quickly, it kills Jim before the poison takes effect. 
+In this case, it’s the stabbing that caused his death. 
+Yet analogous but-for clauses fail to break the symmetry here as well.
+}
+
+Prior work suggests a way out of this difficulty: hold some of the context in which counterfactuals are evaluated fixed, 
+calling such fixed variables \emph{witnesses}.
+Let us focus on the mediator $\varname{check-failed}$ between $\varname{gender}$ and $\varname{loan}$.
+If we fix this variable at the factual value by intervening, then counterfactually, Alice would have been granted the loan if she were male.
+However, there is no context fixed at the actual value such that, had her credit score been higher, she would have been granted the loan.
+This motivates the following formalization:
+\begin{definition}[Actual cause] 
+Let $\mathbf{C} \subseteq \mathbf{S}$ be a cause set,
+$\mathbf{W} \subseteq \mathbf{V}$ be a set of possible witnesses. $\mathbf{C} = \mathbf{c}^\star$ is causally 
+responsible for $Y = y^\star$ in $(M, \mathbf{u})$  
+just in case there is a $\mathbf{T}$ (an actual witness set to be held fixed) s.t. $\mathbf{T} \subseteq \mathbf{W}, \mathbf{T} \cap \mathbf{C} = \emptyset$  
+and  $(M, \mathbf{u})[\mathbf{C} \leftarrow \mathbf{c}', \mathbf{T} \leftarrow \mathbf{t}^\star] \not\models Y = y^\star,$
+for some \(\mathbf{c}'\) 
+distinct everywhere from  \(\mathbf{c}^\star\), where no proper subset of \(\mathbf{C}\) satisfies this property.
+\end{definition}
+
+\noindent This definition extends but-for causality with a witness set $\mathbf{T}$ that is fixed to its factual value by 
+an intervention.
+Under this definition, to determine the cause of an outcome, we need to find a cause set $\mathbf{C}$, alternative values 
+$\mathbf{c}'$ (trivial if the variables are binary and less so if they are categorical or continuous),
+and a witness set $\mathbf{T}$.
+$\mathbf{C}$ and $\mathbf{T}$ are drawn from sets of size at most $2^{|\mathbf{V}|}$, so a brute-force computation of these sets is expensive.
+
+Putting computational difficulties aside, we have so far considered deterministic models, but would like to capture probabilistic models as well, so we now consider a stochastic variant of the OBCB problem.
+
+\subsection{Probability of Necessity and Sufficiency}
+
+\begin{example}[OBCB, stochastic]\label{ex:obcb_stochastic}
+The bank performs credit checks for a randomly selected 20\% of women and skips checks for a randomly selected 10\% of men.
+Unchecked applicants are rejected.
+Furthermore, if a man's credit check fails, he is nevertheless accepted 5\% of the time and if a woman's credit check succeeds, she is denied 10\% of the time.
+We assume that the population is evenly divided into male and female and good and bad credit.
+Formally, the model, using 1 for male and 1 for good credit, is:
+
+\begin{align*}
+\varname{loan-prob} &=
+\begin{array}{r|cc}
+ & \varname{check\text{-}failed}{=}0 & \varname{check\text{-}failed}{=}1 \\ \hline
+\varname{gender}{=}0 & 0.9 & 0 \\[2pt]
+\varname{gender}{=}1 & 1   & 0.05
+\end{array}
+\\[6pt]
+\varname{credit} &\sim \mathrm{Bern}(0.5) \\
+\varname{gender} &\sim \mathrm{Bern}(0.5) \\
+\varname{check} &\sim \mathrm{Bern}((1-\varname{gender}) \cdot 0.2 + \varname{gender} \cdot 0.9) \\
+\varname{check-failed} &= \varname{check} \cdot (1-\varname{credit}) \\
+\varname{loan-if-checked} &\sim \mathrm{Bern}(\varname{loan-prob}[\varname{gender}, \varname{check-failed}]) \\
+\varname{loan} &= \varname{loan-if-checked} \cdot \varname{check}
+\end{align*}
+\end{example}
+
+The witness mechanism works well for deterministic models, but actual causality in its standard form offers no
+ straightforward way to handle probabilistic ones.
+Before extending the witness idea to the stochastic setting, it is instructive to examine a probabilistic approach
+ that scales more naturally: 
+Pearl's probabilities of necessity and sufficiency \citep{pearl2022probabilities}.
+This will let us identify what probabilistic machinery is needed, and what context-sensitivity is
+ lost when witnesses are absent --- motivating the synthesis that \ourapproach provides.
+The following definitions allow for probabilistic models, but assume that all variables are Boolean (PCI will relax this assumption,
+ allowing for continuous variables).
+Pearl considers two ways that a cause may relate to an effect: it may be necessary or sufficient for the effect.
+A cause is necessary if, counterfactually absent the cause, the effect is unlikely to occur; it is sufficient
+if the effect is counterfactually likely in the presence of the cause.
+We now formalize these ideas and discuss them in the context of the running example.
+
+\begin{definition}[Probability of Necessity]
+Let the probability of necessity be the probability that the outcome $Y=y$ would not have occurred in the absence of  $C = c^\star$, given that both occurred: \[\pn(C = c^\star, Y = y^\star) = P\!\left(Y_{c'} \neq y^\star \;\middle|\; C = c^\star, Y = y^\star\right),\] where $Y_{c'}$ is the value of $Y$ after intervening on $C$ with $c'\neq c^\star$.
+\end{definition}
+
+\begin{comment}
+\begin{table}[h!]
+\centering
+\footnotesize
+\caption{Probabilities of Necessity for Alice and Bob}\label{tab:necessity}
+\vspace{2mm}
+\begin{tabular}{lcc}
+\toprule
+& Alice & Bob \\
+\midrule
+$\varname{gender}$ & 0.045 & 0.0019 \\
+$\varname{credit}$ & 0.18 & 0.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{comment}
+
+The probability of necessity is less specific to a particular situation than the actual cause test discussed above.
+For example, we can consider the probability that being male causes someone to fail to get a loan, but we can't consider the probability that being male causes Bob specifically (who we know has bad credit) to fail to get a loan.
+
+\todo{This is messy, cleanup}
+
+To compute \[\pn(\varname{gender}=\text{male}, \varname{loan}=F) = P(\varname{loan}_{\varname{gender}=\text{female}} = T ~|~ \varname{gender}=\text{male}, \varname{loan} = F),\]
+we first determine that $P(\varname{credit}^\star = \text{good}) = \frac{20}{211} \approx 0.09$ using the condition (men with good credit are rarely rejected).
+The probability of getting a loan in the counterfactual case is then $P(\varname{credit}^\star = \text{good}) \times 0.2 \times (1 - 0.1) = \frac{18}{1055} \approx 0.02$.
+We find that $\pn(\varname{gender}=\text{female}, \varname{loan}=F) \approx 0.43$
+and $\pn(\varname{credit}=\text{bad}, \varname{loan}=F) \approx 0.53$; bad credit has a notably higher necessity score than being female.
+Both exceed $\pn(\varname{gender}=\text{male}) \approx 0.02$, reflecting that female gender and bad credit are each more likely to necessitate rejection.
+The value for $\varname{gender}=\text{female}$ remains below $0.5$ because many rejected females also have bad credit, which would prevent loan approval even in the counterfactual world where gender is male.
+However, we know that having low credit and being female are actually quite likely to cause a loan rejection on their own.
+For Alice specifically, $\pn(\varname{gender}=\text{female}, \varname{loan}=F) = P(\varname{loan}_{\varname{gender}=\text{male}}=T \mid \varname{gender}=\text{female}, \varname{credit}=\text{bad}) = 0.045$: if she were male, a credit check would be performed (90\% probability), and despite bad credit she would have a 5\% chance of approval.
+For her credit, the counterfactual is $P(\varname{loan}_{\varname{credit}=\text{good}}=T \mid \varname{gender}=\text{female}, \varname{credit}=\text{bad}) = 0.2 \times 0.9 = 0.18$.
+Bob's credit necessity score is 0.90: had his credit been good, a check would have been performed and he would almost certainly have been approved.
+
+
+Notice how Bob's PN score for credit gets high necessity (0.9), while  Alice's is lower (0.18). This partially captures the intuition
+ that Bob's bad credit is more responsible for his rejection than Alice's. But while Bob's PN score for gender is 0, which perhaps
+ partially captures the intuition that his gender is not responsible for his rejection, Alice's PN score for gender is only 0.045,
+  which is not that different, and does not capture the intuition that her gender did play a significant role in her rejection. To 
+  see the full picture, we must consider another quantity: the probability of sufficiency.
+
+\begin{comment}
+Alice is a female with bad credit, so her probability of getting a loan is $0$. 
+If she were male, her probability of loan would rise to $0.045$---the same as Bob's.
+If she were to have good credit, her probability of loan would increase to $0.2 * 0.9 = 0.18$.
+
+Bob's scores align with our intuition: being male did no damage to his probability of getting a loan and having bad credit did substantial damage.
+From Alice's scores, one might conclude that Alice's gender is barely responsible for the outcome, that her credit score is more influential than her gender, and her credit score is much less influential than Bob's.
+This is unintuitive: while the low probability of necessity properly communicates that there are other likely scenarios that lead to Alice's application being rejected, even if she was a male, it does not properly account for the fact that gender alone made the outcome extremely likely.
+To see this, we must consider the \emph{probability of sufficiency}.
+\end{comment}
+
+\begin{definition}[Probability of Sufficiency]
+Let the probability of sufficiency be the probability that the outcome $Y=y^\star$ would have occurred in the presence of $C = c^\star$, given that $C=c^\star$ did not occur:
+\[\ps(C = c^{\star}, Y = y^\star) =  P\!(Y_{c^\star} = y^\star \;\vert\;  C = c',\ Y = y')\]
+where $Y_{c^{\star}}$ is the value of $Y$ after intervening on $C$ with $ c^\star \neq c'$.
+\end{definition}
+
+To query whether the factual cause was sufficient, we condition on the counterfactual: we assume the cause did \emph{not} take its factual value and the outcome did \emph{not} occur, then intervene to restore the factual cause value and ask whether the outcome now occurs.
+Intuitively, this asks: if the cause had been absent and things had gone differently, would reinstating the cause have brought the outcome about?
+Let's look at the resulting values. 
+
+Computing the probabilities of sufficiency, we find that $\ps(\varname{gender}=\text{male}, \varname{loan}=F) \approx 0.1$, $\ps(\varname{gender}=\text{female}, \varname{loan}=F) \approx 0.83$, and $\ps(\varname{credit}=\text{bad}, \varname{loan}=F) \approx 0.96$.
+These values tell us that being female or having bad credit are both on their own sufficient for a loan rejection, with bad credit being slightly more sufficient.
+For Alice, both variables achieve $\ps = 1$: being female is fully sufficient to cause denial as the model offers no path to approval for women with bad credit, and having bad credit forecloses approval entirely, since
+$P(\varname{loan}=1 \mid \varname{gender}=\text{female}, \varname{credit}=\text{bad}) = 0$.
+Bob's gender yields an undefined PS: computing it requires conditioning on Bob being female, having bad credit, and succeeding, a conjunction the model assigns probability zero, making the conditional undefined.
+Bob's credit yields $\ps = 0.955$: restoring bad credit leads to denial in $95.5\%$ of worlds, not certainty, because even with bad credit there remains a $4.5\%$ chance of approval ($90\%$ probability of being checked, times the $5\%$ exception rate for males who fail the check).
+These cases illustrate that PS can fall short of $1$ even when a factor is strongly sufficient, and can be undefined when the conditioning event is near-impossible.
+
+
+To somehow combine insights provided by the two scores, we would like to find causes that are both necessary and sufficient.
+This notion is  formalized as follows:
+
+\begin{definition}[Probability of necessity and sufficiency]
+Let the probability of necessity and sufficiency be the probability that the outcome $Y=y^\star$ would have occurred in the presence of $C = c^\star$ and that it would not have occurred under the intervention $C=c'$:
+\[\pns(C = c^{\star}, Y = y^\star) =  P\!(Y_{c^{\star}} = y^\star, Y_{c'} \neq y^\star )\]
+\end{definition}
+
+When we compute these probabilities for our example, we find that $\pns(\varname{gender}=\text{male}, \varname{loan}=F) \approx 0.01$, $\pns(\varname{gender}=\text{female}, \varname{loan}=F) \approx 0.39$, and $\pns(\varname{credit}=\text{bad}, \varname{loan}=F) \approx 0.52$.
+While these probabilities reflect the relative causal impact of $\varname{gender}$ and $\varname{credit}$, they do not provide entirely satisfying answers.
+\Cref{tab:pn_ps_pns} reveals the problem directly: for Alice, $\pns(\varname{gender}) = 0.045 < \pns(\varname{credit}) = 0.18$, so PNS ranks credit as more causally responsible than gender.
+Yet the bank never evaluated Alice's credit---the $\varname{check}$ variable was $F$ throughout.
+PNS has no mechanism to register this: it asks counterfactually what would happen if credit were different, without fixing the mediating variable $\varname{check\text{-}failed}$ that actually blocked credit's causal path.
+
+As an attempt to help Alice better understand her particular situation, we might consider a modification of PNS with additional conditioning:
+\[\pns_{c}(C = c^\star, Y = y^\star ~|~ F=f^\star) = P(Y_{c^\star} = y^\star, Y_{c'} \neq y^\star ~|~ F = f^\star)\]
+Using this definition, we can compute $\pns_c(\varname{gender} = \text{female}, \varname{loan} = F ~|~ \varname{credit} = \text{bad}) = 0.045$ and $\pns_c(\varname{credit} = \text{bad}, \varname{loan} = F ~|~ \varname{gender} = \text{female}) = 0.18$.
+Conditioning does not solve the problem described above---Alice's credit was in reality never evaluated---because the interventions override the mediating variable that tracks whether her credit has been checked.
+When we compute $\pns_c(\varname{credit}=\text{bad}, \varname{loan}=F \mid \varname{gender}=\text{female})$, conditioning on gender being female is consistent with the factual---but when we then intervene to set credit to good, this intervention propagates downstream and changes $\varname{check\text{-}failed}$, overriding what we learned from conditioning on Alice's factual outcome.
+The context we fixed is undone by the very intervention meant to probe it.
+We will not consider this use of conditioning further, and this observation motivates the need for intervention-based (as 
+opposed to conditioning-based) context-sensitivity, which is what the witness mechanism provides.
+
+
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Individual-level \pn, \ps, and \pns for Alice and Bob in
+  Example~\ref{ex:obcb_stochastic}, with $\varname{loan}=F$ as the outcome.
+  Values are conditioned on each subject's factual context
+  (female, bad credit for Alice; male, bad credit for Bob).
+  A dash marks an entry that is undefined because the conditioning
+  premises are inconsistent with the model.}
+\label{tab:pn_ps_pns}
+\vspace{4pt}
+\begin{tabular}{l @{\hspace{1.8em}} ccc @{\hspace{1.8em}} ccc}
+\toprule
+& \multicolumn{3}{c}{Alice} & \multicolumn{3}{c}{Bob} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+& $\pn$ & $\ps$ & $\pns$ & $\pn$ & $\ps$ & $\pns$ \\
+\midrule
+$\varname{gender}$ & 0.045 & 1.00 & 0.045 & 0     & ---  & 0    \\[3pt]
+$\varname{credit}$ & 0.18  & 1.00 & 0.18  & 0.90  & 0.955 & 0.86 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Path forward}
+
+What should we conclude from this investigation of actual causality and the probability of necessity and sufficiency?
+First, we need a way to treat probabilistic models, and the probability of necessity and sufficiency gives us a tool for doing that.
+However, PNS is not as specific as we would like because it does not capture relevant features of individual units that are not part of the cause.
+Actual causality offers more specificity, but requires modification to deal with probability and continuous variables, and is computationally expensive to compute.
+
+\ourapproach addresses both limitations by combining the two approaches.
+To see the intuition, consider Alice's case once more.
+When \ourapproach evaluates gender's causal impact on her denial, it considers counterfactual worlds in which her gender is changed, while drawing witness sets from a distribution that includes $\varname{check-failed}$ at its factual value of $F$ --- the credit check was never performed.
+In those worlds, changing gender to male, with $\varname{check-failed}$ held fixed at $F$, leads to loan approval: a large counterfactual shift, and so high attribution.
+When \ourapproach evaluates credit's causal impact, it searches for witness sets that, held fixed, would make a change to good credit matter for Alice --- but no such context exists, because the credit check was never run.
+The distribution over witness sets therefore assigns low weight to any world in which credit is relevant for Alice, and her credit receives low attribution.
+Unlike actual causality, \ourapproach does not ask whether \emph{some} witness set validates a counterfactual dependency; it integrates over the distribution of all witness sets, weighting each by its probability.
+Unlike PNS, it inherits the context-sensitivity of actual causality through this integration.
+The formal definitions in Section~\ref{sec:causal_impact} make this expectation precise --- but the intuition is the one we have just seen: \ourapproach inherits the witness mechanism of actual causality and the probabilistic language of PN/PNS, and combines them into a tractable estimation problem.
+
+\begin{comment}
+\begin{enumerate}
+\item PN/PS/PNS were on the right path about going probabilistic and looking also at the sufficiency worlds. 
+
+\item Conditioning, and especially conditioning on the outcome was a source of trouble (we were asked to condition on what we knew did not happen, and the latter led us to an undefined value). It's probably healthier to condition and train a model beforehand to opereate with an informed model, of course, but to use counterfactual tooling to explicate notions related to impact.
+
+\item In general, conditioning on the outcome lead to bias. Consider
+a simple two-node model with independent $X, Y \sim Bern(0.5)$. If it so happens that $Y=1$, conditioning on the states of $X, Y$, and intervening on $X=1$ will always lead to $Y=1$, suggesting high sufficiency. If $Y=0$, intervening with $X=0$ will always lead to $Y=0$, suggesting high necessity. So it seems wiser to leave the outcome of interest unconditioned and evaluate what happens to it under different interventional regimes.
+
+\item Conditioning also doesn't seem to be a sufficient tool for context fixing, and it seems that the definition of actual causality is more on the right path by requiring that witnesses be intervened on rather than conditioned on. 
+\end{enumerate}
+
+
+
+There are, however, some directions in which we will depart from those approaches. While we do agree that bringing witness nodes (contexts) into the picture to break symmetries is a great idea, and they should be intervened rather than conditioned on, we will depart from the way they are used in actual causality in some respects. For one thing, this definition is formulated in terms of an existential quantifier: it is enough that one actual context being kept fixed validates the counterfactual dependency. We will prefer a more subtle approach where information from counterfactual dependencies across different witness sets is used and integrated using probability distributions. After all, the mere existence of a context in which a counterfactual dependency arises might come about in importantly different ways. The context might have been a very rare combination of background factors leading to a very unlikely accidental dependency, or it might have been the presence of obvious factors everyone should expect to be present. This should make a difference to the responsibility attribution.  
+
+
+
+
+So, there are some further tasks ahead of us: we need to make sure that we can break the symmetries we already discussed by incorporating search through witnesses in a way analogous to the one used in actual causality, and we need to allow for continuous variables, both as inputs and as outcomes. Moreover, we need to ensure that the resulting notion of responsibility is computationally feasible as models become realistically large. All of this while being Bayesian and probabilistic about our causal impact estimates. This is what we will be moving towards. 
+\end{comment}
+
+
+
+\section{Causal Impact: definitions}\label{sec:causal_impact}
+
+Explanation and causal attribution seek to connect a potentially causal \textit{event} $X=x$ to an outcome event $Y=y$.\footnote{This is quite different from type-level causal queries, where one is interested in some group-level attribution, as when one estimates average treatment effect or conditional average treatment effect.} 
+% To measure the strength of causation, we (i) intervene to change $X$ and measure the extent to which this changes $Y$ (call this a \emph{necessity intervention}), and (ii) intervene on $X$ to have the actual value and measure the extent to which this ensures $Y=y$ (call this a \emph{sufficiency intervention}), while (iii) preserving context-sensitivity, and (iv) allowing for some variation in which parts of the contexts are fixed and in what combinations the cause candidates are intervened on, to account for interactions.
+% Moreover, (v) to search for causes, we also need to perform a search through potential sets of causes.
+In this section, we present a formal development, but the reader is invited to 
+familiarize themselves with  Appendix~\ref{app:conceptual} for a pedagogical explanation that connects our approach to Pearl's probabilities of causation and Halpern's actual causality.
+
+
+
+We define causes in the context of probabilistic structural causal models \citep{causalityPearl}.
+
+\begin{definition}[Probabilistic Structural Causal Model]
+A probabilistic structural causal model is a tuple
+\[
+M = \langle \mathbf{U}, \mathbf{V}, \mathbf{F}, P_{\mathbf{U}} \rangle,
+\]
+where \(\mathbf{V} = \{V_1,\dots,V_n\}\) is a finite set of endogenous variables,
+\(\mathbf{U} = \{U_1,\dots,U_n\}\) is a set of exogenous variables,
+and \(\mathbf{F} = \{f_1,\dots,f_n\}\) is a set of structural assignments
+\[
+V_i := f_i(\mathbf{Pa}_i, U_i), \qquad i = 1,\dots,n,
+\]
+with \(\mathbf{Pa}_i \subseteq \mathbf{V}\setminus\{V_i\}\) denoting the parents of \(V_i\).
+The distribution \(P_{\mathbf{U}}\) is a probability measure on $\dom(\mathbf{U})$,
+and the assignments in \(\mathbf{F}\) are assumed to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).
+\end{definition}
+
+\begin{definition}[Interventions]
+Given a model \(M = \langle \mathbf{U}, \mathbf{V}, \mathbf{F}, P_{\mathbf{U}} \rangle\),
+an intervention on variables \(\mathbf{X} = \{X_1, \dots, X_k\} \subseteq \mathbf{V}\)
+with values \(\mathbf{x} = (x_1, \dots, x_k)\) replaces the structural assignments for \(X_i\) by $X_i := x_i$, where $i = 1, \dots, k$.  
+We denote this intervention by either \([\mathbf{X} \leftarrow \mathbf{x}]\) or $do(\mathbf{X} = \mathbf{x})$.
+\end{definition}
+
+Because \ourapproach supports arbitrary variable types, it will be helpful to define a measure theoretic object corresponding to interventional outcomes. Because outcomes are a deterministic function of exogenous noise, this will be a Dirac measure.
+
+\begin{definition}[Interventional Law] \label{def:interlaw}
+Let $M=\langle \mathbf{U},\mathbf{V},\mathbf{F},P_{\mathbf{U}}\rangle$ be a probabilistic
+structural causal model and let $Y\in\mathbf{V}$.
+For an intervention $\mathrm{do}(\mathbf{X}=\mathbf{x})$, let
+$Y':\dom(\mathbf{U})\to\dom(Y)$ denote the measurable map induced by the
+modified structural assignments.
+The interventional law of $Y$ given fixed $\mathbf{u}\in\dom(\mathbf{U})$ is the probability measure on
+$\dom(Y)$ defined by
+\[
+P\!\left(Y\in A \mid \mathbf{u},\mathrm{do}(\mathbf{X}=\mathbf{x})\right)
+\;:=\;
+\mathbb{I}\!\left\{Y'(\mathbf{u})\in A\right\},
+\qquad
+A\subseteq\dom(Y).
+\]
+\end{definition}
+
+
+We define a \emph{causal set} to be a set of assignments to the variables of a probabilistic structural causal model.
+In what follows, causal sets will take on multiple roles. At times, they will represent sets of \emph{potential} causes---whose subsets may be intervened upon---in which case, we will call them suspects.
+We denote the set of all such potential causes by $\mathbf{S}$. 
+When referring to specific sets we \emph{in fact} intervene on, we use $\mathbf{C}$, calling them \emph{active suspects}.
+
+\begin{definition}[Causal set]
+Given a model \(\langle \mathbf{U}, \mathbf{V}, \mathbf{F}, P_{\mathbf{U}}\rangle\), a causal set is a set of pairs $X = x$ where $X \in \mathbf{V}$ and $x \in \mathit{dom}(X)$. 
+\end{definition}
+
+Analogously, some variables will serve as \emph{potential} elements of the context to be kept fixed at the actual value, denoted by $\mathbf{W}$, and called \emph{witnesses}; when referring to context variables that \emph{in fact} are held fixed in a particular case, we use $\mathbf{T}$ and call them \emph{active witnesses}.
+
+To evaluate the causal impact of a variable on an outcome, we consider two interventional regimes: the \emph{necessity regime}, in which we intervene on the variables $\mathbf{C} \subseteq \mathbf{S}$ to have an alternative value, and the sufficiency regime, in which we intervene so that $\mathbf{C}$ takes on factual values.
+Moreover, we hold some elements $\mathbf{T} \subseteq \mathbf{W}$ of the context fixed (i.e., intervened on to retain factual values, despite intervention on $\mathbf{C}$). 
+When looking for an explanation, we perform a search across possible cause sets and possible contexts.
+In each case, attribution increases when the outcome is far from the factual value in the necessity world and decreases when it is far from the factual value in the sufficiency world.
+
+To answer a causal responsibility query, we marginalize over two families of auxiliary variables: one pertains to causally responsible sets of variables and another determines context sets to hold fixed.
+The set of all candidate cause nodes will be called \emph{suspects} and denoted by $\mathbf{S}$. Subsets of $\mathbf{S}$, when considered intervened in a particular search, will be called \emph{active suspects} and denoted by $\mathbf{C}$. 
+The candidate context variables are called \emph{witnesses} and denoted by $\mathbf{W}$. In a particular search step, some subset of $\mathbf{W}$ will be, in fact, intervened to be kept at the factual values; we call those \emph{active witnesses} and denote them by $\mathbf{T}$. Overlap is handled by preferring suspect activation (i.e., $\mathbf{T}$ is pruned of variables that belong to $\mathbf{C}$.
+
+We expand an original model of interest with auxiliary sites that correspond to the moves involved in the search. 
+
+\begin{definition}[Variable Selection Distribution]
+Let $\mathbf{X}$ be a finite set of random variables and $2^\mathbf{X}$ be its power set. Let $\mathcal{Y}$ be a random set of random variables that is distributed according to $\Gamma(2^\mathbf{X})$ such that $ \mathbf{X} \supseteq \mathbf{Y} \thicksim \Gamma(2^\mathbf{X})$ and probability mass function $p^\Gamma(\mathbf{Y}) = \mathbb{P}(\mathcal{Y} = \mathbf{Y})$.
+\end{definition}
+
+
+\noindent In particular, we will be using variable selection distributions for the powerset of causal suspects $\mathbf{S}$ and for the powerset of witnesses $\mathbf{W}$. One simple pattern of suspect and witness selection can be derived by setting size limits on the number of activated suspects or witnesses, and sampling uniformly otherwise.
+
+\begin{example}[Cardinality-Constrained Uniform Selection]
+Let $\mathbf{X}$ be a candidate set of random variables and let $k \thicksim \mathrm{Unif}\{J, \dots K\}$ with $1 \leq J < K \leq |\mathbf{X}|$. A variable selection $\mathbf{Y} \thicksim \Gamma(2^\mathbf{X})$ is sampled from a cardinality-constrained uniform selection distribution $\Gamma(2^\mathbf{X})$ with probability mass function
+\[
+p^\Gamma(\mathbf{Y}) \propto \mathbb{I}[|\mathbf{Y}| = k].
+\]
+\end{example}
+
+
+Causal attribution hinges on questions such as ``if $X$ had, contrary to fact, been fixed to $x'\ne x$ instead of $x$, what would the outcome have been?'' For non-binary causes, this is ambiguous. To resolve this in a way that does not require committing to a single, contrastive causal event \citep{kawakammi_2024_poc_for_cont_and_vec}, we rely on a \textit{distribution} over alternative values.
+
+% \begin{definition}[Alternative Value Distribution]
+% Consider a set of random variables $\mathbf{X}$ and event $\mathbf{X}=\mathbf{x}\in dom(\mathbf{X})$. An alternative value $\mathbf{x}' \thicksim \Delta(\mathbf{x})$ is sampled from the alternative value distribution $\Delta(\mathbf{x})$, where $\mathbf{x}' \in dom (\mathbf{X})$ and $p_\Delta(\mathbf{x}') = \mathbb{P}(\mathbf{X}'=\mathbf{x'})$ with $dom(\mathbf{X}) = dom(\mathbf{X}')$.
+% \end{definition}
+
+We will assume the model provides us with a family of interventional distributions/densities (SCMs are an example of a model class satisfying this requirement), and explain how those are to be used to build up expanded distributions needed for causal impact estimation.
+
+
+\begin{definition}[Alternative Value Distribution]
+Let $\mathbf{X}$ be a set of random variables with domain $\dom(\mathbf{X})$ and
+let $\mathbf{X}=\mathbf{x}\in\dom(\mathbf{X})$ be a factual event.
+An \emph{alternative value distribution} $\Delta(\mathbf{x})$ is a probability
+measure on $\dom(\mathbf{X})$ such that $\mathbf{x} \notin \operatorname{supp}(\Delta(\mathbf{x}))$.
+\end{definition}
+
+
+
+
+\noindent One natural alternative value distribution results from taking the one currently embodied in the model and excising it around the factual setting. Then, the semantics for  ``alternative value'' means ``a sufficiently different value, following the original distribution otherwise''. In the discrete case, of course, the analogue is simply the probability mass function conditioned on the factual value not holding.
+
+% \begin{example}[Epsilon Excised Distribution]
+% Let factual event $\mathbf{X}=\mathbf{x}$ have marginal probability $p(\mathbf{x})$.
+% The \emph{$\epsilon$-excised alternative value distribution} $\Delta_{\epsilon}(\mathbf{x})$
+%  where $\mathbf{x}' \sim \Delta(\mathbf{x})$ with probability:
+% \[
+% p_\Delta(\mathbf{x}') \propto 
+% \begin{cases}
+%     0, & \text{if } x' \in [\,x - \epsilon,\; x + \epsilon\,], \\[6pt]
+%     p(x'), & \text{otherwise}.
+% \end{cases}
+% \]
+% That is, probability mass in an $\epsilon$-neighborhood of the factual value $x$
+% is removed, and the remaining mass is renormalized.
+% \end{example}
+
+\begin{example}[$\epsilon$-Excised Distribution]
+Assume $\mathbf{X}$ is $\mathbb{R}^d$-valued with density $p$.
+Given a factual event $\mathbf{X}=\mathbf{x}$, define the
+$\epsilon$-excised alternative value distribution $\Delta_\epsilon(\mathbf{x})$
+as the probability measure on $(\mathbb{R}^d,\mathcal{B}(\mathbb{R}^d))$ with density
+\[
+p_{\Delta_\epsilon}(\mathbf{x}'\mid \mathbf{x})\propto
+\begin{cases}
+0, & \mathbf{x}'\in B_\epsilon(\mathbf{x}),\\[4pt]
+p(\mathbf{x}'), & \text{otherwise},
+\end{cases}
+\]
+where $B_\epsilon(\mathbf{x})$ denotes the $\epsilon$-ball centered at $\mathbf{x}$.
+In particular, $\mathbf{x}\notin\operatorname{supp}(\Delta_\epsilon(\mathbf{x}))$.
+\end{example}
+
+% \begin{definition}[search densities] Suppose we start with some active suspects and witnesses distributions, together with a distribution for alternative values, with corresponding probability functions $p^\Gamma_s(\cdot), p^\Gamma_w(\cdot)$ and $p_\Delta(\cdot)$. Then the \textbf{sufficiency intervention} is obtained by setting the values of $\mathbf{C}, \mathbf{T}$ to their factual values, $\mathbf{c}^\star, \mathbf{t}^\star$, while the \textbf{necessity intervention} is obtained by setting the values of $\mathbf{C}$ to $\mathbf{c'}$ and keeping the values of $\mathbf{T}$ fixed at $\mathbf{t}^\star$; these result in the corresponding intervened densities in two interventional regimes (where $\mathbf{u}$ is the noise), which can further be weighted by the corresponding activation probabilities, and marginalized over all witness sets and all causal candidate sets containing the variable of interest $X_k$. 
+
+
+% \begin{align}
+% {p}^s_k(y \vert \mathbf{u})    &= \sum_{\mathbf{C} \subseteq \mathbf{S}, \mathbf{T}\subseteq \mathbf{W}} \mathbb{I}[X_k \in \mathbf{C}]
+% p (y \vert \mathbf{u}, do(\mathbf{C} = \mathbf{c^\star}, \mathbf{T} = \mathbf{t^\star})) p^\Gamma_s(\mathbf{C}) p^\Gamma_w(\mathbf{T})
+% %p^{es}_{C,T}(y \vert \mathbf{u}, C, T) 
+% \\ 
+% {p}^n_k(y \vert \mathbf{u})   & = \sum_{\mathbf{C} \subseteq \mathbf{S}, \mathbf{T}\subseteq \mathbf{W}} \mathbb{I}[X_k \in \mathbf{C}]
+% \int 
+% p(y \vert \mathbf{u}, do(\mathbf{C} = \mathbf{c'}, \mathbf{T} = \mathbf{t^\star}))
+% p^\Gamma_s(\mathbf{C}) p^\Gamma_w(\mathbf{T}) p_\Delta(\mathbf{c}') d\, \mathbf{c}'
+% %p^{en}_{C, T}( y \vert \mathbf{u}, C, T) 
+% \end{align}
+% \end{definition}
+
+We are now ready to state the main definitions of \Ourapproach. Because \ourapproach is not constrained to particular variable types, we write the following in general measure theoretic terms that support combinations of continuous and discrete variables. Below, we use the interventional law (definition \ref{def:interlaw}) — a Dirac measure on deterministic causal outcomes — and marginalize over random samples of suspect sets, witness sets, and alternative values for the causal set. This results in a joint measure on the outcome under the factual and counterfactual settings.
+
+\begin{definition}[Joint Necessity and Sufficiency Measure] \label{def:jointnecsuf}
+Fix a probabilistic structural causal \linebreak model
+$M=\langle \mathbf{U},\mathbf{V},\mathbf{F},P_{\mathbf{U}}\rangle$
+and an outcome variable $Y$ with domain $\dom(Y)$.
+Let $p_s^\Gamma$ and $p_w^\Gamma$ be the mass functions of variable selection
+distributions on $2^{\mathbf{S}}$ and $2^{\mathbf{W}}$, and let
+$\Delta(\mathbf{s}^\star)$ be an alternative value distribution on $\dom(\mathbf{S})$.
+Let $(\mathbf{S},\mathbf{W})=(\mathbf{s}^\star,\mathbf{w}^\star)$ be a factual event.
+
+For a variable of
+interest $X_k$, let
+$2^{\mathbf{S}}_{k}:=\{\mathbf{C}\subseteq\mathbf{S}:X_k\in\mathbf{C}\}$,
+and for each $\mathbf{C}\subseteq\mathbf{S}$ let
+$\Delta_{\mathbf{C}}(\mathbf{s}^\star)$ denote the pushforward of
+$\Delta(\mathbf{s}^\star)$ under the restriction map
+$\mathbf{s}'\mapsto \mathbf{s}'\!\mid_{\mathbf{C}}$.\footnote{For an assignment $\mathbf{x}$ to a collection of variables $\mathbf{X}$ and any subset $\mathbf{Y}\subseteq\mathbf{X}$, the restriction $\mathbf{x}\!\mid_{\mathbf{Y}}$ denotes the sub-assignment of $\mathbf{x}$ to the variables in $\mathbf{Y}$.}
+For any measurable $A\subseteq\dom(Y)$ and exogenous realization $\mathbf{u}$, the \emph{sufficiency} and \emph{necessity} measures are
+\begin{align}
+P_k^{s}(A\mid\mathbf{u})
+&=
+\sum_{\mathbf{C}\in 2^{\mathbf{S}}_{k}}
+\sum_{\mathbf{T}\in 2^{\mathbf{W}}}
+P\!\left(Y\in A \mid \mathbf{u},
+\mathrm{do}\!\left(\mathbf{C}=\mathbf{s}^\star\!\mid_{\mathbf{C}},
+\mathbf{T}=\mathbf{w}^\star\!\mid_{\mathbf{T}}\right)\right)
+\,p_s^\Gamma(\mathbf{C})\,p_w^\Gamma(\mathbf{T}),
+\\[6pt]
+P_k^{n}(A\mid\mathbf{u})
+&=
+\sum_{\mathbf{C}\in 2^{\mathbf{S}}_{k}}
+\sum_{\mathbf{T}\in 2^{\mathbf{W}}}
+\int
+P\!\left(Y\in A \mid \mathbf{u},
+\mathrm{do}\!\left(\mathbf{C}=\mathbf{c}',\mathbf{T}=\mathbf{w}^\star\!\mid_{\mathbf{T}}\right)\right)
+\,\Delta_{\mathbf{C}}(\mathbf{s}^\star)(d\mathbf{c}')
+\,p_s^\Gamma(\mathbf{C})\,p_w^\Gamma(\mathbf{T}).
+\end{align}
+
+The joint necessity-sufficiency measure then is given by
+\begin{equation}
+P_k^{s,n}(A\times B)
+\;:=\;
+\int
+P_k^{s}(A\mid\mathbf{u})\,
+P_k^{n}(B\mid\mathbf{u})\,
+P_{\mathbf{U}}(d\mathbf{u}).
+\end{equation}
+
+\end{definition}
+
+
+% \begin{definition}[Causal impact and its push-forward]
+% Let $y^s$ denote the outcome in the \emph{sufficiency world}, $y^n$ denote the outcome in the \emph{necessity world}, and $y^\star$ the outcome in the factual world. By construction, these are independent conditional on $\mathbf{u}$, and so we get the joint:
+% \begin{align}
+%  p(\langle y^s, y^n \rangle \mid \mathbf{u})  & = p^s_k(y^s \mid \mathbf{u}) \; {p}^n_k(y^n \mid \mathbf{u}).
+% \end{align}
+
+% \noindent which also generates a push-forward on any causal impact scoring function $ci(y^s, y^n, y^\star)$, whose expectation is a summary of causal impact.
+% \begin{align}\label{eq:score}
+% \mathbb{E}_{\mathbf{u}}\Big[\, \mathbb{E}_{y^s, y^n \mid \mathbf{u}} \big[ ci(y^s, y^n, y^\star) \big] \,\Big]
+% =\\ \iiint  ci(y^s, y^n, y^\star) \; p^s_k(y^s \mid \mathbf{u}) \; p^n_k(y^n \mid \mathbf{u}) p(\mathbf{u}) 
+%    \, dy^s \, dy^n \, d\mathbf{u}. \nonumber
+% \end{align}
+% \end{definition}
+
+% With this in place, we can characterize a number of causal impact measures by first defining a \emph{causal impact function} as the expectation of a causal impact function taken with respect to the joint measure on factual and counterfactual outcomes.
+
+With the necessity-sufficiency measure fully defined, we are ready to characterize the causal impact of an event $X_k$. In particular, we will proceed by defining an arbitrary \emph{causal impact function}, whose expectation over the necessity-sufficiency measure determines the causal impact. We first proceed with a formal definition of the causal impact measure, followed by several intuitive candidates for the causal impact function.
+
+\begin{definition}[Causal Impact Function and Its Expectation]  \label{def:causalimpact}
+Let $Y^s, Y^n \thicksim P_k^{s,n}$ and let  \linebreak $y^\star\in\dom(Y)$
+denote the factual outcome value.
+For any measurable causal impact function\linebreak 
+$ci: \dom(Y)^3\to\mathbb{R}$, the
+\emph{(expected) causal impact} of $X_k$ is defined as
+\begin{equation}\label{eq:causal-impact}
+\mathbb{E}\!\left[\,ci\!\left(Y^s,Y^n,y^\star\right)\right]
+\;:=\;
+\iint
+ci(y^s,y^n,y^\star)\,
+P_k^{s,n}(d y^s, d y^n).
+\end{equation}
+\end{definition}
+
+
+\begin{example}[Probability of Necessary and Sufficient Causation for Binary Outcomes]
+Assume \linebreak the outcome $Y$ is binary with $\dom(Y)=\{0,1\}$, and let $y^\star=1$ denote
+the factual outcome. Let $Y^s$ and $Y^n$ denote the sufficiency and necessity
+outcome variables. Define the causal impact score
+\[
+ci(y^s,y^n,y^\star)
+=
+\mathbb{I}\{y^n\neq y^\star\}\,\mathbb{I}\{y^s=y^\star\}.
+\]
+Then the expected causal impact reduces to
+\[
+\mathbb{E}\!\left[ci(Y^s,Y^n,1)\right]
+=
+\mathbb{P}(Y^n=0,\,Y^s=1),
+\]
+which conceptually coincides with Pearl’s probability of necessity and sufficiency (PNS). The alignment is \emph{exact} when $\mathbf{S} = \{X_k\}$, $\mathbf{W}=\emptyset$, and $\dom(X_k)={0,1}$ where, factually, $x_k^\star=1$.
+\end{example}
+
+\begin{example}[Absolute Difference Impact Score] \label{ex:absolute_score}
+We can develop an analogous measure for continuous outcomes where we increase attribution with distance from the factual value $y^\star$ in the necessity world decrease impact with distance to the factual value in the sufficiency world.
+\begin{align*}
+ci(y^s, y^n, y^\star) & = \vert y^n - y^\star \vert   - \vert y^s - y ^\star \vert. 
+\end{align*}
+\end{example}
+
+
+
+
+
+
+
+\section{Examples and comparison to SHAP and Causal SHAP}
+
+
+Shapley values have become one of the most widely used tools for explaining the predictions
+of complex machine learning models. Grounded in cooperative game theory, they provide a
+principled decomposition of a model's prediction into additive contributions from individual
+features. However, when the goal is \emph{causal responsibility attribution} --- explaining
+not just what a model predicts but why an outcome occurred --- standard Shapley values
+suffer from fundamental limitations that are not always made explicit in the literature.
+
+
+\todo{update section description when done}
+
+In this section we inspect these limitations carefully: we work
+throughout with a simple but instructive running example, simple enough to permit 
+exact analytic computation while being rich enough
+to expose the core conceptual issues. We then examine how Causal Shapley values
+\citep{heskes2020causal} partially address these issues, where they succeed, and where
+fundamental gaps remain.
+
+
+\begin{example}[Signal with mediation]\label{ex:signal_mediation}
+We work with the following \textbf{generative model}, where $X$ sends a signal, $M$ mediates it with some noise,
+ and $Y$ is the final outcome, which is also noisy:
+\begin{align}
+X &\sim \mathcal{N}(0.5,\ 0.25) \label{eq:X}\\
+M &= X + \varepsilon_M, \quad \varepsilon_M \sim \mathcal{N}(0,\ 0.1) \label{eq:M}\\
+Y &= M + \varepsilon_Y, \quad \varepsilon_Y \sim \mathcal{N}(0,\ 0.1) \label{eq:Y}
+\end{align}
+
+\noindent The causal graph is $X \to M \to Y$, a simple mediation chain. All noise terms are
+independent of each other and of $X$. Since everything is jointly Gaussian, all conditional
+expectations are exact linear functions --- no approximations are required.
+
+Let $R(X \rightsquigarrow Y)$ denote the causal responsibility of $X$ for $Y$. The \textbf{qualitative causal responsibility desiderata} for this example are rather simple:
+\begin{align*}
+\textbf{DXY} \quad & R(X \rightsquigarrow Y) > 0 \\[4pt]
+\textbf{DMY} \quad & R(M \rightsquigarrow Y) > 0 \\[4pt]
+\textbf{DXM} \quad & R(X \rightsquigarrow M) > 0 \\[8pt]
+\textbf{DYX} \quad & R(Y \rightsquigarrow X) = 0 \\[4pt]
+\textbf{DYM} \quad & R(Y \rightsquigarrow M) = 0 \\[4pt]
+\textbf{DMX} \quad & R(M \rightsquigarrow X) = 0
+\end{align*}
+
+Two somewhat more subtle desiderata are as follows:
+\begin{align*}
+    \textbf{DMXY} \quad & R(M \rightsquigarrow Y) > R(X \rightsquigarrow Y) \\[8pt]
+\textbf{DMYX} \quad & R(M \rightsquigarrow Y) > R(X \rightsquigarrow Y) \\[12pt]
+\end{align*}
+\noindent they capture the intuition that responsibility should be higher for variables that are closer to the outcome in the causal graph.
+
+\todo{put in tagged environ for easier crossref}
+% \begin{tabular}{lp{9cm}}
+% DXY & $X$ should be attributed some responsibility for $Y$,\\
+% DMY & $M$ should be attributed some responsibility for $Y$,\\
+% DMXY & $M$ should be more responsibility for $Y$ as it is closer to $Y$ in the causal graph,\\
+% DYX & No responsibility should be attributed to $Y$ for $X$,\\
+% DMX & No responsibility should be attributed to $M$ for $X$,\\
+% DYM & No responsibility should be attributed to $Y$ for $M$,\\
+% DXM & Some responsibility should be attributed to $X$ for $M$,\\
+% DMXY &  More responsibility should be attached to $M$ than to $X$ for $Y$, as $M$ is closer to $X$ in the causal graph.\\
+% DYX & No responsibility for $X$ should be attributed to $Y$ or $M$.
+% \end{tabular}
+
+\noindent The key \textbf{distributional facts} that we will use are as follows:
+\begin{align}
+\mathbb{E}[X] &= \mathbb{E}[M] = \mathbb{E}[Y] = 0.5, \\
+\bigl(\text{Var}(X),\, \text{Var}(M),\, \text{Var}(Y)\bigr) &= (0.25,\, 0.35,\, 0.45), \\
+\bigl(\text{Cov}(X,M),\, \text{Cov}(X,Y),\, \text{Cov}(M,Y)\bigr) &= (0.25,\, 0.25,\, 0.35).
+\end{align}
+\noindent For each choice of target variable, the \textbf{optimal predictor} (minimizing squared error) is the
+conditional expectation. These can be computed exactly for all three choices of target variable.
+\begin{align}
+f_Y(X, M) &= \mathbb{E}[Y \mid X, M] = M \tag{$\{X, M\} \Rightarrow Y$} \\
+f_M(X, Y) &= \mathbb{E}[M \mid X, Y] = 0.5X + 0.5Y \tag{$\{X, Y\} \Rightarrow M$}\\
+f_X(M, Y) &= \mathbb{E}[X \mid M, Y] = 0.5 + \frac{5}{7}(M - 0.5) \tag{$\{M, Y\} \Rightarrow X$}
+\end{align}
+\todo{add fn with derivations?}
+
+\end{example}
+
+
+Before we compute SHAP values for the case at hand, let's talk through the definition of \textbf{Shapley values}. 
+
+
+\begin{definition}[SHAP]
+A cooperative game is a pair $(N, v)$,
+ where $N = \{1, \ldots, n\}$ is the set of players and $v: 2^N \to \mathbb{R}$ 
+ is the \emph{characteristic function} mapping each subset
+(coalition) $S \subseteq N$ to the value that coalition can produce. The Shapley value
+\citep{shapley1953value} is the unique attribution satisfying four axioms:
+\begin{enumerate}
+\item \textbf{Efficiency}: $\sum_i \phi_i = v(N) - v(\emptyset)$
+\item \textbf{Symmetry}: If $v(S \cup \{i\}) = v(S \cup \{j\})$ for all $S$, then
+      $\phi_i = \phi_j$
+\item \textbf{Dummy}: If $v(S \cup \{i\}) = v(S)$ for all $S$, then $\phi_i = 0$
+\item \textbf{Linearity}: For two games $v_1, v_2$: $\phi_i(\alpha_1 v_1 + \alpha_2 v_2)
+      = \alpha_1 \phi_i(v_1) + \alpha_2 \phi_i(v_2)$
+\end{enumerate}
+The unique solution is:
+\begin{equation}
+\phi_i = \sum_{S \subseteq N \setminus \{i\}}
+\frac{|S|!\,(|N|-|S|-1)!}{|N|!}
+\bigl[v(S \cup \{i\}) - v(S)\bigr]
+\label{eq:shapley}
+\end{equation}
+The weight $\frac{|S|!(|N|-|S|-1)!}{|N|!}$ equals the probability that, in a uniformly
+random ordering of all players, exactly the members of $S$ precede $i$. Equivalently,
+$\phi_i$ is the average marginal contribution of $i$ across all orderings.
+ \citet{lundberg2017unified} apply Shapley values to explain model predictions by taking
+ players  to be input features, and the characteristic function to be the expected model output given a subset of features:
+\begin{equation}
+v(S) = \mathbb{E}_{X_{\bar{S}}}\bigl[f(X_S = x_S,\, X_{\bar{S}})\bigr]
+\end{equation}
+\noindent where $\bar{S} = N \setminus S$ and missing features are marginalized.
+\end{definition}
+
+
+\todo{ Get back to this and illustrate:
+
+One crucial observation here is that SHAP explains predictions, not outcomes. If $f(x) = \mathbb{E}[Y \mid X=x]$
+(as in regression), then SHAP explains $\mathbb{E}[Y \mid X=x] - \mathbb{E}[Y]$. The
+residual $Y - f(x)$ --- the noise --- is entirely invisible to SHAP by construction. 
+}
+
+
+
+Now consider a situation in which  $X=1, M=1, Y=1$. For each of those outcomes we will
+use our straighforward causal  resposbility attribution desiderata and 
+ see how they align with SHAP values.
+ First, let's compute the SHAP values for $X$ and $M$ with respect to the prediction of $Y$.
+
+
+
+\subsection{Target $Y$, Features $\{X, M\}$}
+
+\begin{align}
+v(\emptyset) &= \mathbb{E}[M] = 0.5 \\
+v(\{X\}) &= \mathbb{E}[M \mid X=1] = 1 \\
+v(\{M\}) &= \mathbb{E}[M \mid M=1] = 1 \\
+v(\{X,M\}) &= f_Y(1,1) = 1
+\end{align}
+
+Applying equation~\eqref{eq:shapley} with $|N|=2$:
+\begin{equation}
+\phi_X = \tfrac{1}{2}(1 - 0.5) + \tfrac{1}{2}(1 - 1) = 0.25
+\qquad
+\phi_M = \tfrac{1}{2}(1 - 0.5) + \tfrac{1}{2}(1 - 1) = 0.25
+\end{equation}
+
+So 
+
+
+
+
+
+\newpage 
+
+% \bibliographystyle{plain}
+\bibliography{references}
+
+
+\end{document}
+
+
+
+
+
+

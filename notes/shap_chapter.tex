@@ -1,0 +1,566 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{natbib}
+\geometry{margin=1in}
+
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+
+\title{Shapley Values, Causal Shapley Values, and Responsibility Attribution:\\
+A Critical Analysis}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+%% ============================================================
+\section{Introduction}
+%% ============================================================
+
+Shapley values have become one of the most widely used tools for explaining the predictions
+of complex machine learning models. Grounded in cooperative game theory, they provide a
+principled decomposition of a model's prediction into additive contributions from individual
+features. However, when the goal is \emph{causal responsibility attribution} --- explaining
+not just what a model predicts but why an outcome occurred --- standard Shapley values
+suffer from fundamental limitations that are not always made explicit in the literature.
+
+This chapter develops these limitations carefully, starting from first principles. We work
+throughout with a simple but instructive running example: a linear Gaussian chain
+$X \to M \to Y$, where all variables are Gaussian and the relationships are additive.
+This model is simple enough to permit exact analytic computation while being rich enough
+to expose the core conceptual issues. We then examine how Causal Shapley values
+\citep{heskes2020causal} partially address these issues, where they succeed, and where
+fundamental gaps remain.
+
+%% ============================================================
+\section{The Running Model}
+%% ============================================================
+
+Throughout this chapter we work with the following generative model:
+
+\begin{align}
+X &\sim \mathcal{N}(0.5,\ 0.25) \label{eq:X}\\
+M &= X + \varepsilon_M, \quad \varepsilon_M \sim \mathcal{N}(0,\ 0.1) \label{eq:M}\\
+Y &= M + \varepsilon_Y, \quad \varepsilon_Y \sim \mathcal{N}(0,\ 0.1) \label{eq:Y}
+\end{align}
+
+The causal graph is $X \to M \to Y$, a simple mediation chain. All noise terms are
+independent of each other and of $X$. Since everything is jointly Gaussian, all conditional
+expectations are exact linear functions --- no approximations are required.
+
+Key distributional facts:
+\begin{align}
+\mathbb{E}[X] = \mathbb{E}[M] = \mathbb{E}[Y] &= 0.5 \\
+\text{Var}(X) = 0.25, \quad \text{Var}(M) &= 0.35, \quad \text{Var}(Y) = 0.45 \\
+\text{Cov}(X,M) = 0.25, \quad \text{Cov}(X,Y) &= 0.25, \quad \text{Cov}(M,Y) = 0.35
+\end{align}
+
+\subsection{Prediction Functions}
+
+For each choice of target variable, the optimal predictor (minimizing squared error) is the
+conditional expectation. We derive these exactly.
+
+\paragraph{Target $Y$, features $\{X, M\}$:}
+Since $Y = M + \varepsilon_Y$ with $\varepsilon_Y$ independent of $X$ and $M$:
+\begin{equation}
+f_Y(X, M) = \mathbb{E}[Y \mid X, M] = M
+\end{equation}
+$X$ carries no additional information about $Y$ once $M$ is known --- $M$ screens $X$ from
+$Y$ by d-separation.
+
+\paragraph{Target $M$, features $\{X, Y\}$:}
+Using the multivariate Gaussian conditional formula with the covariance structure above:
+\begin{equation}
+f_M(X, Y) = \mathbb{E}[M \mid X, Y] = 0.5X + 0.5Y
+\end{equation}
+$M$ is exactly halfway between $X$ and $Y$ because the noise variances at each step are equal,
+making $X$ and $Y$ equally informative about $M$.
+
+\paragraph{Target $X$, features $\{M, Y\}$:}
+Since $Y = M + \varepsilon_Y$, conditioning on $M$ renders $Y$ independent of $X$
+(d-separation: $M$ blocks the only path $X \to M \to Y$). Therefore:
+\begin{equation}
+f_X(M, Y) = \mathbb{E}[X \mid M, Y] = \mathbb{E}[X \mid M]
+= 0.5 + \frac{5}{7}(M - 0.5)
+\end{equation}
+$Y$ drops out exactly. The coefficient $\frac{5}{7} = \frac{\text{Cov}(X,M)}{\text{Var}(M)}
+= \frac{0.25}{0.35}$ reflects that $M$ is a noisy signal of $X$: observing $M=1$ raises our
+estimate of $X$ to $0.857$ but not all the way to $1$, because some of $M$'s value is due
+to $\varepsilon_M$.
+
+%% ============================================================
+\section{Shapley Values: Definition and Properties}
+%% ============================================================
+
+\subsection{Cooperative Game Theory Background}
+
+A cooperative game is a pair $(N, v)$ where $N = \{1, \ldots, n\}$ is the set of players
+and $v: 2^N \to \mathbb{R}$ is the \emph{characteristic function} mapping each subset
+(coalition) $S \subseteq N$ to the value that coalition can produce. The Shapley value
+\citep{shapley1953value} is the unique attribution satisfying four axioms:
+\begin{enumerate}
+\item \textbf{Efficiency}: $\sum_i \phi_i = v(N) - v(\emptyset)$
+\item \textbf{Symmetry}: If $v(S \cup \{i\}) = v(S \cup \{j\})$ for all $S$, then
+      $\phi_i = \phi_j$
+\item \textbf{Dummy}: If $v(S \cup \{i\}) = v(S)$ for all $S$, then $\phi_i = 0$
+\item \textbf{Linearity}: For two games $v_1, v_2$: $\phi_i(\alpha_1 v_1 + \alpha_2 v_2)
+      = \alpha_1 \phi_i(v_1) + \alpha_2 \phi_i(v_2)$
+\end{enumerate}
+
+The unique solution is:
+\begin{equation}
+\phi_i = \sum_{S \subseteq N \setminus \{i\}}
+\frac{|S|!\,(|N|-|S|-1)!}{|N|!}
+\bigl[v(S \cup \{i\}) - v(S)\bigr]
+\label{eq:shapley}
+\end{equation}
+
+The weight $\frac{|S|!(|N|-|S|-1)!}{|N|!}$ equals the probability that, in a uniformly
+random ordering of all players, exactly the members of $S$ precede $i$. Equivalently,
+$\phi_i$ is the average marginal contribution of $i$ across all orderings.
+
+\subsection{SHAP: Shapley Values for Machine Learning}
+
+\citet{lundberg2017unified} apply Shapley values to explain model predictions by defining:
+\begin{itemize}
+\item Players = input features
+\item $v(S) = \mathbb{E}_{X_{\bar{S}}}\bigl[f(X_S = x_S,\, X_{\bar{S}})\bigr]$
+\end{itemize}
+where $\bar{S} = N \setminus S$ and missing features are marginalized over their
+(marginal or conditional) distribution. The attribution decomposes:
+\begin{equation}
+f(x) = \underbrace{\mathbb{E}[f(X)]}_{f_0} + \sum_{i=1}^n \phi_i
+\end{equation}
+
+\begin{remark}[SHAP explains predictions, not outcomes]
+SHAP is defined via the \emph{local accuracy} property: the explanation model must match
+$f(x)$, the model prediction, not the actual outcome $Y$. If $f(x) = \mathbb{E}[Y \mid X=x]$
+(as in regression), then SHAP explains $\mathbb{E}[Y \mid X=x] - \mathbb{E}[Y]$. The
+residual $Y - f(x)$ --- the noise --- is entirely invisible to SHAP by construction. This
+is not stated as a limitation in \citet{lundberg2017unified}; it follows from the definition.
+\end{remark}
+
+%% ============================================================
+\section{Plain SHAP on the Running Model}
+%% ============================================================
+
+We compute SHAP for all three targets at the instance $X=1, M=1, Y=1$, with baseline
+$\mathbb{E}[\cdot] = 0.5$ throughout. The value function uses observational conditioning:
+$v(S) = \mathbb{E}[f \mid X_S = x_S]$.
+
+\subsection{Target $Y$, Features $\{X, M\}$}
+
+\begin{align}
+v(\emptyset) &= \mathbb{E}[M] = 0.5 \\
+v(\{X\}) &= \mathbb{E}[M \mid X=1] = 1 \\
+v(\{M\}) &= \mathbb{E}[M \mid M=1] = 1 \\
+v(\{X,M\}) &= f_Y(1,1) = 1
+\end{align}
+
+Applying equation~\eqref{eq:shapley} with $|N|=2$:
+\begin{equation}
+\phi_X = \tfrac{1}{2}(1 - 0.5) + \tfrac{1}{2}(1 - 1) = 0.25
+\qquad
+\phi_M = \tfrac{1}{2}(1 - 0.5) + \tfrac{1}{2}(1 - 1) = 0.25
+\end{equation}
+
+\subsection{Target $M$, Features $\{X, Y\}$}
+
+\begin{align}
+v(\emptyset) &= 0.5 \\
+v(\{X\}) &= \mathbb{E}[0.5X + 0.5Y \mid X=1] = 0.5 + 0.5\cdot\mathbb{E}[Y\mid X=1] = 1 \\
+v(\{Y\}) &= \mathbb{E}[0.5X + 0.5Y \mid Y=1] = 0.5\cdot\mathbb{E}[X\mid Y=1] + 0.5
+         = 0.5\cdot 0.778 + 0.5 = 0.889 \\
+v(\{X,Y\}) &= 1
+\end{align}
+
+where $\mathbb{E}[X \mid Y=1] = 0.5 + \frac{0.25}{0.45}(0.5) = 0.778$.
+
+\begin{equation}
+\phi_X = \tfrac{1}{2}(1-0.5) + \tfrac{1}{2}(1-0.889) = 0.306
+\qquad
+\phi_Y = \tfrac{1}{2}(0.889-0.5) + \tfrac{1}{2}(1-1) = 0.194
+\end{equation}
+
+\subsection{Target $X$, Features $\{M, Y\}$}
+
+\begin{align}
+v(\emptyset) &= 0.5 \\
+v(\{M\}) &= 0.5 + \tfrac{5}{7}(0.5) = 0.857 \\
+v(\{Y\}) &= \mathbb{E}[X \mid Y=1] = 0.5 + \tfrac{0.25}{0.45}(0.5) = 0.778 \\
+v(\{M,Y\}) &= \mathbb{E}[X \mid M=1, Y=1] = 0.857 \quad \text{(since $X \perp Y \mid M$)}
+\end{align}
+
+\begin{equation}
+\phi_M = \tfrac{1}{2}(0.857-0.5) + \tfrac{1}{2}(0.857-0.778) = 0.219
+\qquad
+\phi_Y = \tfrac{1}{2}(0.778-0.5) + \tfrac{1}{2}(0.857-0.857) = 0.139
+\end{equation}
+
+\subsection{Summary: Plain SHAP}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llccc}
+\toprule
+Target & Method & $\phi_X$ & $\phi_M$ & $\phi_Y$ \\
+\midrule
+$Y$ & Plain SHAP & 0.25  & 0.25  & ---   \\
+$M$ & Plain SHAP & 0.306 & ---   & 0.194 \\
+$X$ & Plain SHAP & ---   & 0.219 & 0.139 \\
+\bottomrule
+\end{tabular}
+\caption{Plain SHAP attributions for instance $X=1, M=1, Y=1$.}
+\end{table}
+
+\begin{remark}[Causal direction is invisible to plain SHAP]
+For target $X$, plain SHAP assigns $\phi_Y = 0.139 > 0$, even though $Y$ does not cause $X$.
+This arises because $v(\{Y\}) = 0.778 > 0.5$: observing $Y=1$ is statistically informative
+about $X=1$ through the chain $X \to M \to Y$. SHAP cannot distinguish ``$Y$ is informative
+about $X$'' from ``$Y$ causes $X$'' because the value function is grounded in observational
+conditionals, which are symmetric under reversal of causal direction.
+\end{remark}
+
+%% ============================================================
+\section{The Mediator Dilution Problem}
+%% ============================================================
+
+A second fundamental limitation of plain SHAP concerns the \emph{stability of attribution
+under model reparametrization}.
+
+Consider expanding the chain $X \to M \to Y$ to $X \to M_1 \to M_2 \to Y$ by splitting
+the single intermediary $M$ into two steps, each with half the noise variance:
+\begin{align}
+M_1 &= X + \varepsilon_1, \quad \varepsilon_1 \sim \mathcal{N}(0, 0.05) \\
+M_2 &= M_1 + \varepsilon_2, \quad \varepsilon_2 \sim \mathcal{N}(0, 0.05) \\
+Y &= M_2 + \varepsilon_Y, \quad \varepsilon_Y \sim \mathcal{N}(0, 0.1)
+\end{align}
+
+The total noise $\text{Var}(Y \mid X) = 0.05 + 0.05 + 0.1 = 0.2$ is identical to the
+original model. The joint distribution of $(X, Y)$ is unchanged.
+
+Since $f_Y(X, M_1, M_2) = M_2$, each variable individually predicts $Y$ almost perfectly
+(low noise). As a result, SHAP splits the fixed attribution budget $f(x) - f_0 = 0.5$
+equally across all three features:
+
+\begin{equation}
+\phi_X = \phi_{M_1} = \phi_{M_2} = \tfrac{0.5}{3} \approx 0.167
+\end{equation}
+
+More generally, with $k$ intermediaries: $\phi_X = \frac{0.5}{k+1}$.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\toprule
+Model & $\phi_X$ & Interpretation \\
+\midrule
+$X \to M \to Y$              & 0.25  & $X$ gets 50\% of total attribution \\
+$X \to M_1 \to M_2 \to Y$   & 0.167 & $X$ gets 33\% \\
+$X \to M_1 \to M_2 \to M_3 \to Y$ & 0.125 & $X$ gets 25\% \\
+\bottomrule
+\end{tabular}
+\caption{SHAP attribution to $X$ as a function of chain length, with identical $(X,Y)$
+joint distribution throughout.}
+\end{table}
+
+\begin{remark}[Mediator dilution]
+The attribution to $X$ decreases monotonically as the causal chain is refined, even though
+the causal relationship between $X$ and $Y$ is unchanged. This is because each additional
+mediator enters as a new player in the Shapley game and claims a share of the fixed budget.
+The attribution is determined by modeling granularity, not by facts about causal responsibility.
+\end{remark}
+
+We note that this problem can be given a natural illustration in terms of a \emph{telephone
+game}: $X$ is the original message, $M_1, M_2, \ldots$ are successive intermediaries each
+introducing small distortions, and $Y$ is the final received message. Splitting one
+intermediary into two --- while keeping the total distortion constant --- reduces the
+apparent responsibility of the original sender under SHAP.
+
+%% ============================================================
+\section{Causal Shapley Values}
+%% ============================================================
+
+\subsection{Definition}
+
+\citet{heskes2020causal} propose replacing the observational conditional in the value
+function with an interventional one using Pearl's do-calculus:
+
+\begin{equation}
+v_{\text{causal}}(S) = \mathbb{E}\bigl[f(X) \mid do(X_S = x_S)\bigr]
+= \int P(X_{\bar{S}} \mid do(X_S = x_S))\, f(X_{\bar{S}}, x_S)\, dX_{\bar{S}}
+\label{eq:causal_v}
+\end{equation}
+
+By the rules of do-calculus, intervening on $X_S$ only affects the distribution of
+descendants of $X_S$. For non-descendants, $P(X_j \mid do(X_S = x_S)) = P(X_j)$.
+Therefore equation~\eqref{eq:causal_v} is equivalent to:
+
+\begin{equation}
+v_{\text{causal}}(S) = \mathbb{E}_{X_{\bar{S},\,\text{non-desc}} \sim P(\cdot),\;
+X_{\bar{S},\,\text{desc}} \sim P(\cdot \mid do(X_S=x_S))}\bigl[f(X_{\bar{S}}, x_S)\bigr]
+\end{equation}
+
+The Shapley formula~\eqref{eq:shapley} is otherwise unchanged. The method retains all four
+Shapley axioms.
+
+\subsection{Causal Shapley on the Running Model}
+
+In the model $X \to M \to Y$ with no confounding, the interventional and observational
+conditionals coincide for $X$ (since $X$ has no parents). However they differ for $M$ and $Y$
+when these appear as out-of-coalition features with ancestors in the coalition.
+
+\paragraph{Target $Y$, features $\{X, M\}$:}
+
+\begin{align}
+v(\{X\}) &= \mathbb{E}_{M \sim P(M \mid do(X=1))}[M] = \mathbb{E}[M \mid do(X=1)] = 1
+\end{align}
+
+With no confounding this equals the plain SHAP value. Result: $\phi_X = \phi_M = 0.25$.
+
+\paragraph{Target $M$, features $\{X, Y\}$:}
+
+$Y$ is a descendant of $X$, so when $X \in S$:
+\begin{align}
+v(\{X\}) &= \mathbb{E}_{Y \sim P(Y \mid do(X=1))}[0.5\cdot 1 + 0.5Y]
+         = 0.5 + 0.5 \cdot 1 = 1
+\end{align}
+
+When $Y \in S$ without $X$: $X$ is not a descendant of $Y$, so $X$ is marginalized over $P(X)$:
+\begin{align}
+v(\{Y\}) &= \mathbb{E}_{X \sim P(X)}[0.5X + 0.5\cdot 1] = 0.5\cdot 0.5 + 0.5 = 0.75
+\end{align}
+
+This differs from plain SHAP ($v(\{Y\}) = 0.889$). Result:
+\begin{equation}
+\phi_X = 0.375, \qquad \phi_Y = 0.125
+\end{equation}
+
+\paragraph{Target $X$, features $\{M, Y\}$:}
+
+$Y$ is a descendant of $M$, but $f_X$ does not depend on $Y$. Moreover $do(Y=y)$ cuts the
+$M \to Y$ edge and does not affect $M$'s distribution. So $v(\{Y\}) = 0.5 = v(\emptyset)$.
+Result:
+\begin{equation}
+\phi_M = 0.357, \qquad \phi_Y = 0
+\end{equation}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llccc}
+\toprule
+Target & Method & $\phi_X$ & $\phi_M$ & $\phi_Y$ \\
+\midrule
+$Y$ & Plain SHAP       & 0.25  & 0.25  & ---   \\
+$Y$ & Causal SHAP      & 0.25  & 0.25  & ---   \\
+$M$ & Plain SHAP       & 0.306 & ---   & 0.194 \\
+$M$ & Causal SHAP      & 0.375 & ---   & 0.125 \\
+$X$ & Plain SHAP       & ---   & 0.219 & 0.139 \\
+$X$ & Causal SHAP      & ---   & 0.357 & 0     \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of plain and causal SHAP attributions for instance $X=1, M=1, Y=1$.}
+\end{table}
+
+Causal Shapley correctly zeros out $\phi_Y$ for target $X$: since $do(Y=y)$ does not affect
+$M$, and $f_X$ does not depend on $Y$, $Y$ adds nothing to any coalition under intervention.
+This is causally correct. However $\phi_Y = 0.125 > 0$ persists for target $M$ --- a residual
+we examine in the next section.
+
+%% ============================================================
+\section{Direct and Indirect Effect Decomposition}
+%% ============================================================
+
+\citet{heskes2020causal} further decompose each $\phi_i(\pi)$ into direct and indirect
+components. For permutation $\pi$ with $S = \{j : j \prec_\pi i\}$:
+
+\begin{align}
+\phi_i(\pi) &= \underbrace{\mathbb{E}[f(X_{\bar{S}}, x_{S\cup i}) \mid do(X_S=x_S)]
+              - \mathbb{E}[f(X_{\bar{S}\cup i}, x_S) \mid do(X_S=x_S)]}_{\text{direct effect}}
+\notag\\
+&\quad + \underbrace{\mathbb{E}[f(X_{\bar{S}}, x_{S\cup i}) \mid do(X_{S\cup i}=x_{S\cup i})]
+              - \mathbb{E}[f(X_{\bar{S}}, x_{S\cup i}) \mid do(X_S=x_S)]}_{\text{indirect effect}}
+\label{eq:decomp}
+\end{align}
+
+The \emph{direct effect} measures the change in prediction from fixing $X_i = x_i$ while
+holding the distribution of other out-of-coalition features constant. The \emph{indirect
+effect} measures the additional change in the distribution of out-of-coalition descendants
+caused by the intervention $do(X_i = x_i)$.
+
+\begin{remark}
+``Direct'' and ``indirect'' here refer to information flow through the prediction function
+$f$, not to direct edges in the causal graph. A feature with no outgoing edges in the DAG
+can still have a nonzero indirect effect in this decomposition if $f$ depends on its
+descendants.
+\end{remark}
+
+Applying decomposition~\eqref{eq:decomp} to our model:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llccc}
+\toprule
+Target & Feature & Direct & Indirect & Total \\
+\midrule
+$Y$ & $X$ & 0      & 0.25  & 0.25  \\
+$Y$ & $M$ & 0.25   & 0     & 0.25  \\
+$M$ & $X$ & 0.25   & 0.125 & 0.375 \\
+$M$ & $Y$ & 0.125  & 0     & 0.125 \\
+$X$ & $M$ & 0.357  & 0     & 0.357 \\
+$X$ & $Y$ & 0      & 0     & 0     \\
+\bottomrule
+\end{tabular}
+\caption{Direct and indirect decomposition of causal Shapley values.}
+\end{table}
+
+Key observations:
+\begin{enumerate}
+\item $X$'s contribution to $Y$ is \emph{entirely indirect} (0.25 indirect, 0 direct),
+      correctly reflecting that $X \to Y$ has no direct edge --- $X$ only reaches $Y$ via $M$.
+\item $M$'s contribution to $Y$ is \emph{entirely direct} (0.25 direct, 0 indirect),
+      correctly reflecting the direct edge $M \to Y$ with no further descendants.
+\item $Y$'s contribution to $M$ (0.125) is \emph{entirely direct} and has no causal
+      interpretation: $Y$ has no descendants so it cannot have indirect effects. This
+      attribution arises purely because $f_M(X,Y) = 0.5X + 0.5Y$ uses $Y$ as a
+      statistical signal about $M$. It reflects epistemic dependence, not causal influence.
+\end{enumerate}
+
+%% ============================================================
+\section{Residual Limitations for Responsibility Attribution}
+%% ============================================================
+
+\subsection{The Epistemic vs.\ Causal Direct Effect Problem}
+
+The persistence of $\phi_Y = 0.125$ for target $M$ under causal SHAP reveals a limitation
+that the direct/indirect decomposition makes precise. The ``direct'' effect of $Y$ on the
+prediction of $M$ is real --- $f_M$ genuinely depends on $Y$ as a feature --- but it is
+not causal. It arises because $Y$ is statistically informative about $M$: observing $Y=1$
+updates our estimate of $M$ upward even given $X$, because $Y = M + \varepsilon_Y$ carries
+signal about $M$.
+
+Causal Shapley eliminates spurious \emph{indirect} effects in the wrong causal direction
+by using $do(\cdot)$ in the marginalization. But it cannot eliminate spurious \emph{direct}
+effects, because those are determined by $f$ itself --- which is derived from the observational
+joint distribution and therefore encodes statistical dependencies regardless of their
+causal direction.
+
+\subsection{SHAP Explains Predictions, Not Outcomes}
+
+Consider the instance $X = 0.5, M = 0.5, Y = 1$. Here $Y = 1$ despite both $X$ and $M$
+being at baseline ($0.5$), because $\varepsilon_Y = 0.5$.
+
+The model prediction is $f_Y(0.5, 0.5) = 0.5 = f_0$. Therefore:
+\begin{equation}
+\phi_X = \phi_M = 0, \qquad \text{(both plain and causal SHAP)}
+\end{equation}
+
+The gap between the actual outcome ($Y=1$) and the baseline ($0.5$) is $0.5$, entirely
+attributable to $\varepsilon_Y$. SHAP explains $f(x) - f_0 = 0$, leaving the full gap
+unexplained. This is not a failure of SHAP --- it correctly explains the prediction ---
+but it reveals that SHAP provides \emph{no information} about responsibility for the
+actual realized outcome when that outcome deviates from its prediction due to noise.
+
+\subsection{The Responsibility of Noise}
+
+More subtly: even when features take values that differ from baseline, the decomposition
+$Y - f_0 = [f(x) - f_0] + [Y - f(x)]$ splits the outcome into an explained part (which
+SHAP distributes among features) and a residual (which SHAP ignores). For causal responsibility
+attribution, the residual is not noise to be discarded --- it is the part of the outcome
+due to unmodeled or stochastic mechanisms, and assigning it to ``nobody'' is itself a
+responsibility claim.
+
+\subsection{The Choice of Responsibility Principle}
+
+A deeper issue is that Shapley values, even causal ones, implement a specific implicit
+principle of responsibility: \emph{symmetric informational contribution, corrected for
+causal structure in the marginalization}. This does not correspond to any of the standard
+philosophical principles of causal responsibility:
+
+\begin{itemize}
+\item \textbf{Exogeneity / causal primacy}: assign responsibility to root causes ($X$),
+      treat mediators as mechanisms
+\item \textbf{Proximate causation}: assign responsibility to the most immediate cause ($M$
+      for $Y$)
+\item \textbf{Path-specific responsibility}: decompose along causal paths, not features
+\item \textbf{Agency / manipulability}: assign responsibility to variables under an agent's
+      control
+\item \textbf{Actual causation}: responsibility tracks counterfactual dependence in the
+      actual world
+\end{itemize}
+
+Each principle leads to different attributions. Causal SHAP does not commit to any of them
+explicitly. The equal split $\phi_X = \phi_M = 0.25$ for target $Y$ is defensible under a
+symmetric informational principle but is wrong under exogeneity (where $X$ should receive
+all credit) and wrong under proximate causation (where $M$ should receive all credit).
+
+%% ============================================================
+\section{Conclusion}
+%% ============================================================
+
+We have worked through the theory and computation of plain and causal Shapley values on a
+simple linear Gaussian chain, and identified several fundamental limitations for causal
+responsibility attribution:
+
+\begin{enumerate}
+\item \textbf{Causal direction is invisible to plain SHAP}: the observational value function
+      cannot distinguish $X \to Y$ from $Y \to X$.
+\item \textbf{Mediator dilution}: adding intermediate variables to a causal chain reduces
+      the root cause's apparent attribution without any change to the underlying causal
+      relationship.
+\item \textbf{Causal SHAP partially corrects direction}: by replacing conditioning with
+      intervention in the marginalization, causal SHAP correctly zeros out downstream
+      variables as causes of upstream ones in many cases.
+\item \textbf{Epistemic direct effects persist}: causal SHAP cannot remove the attribution
+      to downstream variables that appear as features in $f$, because those attributions
+      arise from the prediction function itself, not from the marginalization.
+\item \textbf{SHAP explains predictions, not outcomes}: by the local accuracy axiom, SHAP
+      is defined to explain $f(x) - f_0$. The gap between actual outcomes and predictions
+      --- the noise --- is invisible by construction.
+\item \textbf{No responsibility principle is made explicit}: Shapley values implement
+      symmetric informational attribution, which does not correspond to standard causal
+      responsibility principles. The choice of principle must be made external to the SHAP
+      framework.
+\end{enumerate}
+
+These limitations are not arguments against Shapley values as explanation tools for
+predictive models --- for that purpose they are principled and well-axiomatized. They are
+arguments that the step from ``explaining a prediction'' to ``attributing causal
+responsibility'' requires additional theoretical machinery that Shapley values alone do not
+provide.
+
+\bibliographystyle{plainnat}
+\begin{thebibliography}{9}
+
+\bibitem[Heskes et al.(2020)]{heskes2020causal}
+Heskes, T., Sijben, E., Bucur, I.G., and Claassen, T. (2020).
+\newblock Causal Shapley values: Exploiting causal knowledge to explain
+individual predictions of complex models.
+\newblock \emph{Advances in Neural Information Processing Systems}, 33.
+
+\bibitem[Lundberg and Lee(2017)]{lundberg2017unified}
+Lundberg, S.M. and Lee, S.-I. (2017).
+\newblock A unified approach to interpreting model predictions.
+\newblock \emph{Advances in Neural Information Processing Systems}, 30.
+
+\bibitem[Pearl(2009)]{pearl2009causality}
+Pearl, J. (2009).
+\newblock \emph{Causality: Models, Reasoning, and Inference}.
+\newblock Cambridge University Press.
+
+\bibitem[Shapley(1953)]{shapley1953value}
+Shapley, L.S. (1953).
+\newblock A value for n-person games.
+\newblock \emph{Contributions to the Theory of Games}, 2:307--317.
+
+\end{thebibliography}
+
+\end{document}
