@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.4.27)  27 APR 2026 16:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.4.27)  28 APR 2026 11:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**main.tex
-(./main.tex
+**/home/rafal/s76projects/explainable_paper/main.tex
+(/home/rafal/s76projects/explainable_paper/main.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
 (./clear2026.cls
@@ -1211,67 +1211,91 @@ m/n/10.95 =
 LaTeX Warning: Reference `app:conceptual' on page 8 undefined on input line 533
 .
 
-[8] [9] [10]
-Underfull \hbox (badness 1478) in paragraph at lines 758--764
-[][][][] \OT1/ptm/m/it/10.95 Let $\OML/cmm/m/it/10.95 Y[]; Y[] \U/msb/m/n/10.95
- s \OML/cmm/m/it/10.95 P[]$ \OT1/ptm/m/it/10.95 and let
+
+LaTeX Warning: Reference `sec:TODO' on page 8 undefined on input line 535.
+
+[8] [9]
+Overfull \hbox (105.0176pt too wide) in paragraph at lines 574--575
+[]\OT1/ptm/m/n/10.95 The OBCB model (Ex-am-ple [][]3[][]) is a PSCM with en-dog
+e-nous vari-ables $\OT1/cmr/bx/n/10.95 V \OT1/cmr/m/n/10.95 = \OMS/cmsy/m/n/10.
+95 f[]\OML/cmm/m/it/10.95 ; []; []; []; []\OMS/cmsy/m/n/10.95 g$\OT1/ptm/m/n/10
+.95 ,
  []
 
+[10]
 
-Underfull \hbox (badness 10000) in paragraph at lines 774--778
-[][]\OT1/ptm/m/it/10.95 Assume
- []
+Package natbib Warning: Citation `shapley1953' on page 11 undefined on input li
+ne 641.
 
 [11]
 
-Package natbib Warning: Citation `heskes2020causal' on page 12 undefined on inp
-ut line 822.
+Package natbib Warning: Citation `kruschke2018' on page 12 undefined on input l
+ine 695.
 
 
-Overfull \hbox (0.52014pt too wide) in paragraph at lines 826--829
+Package natbib Warning: Citation `cohen1988statistical' on page 12 undefined on
+ input line 695.
+
+[12] [13]
+Overfull \hbox (13.2665pt too wide) in paragraph at lines 798--802
+[][]\OT1/ptm/m/it/10.95 Assume the
+ []
+
+
+LaTeX Warning: Reference `sec:ac_benchmark' on page 14 undefined on input line 
+816.
+
+
+LaTeX Warning: Reference `sec:TODO' on page 14 undefined on input line 816.
+
+
+Package natbib Warning: Citation `heskes2020causal' on page 14 undefined on inp
+ut line 848.
+
+
+Overfull \hbox (0.52014pt too wide) in paragraph at lines 852--855
 [][][][] \OT1/ptm/m/it/10.95 We work with the fol-low-ing \OT1/ptm/b/it/10.95 g
 en-er-a-tive model\OT1/ptm/m/it/10.95 , where $\OML/cmm/m/it/10.95 X$ \OT1/ptm/
 m/it/10.95 sends
  []
 
-[12]
+[14] [15]
 
-Package natbib Warning: Citation `shapley1953value' on page 13 undefined on inp
-ut line 883.
-
-[13]
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 927.
+Package natbib Warning: Citation `shapley1953value' on page 16 undefined on inp
+ut line 909.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 927.
+(hyperref)                removing `math shift' on input line 953.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 927.
+(hyperref)                removing `math shift' on input line 953.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 927.
+(hyperref)                removing `math shift' on input line 953.
 
-[14] (./main.bbl
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 3
-7.
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 953.
+
+[16] (./main.bbl
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 4
+4.
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-Underfull \hbox (badness 1043) in paragraph at lines 77--83
+Underfull \hbox (badness 1043) in paragraph at lines 94--103
 \OT1/ptm/m/n/10.95 giou, Niko-laos Dim-itriou, Dim-itrios Tzo-varas, and George
  Mar-getis.  A sys-tem-atic re-
  []
 
-[15])
+[17])
 
 Package natbib Warning: There were undefined citations.
 
-[16] (./main.aux)
+[18] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -1284,13 +1308,13 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: C805ACFDC8EF3C6DB8CDE25822AC45C5;1513.
  ) 
 Here is how much of TeX's memory you used:
- 40441 strings out of 476106
- 878614 string characters out of 5793933
- 1940975 words of memory out of 5000000
- 61728 multiletter control sequences out of 15000+600000
- 592190 words of font info for 114 fonts, out of 8000000 for 9000
+ 40462 strings out of 476106
+ 879008 string characters out of 5793933
+ 1941975 words of memory out of 5000000
+ 61739 multiletter control sequences out of 15000+600000
+ 596538 words of font info for 120 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
- 104i,16n,117p,1674b,1143s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 104i,16n,117p,2410b,1074s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb></usr/share
 /texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texliv
@@ -1299,24 +1323,26 @@ e/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texlive/texmf
 fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
 ublic/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8
-.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><
-/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/sh
-are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/tex
-live/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmti8.pfb></usr/share/texlive/texmf-dist/font
-s/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/fonts
-/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/tim
-es/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb>
-</usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/tex
-live/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (16 pages, 343583 bytes).
+msfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
+6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmti8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/couri
+er/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/tex
+live/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (18 pages, 378125 bytes).
 PDF statistics:
- 445 PDF objects out of 1000 (max. 8388607)
- 350 compressed objects within 4 object streams
- 104 named destinations out of 1000 (max. 500000)
+ 478 PDF objects out of 1000 (max. 8388607)
+ 377 compressed objects within 4 object streams
+ 111 named destinations out of 1000 (max. 500000)
  221 words of extra memory for PDF output out of 10000 (max. 10000000)
 

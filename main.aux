@@ -49,7 +49,6 @@
 \newlabel{ex:obcb_stochastic@cref}{{[example][3][]3}{[1][5][]5}}
 \@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ This is messy, cleanup}{6}{section*.2}\protected@file@percent }
 \pgfsyspdfmark {pgfid2}{20112833}{40388880}
-\citation{causalityPearl}
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Individual-level \ensuremath  {\mathit  {PN}}, \ensuremath  {\mathit  {PS}}, and \ensuremath  {\mathit  {PNS}}for Alice and Bob in Example~\ref {ex:obcb_stochastic}, with $\varname  {loan}=F$ as the outcome. Values are conditioned on each subject's factual context (female, bad credit for Alice; male, bad credit for Bob). A dash marks an entry that is undefined because the conditioning premises are inconsistent with the model.}}{8}{table.caption.3}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{tab:pn_ps_pns}{{1}{8}{Individual-level \pn , \ps , and \pns for Alice and Bob in Example~\ref {ex:obcb_stochastic}, with $\varname {loan}=F$ as the outcome. Values are conditioned on each subject's factual context (female, bad credit for Alice; male, bad credit for Bob). A dash marks an entry that is undefined because the conditioning premises are inconsistent with the model}{table.caption.3}{}}
@@ -58,38 +57,49 @@
 \@writefile{toc}{\contentsline {section}{\numberline {3}Causal Impact: definitions}{8}{section.0.3}\protected@file@percent }
 \newlabel{sec:causal_impact}{{3}{8}{Causal Impact: definitions}{section.0.3}{}}
 \newlabel{sec:causal_impact@cref}{{[section][3][0]3}{[1][8][]8}}
-\newlabel{def:interlaw}{{8}{9}{Interventional Law}{theorem.0.3.8}{}}
-\newlabel{def:interlaw@cref}{{[theorem][8][]8}{[1][9][]9}}
+\citation{causalityPearl}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ Add cross-reference to continuous example.}{9}{section*.4}\protected@file@percent }
+\pgfsyspdfmark {pgfid3}{20112833}{42729605}
+\citation{shapley1953}
+\newlabel{def:interlaw}{{8}{11}{Interventional Law}{theorem.0.3.8}{}}
+\newlabel{def:interlaw@cref}{{[theorem][8][]8}{[1][10][]11}}
 \citation{kawakammi_2024_poc_for_cont_and_vec}
-\newlabel{def:jointnecsuf}{{12}{11}{Joint Necessity and Sufficiency Measure}{theorem.0.3.12}{}}
-\newlabel{def:jointnecsuf@cref}{{[theorem][12][]12}{[1][11][]11}}
-\newlabel{def:causalimpact}{{13}{11}{Causal Impact Function and Its Expectation}{theorem.0.3.13}{}}
-\newlabel{def:causalimpact@cref}{{[theorem][13][]13}{[1][11][]11}}
-\newlabel{eq:causal-impact}{{4}{11}{Causal Impact Function and Its Expectation}{equation.0.3.4}{}}
-\newlabel{eq:causal-impact@cref}{{[equation][4][]4}{[1][11][]11}}
-\citation{heskes2020causal}
-\newlabel{ex:absolute_score}{{7}{12}{Absolute Difference Impact Score}{example.7}{}}
-\newlabel{ex:absolute_score@cref}{{[example][7][]7}{[1][12][]12}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Examples and comparison to SHAP and Causal SHAP}{12}{section.0.4}\protected@file@percent }
-\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ update section description when done}{12}{section*.4}\protected@file@percent }
-\pgfsyspdfmark {pgfid3}{20112833}{20699776}
-\newlabel{ex:signal_mediation}{{8}{12}{Signal with mediation}{example.8}{}}
-\newlabel{ex:signal_mediation@cref}{{[example][8][]8}{[1][12][]12}}
-\newlabel{eq:X}{{5}{12}{Signal with mediation}{equation.0.4.5}{}}
-\newlabel{eq:X@cref}{{[equation][5][]5}{[1][12][]12}}
-\newlabel{eq:M}{{6}{12}{Signal with mediation}{equation.0.4.6}{}}
-\newlabel{eq:M@cref}{{[equation][6][]6}{[1][12][]12}}
-\newlabel{eq:Y}{{7}{12}{Signal with mediation}{equation.0.4.7}{}}
-\newlabel{eq:Y@cref}{{[equation][7][]7}{[1][12][]12}}
-\citation{shapley1953value}
-\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ add fn with derivations?}{13}{section*.11}\protected@file@percent }
-\pgfsyspdfmark {pgfid4}{20112833}{13307566}
 \citation{lundberg2017unified}
-\newlabel{eq:shapley}{{11}{14}{SHAP}{equation.0.4.11}{}}
-\newlabel{eq:shapley@cref}{{[equation][11][]11}{[1][14][]14}}
-\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\  Get back to this and illustrate: \par One crucial observation here is that SHAP explains predictions, not outcomes. If $f(x) = \mathbb  {E}[Y \mid X=x]$ (as in regression), then SHAP explains $\mathbb  {E}[Y \mid X=x] - \mathbb  {E}[Y]$. The residual $Y - f(x)$ --- the noise --- is entirely invisible to SHAP by construction. }{14}{section*.12}\protected@file@percent }
-\pgfsyspdfmark {pgfid5}{20112833}{26123758}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Target $Y$, Features $\{X, M\}$}{14}{subsection.0.4.1}\protected@file@percent }
+\citation{kruschke2018}
+\citation{cohen1988statistical}
+\newlabel{def:jointnecsuf}{{12}{13}{Joint Necessity and Sufficiency Measure}{theorem.0.3.12}{}}
+\newlabel{def:jointnecsuf@cref}{{[theorem][12][]12}{[1][13][]13}}
+\newlabel{def:causalimpact}{{13}{13}{Causal Impact Function and Its Expectation}{theorem.0.3.13}{}}
+\newlabel{def:causalimpact@cref}{{[theorem][13][]13}{[1][13][]13}}
+\citation{heskes2020causal}
+\newlabel{eq:causal-impact}{{4}{14}{Causal Impact Function and Its Expectation}{equation.0.3.4}{}}
+\newlabel{eq:causal-impact@cref}{{[equation][4][]4}{[1][13][]14}}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ Add cross-reference to sufficiency experiments once written.}{14}{section*.5}\protected@file@percent }
+\pgfsyspdfmark {pgfid4}{20112833}{24833156}
+\newlabel{ex:absolute_score}{{7}{14}{Absolute Difference Impact Score}{example.7}{}}
+\newlabel{ex:absolute_score@cref}{{[example][7][]7}{[1][14][]14}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Examples and comparison to SHAP and Causal SHAP}{14}{section.0.4}\protected@file@percent }
+\newlabel{sec:shap_examples}{{4}{14}{Examples and comparison to SHAP and Causal SHAP}{section.0.4}{}}
+\newlabel{sec:shap_examples@cref}{{[section][4][0]4}{[1][14][]14}}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ update section description when done}{14}{section*.6}\protected@file@percent }
+\pgfsyspdfmark {pgfid5}{20112833}{10049415}
+\newlabel{ex:signal_mediation}{{8}{15}{Signal with mediation}{example.8}{}}
+\newlabel{ex:signal_mediation@cref}{{[example][8][]8}{[1][14][]15}}
+\newlabel{eq:X}{{5}{15}{Signal with mediation}{equation.0.4.5}{}}
+\newlabel{eq:X@cref}{{[equation][5][]5}{[1][14][]15}}
+\newlabel{eq:M}{{6}{15}{Signal with mediation}{equation.0.4.6}{}}
+\newlabel{eq:M@cref}{{[equation][6][]6}{[1][14][]15}}
+\newlabel{eq:Y}{{7}{15}{Signal with mediation}{equation.0.4.7}{}}
+\newlabel{eq:Y@cref}{{[equation][7][]7}{[1][14][]15}}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\ add fn with derivations?}{15}{section*.13}\protected@file@percent }
+\pgfsyspdfmark {pgfid6}{20112833}{6452918}
+\citation{shapley1953value}
+\citation{lundberg2017unified}
+\newlabel{eq:shapley}{{11}{16}{SHAP}{equation.0.4.11}{}}
+\newlabel{eq:shapley@cref}{{[equation][11][]11}{[1][16][]16}}
+\@writefile{tdo}{\contentsline {todo}{\fcolorbox {black}{orange}{\textcolor {orange}{o}}\  Get back to this and illustrate: \par One crucial observation here is that SHAP explains predictions, not outcomes. If $f(x) = \mathbb  {E}[Y \mid X=x]$ (as in regression), then SHAP explains $\mathbb  {E}[Y \mid X=x] - \mathbb  {E}[Y]$. The residual $Y - f(x)$ --- the noise --- is entirely invisible to SHAP by construction. }{16}{section*.14}\protected@file@percent }
+\pgfsyspdfmark {pgfid7}{20112833}{21305908}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Target $Y$, Features $\{X, M\}$}{16}{subsection.0.4.1}\protected@file@percent }
 \bibdata{references}
 \bibcite{Beckers2015CombiningPC}{{1}{2015}{{Beckers and Vennekens}}{{}}}
 \bibcite{butler2022differential}{{2}{2022}{{Butler et~al.}}{{Butler, Feng, and Djurić}}}
@@ -106,6 +116,6 @@
 \bibcite{causalityPearl}{{13}{2009}{{Pearl}}{{}}}
 \bibcite{pearl2022probabilities}{{14}{2022}{{Pearl}}{{}}}
 \bibcite{Shepherd2024}{{15}{2024}{{Shepherd et~al.}}{{Shepherd, Amor, and Moreno‐Betancur}}}
-\newlabel{jmlrend}{{4.1}{16}{end of Explainable}{section*.14}{}}
-\newlabel{jmlrend@cref}{{[subsection][1][0,4]4.1}{[1][16][]16}}
-\gdef \@abspage@last{16}
+\newlabel{jmlrend}{{4.1}{18}{end of Explainable}{section*.16}{}}
+\newlabel{jmlrend@cref}{{[subsection][1][0,4]4.1}{[1][18][]18}}
+\gdef \@abspage@last{18}
