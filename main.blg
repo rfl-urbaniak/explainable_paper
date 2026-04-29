@@ -3,51 +3,46 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: plainnat.bst
 Database file #1: references.bib
-Warning--I didn't find a database entry for "shapley1953"
-Warning--I didn't find a database entry for "kruschke2018"
-Warning--I didn't find a database entry for "cohen1988statistical"
-Warning--I didn't find a database entry for "heskes2020causal"
-Warning--I didn't find a database entry for "shapley1953value"
 Warning--empty publisher in pearl2022probabilities
-You've used 15 entries,
+You've used 19 entries,
             2773 wiz_defined-function locations,
-            724 strings with 8481 characters,
-and the built_in function-call counts, 7567 in all, are:
-= -- 725
-> -- 374
-< -- 16
-+ -- 126
-- -- 111
-* -- 598
-:= -- 1149
-add.period$ -- 66
-call.type$ -- 15
-change.case$ -- 79
-chr.to.int$ -- 15
-cite$ -- 31
-duplicate$ -- 357
-empty$ -- 618
-format.name$ -- 138
-if$ -- 1620
+            749 strings with 9148 characters,
+and the built_in function-call counts, 9583 in all, are:
+= -- 916
+> -- 451
+< -- 23
++ -- 153
+- -- 134
+* -- 745
+:= -- 1438
+add.period$ -- 80
+call.type$ -- 19
+change.case$ -- 98
+chr.to.int$ -- 19
+cite$ -- 39
+duplicate$ -- 466
+empty$ -- 802
+format.name$ -- 165
+if$ -- 2066
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 17
-newline$ -- 101
-num.names$ -- 64
-pop$ -- 140
+missing$ -- 22
+newline$ -- 122
+num.names$ -- 82
+pop$ -- 182
 preamble$ -- 1
-purify$ -- 65
+purify$ -- 80
 quote$ -- 0
-skip$ -- 282
+skip$ -- 365
 stack$ -- 0
-substring$ -- 318
-swap$ -- 63
-text.length$ -- 6
+substring$ -- 423
+swap$ -- 91
+text.length$ -- 10
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 155
+type$ -- 194
 warning$ -- 1
-while$ -- 71
+while$ -- 92
 width$ -- 0
-write$ -- 243
-(There were 6 warnings)
+write$ -- 302
+(There was 1 warning)
