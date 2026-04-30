@@ -196,13 +196,15 @@
   Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency
 \end{keywords}
 
+\tableofcontents
+\newpage
 
 \section{Introduction}
 \label{sec:intro}
 
 Causal attribution is a central reasoning task in many important problems, such as gauging the efficacy of medical treatments \citep{Shepherd2024}, pinpointing drivers of economic growth \citep{CheshireMagrini2009}, root cause analysis in automated systems \citep{Papageorgiou2022}, or assessing the impact of public policy \citep{HeckmanPinto2022CausalPolicyAnalysis}. In general, we may want to understand why an adverse outcome occurred to prevent it from happening again, or understand how and why a predicted, counterfactual positive outcome can be brought about. However, in the absence of scalable, formal causal attribution tools, analysts often resort to either ad-hoc methods, such as mechanistic reasoning and finding strong correlation, historical comparison, domain expertise, or non-causal attribution like Granger causality \citep{Granger1969} and SHAP \citep{lundberg2017unified}. Even researchers with an advanced command of statistical and experimental methods may not possess a thorough understanding of how to ascribe cause \citep{Shepherd2024}, and would thus benefit from scalable automation. Here we present a tool for accurate and tractable causal attribution that can be applied to a wide array of causal, probabilistic, machine-learned models.
 
-Current methods for causal attribution that focus on token-level explanations of particular events, such as actual causality \citep{actualCausalityHalpern}, involve intractable combinatorics without clear approximating machinery \citep{eiterComplexityResultsStructurebased2002}. Explanation methods that \textit{do} scale are either non-causal \citep{lundberg2017unified} or amount to local, gradient-based sensitivity analyses \citep{butler2022differential}. For example, \citeauthor{lundberg2017unified}'s SHAP method may assign high attribution to a feature simply because it correlates with a true cause, not because altering said feature would change the outcome. \citeauthor{butler2022differential} in their Differential Causal Effect (DCE) rely on gradients for attribution, which requires model differentiability, and does not capture effects that require more than infinitesimal changes in potential causes (admittedly,  the authors are only after rates of change of treatment, which is conceptually different from responsibility attribution).
+Current methods for token-level causal attribution, such as actual causality \citep{actualCausalityHalpern}, involve intractable combinatorics without clear approximating machinery \citep{eiterComplexityResultsStructurebased2002}. Explanation methods that \textit{do} scale are either non-causal \citep{lundberg2017unified} or amount to local, gradient-based sensitivity analyses \citep{butler2022differential}. For example, \citeauthor{lundberg2017unified}'s SHAP method may assign high attribution to a feature simply because it correlates with a true cause, not because altering said feature would change the outcome. \citeauthor{butler2022differential} in their Differential Causal Effect (DCE) rely on gradients for attribution, which requires model differentiability, and does not capture effects that require more than infinitesimal changes in potential causes (admittedly, the authors are only after rates of change of treatment, which is conceptually different from responsibility attribution).
 
 In contrast, we introduce probabilistic causal impacts (\Ourapproach), which exploit probabilistic understandings of context and causation to frame attribution as a turnkey estimation problem. In particular, we generalize Pearl's formulation of the ``probability of necessary and sufficient causation'' \citep{pearl2022probabilities} for arbitrary variable domains, and additionally incorporate causal context in the form of ``witnesses'' as understood by actual causality researchers \citep{actualCausalityHalpern}. Inspired by the study of ``descriptive normality'' \citep{Halpern2015-HALGCA, icardNormalityActualCausal2017} — how statistical probabilities of counterfactuals influence causal attributions — we characterize attribution as the expectation of a customizable causal impact function taken with respect to user-defined distributions that assign probabilities to counterfactual worlds. \ourapproach combines a variety of intuitions from the literature, including taking expectations over exogenous inputs (cf. \cite{actualCausalityHalpern} on ``blame'', def. 6.2.1; and implicitly by \citeauthor{pearl2022probabilities}'s \citeyearpar{pearl2022probabilities} probabilities of causation), weighting by the probability of alternative values for the supposed cause \cite[def. 8]{Beckers2015CombiningPC},
 %\TODO find more here), 
@@ -215,7 +217,7 @@ illustrate how our method scales to far larger models than does exact actual cau
 
 \todo{revise this list once paper done}
 \begin{enumerate}[itemsep=0pt, topsep=0pt, parsep=0pt]
-    \item  We draw theoretical connections to existing (but intractable) attribution strategy, actual causality in Section \ref{sec:th_ac}, where we prove that, under certain constraints, the diagnoses offered by actual causality and by \ourapproach coincide. 
+    \item We draw theoretical connections to actual causality in Section~\ref{sec:th_ac}, proving that under certain constraints the diagnoses of actual causality and \ourapproach coincide.
     
     \item In Section \ref{sec:ac_benchmark}, we test \ourapproach\ on scaled-up, but canonical failure cases for actual causation involving overdetermination and undercutting, finding that we recover results deemed intuitive by the literature, 
     
@@ -464,11 +466,11 @@ Let the probability of necessity and sufficiency be the probability that the out
 \[\pns(C = c^{\star}, Y = y^\star) =  P\!(Y_{c^{\star}} = y^\star, Y_{c'} \neq y^\star )\]
 \end{definition}
 
-When we compute these probabilities for our example, we find that $\pns(\varname{gender}=\text{male}, \varname{loan}=F) \approx 0.01$, $\pns(\varname{gender}=\text{female}, \varname{loan}=F) \approx 0.39$, and $\pns(\varname{credit}=\text{bad}, \varname{loan}=F) \approx 0.52$.
+Computing these probabilities: $\pns(\varname{gender}=\text{male}, \varname{loan}=F) \approx 0.01$, $\pns(\varname{gender}=\text{female}) \approx 0.39$, and $\pns(\varname{credit}=\text{bad}) \approx 0.52$.
 While these probabilities reflect the relative causal impact of $\varname{gender}$ and $\varname{credit}$, they do not provide entirely satisfying answers.
 \Cref{tab:pn_ps_pns} reveals the problem directly: for Alice, $\pns(\varname{gender}) = 0.045 < \pns(\varname{credit}) = 0.18$, so PNS ranks credit as more causally responsible than gender.
 Yet the bank never evaluated Alice's credit---the $\varname{check}$ variable was $F$ throughout.
-PNS has no mechanism to register this: it asks counterfactually what would happen if credit were different, without fixing the mediating variable $\varname{check\text{-}failed}$ that actually blocked credit's causal path.
+PNS has no mechanism to register this: it asks counterfactually what would happen if credit were different, without fixing $\varname{check\text{-}failed}$, the mediating variable that blocked credit's causal path.
 
 As an attempt to help Alice better understand her particular situation, we might consider a modification of PNS with additional conditioning:
 \[\pns_{c}(C = c^\star, Y = y^\star ~|~ F=f^\star) = P(Y_{c^\star} = y^\star, Y_{c'} \neq y^\star ~|~ F = f^\star)\]
@@ -892,12 +894,12 @@ The $\epsilon$-excised distribution makes the commitment explicit and tunable: \
 % \end{align}
 % \end{definition}
 
-We are now ready to state the main definitions of \Ourapproach. Because \ourapproach is not constrained to particular variable types, we write the following in general measure theoretic terms that support combinations of continuous and discrete variables. Below, we use the interventional law (definition \ref{def:interlaw}) — a Dirac measure on deterministic causal outcomes — and marginalize over random samples of suspect sets, witness sets, and alternative values for the causal set. This results in a joint measure on the outcome under the factual and counterfactual settings.
+We are now ready to state the main definitions of \Ourapproach. Because \ourapproach is not constrained to particular variable types, we work in general measure-theoretic terms that support combinations of continuous and discrete variables. We use the interventional law (Definition~\ref{def:interlaw}) and marginalize over random samples of suspect sets, witness sets, and alternative values for the causal set, yielding a joint measure on factual and counterfactual outcomes.
 
 \begin{definition}[Joint Necessity and Sufficiency Measure] \label{def:jointnecsuf}
-Fix a probabilistic structural causal model
-$M=\langle \mathbf{U},\mathbf{V},\mathbf{F},P_{\mathbf{U}}\rangle$
-and an outcome variable $Y$ with domain $\dom(Y)$.
+Let $M=\langle \mathbf{U},\mathbf{V},\mathbf{F},P_{\mathbf{U}}\rangle$
+be a probabilistic structural causal model
+and $Y$ an outcome variable with domain $\dom(Y)$.
 Let $p_s^\Gamma$ and $p_w^\Gamma$ be the mass functions of variable selection
 distributions on $2^{\mathbf{S}}$ and $2^{\mathbf{W}}$, and let
 $\Delta(\mathbf{s}^\star)$ be an alternative value distribution on $\dom(\mathbf{S})$.
@@ -1049,7 +1051,7 @@ For the OBCB analysis we instantiate $ci$ as the PNS binary score defined in the
 following example, with $y^\star = \varname{loan} = 0$. This is the choice that produces
 the values in Table~\ref{tab:pci_obcb}.
 
-\begin{example}[Probability of Necessary and Sufficient Causation for Binary Outcomes]
+\begin{example}[PNS for Binary Outcomes]
 Assume the outcome $Y$ is binary with $\dom(Y)=\{0,1\}$, and let $y^\star=1$ denote
 the factual outcome. Let $Y^s$ and $Y^n$ denote the sufficiency and necessity
 outcome variables. Define the causal impact score
@@ -1090,9 +1092,9 @@ value distribution, joint necessity-sufficiency measure, and causal impact funct
   $\mathbf{W}=\emptyset$, and $\dom(X_k)=\{0,1\}$, the PNS binary $ci$ recovers Pearl's
   probability of necessity and sufficiency exactly; PN and PS are recovered by the
   corresponding one-sided $ci$ choices.
-\item \textbf{Connection to actual causality.} Under suitable conditions on $\Gamma$ and
-  $\Delta$, \ourapproach recovers Halpern's actual causality judgements; formal results
-  are given in Section~\ref{sec:th_ac}.
+\item \textbf{Connection to actual causality.} For suitable $\Gamma$
+  and $\Delta$, \ourapproach recovers Halpern's actual causality judgements
+  (Section~\ref{sec:th_ac}).
 \item \textbf{Necessity--sufficiency decomposition.} $P_k^s$ and $P_k^n$ are defined and
   interpretable independently; practitioners may choose a $ci$ that uses either alone
   or both, depending on whether the causal question concerns necessity, sufficiency,
@@ -1116,6 +1118,7 @@ $|R(V\rightsquigarrow\varname{loan}\mid\text{person})|$.)
 
 \begin{table}[h]
 \centering
+\small
 \begin{tabular}{lcc}
 \toprule
 Desideratum & PCI (with witnesses) & PNS \\
@@ -1143,29 +1146,45 @@ satisfies all seven; PNS fails \textbf{D-A-rank} and \textbf{D-B1}.}
 \end{table}
 
 \medskip\noindent\textit{PNS fails \textbf{D-A-rank} and \textbf{D-B1}. The D-A-rank
-failure reflects that without a witness holding \varname{check\text{-}failed} fixed,
+failure reflects that without a \varname{check\text{-}failed} witness,
 necessity-based attribution cannot distinguish Alice's gender (which blocked the
 evaluation entirely) from her credit (which would only have mattered had she been
 evaluated). The D-B1 failure reflects that PNS assigns Bob's gender exactly zero:
-because $P(\varname{loan}=1\mid\varname{gender}=\text{female},\varname{credit}=\text{bad})=0$,
+because $P(\varname{loan}=1\mid\text{female},\text{bad})=0$,
 the counterfactual necessity calculation returns zero, missing gender's indirect role in
 opening the credit evaluation. The \varname{check\text{-}failed} witness resolves both.}
 
 \section{Examples and comparison to SHAP and Causal SHAP}\label{sec:shap_examples}
 
-Shapley values have become one of the most widely used tools for explaining the predictions
-of complex machine learning models. Grounded in cooperative game theory, they provide a
-principled decomposition of a model's prediction into additive contributions from individual
-features. However, when the goal is \emph{causal responsibility attribution} --- explaining
-not just what a model predicts but why an outcome occurred --- standard Shapley values
-suffer from fundamental limitations that are not always made explicit in the literature.
+Shapley values have become one of the most widely used tools for explaining the
+predictions of complex machine learning models. Grounded in cooperative game theory,
+they provide a principled decomposition of a model's prediction into additive
+contributions from individual features.
+\citet{heskes2020causal} propose Causal SHAP, which refines this by replacing the
+observational marginal used for features outside the active coalition with an
+interventional distribution: when a dropped feature is causally downstream of a
+coalition member, its distribution under the intervention differs from its marginal,
+and Causal SHAP corrects for this using Pearl's do-calculus.
+Formal definitions of both are given in Section~\ref{sec:shap_defs}.
 
-We inspect these limitations through two examples. We first return to the OBCB model
-introduced in Section~\ref{sec:motivations}: it is simple enough to permit exact analytic
-computation and the reader already knows the desiderata, making it a concise warm-up that
-exposes the key failure modes directly. We then examine a continuous mediation example in
-depth, tracing each limitation more carefully and comparing plain SHAP, Causal SHAP
-\citep{heskes2020causal}, and PCI.
+Despite this repair, both methods share deeper limitations. First, both plain and
+Causal SHAP can assign non-zero responsibility to variables that play no causal role
+with respect to the target --- attribution can run against the direction of the causal
+graph, a failure the interventional correction does not address. Second, both methods
+explain a model's predicted output averaged over the population, not the individual
+factual outcome of a specific person: when the goal is \emph{causal responsibility
+attribution}, this produces further failures that are not always made explicit in the
+literature.
+
+We trace these failures through two examples, comparing plain SHAP, Causal SHAP, and
+PCI against the desiderata of Section~\ref{sec:motivations}. We first return to the
+OBCB model: it permits exact analytic computation and the desiderata are already
+known. In OBCB the feature set contains only exogenous roots, so plain and Causal
+SHAP coincide --- the comparison is short. We then turn to a continuous mediation
+example where downstream variables are observable model inputs; there the two methods
+diverge, and we examine what Causal SHAP fixes and what it does not.
+
+\subsection{SHAP and Causal SHAP}\label{sec:shap_defs}
 
 \begin{definition}[SHAP]
 A cooperative game is a pair $(N, v)$,
@@ -1201,10 +1220,32 @@ v(S) = \mathbb{E}_{X_{\bar{S}}}\bigl[f(X_S = x_S,\, X_{\bar{S}})\bigr]
 their marginal distribution.
 \end{definition}
 
+\medskip\noindent Causal SHAP replaces the characteristic function with an
+interventional expectation \citep{heskes2020causal}:
 
-\subsection{OBCB revisited: plain SHAP}\label{sec:obcb_shap}
+\begin{definition}[Causal SHAP]\label{def:causalshap}
+\begin{equation}
+v_{\text{causal}}(S) = \mathbb{E}\bigl[f(X) \mid do(X_S = x_S)\bigr]
+= \int P(X_{\bar{S}} \mid do(X_S = x_S))\, f(X_{\bar{S}}, x_S)\, dX_{\bar{S}}
+\label{eq:causal_v}
+\end{equation}
+By the rules of do-calculus, intervening on $X_S$ only affects the distribution of
+descendants of $X_S$. For non-descendants, $P(X_j \mid do(X_S = x_S)) = P(X_j)$.
+Writing $X_{\bar{S},\,\mathrm{nd}}$ for the features in $\bar{S}$ that are not
+descendants of any member of $S$, and $X_{\bar{S},\,\mathrm{d}}$ for those that are,
+equation~\eqref{eq:causal_v} is equivalent to:
+\begin{equation}
+v_{\text{causal}}(S) = \mathbb{E}_{X_{\bar{S},\,\mathrm{nd}} \sim P(\cdot),\;
+X_{\bar{S},\,\mathrm{d}} \sim P(\cdot \mid do(X_S=x_S))}\bigl[f(X_{\bar{S}}, x_S)\bigr]
+\end{equation}
+The Shapley formula~\eqref{eq:shapley} is otherwise unchanged. The method retains all
+four Shapley axioms.
+\end{definition}
 
-We apply SHAP to $g(x)=P(\varname{loan}=0\mid x)$ for Alice and Bob from
+
+\subsection{OBCB: SHAP and Causal SHAP}\label{sec:obcb_shap}
+
+We first apply SHAP to $g(x)=P(\varname{loan}=0\mid x)$ for Alice and Bob from
 Example~\ref{ex:obcb_stochastic}, attributing responsibility for the denial
 outcome.%
 \footnote{We use $g = 1 - f$ where $f(g,c)=P(\varname{loan}=1\mid g,c)$ takes
@@ -1241,13 +1282,11 @@ $|\cdot|$. PNS and PCI values from Table~\ref{tab:pci_obcb}.}
 \label{tab:shap_obcb}
 \end{table}
 
-SHAP fails two desiderata. The primary failure is \textbf{D-A-rank}: Alice's
-\varname{credit} gets a higher responsibility magnitude than \varname{gender}
-($0.174 > 0.107$). This is an overdetermination effect: \varname{credit}=bad
-correlates with the \varname{check\text{-}failed} mechanism that is the proximate
-cause of Alice's denial, so SHAP's observational marginalization absorbs this
-correlation into $|\phi^g_{\varname{credit}}|$, inflating it above
-$|\phi^g_{\varname{gender}}|$. PCI conditions on the factual
+SHAP fails two desiderata. The primary failure is \textbf{D-A-rank}:
+credit outranks gender ($0.174 > 0.107$). This is an overdetermination
+effect: \varname{credit}=bad correlates with the \varname{check\text{-}failed}
+mechanism that blocked Alice's credit evaluation, so SHAP's observational
+marginalization inflates credit attribution above gender's. PCI conditions on the factual
 \varname{check\text{-}failed} value directly, isolating gender's upstream causal
 role and recovering the correct ranking. PNS fails D-A-rank for the same reason;
 it also fails \textbf{D-B1} by returning exactly zero for Bob's gender (see
@@ -1266,12 +1305,30 @@ magnitude regardless of their individual causal weight. This is an instance of a
 deeper limitation: SHAP explains predicted outputs, not individual factual
 outcomes, which we examine further in Section~\ref{sec:signal}.
 
+\medskip\noindent\textbf{Causal SHAP.}
+In this example Causal SHAP coincides exactly with plain SHAP.
+The feature set $N=\{\varname{gender},\varname{credit}\}$ consists entirely of
+exogenous roots: neither is causally downstream of the other, so
+$P(\varname{credit}\mid do(\varname{gender}=g))=P(\varname{credit})$
+and vice versa.
+The downstream variables (\varname{check}, \varname{check\text{-}failed},
+\varname{loan\text{-}if\text{-}checked}) are not observable as model inputs (while PCI can still consider
+the consequences of keeping them fixed as witnesses 
+as the model runs unfold\footnote{With the next example we will see that when downstream variables are observable model inputs,
+causal SHAP does not coincide with plain SHAP, and yet it still runs into trouble});
+they are integrated out inside $f$.
+Because no dropped feature is a descendant of any coalition member,
+$v_{\mathrm{causal}}(S)=v_{\mathrm{plain}}(S)$ for every coalition, and the
+Causal SHAP values are identical to those in Table~\ref{tab:shap_obcb}.
+In the signal example (Section~\ref{sec:signal}), downstream variables are
+observable model inputs and the two methods diverge.
+
 
 \subsection{Signal with mediation}\label{sec:signal}
 
 \begin{example}[Signal with mediation]\label{ex:signal_mediation}
-We work with the following \textbf{generative model}, where $X$ sends a signal,
-$M$ mediates it with some noise, and $Y$ is the final outcome, which is also noisy:
+We work with the following \textbf{generative model}: $X$ sends a signal,
+$M$ mediates it with some noise, and $Y$ is the noisy final outcome:
 \begin{align}
 X &\sim \mathcal{N}(0.5,\ 0.25) \label{eq:X}\\
 M &= X + \varepsilon_M, \quad \varepsilon_M \sim \mathcal{N}(0,\ 0.1) \label{eq:M}\\
@@ -1308,27 +1365,48 @@ that are closer to the outcome in the causal graph.
 \bigl(\text{Cov}(X,M),\, \text{Cov}(X,Y),\, \text{Cov}(M,Y)\bigr) &= (0.25,\, 0.25,\, 0.35).
 \end{align}
 \noindent For each target variable, the optimal predictor under squared loss is the
-conditional expectation, computable exactly in this Gaussian model:
+conditional expectation, computable exactly in this Gaussian model:%
+\footnote{%
+\textbf{Distributional facts.}
+From the structural equations:
+$\mathrm{Var}(M)=\mathrm{Var}(X)+\mathrm{Var}(\varepsilon_M)=0.25+0.1=0.35$;
+$\mathrm{Var}(Y)=\mathrm{Var}(M)+\mathrm{Var}(\varepsilon_Y)=0.35+0.1=0.45$.
+$\mathrm{Cov}(X,M)=\mathrm{Cov}(X,X+\varepsilon_M)=\mathrm{Var}(X)=0.25$;
+$\mathrm{Cov}(X,Y)=\mathrm{Cov}(X,M+\varepsilon_Y)=\mathrm{Cov}(X,M)=0.25$;
+$\mathrm{Cov}(M,Y)=\mathrm{Cov}(M,M+\varepsilon_Y)=\mathrm{Var}(M)=0.35$.
+\textbf{Conditional expectations.}
+$\mathbb{E}[Y\mid X,M]=M$ since $Y=M+\varepsilon_Y$ with $\varepsilon_Y\perp(X,M)$.
+For $\mathbb{E}[M\mid X,Y]$: the covariance matrix of $(X,Y)$ is
+$\Sigma_{XY}=\bigl(\begin{smallmatrix}0.25&0.25\\0.25&0.45\end{smallmatrix}\bigr)$
+with $\det(\Sigma_{XY})=0.05$, so
+$\Sigma_{XY}^{-1}=20\bigl(\begin{smallmatrix}0.45&-0.25\\-0.25&0.25\end{smallmatrix}\bigr)$;
+the regression coefficients are
+$[\mathrm{Cov}(M,X),\,\mathrm{Cov}(M,Y)]\,\Sigma_{XY}^{-1}
+=[0.25,\,0.35]\cdot 20\bigl(\begin{smallmatrix}0.45&-0.25\\-0.25&0.25\end{smallmatrix}\bigr)
+=[0.5,\,0.5]$,
+giving $\mathbb{E}[M\mid X,Y]=0.5+0.5(X-0.5)+0.5(Y-0.5)=0.5X+0.5Y$.
+For $\mathbb{E}[X\mid M,Y]$: by $d$-separation, $X\perp Y\mid M$ in the chain
+$X\!\to\!M\!\to\!Y$, so $\mathbb{E}[X\mid M,Y]=\mathbb{E}[X\mid M]
+=0.5+\tfrac{\mathrm{Cov}(X,M)}{\mathrm{Var}(M)}(M-0.5)
+=0.5+\tfrac{0.25}{0.35}(M-0.5)=0.5+\tfrac{5}{7}(M-0.5)$.}
 \begin{align}
 f_Y(X, M) &= \mathbb{E}[Y \mid X, M] = M \quad (\{X, M\} \Rightarrow Y) \\
 f_M(X, Y) &= \mathbb{E}[M \mid X, Y] = 0.5X + 0.5Y \quad (\{X, Y\} \Rightarrow M) \\
 f_X(M, Y) &= \mathbb{E}[X \mid M, Y] = 0.5 + \frac{5}{7}(M - 0.5) \quad (\{M, Y\} \Rightarrow X)
 \end{align}
-\todo{add fn with derivations?}
 
 \end{example}
 
 
-\subsection{SHAP values for the signal with mediation example}
+\subsection{SHAP values for the signal with mediation example}\label{sec:shap_signal}
 
-Now consider a situation in which $X=1, M=1, Y=1$. For each of those outcomes we will
+First consider a situation in which $X=1, M=1, Y=1$. For each of those outcomes we will
 check our causal responsibility attribution desiderata against SHAP values.
 First, let's compute the SHAP values for $X$ and $M$ with respect to the prediction of $Y$.
 
 
 
-\paragraph{Target $Y$, Features $\{X, M\}$:} 
-
+\paragraph{Target $Y$, Features $\{X, M\}$.}   First, compute the coalition values: 
 \begin{align}
 v(\emptyset) &= \mathbb{E}[M] = 0.5 \\
 v(\{X\}) &= \mathbb{E}[M \mid X=1] = 1 \\
@@ -1336,53 +1414,36 @@ v(\{M\}) &= \mathbb{E}[M \mid M=1] = 1 \\
 v(\{X,M\}) &= f_Y(1,1) = 1
 \end{align}
 
-Applying equation~\eqref{eq:shapley} with $|N|=2$:
+Next, apply equation~\eqref{eq:shapley} with $|N|=2$:
 \begin{equation}
 \phi_X = \tfrac{1}{2}(1 - 0.5) + \tfrac{1}{2}(1 - 1) = 0.25
 \qquad
 \phi_M = \tfrac{1}{2}(1 - 0.5) + \tfrac{1}{2}(1 - 1) = 0.25
 \end{equation}
 
-\todo{add which desiderata this violates}
 
 
-\paragraph{Target $M$, Features $\{X, Y\}$:}
 
+
+\paragraph{Target $M$, features $\{X,Y\}$.}
+$v(\emptyset)=0.5$;\enspace $v(\{X\})=1$;\enspace
+$v(\{Y\})=0.5\,\mathbb{E}[X\mid Y{=}1]+0.5=0.889$
+(using $\mathbb{E}[X\mid Y{=}1]=0.5+\tfrac{0.25}{0.45}(0.5)=0.778$);\enspace
+$v(\{X,Y\})=1$.
 \begin{align}
-v(\emptyset) &= 0.5 \\
-v(\{X\}) &= \mathbb{E}[0.5X + 0.5Y \mid X=1] = 0.5 + 0.5\cdot\mathbb{E}[Y\mid X=1] = 1 \\
-v(\{Y\}) &= \mathbb{E}[0.5X + 0.5Y \mid Y=1] \\ &= 0.5\cdot\mathbb{E}[X\mid Y=1] + 0.5 \nonumber
-         = 0.5\cdot 0.778 + 0.5 = 0.889 \\
-v(\{X,Y\}) &= 1
+\phi_X &= \tfrac{1}{2}(1-0.5)+\tfrac{1}{2}(1-0.889)=0.306, \\
+\phi_Y &= \tfrac{1}{2}(0.889-0.5)+\tfrac{1}{2}(1-1)=0.194.
 \end{align}
 
-\noindent where $\mathbb{E}[X \mid Y=1] = 0.5 + \frac{0.25}{0.45}(0.5) = 0.778$.
-
-\begin{equation}
-\phi_X = \tfrac{1}{2}(1-0.5) + \tfrac{1}{2}(1-0.889) = 0.306
-\qquad
-\phi_Y = \tfrac{1}{2}(0.889-0.5) + \tfrac{1}{2}(1-1) = 0.194
-\end{equation}
-
-
-\todo{add which desiderata this violates}
-
-
-\paragraph{Target $X$, Features $\{M, Y\}$:}
-
+\paragraph{Target $X$, features $\{M,Y\}$.}
+$v(\emptyset)=0.5$;\enspace $v(\{M\})=0.5+\tfrac{5}{7}(0.5)=0.857$;\enspace
+$v(\{Y\})=\mathbb{E}[X\mid Y{=}1]=0.778$ (as above);\enspace
+$v(\{M,Y\})=\mathbb{E}[X\mid M{=}1]=0.857$ (since $X\perp Y\mid M$).
 \begin{align}
-v(\emptyset) &= 0.5 \\
-v(\{M\}) &= 0.5 + \tfrac{5}{7}(0.5) = 0.857 \\
-v(\{Y\}) &= \mathbb{E}[X \mid Y=1] = 0.5 + \tfrac{0.25}{0.45}(0.5) = 0.778 \\
-v(\{M,Y\}) &= \mathbb{E}[X \mid M=1, Y=1] = 0.857 \quad \text{(since $X \perp Y \mid M$)}
+\phi_M &= \tfrac{1}{2}(0.857-0.5)+\tfrac{1}{2}(0.857-0.778)=0.219, \\
+\phi_Y &= \tfrac{1}{2}(0.778-0.5)+\tfrac{1}{2}(0.857-0.857)=0.139.
 \end{align}
 
-\begin{align}
-\phi_M  &= \tfrac{1}{2}(0.857-0.5) + \tfrac{1}{2}(0.857-0.778) = 0.219\\
-\phi_Y & = \tfrac{1}{2}(0.778-0.5) + \tfrac{1}{2}(0.857-0.857) = 0.139
-\end{align}
-
-\todo{add which desiderata this violates}
 
 \noindent Summing up, the SHAP values for the three targets are as follows:
 \begin{table}[h]
@@ -1406,82 +1467,125 @@ conditionals, which are symmetric under reversal of causal direction.
 
 
 
-\subsection{Causal SHAP values for the signal with mediation example}
+\subsection{Causal SHAP for the signal example}\label{sec:causal_shap_signal}
 
+We now apply Causal SHAP (Definition~\ref{def:causalshap}) to the signal example
+and compare against plain SHAP.
 
-Standard Shapley marginalizes over the distribution of features outside of a
-a given coalition. From the causal perspective, if a feature outside the colation is a
-descendant of a feature inside teh coaliition, its marginal distribtuion is wrong ---- instead
-we should use a distribution that reflects the intervention on its ancestor. 
-This is the motivation behind \citet{heskes2020causal}, who propose replacing the observational conditional in the value
-function with an interventional one using Pearl's do-calculus:
+\paragraph{Target $Y$, features $\{X,M\}$.}
+$v_{\mathrm{causal}}(\emptyset)=0.5$;\enspace
+$v_{\mathrm{causal}}(\{X\})=\mathbb{E}[M\mid do(X{=}1)]=1$
+(M is downstream of X: $P(M\mid do(X{=}1))=\mathcal{N}(1,0.1)$);\enspace
+$v_{\mathrm{causal}}(\{M\})=1$ ($do(M{=}1)$ sets $f_Y=M=1$ directly,
+$P(X\mid do(M{=}1))=P(X)$ since X has no causal parents);\enspace
+$v_{\mathrm{causal}}(\{X,M\})=1$.
+All values match plain SHAP, so $\phi_X=\phi_M=0.25$.
 
-\begin{definition}[Causal SHAP]
-\begin{equation}
-v_{\text{causal}}(S) = \mathbb{E}\bigl[f(X) \mid do(X_S = x_S)\bigr]
-= \int P(X_{\bar{S}} \mid do(X_S = x_S))\, f(X_{\bar{S}}, x_S)\, dX_{\bar{S}}
-\label{eq:causal_v}
-\end{equation}
-
-By the rules of do-calculus, intervening on $X_S$ only affects the distribution of
-descendants of $X_S$. For non-descendants, $P(X_j \mid do(X_S = x_S)) = P(X_j)$.
-Therefore equation~\eqref{eq:causal_v} is equivalent to:
-
-\begin{equation}
-v_{\text{causal}}(S) = \mathbb{E}_{X_{\bar{S},\,\text{non-desc}} \sim P(\cdot),\;
-X_{\bar{S},\,\text{desc}} \sim P(\cdot \mid do(X_S=x_S))}\bigl[f(X_{\bar{S}}, x_S)\bigr]
-\end{equation}
-
-The Shapley formula~\eqref{eq:shapley} is otherwise unchanged. The method retains all four
-Shapley axioms.
-\end{definition}
-
-
-
-Now let's compute Causal SHAP values for the same example and see how they align with our desiderata.
-
-\paragraph{Target $Y$, features $\{X, M\}$:}
-
-
-
+\paragraph{Target $M$, features $\{X,Y\}$.}
+$v_{\mathrm{causal}}(\emptyset)=0.5$;\enspace
+$v_{\mathrm{causal}}(\{X\})=1$ ($Y$ is downstream of $X$, same as plain SHAP);\enspace
+$v_{\mathrm{causal}}(\{Y\})=\mathbb{E}_{X\sim P(X)}[0.5X+0.5{\cdot}1]=0.75$
+($Y$ does not cause $X$, so $P(X\mid do(Y{=}1))=P(X)$;
+differs from plain SHAP's $0.889$);\enspace
+$v_{\mathrm{causal}}(\{X,Y\})=1$.
 \begin{align}
-v_{\text{causal}}(\emptyset) & = v(\emptyset) = \mathbb{E}[M] = 0.5 \\
-v_{\text{causal}}(\{X\}) &= \mathbb{E}_{M \sim P(M \mid do(X=1))}[M] \\
-         &= \mathbb{E}[M \mid do(X=1)] = 1 \\
-v_{\text{causal}}(\{M\}) &= \sum_{x} P(X=x) \mathbb{E}[M \mid do(M=1), X=x] = 1 \\
-v_{\text{causal}}(\{X,M\}) &= v(\{X,M\}) = 1
+\phi_X &= \tfrac{1}{2}(1-0.5)+\tfrac{1}{2}(1-0.75)=0.375, \\
+\phi_Y &= \tfrac{1}{2}(0.75-0.5)+\tfrac{1}{2}(1-1)=0.125.
+\end{align}
+
+\paragraph{Target $X$, features $\{M,Y\}$.}
+$v_{\mathrm{causal}}(\emptyset)=0.5$;\enspace
+$v_{\mathrm{causal}}(\{M\})=0.857$ ($Y$ is downstream of $M$ but $f_X$
+does not depend on $Y$ since $X\perp Y\mid M$, so
+$\mathbb{E}_{Y\sim P(Y\mid do(M{=}1))}[f_X(1,Y)]=f_X(1,\cdot)=0.857$;
+same as plain SHAP);\enspace
+$v_{\mathrm{causal}}(\{Y\})=\mathbb{E}_{M\sim P(M)}[f_X(M,1)]=0.5$
+($M$ is not a descendant of $Y$, so $P(M\mid do(Y{=}1))=P(M)$
+and $\mathbb{E}[f_X(M,1)]=0.5+\tfrac{5}{7}(\mathbb{E}[M]-0.5)=0.5$;
+differs from plain SHAP's $0.778$);\enspace
+$v_{\mathrm{causal}}(\{M,Y\})=0.857$.
+\begin{align}
+\phi_M &= \tfrac{1}{2}(0.857-0.5)+\tfrac{1}{2}(0.857-0.5)=0.357, \\
+\phi_Y &= \tfrac{1}{2}(0.5-0.5)+\tfrac{1}{2}(0.857-0.857)=0.
 \end{align}
 
 
 
-\todo{this requires a gloss step by step}
+\subsection{Desiderata analysis for the signal example}
+\label{sec:signal_desiderata}
 
-As all the $v$ values are the same as in the plain SHAP case, we get the same results as with plain SHAP: $\phi_X = \phi_M = 0.25$.
+Write $\phi_A^B$ for the attribution to feature $A$ when predicting target $B$.
+Table~\ref{tab:signal_desid} maps the desiderata from Section~\ref{sec:signal}
+to the values computed in Sections~\ref{sec:shap_signal}
+and~\ref{sec:causal_shap_signal}.
 
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{llcc}
+\toprule
+Desideratum & Condition & Plain SHAP & Causal SHAP \\
+\midrule
+\textbf{DXY}  & $\phi_X^Y > 0$
+  & $0.250$\;\checkmark & $0.250$\;\checkmark \\
+\textbf{DMY}  & $\phi_M^Y > 0$
+  & $0.250$\;\checkmark & $0.250$\;\checkmark \\
+\textbf{DXM}  & $\phi_X^M > 0$
+  & $0.306$\;\checkmark & $0.375$\;\checkmark \\
+\textbf{DYX}  & $\phi_Y^X = 0$
+  & $0.139$\;\texttimes & $0.000$\;\checkmark \\
+\textbf{DYM}  & $\phi_Y^M = 0$
+  & $0.194$\;\texttimes & $0.125$\;\texttimes \\
+\textbf{DMX}  & $\phi_M^X = 0$
+  & $0.219$\;\texttimes & $0.357$\;\texttimes \\
+\textbf{DMXY} & $\phi_M^Y > \phi_X^Y$
+  & $0.25{=}0.25$\;\texttimes & $0.25{=}0.25$\;\texttimes \\
+\bottomrule
+\end{tabular}
+\caption{Desiderata satisfied (\checkmark) and violated (\texttimes) by plain SHAP
+and Causal SHAP on the signal with mediation example ($X\!\to\!M\!\to\!Y$),
+instance $X=M=Y=1$.}
+\label{tab:signal_desid}
+\end{table}
 
+\noindent\textbf{Positive results (DXY, DMY, DXM).}
+Both methods correctly assign positive attribution to every direct or upstream cause
+of the target. Causal prediction models are built from observational conditionals,
+which do preserve correlation from cause to effect, so these desiderata pose no
+challenge to either method.
 
-\paragraph{Target $M$, features $\{X, Y\}$:}
+\noindent\textbf{Causal SHAP fixes DYX, not DYM.}
+For target $X$, the interventional value $v_{\mathrm{causal}}(\{Y\})=0.5$ equals
+the baseline because $M$ is not downstream of $Y$: $P(M\mid do(Y{=}1))=P(M)$,
+so fixing $Y=1$ provides no interventional leverage over $f_X$, and Causal SHAP
+correctly yields $\phi_Y^X=0$.
+For target $M$, however, $\phi_Y^M=0.125>0$ persists.
+The prediction model $f_M(X,Y)=0.5X+0.5Y$ contains $Y$ as an input because $Y$ is
+observationally predictive of $M$; setting $Y=1$ raises the model output even under
+the interventional regime.
+Causal SHAP replaces the conditioning distribution but cannot remove a feature that
+the prediction model itself uses.
 
-$Y$ is a descendant of $X$, so when $X \in S$:
-\begin{align}
-v_{\mathrm{causal}}(\{X\}) 
-&= \mathbb{E}_{Y \sim P(Y \mid do(X=1))}[0.5 \cdot 1 + 0.5Y] \\
-&= 0.5 + 0.5 \cdot 1 = 1
-\end{align}
+\noindent\textbf{DMX worsens under Causal SHAP.}
+Plain SHAP assigns $\phi_M^X=0.219$; Causal SHAP assigns $0.357$.
+Fixing DYX reduces $v_{\mathrm{causal}}(\{Y\})$ from $0.778$ to $0.5$, driving
+$\phi_Y^X$ to zero, but reallocates the freed attribution to~$M$.
+Since the structural noise that actually drives $X$ is unobserved, all attribution
+concentrates on the only visible predictor,~$M$, even though $M$ does not cause~$X$.
 
-When $Y \in S$ without $X$: $X$ is not a descendant of $Y$, so $X$ is marginalized over $P(X)$:
-\begin{align}
-v_{\mathrm{causal}}(\{Y\}) 
-&= \mathbb{E}_{X \sim P(X)}[0.5X + 0.5 \cdot 1] \\
-&= 0.5 \cdot 0.5 + 0.5 = 0.75
-\end{align}
+\noindent\textbf{DMXY fails for both.}
+Since $f_Y=M$, the singleton values $v(\{X\})=\mathbb{E}[M\mid X{=}1]=1$ and
+$v(\{M\})=1$ are identical, giving $\phi_M^Y=\phi_X^Y=0.25$ for both methods.
+The Shapley formula cannot distinguish that $X$ reaches $Y$ only through~$M$:
+when $X=1$, the expected prediction is already~$1$ regardless of whether $M$ is
+observed or not, so both features receive the same marginal contribution.
 
-This differs from plain SHAP ($v_{\mathrm{causal}}(\{Y\}) = 0.889$). Result:
-\begin{equation}
-\phi_X = 0.375, \qquad \phi_Y = 0.125
-\end{equation}
+Overall, Causal SHAP strictly improves on plain SHAP for one desideratum~(DYX)
+by replacing observational conditioning with interventional distributions.
+The remaining failures (DYM, DMX, DMXY) trace to two limitations neither method
+addresses: prediction models that include non-causal features~(DYM, DMX), and the
+inability of Shapley averaging to distinguish direct from indirect causal paths~(DMXY).
 
-\newpage 
 
 \bibliography{references}
 
