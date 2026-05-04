@@ -467,6 +467,8 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam5.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmr7t.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmr7t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr9.tfm
@@ -480,8 +482,6 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmri7t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/adobe/times/ptmri7t.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmri8r.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmr7t.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmr7t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmbi7t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/adobe/times/ptmbi7t.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmbi8r.tfm
@@ -492,9 +492,11 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmbi7t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/adobe/times/ptmb7t.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmb8r.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/adobe/times/ptmr8c.tfm
 INPUT ./main.bbl
 INPUT ./main.bbl
 INPUT main.bbl
+INPUT /usr/share/texlive/texmf-dist/fonts/vf/adobe/times/ptmr8c.vf
 INPUT /usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 INPUT /usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 INPUT /usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd

@@ -8,12 +8,12 @@
 \contentsline {subsection}{\numberline {4.1}SHAP and Causal SHAP}{19}{subsection.0.4.1}%
 \contentsline {subsection}{\numberline {4.2}OBCB: SHAP and Causal SHAP}{20}{subsection.0.4.2}%
 \contentsline {subsection}{\numberline {4.3}Signal with mediation}{21}{subsection.0.4.3}%
-\contentsline {subsection}{\numberline {4.4}SHAP values for the signal with mediation example}{22}{subsection.0.4.4}%
-\contentsline {paragraph}{Target $Y$, Features $\{X, M\}$.}{23}{section*.10}%
-\contentsline {paragraph}{Target $M$, features $\{X,Y\}$.}{23}{section*.11}%
-\contentsline {paragraph}{Target $X$, features $\{M,Y\}$.}{23}{section*.12}%
-\contentsline {subsection}{\numberline {4.5}Causal SHAP for the signal example}{23}{subsection.0.4.5}%
-\contentsline {paragraph}{Target $Y$, features $\{X,M\}$.}{23}{section*.14}%
-\contentsline {paragraph}{Target $M$, features $\{X,Y\}$.}{24}{section*.15}%
-\contentsline {paragraph}{Target $X$, features $\{M,Y\}$.}{24}{section*.16}%
+\contentsline {subsection}{\numberline {4.4}SHAP values for the signal with mediation example}{23}{subsection.0.4.4}%
+\contentsline {paragraph}{Target $Y$, Features $\{X, M\}$.}{23}{section*.9}%
+\contentsline {paragraph}{Target $M$, features $\{X,Y\}$.}{23}{section*.10}%
+\contentsline {paragraph}{Target $X$, features $\{M,Y\}$.}{23}{section*.11}%
+\contentsline {subsection}{\numberline {4.5}Causal SHAP for the signal example}{24}{subsection.0.4.5}%
+\contentsline {paragraph}{Target $Y$, features $\{X,M\}$.}{24}{section*.13}%
+\contentsline {paragraph}{Target $M$, features $\{X,Y\}$.}{24}{section*.14}%
+\contentsline {paragraph}{Target $X$, features $\{M,Y\}$.}{24}{section*.15}%
 \contentsline {subsection}{\numberline {4.6}Desiderata analysis for the signal example}{24}{subsection.0.4.6}%
