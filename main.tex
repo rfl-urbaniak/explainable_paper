@@ -1,16 +1,19 @@
-\documentclass[anon,12pt]{clear2026} % Anonymized submission
-% \documentclass[final,12pt]{clear2025} % Final submission
-% \documentclass[final,12pt,noproceedings]{clear2025} % Final submission for those who opt out of the proceedings; they should use clear2025-extended-abstract.tex for their extended abstract
+\documentclass{article}
+\usepackage[preprint]{neurips_2024}
 
 % --- PACKAGES ---
+\usepackage{amsmath,amsthm}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
 \newtheorem{observation}[theorem]{Observation}
 \newtheorem{attempt}{Attempt}
 
-\usepackage[capitalise]{cleveref}
 \usepackage{amsfonts}
 \usepackage{bbm}
 
 \usepackage[font=small]{caption}
+\captionsetup[table]{skip=14pt}
 
 \newtheorem*{theoremacpositive}{Theorem \ref{th:ac->positive} (Formal)}
 \newtheorem*{theoremcihalpern}{Theorem \ref{th:ci_halpern} (Formal)}
@@ -128,6 +131,7 @@
 \newcommand{\Ourapproach}{PCI}
 \newcommand{\dom}{\operatorname{dom}\,}
 \usepackage{hyperref}
+\usepackage[capitalise]{cleveref}
 
 % Configure hyperlinks
 \hypersetup{
@@ -138,48 +142,25 @@
     filecolor=blue        % color of file links
 }
 
-\title[Explainable]{A Computationally Feasible Framework for  Causal Probabilistic Explanation}
-\usepackage{times}
-% Use \Name{Author Name} to specify the name.
-% If the surname contains spaces, enclose the surname
-% in braces, e.g. \Name{John {Smith Jones}} similarly
-% if the name has a "von" part, e.g \Name{Jane {de Winter}}.
-% If the first letter in the forenames is a diacritic
-% enclose the diacritic in braces, e.g. \Name{{\'E}louise Smith}
+\title{A Computationally Feasible Framework for Causal Probabilistic Explanation}
 
-% Two authors with the same address
-% \clearauthor{\Name{Author Name1} \Email{abc@sample.com}\and
-%  \Name{Author Name2} \Email{xyz@sample.com}\\
-%  \addr Address}
-
-% Three or more authors with the same address:
-% \clearauthor{\Name{Author Name1} \Email{an1@sample.com}\\
-%  \Name{Author Name2} \Email{an2@sample.com}\\
-%  \Name{Author Name3} \Email{an3@sample.com}\\
-%  \addr Address}
-
-% Authors with different addresses:
-%Rafal
-%Andy
-%Sam
-%Dan
-%Jack
-%Poorva
-%Drew
-%Eli
-
-
-
-% \clearauthor{%
-%  \Name{Rafal Urbaniak} \Email{rafal@basis.ai} \\
-%  \Name{Eli Bingham} \Email{eli@basis.ai}\\
-%  \addr{Basis Research Institute}\\
-%  \Name{Poorva Garg} \Email{poorvagarg@cs.ucla.edu}\\
-%  \addr{University of California, Los Angeles} \\
-%  \Name{Jack Feser} \Email{jack@basis.ai} \\
-%  \Name{Daniel Waxman} \Email{dan@basis.ai} \\
-%  \addr{Basis Research Institute}
-% }
+\author{%
+  Rafal Urbaniak\thanks{\texttt{rafal@basis.ai}} \\
+  Basis Research Institute
+  \And
+  Eli Bingham\thanks{\texttt{eli@basis.ai}} \\
+  Basis Research Institute
+  \And
+  Poorva Garg\thanks{\texttt{poorvagarg@cs.ucla.edu}} \\
+  University of California, Los Angeles
+  \And
+  Jack Feser\thanks{\texttt{jack@basis.ai}} \\
+  Basis Research Institute
+  \And
+  Daniel Waxman\thanks{\texttt{dan@basis.ai}} \\
+  Basis Research Institute
+}
+% TODO: add Andy, Sam, Drew (full names, emails, affiliations).
 
 \begin{document}
 
@@ -190,11 +171,9 @@
  
   
   % %
-\end{abstract}
 
-\begin{keywords}%
-  Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency
-\end{keywords}
+  \medskip\noindent\textbf{Keywords:} Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency.
+\end{abstract}
 
 \tableofcontents
 \newpage
@@ -202,7 +181,22 @@
 \section{Introduction}
 \label{sec:intro}
 
-Causal attribution is a central reasoning task in many important problems, such as gauging the efficacy of medical treatments \citep{Shepherd2024}, pinpointing drivers of economic growth \citep{CheshireMagrini2009}, root cause analysis in automated systems \citep{Papageorgiou2022}, or assessing the impact of public policy \citep{HeckmanPinto2022CausalPolicyAnalysis}. In general, we may want to understand why an adverse outcome occurred to prevent it from happening again, or understand how and why a predicted, counterfactual positive outcome can be brought about. However, in the absence of scalable, formal causal attribution tools, analysts often resort to either ad-hoc methods, such as finding strong correlation, historical comparison, domain expertise, or non-causal attribution like Granger causality \citep{Granger1969} and SHAP \citep{lundberg2017unified}. Even researchers with an advanced command of statistical and experimental methods may not possess a thorough understanding of how to ascribe cause \citep{Shepherd2024}, and would thus benefit from scalable automation. Here we present a tool for accurate and tractable causal attribution that can be applied to a wide array of causal, probabilistic, machine-learned models.
+Causal attribution is a central reasoning task in many important problems, such as
+gauging the efficacy of medical treatments \citep{Shepherd2024}, pinpointing drivers
+of economic growth \citep{CheshireMagrini2009}, root cause analysis in automated
+systems \citep{Papageorgiou2022}, or assessing the impact of public policy
+\citep{HeckmanPinto2022CausalPolicyAnalysis}. We may want to understand why an
+adverse outcome occurred so as to prevent recurrence, or how a predicted positive
+outcome could be brought about.
+
+In the absence of scalable, formal causal attribution tools, analysts often resort to
+ad-hoc methods --- strong correlation, historical comparison, domain expertise, or
+non-causal attribution like Granger causality \citep{Granger1969} and SHAP
+\citep{lundberg2017unified}. Even researchers with an advanced command of
+statistical and experimental methods may not possess a thorough understanding of how
+to ascribe cause \citep{Shepherd2024}, and would benefit from scalable automation.
+Here we present a tool for accurate and tractable causal attribution applicable to a
+wide array of causal, probabilistic, machine-learned models.
 
 Current methods for attributing causes to specific outcomes, such as actual causality
 \citep{actualCausalityHalpern}, are intractable in general, with no clear
@@ -219,22 +213,23 @@ does not capture effects from non-infinitesimal changes in potential causes. (DC
 fairly, not designed for responsibility attribution:
 \citeauthor{butler2022differential} target rates of change of treatment.)
 
-In contrast, we introduce probabilistic causal impacts (\Ourapproach), which exploit probabilistic understandings of context and causation to frame attribution as a turnkey estimation problem. In particular, we generalize Pearl's formulation of the ``probability of necessary and sufficient causation'' \citep{pearl2022probabilities} for arbitrary variable domains, and additionally incorporate causal context in the form of ``witnesses'' as 
-understood by actual causality researchers \citep{actualCausalityHalpern}. Our construction makes partial contact with the study of \emph{descriptive normality}
-\citep{Halpern2015-HALGCA, icardNormalityActualCausal2017}, which holds that causal
-attributions depend on a graded measure of which counterfactual scenarios are
-plausible. We characterize attribution as the expectation of a customizable causal
-impact function with respect to a distribution over counterfactual worlds, where this
-distribution is conditioned on upstream factual context --- a concrete, if partial,
-operationalization of the normality intuition. \ourapproach combines a variety of intuitions from the literature, including taking
-  expectations over exogenous inputs (cf. \cite{actualCausalityHalpern} on ``blame'', def. 6.2.1; and implicitly
-   by \citeauthor{pearl2022probabilities}'s \citeyearpar{pearl2022probabilities} probabilities of causation), 
-   weighting by the probability of alternative values for the supposed cause \cite[def. 8]{Beckers2015CombiningPC},
-%\TODO find more here), 
-aggregating the probabilities of all valid witness worlds \cite[\S 6.2]{Beckers2015CombiningPC}, 
-or weighting by the complexity of the least complex witness set \cite[on ``responsibility'', def. 6.1.6]{actualCausalityHalpern}.
-  Unfortunately, taken individually, none of these existing approaches achieves the scalability
-   and generality required for modern causal attribution needs, thereby necessitating the development of \Ourapproach.
+We introduce \emph{probabilistic causal impacts} (\Ourapproach), an attribution
+framework that combines the context-sensitivity of actual causality with the
+scalability of probability-of-causation methods. \Ourapproach\ generalises Pearl's
+probability of necessary and sufficient causation \citep{pearl2022probabilities} from
+binary to arbitrary variable domains, and incorporates the \emph{witness} mechanism
+from actual causality \citep{actualCausalityHalpern} via integration over a
+distribution of witness sets rather than existential quantification.
+
+\ourapproach\ also makes partial contact with the literature on \emph{descriptive
+normality} \citep{Halpern2015-HALGCA, icardNormalityActualCausal2017}: attributions
+are computed as expectations against a distribution over counterfactual worlds
+conditioned on upstream factual context, a concrete operationalisation of the
+normality intuition. Several components have precedents --- expectations over
+exogenous noise \citep{actualCausalityHalpern}, weighting by alternative-value
+probabilities \citep{Beckers2015CombiningPC}, aggregation over witness sets
+\citep{Beckers2015CombiningPC, actualCausalityHalpern} --- but no prior construction
+combines them into a single tractable estimator handling arbitrary variable domains.
 
 \ourapproach\ presumes access to a trained probabilistic causal model from which
 counterfactual outcomes can be sampled --- a stronger requirement than methods that
@@ -250,27 +245,28 @@ function --- as explicit user-facing components rather than hidden defaults,
 \ourapproach\ hopes to provide causal attribution and explanation tooling for a
 wide array of users and applications.
 
-To validate and better understand the approach, and to 
-illustrate how our method scales to far larger models than does exact actual causality computation, we take the following steps:
+We validate \ourapproach\ along four lines:
+\begin{enumerate}[itemsep=2pt, topsep=2pt, parsep=0pt]
+    \item \textbf{Theoretical connection to actual causality.} Under suitable choices
+    of $\Gamma$ and $\Delta$, \ourapproach\ recovers Halpern's actual-causality
+    verdicts exactly (Section~\ref{sec:th_ac}). A more extensive conceptual
+    discussion appears in Appendix~\ref{app:conceptual}.
 
-\todo{revise this list once paper done}
-\begin{enumerate}[itemsep=0pt, topsep=0pt, parsep=0pt]
-    \item We draw theoretical connections to actual causality in Section~\ref{sec:th_ac}, proving that under certain constraints the diagnoses of actual causality and \ourapproach coincide.
-    
-    \item In Section \ref{sec:ac_benchmark}, we test \ourapproach\ on scaled-up, but canonical failure cases for actual causation involving overdetermination and undercutting, finding that we recover results deemed intuitive by the literature, 
-    
-    \item In Section \ref{sec:con_benchmark}  we  point also to the correct behavior in the continuous version of the problem.
+    \item \textbf{Recovery on canonical actual-causality failure cases.} On scaled-up
+    overdetermination and undercutting examples, \ourapproach\ produces attributions
+    matching the literature's intuitive judgements
+    (Section~\ref{sec:ac_benchmark}); the same holds in the continuous version
+    (Section~\ref{sec:con_benchmark}).
 
-\item  We also delegate a more extensive conceptual discussion of the relation between \ourapproach, actual causality, and probabilities of necessity, sufficiency and necessity and sufficiency to Appendix \ref{app:conceptual}.
+    \item \textbf{Scalability to ML-grade models.} \Ourapproach\ produces
+    individual-level attributions on a causal spatio-temporal model with
+    machine-learned components trained on millions of data points
+    (Section~\ref{sec:avm}), where SHAP yields qualitatively different
+    explanations.
 
-\item In Section \ref{sec:avm} we describe results on a causal spatio-temporal model with complex machine-learned components trained on millions of data points. In this setting, we compare to the non-causal but scalable attribution method SHAP and discuss the differences in the resulting explanations.
-
-
-\item Additionally, in Appendix \ref{app:DCE}, we  compare the local, sensitivity-analysis-style attribution from  \cite{butler2022differential}, demonstrating cases where \ourapproach\ better reveals causality.
-
-%TODO maybe add when ready
-%To demonstrate application breadth, we %also include an attribution application %for a continuous-time dynamical system %involving an epidemiological model.
-
+    \item \textbf{Comparison to gradient-based attribution.} Against Differential
+    Causal Effect \citep{butler2022differential}, \ourapproach\ better reveals
+    non-infinitesimal causal effects (Appendix~\ref{app:DCE}).
 \end{enumerate}
 
 
@@ -430,7 +426,7 @@ Strictly speaking, the probability of necessity is less specific to a particular
 For example, we can consider the probability that being male causes someone
  to fail to get a loan, but we can't consider the probability that being male causes Bob 
  specifically (who we know has bad credit) to fail to get a loan.
-We might try to patch this up by conditioning, for the time being. 
+We might try to patch this up by conditioning, for the time being (while also reporting population-level values that follow the definitions more closely). 
 
 
 We illustrate the computation for Alice's gender.
@@ -570,12 +566,15 @@ Actual causality offers more specificity, but requires modification to deal with
 \ourapproach addresses both limitations by combining the two approaches.
 To see the intuition, consider Alice's case once more.
 When \ourapproach evaluates gender's causal impact on her denial, it considers counterfactual worlds in which her gender is changed, while drawing witness sets from a distribution that includes $\varname{check-failed}$ at its factual value of $F$ --- the credit check was never performed.
-In those worlds, changing gender to male, with $\varname{check-failed}$ held fixed at $F$, leads to loan approval: a large counterfactual shift, and so high attribution.
+In those worlds, changing gender to male, with $\varname{check-failed}$ held fixed at $F$ (by intervention, so unlike in the case of 
+patched-up PNS, the mediator value does not get overriden), leads to loan approval: a large counterfactual shift, and so high attribution.
 When \ourapproach evaluates credit's causal impact, it searches for witness sets that, held fixed, would make a change to good credit matter for Alice --- but no such context exists, because the credit check was never run.
 The distribution over witness sets therefore assigns low weight to any world in which credit is relevant for Alice, and her credit receives low attribution.
 Unlike actual causality, \ourapproach does not ask whether \emph{some} witness set validates a counterfactual dependency; it integrates over the distribution of all witness sets, weighting each by its probability.
 Unlike PNS, it inherits the context-sensitivity of actual causality through this integration.
-The formal definitions in Section~\ref{sec:causal_impact} make this expectation precise --- but the intuition is the one we have just seen: \ourapproach inherits the witness mechanism of actual causality and the probabilistic language of PN/PNS, and combines them into a tractable estimation problem.
+The formal definitions in Section~\ref{sec:causal_impact} make this expectation precise --- but
+ the intuition is the one we have just seen: \ourapproach inherits the witness mechanism of actual causality 
+ and the probabilistic language of PN/PNS, and generalizes and combines them into a tractable estimation problem even when variables are continuous.
 
 
 
@@ -594,11 +593,11 @@ In this section, we present a formal development. To ground it, we return to Exa
 Let $R(V \rightsquigarrow \varname{loan} \mid \text{person})$ denote the causal responsibility of variable $V$
 for the loan outcome at the individual level ($R$ is a placeholder for any attribution score and
 should not be identified with a specific formal quantity; \ourapproach interprets $R$ as
-$\mathbb{E}[ci(Y^s,Y^n,y^\star)]$, but the desiderata are method-agnostic).
+$\mathbb{E}[ci(Y^s,Y^n,y^\star)]$, to be defined below, but the desiderata are method-agnostic).
 Attribution methods may produce signed values; the desiderata are stated in terms of absolute
 magnitudes $|R(\cdot)|$, allowing for directionality while remaining agnostic about sign
 conventions.
-The following desiderata encode what an intuitively correct attribution should look like:\label{desid}
+The following desiderata encode what an intuitively correct causal responsibility attribution should look like:\label{desid}
 \begin{align*}
 \textbf{D-A1} \quad & |R(\varname{gender} \rightsquigarrow \varname{loan} \mid \text{Alice})| > 0 \\[2pt]
 \textbf{D-A2} \quad & |R(\varname{credit} \rightsquigarrow \varname{loan} \mid \text{Alice})| > 0 \\[2pt]
@@ -645,18 +644,7 @@ V_i := f_i(\mathbf{Pa}_i, U_i), \qquad i = 1,\dots,n,
 \]
 with \(\mathbf{Pa}_i \subseteq \mathbf{V}\setminus\{V_i\}\) denoting the parents of \(V_i\).
 The distribution \(P_{\mathbf{U}}\) is a probability measure on $\dom(\mathbf{U})$,
-and the assignments in \(\mathbf{F}\) are assumed to be acyclic and to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).\footnote{Working within the PSCM framework commits the practitioner to fully specified structural assignments $\mathbf{F}$ and an exogenous distribution $P_{\mathbf{U}}$. This is a standard feature of probabilistic model-based causal inference --- analogous to how Bayesian inference requires a likelihood and a prior --- and it is precisely what enables \ourapproach to yield individual-level counterfactual attributions rather than population-level bounds. Sampling from $P_{\mathbf{U}}$ is then a routine probabilistic inference operation.
-This requirement is a scope limitation worth stating explicitly. Standard Shapley values
-\citep{lundberg2017unified} require only expectations of the form
-$\mathbb{E}[f(\mathbf{X}_S, \mathbf{X}_{\bar{S}})]$ --- no causal structure at all.
-Causal Shapley methods \citep{heskes2020causal} additionally require a causal graph and
-observational or interventional data, but not the structural equations themselves.
-Pearl's PN/PS/PNS can be bounded from observational or interventional data given the
-graph, again without the full noise model. \Ourapproach\, requires strictly more: the
-complete structural assignments $\mathbf{F}$ and the noise distribution $P_{\mathbf{U}}$.
-The payoff is individual-level counterfactual attribution --- not population-level bounds
-or marginal contributions averaged over a reference distribution --- but practitioners
-without a fully specified structural model will need to build or assume one.}
+and the assignments in \(\mathbf{F}\) are assumed to be acyclic and to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).\footnote{Working within the PSCM framework commits the practitioner to fully specified structural assignments $\mathbf{F}$ and an exogenous distribution $P_{\mathbf{U}}$ --- analogous to how Bayesian inference requires a likelihood and a prior. This is precisely what enables \ourapproach to yield individual-level counterfactual attributions rather than population-level bounds, and once $\mathbf{F}$ and $P_{\mathbf{U}}$ are specified, sampling from $P_{\mathbf{U}}$ is a routine probabilistic inference operation.}
 \end{definition}
 
 \medskip\noindent A PSCM encodes which variables influence which others, 
@@ -736,16 +724,21 @@ assignments --- a precise statement of which variables are set to which values. 
 basic unit of intervention: from a causal set one can read off exactly what is being
 manipulated or held fixed.
 
-In \ourapproach, causal sets play four distinct roles.
-At times, they will represent sets of \emph{potential} causes---whose subsets may be intervened upon---
-in which case we call them \emph{suspects}, denoted $\mathbf{S}$. When referring to the specific 
-subset we \emph{in fact} intervene on in a given search step,
- we use $\mathbf{C}\subseteq\mathbf{S}$ and call them \emph{active suspects}. 
- Analogously, some variables serve as \emph{potential} context variables to be held fixed
-at their actual values; we call these \emph{witnesses}, denoted $\mathbf{W}$. 
-The subset of witnesses actually held fixed in a given step is denoted $\mathbf{T}\subseteq\mathbf{W}$ and
-called \emph{active witnesses}. When a variable appears in both $\mathbf{C}$ and $\mathbf{W}$, 
-  suspect activation takes precedence: $\mathbf{T}$ is pruned so that $\mathbf{T}\cap\mathbf{C}=\emptyset$. 
+In \ourapproach, causal sets play four distinct roles --- two on the cause side and two
+on the context side:
+
+\begin{description}
+\item[Suspects $\mathbf{S}$.] The full set of variables suspected to bear on the
+outcome. Subsets of $\mathbf{S}$ will be sampled and intervened on.
+\item[Active suspects $\mathbf{C} \subseteq \mathbf{S}$.] The specific subset
+intervened on in a given search step --- either to alternative values (necessity
+regime) or to factual values (sufficiency regime).
+\item[Witnesses $\mathbf{W}$.] The full set of context variables that may be held fixed
+at their factual values. Subsets of $\mathbf{W}$ will be sampled and held fixed.
+\item[Active witnesses $\mathbf{T} \subseteq \mathbf{W}$.] The specific subset held
+fixed in a given search step. To avoid contradicting the active intervention,
+$\mathbf{T}$ is pruned so that $\mathbf{T} \cap \mathbf{C} = \emptyset$.
+\end{description}
 
 To evaluate the causal impact of a variable on an outcome, we consider two interventional regimes: the \emph{necessity regime}, 
 in which we intervene on the variables $\mathbf{C} \subseteq \mathbf{S}$ to have an alternative value, and the sufficiency regime,
@@ -809,7 +802,7 @@ absorbed into an implicit default.
 \noindent In particular, we will be using variable selection distributions for the powerset of causal suspects $\mathbf{S}$ and for the powerset of witnesses $\mathbf{W}$. One simple pattern of suspect and witness selection can be derived by setting size limits on the number of activated suspects or witnesses, and sampling uniformly otherwise.
 
 \begin{example}[Cardinality-Constrained Uniform Selection]
-Let $\mathbf{X}$ be a candidate set of random variables and let $k \thicksim \mathrm{Unif}\{J, \dots K\}$ with $1 \leq J \leq K \leq |\mathbf{X}|$. A variable selection $\mathbf{Y} \thicksim \Gamma(2^\mathbf{X})$ is sampled from a cardinality-constrained uniform selection distribution $\Gamma(2^\mathbf{X})$ with probability mass function
+Let $\mathbf{X}$ be a candidate set of random variables and let $k \sim \mathrm{Unif}\{J, \dots K\}$ with $1 \leq J \leq K \leq |\mathbf{X}|$. A variable selection $\mathbf{Y} \sim \Gamma(2^\mathbf{X})$ is sampled from a cardinality-constrained uniform selection distribution $\Gamma(2^\mathbf{X})$ with probability mass function
 \[
 p^\Gamma(\mathbf{Y}) \propto \mathbb{I}[|\mathbf{Y}| = k].
 \]
@@ -857,7 +850,7 @@ the experimental section.
 Causal attribution hinges on questions such as ``if $X$ had, contrary to fact, been fixed to $x'\ne x$ instead of $x$, what would the outcome have been?'' For non-binary causes, this is ambiguous. To resolve this in a way that does not require committing to a single, contrastive causal event \citep{kawakammi_2024_poc_for_cont_and_vec}, we rely on a \textit{distribution} over alternative values.
 
 % \begin{definition}[Alternative Value Distribution]
-% Consider a set of random variables $\mathbf{X}$ and event $\mathbf{X}=\mathbf{x}\in dom(\mathbf{X})$. An alternative value $\mathbf{x}' \thicksim \Delta(\mathbf{x})$ is sampled from the alternative value distribution $\Delta(\mathbf{x})$, where $\mathbf{x}' \in dom (\mathbf{X})$ and $p_\Delta(\mathbf{x}') = \mathbb{P}(\mathbf{X}'=\mathbf{x'})$ with $dom(\mathbf{X}) = dom(\mathbf{X}')$.
+% Consider a set of random variables $\mathbf{X}$ and event $\mathbf{X}=\mathbf{x}\in dom(\mathbf{X})$. An alternative value $\mathbf{x}' \sim \Delta(\mathbf{x})$ is sampled from the alternative value distribution $\Delta(\mathbf{x})$, where $\mathbf{x}' \in dom (\mathbf{X})$ and $p_\Delta(\mathbf{x}') = \mathbb{P}(\mathbf{X}'=\mathbf{x'})$ with $dom(\mathbf{X}) = dom(\mathbf{X}')$.
 % \end{definition}
 
 \begin{definition}[Alternative Value Distribution]
@@ -867,14 +860,18 @@ An \emph{alternative value distribution} $\Delta(\mathbf{x})$ is a probability
 measure on $\dom(\mathbf{X})$ such that $\mathbf{x} \notin \operatorname{supp}(\Delta(\mathbf{x}))$.
 \end{definition}
 
-\medskip\noindent\textit{Informally, $\Delta(\mathbf{x})$ specifies what counts as a
+\medskip\noindent Informally, $\Delta(\mathbf{x})$ specifies what counts as a
 genuinely different value for a suspect variable. The support condition ensures no mass
 falls on the factual value $\mathbf{x}$ itself, so every sampled alternative is a real
-counterfactual departure rather than a noisy copy of what actually happened.}
+counterfactual departure rather than a noisy copy of what actually happened. 
 
 \medskip\noindent When $\Delta(\mathbf{x})$ is a posterior conditioned on upstream
 factual values --- the construction we use throughout --- alternatives are weighted by
 their plausibility under the structural model with upstream context held fixed.
+The upstream-only conditioning is itself a normality-respecting choice: factual upstream
+values play the role of the \emph{default} against which counterfactual alternatives are
+graded, while downstream evidence (which would leak the consequence back into the
+counterfactual) is deliberately excluded.
 This is the operational link to the descriptive-normality literature
 \citep{Halpern2015-HALGCA, icardNormalityActualCausal2017} mentioned in the introduction;
 PCI does not aim to resolve the counterexamples motivating that line of work, only to
@@ -884,20 +881,7 @@ counterfactual.
 
 \noindent One natural alternative value distribution results from taking the one currently embodied in the model and excising it around the factual setting. Then, the semantics for  ``alternative value'' means ``a sufficiently different value, following the original distribution otherwise''. In the discrete case, of course, the analogue is simply the probability mass function conditioned on the factual value not holding.
 
-% \begin{example}[Epsilon Excised Distribution]
-% Let factual event $\mathbf{X}=\mathbf{x}$ have marginal probability $p(\mathbf{x})$.
-% The \emph{$\epsilon$-excised alternative value distribution} $\Delta_{\epsilon}(\mathbf{x})$
-%  where $\mathbf{x}' \sim \Delta(\mathbf{x})$ with probability:
-% \[
-% p_\Delta(\mathbf{x}') \propto 
-% \begin{cases}
-%     0, & \text{if } x' \in [\,x - \epsilon,\; x + \epsilon\,], \\[6pt]
-%     p(x'), & \text{otherwise}.
-% \end{cases}
-% \]
-% That is, probability mass in an $\epsilon$-neighborhood of the factual value $x$
-% is removed, and the remaining mass is renormalized.
-% \end{example}
+
 
 \begin{example}[$\epsilon$-Excised Distribution]
 Assume $\mathbf{X}$ is $\mathbb{R}^d$-valued with density $p$.
@@ -915,10 +899,10 @@ where $B_\epsilon(\mathbf{x})$ denotes the $\epsilon$-ball centered at $\mathbf{
 In particular, $\mathbf{x}\notin\operatorname{supp}(\Delta_\epsilon(\mathbf{x}))$.
 \end{example}
 
-\medskip\noindent\textit{Informally, the alternative value distribution $\Delta$
+\medskip\noindent Informally, the alternative value distribution $\Delta$
 operationalises what ``counterfactually different'' means for each suspect variable:
 it specifies which alternative values are considered when asking whether the outcome would
-have changed under an alternative cause.}
+have changed under an alternative cause.
 
 In the OBCB model both \varname{gender} and \varname{credit} are binary, so $\Delta$ is
 trivial. For Alice, the only alternative to $\varname{gender}=0$ (female) is
@@ -957,7 +941,15 @@ The $\epsilon$-excised distribution makes the commitment explicit and tunable: \
 % \end{align}
 % \end{definition}
 
-We are now ready to state the main definitions of \Ourapproach. Because \ourapproach is not constrained to particular variable types, we work in general measure-theoretic terms that support combinations of continuous and discrete variables. We use the interventional law (Definition~\ref{def:interlaw}) and marginalize over random samples of suspect sets, witness sets, and alternative values for the causal set, yielding a joint measure on factual and counterfactual outcomes.
+We are now ready to state the main definitions of \Ourapproach. The core idea is to
+measure two complementary things for a variable of interest $X_k$: (a) how much $X_k$'s
+factual value contributes to producing $y^\star$ --- the \emph{sufficiency} question ---
+and (b) how much replacing $X_k$'s value with alternatives would shift the outcome away
+from $y^\star$ --- the \emph{necessity} question. We capture both by constructing two
+counterfactual outcome distributions conditioned on the same noise realization $\mathbf{u}$,
+then marginalising their product over $P_{\mathbf{U}}$. Because \ourapproach is not
+constrained to particular variable types, we work in general measure-theoretic terms
+supporting combinations of continuous and discrete variables.
 
 \begin{definition}[Joint Necessity and Sufficiency Measure] \label{def:jointnecsuf}
 Let $M=\langle \mathbf{U},\mathbf{V},\mathbf{F},P_{\mathbf{U}}\rangle$
@@ -1009,27 +1001,153 @@ P_{\mathbf{U}}(d\mathbf{u}).
 
 \end{definition}
 
-\medskip\noindent\textit{$P_k^s(\cdot\mid\mathbf{u})$ and $P_k^n(\cdot\mid\mathbf{u})$
-record, for a fixed noise realization $\mathbf{u}$, the outcome distributions under the
-sufficiency and necessity interventions respectively; marginalising over $P_{\mathbf{U}}$
-recovers their marginal forms
-$P_k^s(A)=\int P_k^s(A\mid\mathbf{u})\,P_{\mathbf{U}}(d\mathbf{u})$
-and analogously for $P_k^n$.
+\medskip\noindent
+Informally: $P_k^s(\cdot\mid\mathbf{u})$ is the distribution of $Y$ in the
+\emph{sufficiency world} --- restore the factual value of a candidate cause set
+$\mathbf{C}$ containing $X_k$, hold the witness set $\mathbf{T}$ at its factual values,
+and observe where the outcome lands. $P_k^n(\cdot\mid\mathbf{u})$ is the distribution of
+$Y$ in the \emph{necessity world} --- replace $\mathbf{C}$'s values with alternatives
+drawn from $\Delta$, hold $\mathbf{T}$ fixed, and ask how the outcome shifts. The double
+sum over $\mathbf{C}\in 2^{\mathbf{S}}_k$ and $\mathbf{T}\in 2^{\mathbf{W}}$ averages
+over candidate cause and witness configurations weighted by $\Gamma$: more focused
+interventions receive whatever weight the practitioner assigns them. In the OBCB example,
+for $X_k=\varname{gender}$ under a noise realization in which Alice is credit-checked:
+the sufficiency world restores $\varname{gender}=\text{female}$ while holding
+$\varname{check\text{-}failed}$ fixed; the necessity world substitutes
+$\varname{gender}=\text{male}$ under the same noise.
+
 The product decomposition in $P_k^{s,n}$ is legitimate because, conditional on
 $\mathbf{u}$, the sufficiency and necessity interventions operate in separate
 counterfactual regimes with no causal connection: $\mathrm{do}(\mathbf{C}=\mathbf{c}^\star)$
 and $\mathrm{do}(\mathbf{C}=\mathbf{c}')$ act on the same noise but in distinct
 hypothetical worlds, so $Y^s$ and $Y^n$ are conditionally independent given
 $\mathbf{u}$, and
-$P(Y^s\in A,\,Y^n\in B\mid\mathbf{u})=P_k^s(A\mid\mathbf{u})\,P_k^n(B\mid\mathbf{u})$.}
+$P(Y^s\in A,\,Y^n\in B\mid\mathbf{u})=P_k^s(A\mid\mathbf{u})\,P_k^n(B\mid\mathbf{u})$.
 
-Applied to the OBCB model with the choices established above ---
-$\mathbf{S}=\{\varname{gender},\varname{credit}\}$,
+With the necessity-sufficiency measure fully defined, we are ready to characterize the causal impact of an event $X_k$. In particular, we will proceed by defining an arbitrary \emph{causal impact function}, whose expectation over the necessity-sufficiency measure determines the causal impact. We first proceed with a formal definition of the causal impact measure, followed by several intuitive candidates for the causal impact function.
+
+\begin{definition}[Causal Impact Function and Its Expectation]  \label{def:causalimpact}
+Let $y^\star\in\dom(Y)$ denote the factual outcome value, and let $Y^s, Y^n \sim P_k^{s,n}$.
+For any measurable function $ci: \dom(Y)^3\to\mathbb{R}$, the
+\emph{(expected) causal impact} of $X_k$ is defined as
+\begin{equation}\label{eq:causal-impact}
+\mathbb{E}\!\left[\,ci\!\left(Y^s,Y^n,y^\star\right)\right]
+\;:=\;
+\iint
+ci(y^s,y^n,y^\star)\,
+P_k^{s,n}(d y^s, d y^n).
+\end{equation}
+\end{definition}
+
+\medskip\noindent Informally, $ci$ is a user-defined scoring rule that translates
+the joint sufficiency--necessity measure into a single scalar. The choice is not arbitrary:
+the Absolute Difference example below is an instance of L1 distance between outcomes, the
+same metric underlying Average Treatment Effect, Conditional Treatment Effect, and SHAP.
+The binary indicator score recovers this as a special case when outcomes are binary ---
+indicators are L1 on $\{0,1\}$. Practitioners with reasons to prefer L2 or another
+distance measure may substitute it freely; the framework places no restriction on $ci$
+beyond measurability.
+
+For the OBCB analysis we instantiate $ci$ as the PNS binary score defined in the
+following example, with $y^\star = \varname{loan} = 0$. This is the choice that produces
+the values in Table~\ref{tab:pci_obcb}.
+
+\begin{example}[PNS for Binary Outcomes]
+Assume the outcome $Y$ is binary with $\dom(Y)=\{0,1\}$, and let $y^\star=1$ denote
+the factual outcome. Let $Y^s$ and $Y^n$ denote the sufficiency and necessity
+outcome variables. Define the causal impact score
+\[
+ci(y^s,y^n,y^\star)
+=
+\mathbb{I}\{y^n\neq y^\star\}\,\mathbb{I}\{y^s=y^\star\}.
+\]
+Then the expected causal impact reduces to
+\[
+\mathbb{E}\!\left[ci(Y^s,Y^n,1)\right]
+=
+\mathbb{P}(Y^n=0,\,Y^s=1),
+\]
+which conceptually coincides with Pearl's probability of necessity and sufficiency (PNS). The alignment is \emph{exact} when $\mathbf{S} = \{X_k\}$, $\mathbf{W}=\emptyset$, and $\dom(X_k)=\{0,1\}$ where, factually, $x_k^\star=1$.
+\end{example}
+
+We now illustrate the full computation for Alice's gender attribution using this $ci$.
+With $\mathbf{S}=\{\varname{gender},\varname{credit}\}$,
 $\mathbf{W}=\{\varname{check\text{-}failed}\}$, $\Gamma_s$ and $\Gamma_w$ uniform,
-$\Delta$ point masses on alternative binary values, outcome
-$y^\star=\varname{loan}=0$ --- Table~\ref{tab:pci_obcb} reports the expected causal
-impact for Alice and Bob under PNS, PCI without witnesses, and PCI with the
-\varname{check\text{-}failed} witness active.
+$\Delta$ a point mass on the alternative binary value, and $y^\star=\varname{loan}=0$,
+the exogenous noise $U_\text{check}$ falls into three regions:
+\begin{itemize}
+\item $u_1$ (prob.\ 0.2): Alice is checked regardless of gender;
+  $\varname{check\text{-}failed}=1$ factually.
+\item $u_2$ (prob.\ 0.7): Alice is not checked as female but would be as male;
+  $\varname{check\text{-}failed}=0$ factually.
+\item $u_3$ (prob.\ 0.1): Alice is not checked regardless of gender.
+\end{itemize}
+In all regions, restoring Alice's factual values always yields a denial, so
+$P_k^s(\{0\}\mid\mathbf{u})=\tfrac{2}{3}$ everywhere (four $(C,T)$ combinations
+each with weight $\tfrac{1}{3}\cdot\tfrac{1}{2}$, each contributing probability~1).
+The necessity measure varies.
+
+In $u_1$, the witness holds $\varname{check\text{-}failed}=1$.
+The four $(C,T)$ contributions, each weighted $\tfrac{1}{6}$, are:
+\begin{itemize}
+\item[$\circ$] $\mathbf{C}=\{\varname{gender}\}$, $T=\emptyset$:
+  male, $\varname{check\text{-}failed}=1$ propagates structurally
+  $\Rightarrow P(\varname{loan}=1)=0.05$.
+\item[$\circ$] $\mathbf{C}=\{\varname{gender}\}$,
+  $T=\{\varname{check\text{-}failed}\}$:
+  male, witness holds failure
+  $\Rightarrow P(\varname{loan}=1)=0.05$.
+\item[$\circ$] $\mathbf{C}=\{\varname{gender},\varname{credit}\}$, $T=\emptyset$:
+  male and good credit, check passes
+  $\Rightarrow P(\varname{loan}=1)=1.0$.
+\item[$\circ$] $\mathbf{C}=\{\varname{gender},\varname{credit}\}$,
+  $T=\{\varname{check\text{-}failed}\}$:
+  male and good credit, but witness holds failure
+  $\Rightarrow P(\varname{loan}=1)=0.05$.
+\end{itemize}
+\[ P_k^n(\{1\}\mid u_1)
+   = \tfrac{1}{6}(0.05+0.05+1.0+0.05) \approx 0.192. \]
+
+In $u_2$, the witness holds $\varname{check\text{-}failed}=0$.
+The four contributions:
+\begin{itemize}
+\item[$\circ$] $\mathbf{C}=\{\varname{gender}\}$, $T=\emptyset$:
+  male would be checked; $\varname{check\text{-}failed}=1$ propagates structurally
+  $\Rightarrow P(\varname{loan}=1)=0.05$.
+\item[$\circ$] $\mathbf{C}=\{\varname{gender}\}$,
+  $T=\{\varname{check\text{-}failed}\}$:
+  male, witness holds $\varname{check\text{-}failed}=0$, check passes
+  $\Rightarrow P(\varname{loan}=1)=1.0$.
+\item[$\circ$] $\mathbf{C}=\{\varname{gender},\varname{credit}\}$, $T=\emptyset$:
+  male and good credit, check passes
+  $\Rightarrow P(\varname{loan}=1)=1.0$.
+\item[$\circ$] $\mathbf{C}=\{\varname{gender},\varname{credit}\}$,
+  $T=\{\varname{check\text{-}failed}\}$:
+  male and good credit, witness holds $0$
+  $\Rightarrow P(\varname{loan}=1)=1.0$.
+\end{itemize}
+\[ P_k^n(\{1\}\mid u_2)
+   = \tfrac{1}{6}(0.05+1.0+1.0+1.0) \approx 0.508. \]
+
+In $u_3$, male Alice is also not checked ($\varname{check}=0$ regardless of gender),
+so all necessity worlds yield denial: $P_k^n(\{1\}\mid u_3)=0$.
+
+Combining, with $ci(y^s,y^n,y^\star)=\mathbb{I}\{y^n\neq y^\star\}\,\mathbb{I}\{y^s=y^\star\}$
+and $y^\star=\varname{loan}=0$:
+\begin{align*}
+\mathrm{PCI}_{\varname{gender}}(\text{Alice})
+  &= \mathbb{E}\!\left[ci(Y^s,Y^n,y^\star)\right]
+   = \mathbb{P}(Y^n=1,\,Y^s=0) \\
+  &= \sum_u p(u)\,P_k^s(\{0\}\mid u)\,P_k^n(\{1\}\mid u) \\
+  &= 0.2\times\tfrac{2}{3}\times 0.192
+   + 0.7\times\tfrac{2}{3}\times 0.508
+   + 0.1\times 0 \\
+  &\approx 0.026 + 0.237 = 0.263.
+\end{align*}
+
+Table~\ref{tab:pci_obcb} gives the full results for Alice and Bob under these
+parameter choices, comparing PNS, PCI without witnesses, and PCI with the
+$\varname{check\text{-}failed}$ witness active.
 
 \begin{table}[h]
 \centering
@@ -1070,6 +1188,15 @@ desideratum \textbf{D-comp} holds under both PCI (0.263 $>$ 0.019) and PNS
 (0.045 $>$ 0.000). A full verification of all seven desiderata is given at the end
 of this section.
 
+The PNS and PCI (no witnesses) columns differ even though neither uses witnesses,
+because PCI still $\Gamma$-averages over candidate suspect sets.  With
+$|\mathbf{S}|=2$ PCI averages over $\{\varname{gender}\}$, $\{\varname{credit}\}$,
+and $\{\varname{gender},\varname{credit}\}$ (each weighted $\tfrac{1}{3}$),
+whereas PNS evaluates a single counterfactual on one variable at a time.
+Property~(i) below establishes that the two agree exactly when $|\mathbf{S}|=1$
+(single suspect, no witnesses, binary outcome) --- the OBCB setup uses
+$|\mathbf{S}|=2$ deliberately, to demonstrate joint-subset attribution.
+
 % \begin{definition}[Causal impact and its push-forward]
 % Let $y^s$ denote the outcome in the \emph{sufficiency world}, $y^n$ denote the outcome in the \emph{necessity world}, and $y^\star$ the outcome in the factual world. By construction, these are independent conditional on $\mathbf{u}$, and so we get the joint:
 % \begin{align}
@@ -1085,52 +1212,6 @@ of this section.
 % \end{definition}
 
 % With this in place, we can characterize a number of causal impact measures by first defining a \emph{causal impact function} as the expectation of a causal impact function taken with respect to the joint measure on factual and counterfactual outcomes.
-
-With the necessity-sufficiency measure fully defined, we are ready to characterize the causal impact of an event $X_k$. In particular, we will proceed by defining an arbitrary \emph{causal impact function}, whose expectation over the necessity-sufficiency measure determines the causal impact. We first proceed with a formal definition of the causal impact measure, followed by several intuitive candidates for the causal impact function.
-
-\begin{definition}[Causal Impact Function and Its Expectation]  \label{def:causalimpact}
-Let $y^\star\in\dom(Y)$ denote the factual outcome value, and let $Y^s, Y^n \thicksim P_k^{s,n}$.
-For any measurable function $ci: \dom(Y)^3\to\mathbb{R}$, the
-\emph{(expected) causal impact} of $X_k$ is defined as
-\begin{equation}\label{eq:causal-impact}
-\mathbb{E}\!\left[\,ci\!\left(Y^s,Y^n,y^\star\right)\right]
-\;:=\;
-\iint
-ci(y^s,y^n,y^\star)\,
-P_k^{s,n}(d y^s, d y^n).
-\end{equation}
-\end{definition}
-
-\medskip\noindent\textit{Informally, $ci$ is a user-defined scoring rule that translates
-the joint sufficiency--necessity measure into a single scalar. The choice is not arbitrary:
-the Absolute Difference example below is an instance of L1 distance between outcomes, the
-same metric underlying Average Treatment Effect, Conditional Treatment Effect, and SHAP.
-The binary indicator score recovers this as a special case when outcomes are binary ---
-indicators are L1 on $\{0,1\}$. Practitioners with reasons to prefer L2 or another
-distance measure may substitute it freely; the framework places no restriction on $ci$
-beyond measurability.}
-
-For the OBCB analysis we instantiate $ci$ as the PNS binary score defined in the
-following example, with $y^\star = \varname{loan} = 0$. This is the choice that produces
-the values in Table~\ref{tab:pci_obcb}.
-
-\begin{example}[PNS for Binary Outcomes]
-Assume the outcome $Y$ is binary with $\dom(Y)=\{0,1\}$, and let $y^\star=1$ denote
-the factual outcome. Let $Y^s$ and $Y^n$ denote the sufficiency and necessity
-outcome variables. Define the causal impact score
-\[
-ci(y^s,y^n,y^\star)
-=
-\mathbb{I}\{y^n\neq y^\star\}\,\mathbb{I}\{y^s=y^\star\}.
-\]
-Then the expected causal impact reduces to
-\[
-\mathbb{E}\!\left[ci(Y^s,Y^n,1)\right]
-=
-\mathbb{P}(Y^n=0,\,Y^s=1),
-\]
-which conceptually coincides with Pearl’s probability of necessity and sufficiency (PNS). The alignment is \emph{exact} when $\mathbf{S} = \{X_k\}$, $\mathbf{W}=\emptyset$, and $\dom(X_k)=\{0,1\}$ where, factually, $x_k^\star=1$.
-\end{example}
 
 \noindent The causal impact function $ci$ is a user-defined component of \ourapproach, and different choices encode different causal questions. In the benchmarking experiments of Section~\ref{sec:ac_benchmark}, we instantiate $ci$ using only the necessity component, since Halpern’s actual causality has no sufficiency counterpart --- necessity-only attribution allows a direct parallel comparison. The full framework incorporating both $Y^s$ and $Y^n$ is instantiated in the PNS binary
 example above and in the Absolute Difference example below; the OBCB analysis of this
@@ -1174,37 +1255,43 @@ value distribution, joint necessity-sufficiency measure, and causal impact funct
 
 Table~\ref{tab:desiderata} verifies the seven desiderata introduced at the start of this
 section (p.~\pageref{desid}) against the values in Table~\ref{tab:pci_obcb}.
-\Ourapproach with the \varname{check\text{-}failed} witness satisfies all seven; PNS
-fails \textbf{D-A-rank} and \textbf{D-B1}.
+PCI with witnesses satisfies all seven; PCI without witnesses fails \textbf{D-A-rank};
+PNS fails \textbf{D-A-rank} and \textbf{D-B1}.
 (The table uses the shorthand $|R(V\mid\text{person})|$ for
 $|R(V\rightsquigarrow\varname{loan}\mid\text{person})|$.)
 
 \begin{table}[h]
 \centering
-\small
-\begin{tabular}{lcc}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lccc}
 \toprule
-Desideratum & PCI (with witnesses) & PNS \\
+Desideratum & PNS & PCI (no wit.) & PCI (with wit.) \\
 \midrule
 \textbf{D-A1}: $|R(\varname{gender}\mid\text{Alice})| > 0$
-  & $\checkmark$\ \ 0.263 & $\checkmark$\ \ 0.045 \\
+  & $\checkmark$\ 0.045 & $\checkmark$\ 0.210 & $\checkmark$\ 0.263 \\
 \textbf{D-A2}: $|R(\varname{credit}\mid\text{Alice})| > 0$
-  & $\checkmark$\ \ 0.199 & $\checkmark$\ \ 0.180 \\
+  & $\checkmark$\ 0.180 & $\checkmark$\ 0.240 & $\checkmark$\ 0.199 \\
 \textbf{D-A-rank}: $|R(\varname{gender}\mid\text{Alice})| > |R(\varname{credit}\mid\text{Alice})|$
-  & $\checkmark$\ \ $0.263 > 0.199$ & $\times$\ \ $0.045 < 0.180$ \\
+  & $\times$\ $0.045 {<} 0.180$
+  & $\times$\ $0.210 {<} 0.240$
+  & $\checkmark$\ $0.263 {>} 0.199$ \\
 \textbf{D-B1}: $|R(\varname{gender}\mid\text{Bob})| > 0$
-  & $\checkmark$\ \ 0.019 & $\times$\ \ 0.000 \\
+  & $\times$\ 0.000 & $\checkmark$\ 0.038 & $\checkmark$\ 0.019 \\
 \textbf{D-B2}: $|R(\varname{credit}\mid\text{Bob})| > 0$
-  & $\checkmark$\ \ 0.119 & $\checkmark$\ \ 0.860 \\
+  & $\checkmark$\ 0.860 & $\checkmark$\ 0.228 & $\checkmark$\ 0.119 \\
 \textbf{D-B-rank}: $|R(\varname{credit}\mid\text{Bob})| > |R(\varname{gender}\mid\text{Bob})|$
-  & $\checkmark$\ \ $0.119 > 0.019$ & $\checkmark$\ \ $0.860 > 0.000$ \\
+  & $\checkmark$\ $0.860 {>} 0.000$
+  & $\checkmark$\ $0.228 {>} 0.038$
+  & $\checkmark$\ $0.119 {>} 0.019$ \\
 \textbf{D-comp}: $|R(\varname{gender}\mid\text{Alice})| > |R(\varname{gender}\mid\text{Bob})|$
-  & $\checkmark$\ \ $0.263 > 0.019$ & $\checkmark$\ \ $0.045 > 0.000$ \\
+  & $\checkmark$\ $0.045 {>} 0.000$
+  & $\checkmark$\ $0.210 {>} 0.038$
+  & $\checkmark$\ $0.263 {>} 0.019$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \caption{Verification of the seven desiderata (p.~\pageref{desid}) against the values in
-Table~\ref{tab:pci_obcb}. \Ourapproach with the \varname{check\text{-}failed} witness
-satisfies all seven; PNS fails \textbf{D-A-rank} and \textbf{D-B1}.}
+Table~\ref{tab:pci_obcb}. PCI with witnesses satisfies all seven; PCI without witnesses
+fails \textbf{D-A-rank}; PNS fails \textbf{D-A-rank} and \textbf{D-B1}.}
 \label{tab:desiderata}
 \end{table}
 
@@ -1216,6 +1303,76 @@ evaluated). The D-B1 failure reflects that PNS assigns Bob's gender exactly zero
 because $P(\varname{loan}=1\mid\text{female},\text{bad})=0$,
 the counterfactual necessity calculation returns zero, missing gender's indirect role in
 opening the credit evaluation. The \varname{check\text{-}failed} witness resolves both.}
+
+To close this section, it is worth comparing PCI's decomposition with the one already
+present in Pearl's framework. Pearl's framework defines three related but distinct
+binary scores: the probability of necessity
+$\mathrm{PN} = P(Y_{x'} = y' \mid X = x^*, Y = y^*)$, the probability of sufficiency
+$\mathrm{PS} = P(Y_{x^*} = y^* \mid X = x', Y = y')$, and their joint
+$\mathrm{PNS} = P(Y_{x^*} = y^*, Y_{x'} = y')$. The first two are conditional
+probabilities; $\mathrm{PNS}$ is unconditional, and the three satisfy
+$\mathrm{PNS} = \mathrm{PN}\cdot P(Y_{x^*}=y^*) = \mathrm{PS}\cdot P(Y_{x'}=y')$ rather
+than $\mathrm{PNS} = \mathrm{PN}\cdot\mathrm{PS}$ (which would require
+$Y_{x^*}\perp Y_{x'}$, an assumption typically violated since the two potential
+outcomes share exogenous noise). PCI admits a related split: with
+$ci = \mathbb{I}\{y^n \neq y^\star\}\,\mathbb{I}\{y^s = y^\star\}$,
+\[
+\mathbb{E}[ci(Y^s, Y^n, y^\star)]
+= \int P^s_k(\{y^\star\}\mid\mathbf{u})\,P^n_k(\{1{-}y^\star\}\mid\mathbf{u})\,dP_{\mathbf{U}},
+\]
+giving a \emph{sufficiency marginal} and a \emph{necessity marginal} that record how
+often, on average, restoring the factual values of a suspect set containing $X_k$
+reproduces the factual outcome, and how often substituting alternatives overturns it.
+The two marginals are independent given $\mathbf{u}$.
+
+The components are not identical to Pearl's: $\mathrm{PN}$ and $\mathrm{PS}$ condition
+on the factual outcome and consider a single counterfactual flip; PCI's marginals
+integrate over $P_{\mathbf{U}}$, average over suspect sets weighted by $\Gamma$, and
+hold the witness configurations fixed when active. Table~\ref{tab:pci_decomp} shows
+both decompositions side by side for \varname{gender} and \varname{credit}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l c c c c c c}
+\toprule
+& \multicolumn{3}{c}{Pearl}
+& \multicolumn{3}{c}{PCI (with witnesses)} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+Person, Variable & PN & PS & PNS
+                 & Necessity & Sufficiency & $\mathrm{PCI}$ \\
+\midrule
+Alice (\varname{gender}) & $0.045$ & $1.000$ & $0.045$
+                          & $0.394$ & $0.667$ & $0.263$ \\
+Alice (\varname{credit}) & $0.180$ & $1.000$ & $0.180$
+                          & $0.298$ & $0.667$ & $0.199$ \\
+Bob   (\varname{gender}) & $0.000$ & ---     & $0.000$
+                          & $0.030$ & $0.637$ & $0.019$ \\
+Bob   (\varname{credit}) & $0.900$ & $0.955$ & $0.860$
+                          & $0.188$ & $0.637$ & $0.119$ \\
+\bottomrule
+\end{tabular}
+\caption{Pearl's $\mathrm{PN}/\mathrm{PS}/\mathrm{PNS}$ alongside PCI's necessity and
+sufficiency marginals (with $\mathbf{W} = \{\varname{check\text{-}failed}\}$ active).
+Bob's $\mathrm{PS}$ for \varname{gender} is undefined because the conditioning event
+$(\text{female}, \text{bad}, \text{loan}=1)$ has probability zero in the OBCB model.
+The PCI marginal counterparts are well-defined throughout, since they integrate over
+$P_{\mathbf{U}}$ rather than conditioning on the factual outcome.}
+\label{tab:pci_decomp}
+\end{table}
+
+For Alice's gender, $\mathrm{PN} = 0.045$ is the bare probability that a male with bad
+credit would have been approved; PCI's necessity marginal is $0.394$, nearly an order of
+magnitude higher, because the \varname{check\text{-}failed} witness keeps the
+credit-check bottleneck active when the male counterfactual would otherwise have been
+checked and might still have failed --- structural information that the unconditional
+$\mathrm{PN}$ cannot register. For Bob's gender, $\mathrm{PN}$ is exactly $0$ (a female
+with bad credit cannot be approved in this model) and $\mathrm{PS}$ is undefined; PCI's
+marginals remain well-defined at $0.030$ and $0.637$, recovering the indirect role of
+gender in opening the evaluation.
+
+The next section turns from comparing PCI with Pearl's family of counterfactual scores
+to comparing it with the SHAP family --- methods grounded in cooperative game theory
+rather than in structural counterfactual reasoning.
 
 \section{Examples and comparison to SHAP and Causal SHAP}\label{sec:shap_examples}
 
@@ -1240,7 +1397,8 @@ attribution}, this produces further failures that are not always made explicit i
 literature.
 
 We trace these failures through two examples, comparing plain SHAP, Causal SHAP, and
-PCI against the desiderata of Section~\ref{sec:motivations}. We first return to the
+PCI against the desiderata of Section~\ref{sec:motivations} and some further desiderata related to the example we 
+will employ. We first return to the
 OBCB model: it permits exact analytic computation and the desiderata are already
 known. In OBCB the feature set contains only exogenous roots, so plain and Causal
 SHAP coincide --- the comparison is short. We then turn to a continuous mediation
@@ -1308,24 +1466,89 @@ four Shapley axioms.
 
 \subsection{OBCB: SHAP and Causal SHAP}\label{sec:obcb_shap}
 
-We first apply SHAP to $g(x)=P(\varname{loan}=0\mid x)$ for Alice and Bob from
-Example~\ref{ex:obcb_stochastic}, attributing responsibility for the denial
-outcome.%
-\footnote{We use $g = 1 - f$ where $f(g,c)=P(\varname{loan}=1\mid g,c)$ takes
-values $f(\text{F},\text{bad})=0$, $f(\text{F},\text{good})=0.180$,
-$f(\text{M},\text{bad})=0.045$, $f(\text{M},\text{good})=0.900$.
-Because $g=1-f$, the characteristic functions satisfy $v_g(S)=1-v_f(S)$ and
-$\phi^g_i=-\phi^f_i$; we compute $\phi^f$ and flip signs.
-With $|N|=2$ and uniform marginals $P(\varname{gender})=P(\varname{credit})=\tfrac{1}{2}$,
+To apply the SHAP and Causal SHAP definitions of Section~\ref{sec:shap_defs}
+to OBCB we must specify both a feature set $N$ and a function $f$ on the joint
+feature space; the value functions and Shapley sums are derived from these.
+The natural choice for $f$ is the conditional expectation of the outcome,
+$f(x_N)=\mathbb{E}[\varname{loan}\mid X_N=x_N]$. But the OBCB SCM has five
+variables --- $\varname{gender}$, $\varname{credit}$, $\varname{check}$,
+$\varname{check\text{-}failed}$, $\varname{loan\_if\_checked}$ --- so the
+choice of $N$ is non-trivial. Two options are natural:
+\begin{itemize}
+\item \textbf{Option A: two upstream roots.}
+$N=\{\varname{gender},\varname{credit}\}$. Both features are exogenous; the
+three internal variables ($\varname{check}$, $\varname{check\text{-}failed}$,
+$\varname{loan\_if\_checked}$) are integrated out inside $f$. This is the
+smallest sufficient feature set and matches the way the model is normally
+described: predict approval from gender and credit.
+\item \textbf{Option B: two roots plus the mediator.}
+$N'=\{\varname{gender},\varname{credit},\varname{check\text{-}failed}\}$.
+The mediator becomes an observable model input, the same status it has in the
+signal-with-mediation example (\S\ref{sec:signal}). This is the comparison
+PCI's witness mechanism naturally invites: PCI accesses
+$\varname{check\text{-}failed}$ as a witness, so allowing SHAP to access it as
+a feature is the fair foil.
+\end{itemize}
+We work through both. Option~A is simpler and exposes the qualitative failures
+of plain SHAP. Option~B then asks whether admitting the mediator rescues Causal
+SHAP.
+
+\medskip\noindent\textbf{Option~A: two upstream roots.}
+Here $f(g,c)=P(\varname{loan}=1\mid g,c)$ takes values
+$f(\text{F},\text{bad})=0$, $f(\text{F},\text{good})=0.180$,
+$f(\text{M},\text{bad})=0.045$, $f(\text{M},\text{good})=0.900$, with the three
+internal variables integrated out. We apply SHAP to the rejection probability
+$g(x)=1-f(x)$ for Alice and Bob from Example~\ref{ex:obcb_stochastic},
+attributing responsibility for the denial outcome.\footnote{Because $g=1-f$,
+the characteristic functions satisfy $v_g(S)=1-v_f(S)$ and
+$\phi^g_i=-\phi^f_i$; we compute $\phi^f$ and flip signs. With $|N|=2$ and
+uniform marginals $P(\varname{gender})=P(\varname{credit})=\tfrac{1}{2}$,
 equation~\eqref{eq:shapley} reduces to
-$\phi_i = \tfrac{1}{2}[v(\{i\})-v(\emptyset)] + \tfrac{1}{2}[v(N)-v(N\!\setminus\!\{i\})]$.
-Population baseline: $v(\emptyset)=0.281$.
-Alice: $v(\{\varname{gender}=\text{F}\})=0.090$,
-$v(\{\varname{credit}=\text{bad}\})=0.023$, $v(N)=0.000$;
-hence $\phi^g_{\varname{gender}}=0.107$, $\phi^g_{\varname{credit}}=0.174$.
-Bob: $v(\{\varname{gender}=\text{M}\})=0.473$, $v(N)=0.045$;
-hence $\phi^g_{\varname{gender}}=-0.107$, $\phi^g_{\varname{credit}}=0.343$.}
-Table~\ref{tab:shap_obcb} compares the resulting values against PNS and PCI.
+$\phi_i = \tfrac{1}{2}[v(\{i\})-v(\emptyset)] + \tfrac{1}{2}[v(N)-v(N\!\setminus\!\{i\})]$.}
+By the SHAP definition (and equivalently by Definition~\ref{def:causalshap}
+once we note that no dropped feature is a descendant of any coalition member),
+the value function on the 2-feature game is
+\[
+v(S) \;=\; \mathbb{E}\!\left[f(X)\,\big|\,X_S = x_S^\star\right]
+\;=\; \sum_{x_{N\setminus S}\in\{0,1\}^{|N\setminus S|}} P(X_{N\setminus S}=x_{N\setminus S})\,f(x_S^\star,\,x_{N\setminus S}).
+\]
+Under independent uniform marginals
+$P(\varname{gender})=P(\varname{credit})=\tfrac{1}{2}$ this specialises to
+\begin{align*}
+v(\emptyset)                              &= \tfrac{1}{4}\sum_{g,c\in\{0,1\}} f(g,c),
+&&[\text{both features dropped: weight } P(g)\,P(c) = \tfrac{1}{2}\cdot\tfrac{1}{2}] \\
+v(\{\varname{gender}\})                   &= \tfrac{1}{2}\!\left[f(g^\star,0)+f(g^\star,1)\right],
+&&[\text{only credit dropped: weight } P(c) = \tfrac{1}{2}] \\
+v(\{\varname{credit}\})                   &= \tfrac{1}{2}\!\left[f(0,c^\star)+f(1,c^\star)\right],
+&&[\text{only gender dropped: weight } P(g) = \tfrac{1}{2}] \\
+v(\{\varname{gender},\varname{credit}\})  &= f(g^\star,c^\star).
+&&[\text{nothing dropped: no average}]
+\end{align*}
+Plugging in the four values of $f$ listed at the start of Option~A yields
+Table~\ref{tab:vS_optionA}; pushing those through the closed-form Shapley above
+gives the magnitudes in Table~\ref{tab:shap_obcb}, which compares against PNS
+and PCI.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\toprule
+$S$ & $v(S)$ for Alice & $v(S)$ for Bob \\
+\midrule
+$\emptyset$                              & $0.281$ & $0.281$ \\
+$\{\varname{gender}\}$                   & $0.090$ & $0.473$ \\
+$\{\varname{credit}\}$                   & $0.023$ & $0.023$ \\
+$\{\varname{gender},\varname{credit}\}$  & $0.000$ & $0.045$ \\
+\bottomrule
+\end{tabular}
+\caption{Coalition values $v(S)=\mathbb{E}[f(X)\mid X_S=x_S^\star]$ for the
+2-feature game ($N=\{\varname{gender},\varname{credit}\}$).
+$v(\emptyset)=\mathbb{E}[f(X)]=0.281$ is the population baseline; $v(N)$ is
+the factual prediction $f(x^\star)$. Plain SHAP and Causal SHAP coincide on
+this game (neither feature is downstream of the other), so a single column
+suffices per individual.}
+\label{tab:vS_optionA}
+\end{table}
 
 \begin{table}[h]
 \centering
@@ -1345,13 +1568,13 @@ $|\cdot|$. PNS and PCI values from Table~\ref{tab:pci_obcb}.}
 \label{tab:shap_obcb}
 \end{table}
 
-SHAP fails two desiderata. The primary failure is \textbf{D-A-rank}:
-credit outranks gender ($0.174 > 0.107$). This is an overdetermination
+SHAP fails two desiderata. The primary failure is \textbf{D-A-rank}: Alice's 
+credit outranks her gender ($0.174 > 0.107$). This is an overdetermination
 effect: \varname{credit}=bad correlates with the \varname{check\text{-}failed}
 mechanism that blocked Alice's credit evaluation, so SHAP's observational
-marginalization inflates credit attribution above gender's. PCI conditions on the factual
+marginalization inflates credit attribution above gender's. PCI includes the factual
 \varname{check\text{-}failed} value directly, isolating gender's upstream causal
-role and recovering the correct ranking. PNS fails D-A-rank for the same reason;
+role and recovering the correct ranking. PNS fails \textbf{D-A-rank} for the same reason;
 it also fails \textbf{D-B1} by returning exactly zero for Bob's gender (see
 Table~\ref{tab:desiderata}).
 
@@ -1368,23 +1591,162 @@ magnitude regardless of their individual causal weight. This is an instance of a
 deeper limitation: SHAP explains predicted outputs, not individual factual
 outcomes, which we examine further in Section~\ref{sec:signal}.
 
-\medskip\noindent\textbf{Causal SHAP.}
-In this example Causal SHAP coincides exactly with plain SHAP.
-The feature set $N=\{\varname{gender},\varname{credit}\}$ consists entirely of
-exogenous roots: neither is causally downstream of the other, so
-$P(\varname{credit}\mid do(\varname{gender}=g))=P(\varname{credit})$
-and vice versa.
-The downstream variables (\varname{check}, \varname{check\text{-}failed},
-\varname{loan\text{-}if\text{-}checked}) are not observable as model inputs (while PCI can still consider
-the consequences of keeping them fixed as witnesses 
-as the model runs unfold\footnote{With the next example we will see that when downstream variables are observable model inputs,
-causal SHAP does not coincide with plain SHAP, and yet it still runs into trouble});
-they are integrated out inside $f$.
-Because no dropped feature is a descendant of any coalition member,
-$v_{\mathrm{causal}}(S)=v_{\mathrm{plain}}(S)$ for every coalition, and the
-Causal SHAP values are identical to those in Table~\ref{tab:shap_obcb}.
-In the signal example (Section~\ref{sec:signal}), downstream variables are
-observable model inputs and the two methods diverge.
+Causal SHAP coincides exactly with plain SHAP under Option~A: both features
+are exogenous roots, so
+$P(\varname{credit}\mid do(\varname{gender}=g))=P(\varname{credit})$ and vice
+versa, no dropped feature is a descendant of any coalition member, and
+$v_{\mathrm{causal}}(S)=v_{\mathrm{plain}}(S)$ for every coalition. Option~A
+therefore reduces to a single SHAP analysis, and the failures
+above belong to both methods.
+
+\medskip\noindent\textbf{Option~B: two roots plus the mediator.}
+Now we admit \varname{check\text{-}failed} as a third model input and apply
+both methods to the 3-feature game $N'=\{\varname{gender},\varname{credit},\varname{check\text{-}failed}\}$.
+This requires defining $f$ on $\{0,1\}^3$ rather than on $\{0,1\}^2$. The
+natural observational extension is again the conditional expectation
+$\tilde f(g,c,cf)=\mathbb{E}[\varname{loan}\mid \varname{gender}=g,\,\varname{credit}=c,\,\varname{check\text{-}failed}=cf]$.
+This is well defined for three of the four $(c,cf)$ combinations, but not the
+fourth: a failed check requires that a check happened \emph{and} the credit
+was bad, so $\varname{check\text{-}failed}=1$ together with
+$\varname{credit}=\text{good}$ is impossible under the SCM and has no
+observational data to condition on. We leave $\tilde f$ undefined on this cell.
+
+Both methods need a value function $v(S)$: the expected value of $\tilde f$
+when the features in $S$ are held at their factual values $x_S^\star$ and the
+remaining features are averaged out. The methods differ in how that average
+is taken. Plain SHAP averages over each dropped feature using its own
+observational marginal $P(X_i)$, with the dropped features treated as
+independent of one another. Causal SHAP averages over the joint distribution
+the SCM produces under the intervention $do(X_S = x_S^\star)$, so the dropped
+features keep whatever joint dependencies the SCM imposes on them. Whether
+either average ever lands on the impossible cell $(c{=}1, cf{=}1)$ --- and so
+whether $v(S)$ is finite --- depends on both the method and on which features
+are held fixed at which factual values. Table~\ref{tab:vS_optionB} works out
+all eight coalition values for both individuals.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{l cc cc}
+\toprule
+& \multicolumn{2}{c}{Alice $(g,c,cf){=}(0,0,0)$} & \multicolumn{2}{c}{Bob $(g,c,cf){=}(1,0,1)$} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+$S$ & $v_{\mathrm{plain}}$ & $v_{\mathrm{causal}}$ & $v_{\mathrm{plain}}$ & $v_{\mathrm{causal}}$ \\
+\midrule
+$\emptyset$    & \textbf{NaN} & $0.281$ & \textbf{NaN} & $0.281$ \\
+$\{g\}$        & \textbf{NaN} & $0.090$ & \textbf{NaN} & $0.473$ \\
+$\{c\}$        & $0.007$      & $0.023$ & $0.007$      & $0.023$ \\
+$\{cf\}$       & $0.270$      & $0.270$ & \textbf{NaN} & \textbf{NaN} \\
+$\{g,c\}$      & $0.000$      & $0.000$ & $0.014$      & $0.045$ \\
+$\{g,cf\}$     & $0.090$      & $0.090$ & \textbf{NaN} & \textbf{NaN} \\
+$\{c,cf\}$     & $0.000$      & $0.000$ & $0.025$      & $0.025$ \\
+$N'$           & $0.000$      & $0.000$ & $0.050$      & $0.050$ \\
+\bottomrule
+\end{tabular}
+\caption{Coalition values for the 3-feature game
+$N' = \{\varname{gender},\varname{credit},\varname{check\text{-}failed}\}$.
+Bold \textbf{NaN} entries flag coalitions whose value function evaluates
+$\tilde f$ at the impossible cell $(c{=}1,cf{=}1)$ with positive weight.
+Plain SHAP and Causal SHAP coincide whenever neither $\varname{credit}$ nor
+$\varname{check\text{-}failed}$ is dropped, since the only structural coupling
+in the model is between these two; they diverge whenever one is in $S$ and the
+other is not.}
+\label{tab:vS_optionB}
+\end{table}
+
+\textbf{Plain SHAP.}
+Plain SHAP treats $\varname{credit}$ and $\varname{check\text{-}failed}$ as
+independent, so whenever both are dropped from the coalition the average runs
+over all four $(c, cf)$ combinations, with the impossible $(c{=}1, cf{=}1)$
+combination receiving weight
+$P(c{=}1)\cdot P(cf{=}1) = 0.5\cdot 0.275 \approx 0.14$ ---
+the same nonzero weight as any other corner. For Alice, both $c$ and $cf$
+are dropped at $S\in\{\emptyset,\{\varname{gender}\}\}$, the first two NaN
+entries in Table~\ref{tab:vS_optionB}. For Bob the same two coalitions fail,
+and two more break for an additional reason: at
+$S=\{\varname{check\text{-}failed}\}$ and
+$S=\{\varname{gender},\varname{check\text{-}failed}\}$ the value $cf^\star=1$
+is held fixed while $c$ is sampled from its marginal, so the $c{=}1$ branch
+enters with weight $0.5$ and again hits the impossible cell. Plain SHAP gives
+undefined Shapley values for both individuals.\footnote{The underlying issue
+is that plain SHAP does not see that $\varname{credit}$ and
+$\varname{check\text{-}failed}$ are linked by the structural equation
+$cf = \varname{check}\cdot(1 - c)$, and so cheerfully samples a combination
+the SCM rules out.}
+
+\textbf{Causal SHAP for Alice.}
+Causal SHAP samples $cf$ following its structural equation
+$cf = \varname{check}\cdot(1 - c)$, with $\varname{check}\sim\mathrm{Bern}(p_\text{check}[g])$,
+given whatever $(g, c)$ values appear in the integrand. When $c=1$ the
+equation forces $cf=0$ regardless of $\varname{check}$, so the
+$(c{=}1, cf{=}1)$ combination is never produced. Every Alice entry in the
+$v_\mathrm{causal}$ column of Table~\ref{tab:vS_optionB} is therefore finite.
+Plugging Alice's column into the Shapley formula gives magnitudes
+$|\phi_{\varname{gender}}|=0.097$, $|\phi_{\varname{credit}}|=0.176$,
+$|\phi_{\varname{check\text{-}failed}}|=0.007$, so
+$|\phi_{\varname{credit}}|>|\phi_{\varname{gender}}|$ and \textbf{D-A-rank}
+fails: credit outranks gender, exactly the same pathology plain SHAP exhibited
+on the 2-feature game.
+
+\textbf{Causal SHAP for Bob.}
+Two coalitions break for Bob: $S=\{\varname{check\text{-}failed}\}$ and
+$S=\{\varname{gender},\varname{check\text{-}failed}\}$. Both hold $cf$ at
+Bob's factual value $cf^\star=1$ and average $\varname{credit}$ over its
+marginal. To see why this is fatal, apply
+Definition~\ref{def:causalshap} to the first:
+\[
+v_\mathrm{causal}(\{cf\})
+\;=\; \mathbb{E}\!\left[\tilde f(X)\,\big|\,do(cf = 1)\right]
+\;=\; \tfrac{1}{4}\sum_{g\in\{0,1\}}\sum_{c\in\{0,1\}}\tilde f(g,c,1).
+\]
+The uniform $\tfrac{1}{4}$ weights come from $\varname{gender}$ and
+$\varname{credit}$ sitting upstream of $cf$ in the causal graph: intervening
+on $cf$ overrides the structural equation that would normally determine it
+from credit and check, but does not alter the marginal distributions of the
+upstream features. Two of the four summands evaluate $\tilde f$ at
+$(g, c{=}1, cf{=}1)$ --- the impossible cell --- with weight $\tfrac{1}{4}$
+each. So $v_\mathrm{causal}(\{cf\})$ is undefined, and so is
+$v_\mathrm{causal}(\{g, cf\})$ for the same reason. These two coalitions
+appear in the Shapley sum for every feature, so all three of Bob's Causal
+SHAP values are NaN (Bob's columns in Table~\ref{tab:vS_optionB}).
+
+\textbf{Why Bob breaks and Alice does not.}
+The same two coalitions arise for Alice; the difference is the value of
+$cf^\star$ being held fixed. With Alice's $cf^\star = 0$, the $c{=}1$ summand
+in the formula above evaluates $\tilde f(g, 1, 0) =
+p_\text{check}[g]\cdot\text{loan\_prob}[g, 0]$, which is defined because the
+SCM does allow $(c{=}1, cf{=}0)$: when credit is good, $cf$ is forced to $0$
+deterministically, so the conditional expectation has a value. With Bob's
+$cf^\star = 1$, the $c{=}1$ summand evaluates $\tilde f(g, 1, 1)$, the
+impossible cell --- ``good credit and a failed check'' --- which the SCM
+rules out, since failing the credit check requires bad credit by the
+structural equation $cf = \varname{check}\cdot(1 - c)$.
+
+The mechanism producing this asymmetry is the intervention itself. When the
+SCM runs forward, $\varname{credit}$ and $\varname{check\text{-}failed}$ are
+linked by $cf = \varname{check}\cdot(1 - c)$, which keeps $c{=}1$ and
+$cf{=}1$ from co-occurring. When Causal SHAP intervenes via
+$do(cf = cf^\star)$, this link is overridden: $cf$ is fixed externally and
+$\varname{credit}$ is sampled freely. The override always produces a
+$(c{=}1, cf^\star)$ combination with positive weight; whether $\tilde f$ has
+a value for that combination depends on which $cf^\star$ value Causal SHAP is
+intervening on.
+
+Promoting the mediator to a feature therefore does not rescue Causal SHAP:
+it fails the desideratum on Alice and breaks down outright on Bob.
+
+\medskip\noindent
+This example, however, has been a peculiar one. The OBCB SCM contains a
+structural equation tying $\varname{credit}$ and $\varname{check\text{-}failed}$
+together, so Option~B's natural feature set ends up with one combination of
+input values --- ``good credit and a failed check'' --- that the model is not
+defined on. The impossible-cell phenomenon exposed real failure modes of plain
+SHAP and Causal SHAP, but it also obscured what the methods do on cleaner
+inputs. To see things more clearly we move to a simpler example, the
+signal-with-mediation chain $X \to M \to Y$, where the mediator is naturally
+an observable input, $\tilde f$ is defined everywhere, and no impossible-cell
+issue arises. Causal SHAP's failures there are not artifacts of an undefined
+$\tilde f$ but properties of the method itself.
 
 
 \subsection{Signal with mediation}\label{sec:signal}
@@ -1677,15 +2039,31 @@ For \emph{causal responsibility} attribution the implicit answer ``no feature is
 responsible'' is itself a substantive claim about $\varepsilon_Y$, one that SHAP and
 Causal SHAP are not equipped to articulate.
 
-Overall, Causal SHAP strictly improves on plain SHAP for one desideratum~(DYX)
-by replacing observational conditioning with interventional distributions.
-The remaining failures trace to three limitations neither method addresses:
-prediction models that include non-causal features~(DYM, DMX),
-the inability of Shapley averaging to distinguish direct from indirect causal
-paths~(DMXY), and the local-accuracy axiom that ties attribution to the prediction
-$f(x)$ rather than to the realized outcome~(D-ind).
+Stepping back from the individual desiderata, the failures above are not
+artifacts of a particular feature set or parameter choice: each traces to a
+structural limitation of the SHAP/Causal SHAP framework. Causal SHAP strictly
+improves on plain SHAP for one desideratum~(DYX), by replacing observational
+conditioning with interventional distributions. The remaining failures share
+three sources. Prediction models include non-causal features that the
+conditioning distribution cannot exclude~(DYM, DMX). Shapley averaging cannot
+distinguish direct from indirect causal paths~(DMXY). And the local-accuracy
+axiom ties attribution to the prediction $f(x)$ rather than to the realized
+outcome, so noise that drives $B$ away from $f(x)$ is invisible by
+construction~(D-ind).
+
+Read together with the OBCB analysis of Section~\ref{sec:obcb_shap} --- where
+plain SHAP fails \textbf{D-A-rank} on the 2-feature game, and Causal SHAP
+either inherits that failure (Alice) or becomes undefined outright (Bob) once
+the mediator is admitted as a feature --- the picture across both examples is
+the same: neither SHAP variant reliably satisfies the desiderata that motivated
+\Ourapproach in Section~\ref{sec:motivations}. The witness mechanism, the
+suspect-set distribution $\Gamma_s$, and the use of the realized outcome rather
+than the prediction baseline are the three ingredients of \Ourapproach that the
+SHAP framework systematically lacks; the failures catalogued above are the
+shape of that absence.
 
 
+\bibliographystyle{plainnat}
 \bibliography{references}
 
 
