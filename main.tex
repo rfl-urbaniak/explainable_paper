@@ -1956,32 +1956,47 @@ and~\ref{sec:causal_shap_signal}.
 
 \begin{table}[ht]
 \centering
-\small
-\begin{tabular}{llcc}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccc}
 \toprule
-Desideratum & Condition & Plain SHAP & Causal SHAP \\
+Desideratum & Condition & Plain SHAP & Causal SHAP
+  & PCI ($\mathbf{W}{=}\emptyset$) & PCI ($\mathbf{W}{=}$3rd) \\
 \midrule
 \textbf{DXY}  & $\phi_X^Y > 0$
-  & $0.250$\;\checkmark & $0.250$\;\checkmark \\
+  & $0.250$\;\checkmark & $0.250$\;\checkmark
+  & $0.677$\;\checkmark & $0.252$\;\checkmark$^\dagger$ \\
 \textbf{DMY}  & $\phi_M^Y > 0$
-  & $0.250$\;\checkmark & $0.250$\;\checkmark \\
+  & $0.250$\;\checkmark & $0.250$\;\checkmark
+  & $0.677$\;\checkmark & $0.677$\;\checkmark \\
 \textbf{DXM}  & $\phi_X^M > 0$
-  & $0.306$\;\checkmark & $0.375$\;\checkmark \\
+  & $0.306$\;\checkmark & $0.375$\;\checkmark
+  & $0.631$\;\checkmark & $0.631$\;\checkmark \\
 \textbf{DYX}  & $\phi_Y^X = 0$
-  & $0.139$\;\texttimes & $0.000$\;\checkmark \\
+  & $0.139$\;\texttimes & $0.000$\;\checkmark
+  & $0.000$\;\checkmark & $0.000$\;\checkmark \\
 \textbf{DYM}  & $\phi_Y^M = 0$
-  & $0.194$\;\texttimes & $0.125$\;\texttimes \\
+  & $0.194$\;\texttimes & $0.125$\;\texttimes
+  & $0.000$\;\checkmark & $0.000$\;\checkmark \\
 \textbf{DMX}  & $\phi_M^X = 0$
-  & $0.219$\;\texttimes & $0.357$\;\texttimes \\
+  & $0.219$\;\texttimes & $0.357$\;\texttimes
+  & $0.000$\;\checkmark & $0.000$\;\checkmark \\
 \textbf{DMXY} & $\phi_M^Y > \phi_X^Y$
-  & $0.25{=}0.25$\;\texttimes & $0.25{=}0.25$\;\texttimes \\
+  & $0.25{=}0.25$\;\texttimes & $0.25{=}0.25$\;\texttimes
+  & $0.677{=}0.677$\;\texttimes & $0.677{>}0.252$\;\checkmark$^\ddagger$ \\
 \textbf{D-ind} & $\sum_i \phi_i^X = X-\mathbb{E}[X]$
-  & $0.358$\;\texttimes & $0.357$\;\texttimes \\
+  & $0.358$\;\texttimes & $0.357$\;\texttimes & n/a & n/a \\
 \bottomrule
 \end{tabular}
-\caption{Desiderata satisfied (\checkmark) and violated (\texttimes) by plain SHAP
-and Causal SHAP on the signal with mediation example ($X\!\to\!M\!\to\!Y$),
-instance $X=M=Y=1$.}
+\caption{Desiderata satisfied (\checkmark) and violated (\texttimes) by plain SHAP,
+Causal SHAP, and PCI (alternative $\sim P(A)$, partial abduction) on the
+signal with mediation example ($X\!\to\!M\!\to\!Y$), instance $X=M=Y=1$.
+PCI values are $\mathbb{E}[|y^n - B^\star|]$.
+\textbf{W=3rd}: witness is the third variable (neither $A$ nor $B$), fixed at its factual value.
+$^\dagger$~Witness $M$ blocks $X$'s only causal path to $Y$; the residual reflects
+$\varepsilon_Y$ noise, not the causal signal.
+$^\ddagger$~The two values use different witnesses ($W{=}X$ vs.\ $W{=}M$),
+so the comparison is illustrative rather than a single-game ranking.}
 \label{tab:signal_desid}
 \end{table}
 
@@ -2039,6 +2054,39 @@ For \emph{causal responsibility} attribution the implicit answer ``no feature is
 responsible'' is itself a substantive claim about $\varepsilon_Y$, one that SHAP and
 Causal SHAP are not equipped to articulate.
 
+\noindent\textbf{PCI: the role of the witness mechanism.}
+Table~\ref{tab:signal_desid} also reports PCI in two configurations: without
+witnesses ($\mathbf{W}=\emptyset$) and with the third variable as witness.
+
+Without witnesses, PCI satisfies DYX, DYM, and DMX exactly --- zero attribution
+to non-causes --- because intervening on a variable that does not structurally
+affect the target leaves the target unchanged in both the necessity and
+sufficiency worlds, so $ci=0$ identically.
+It also satisfies DXY, DMY, and DXM (all positive).
+However, \textbf{DMXY fails}: both
+$\mathrm{PCI}(X\to Y\mid\mathbf{W}{=}\emptyset)$ and
+$\mathrm{PCI}(M\to Y\mid\mathbf{W}{=}\emptyset)$ equal $0.677$, because the
+alternative-value variance reaching $Y$ is $\mathrm{Var}(X)+\mathrm{Var}(\varepsilon_M)+\mathrm{Var}(\varepsilon_Y)=0.45$
+for $X$ (through $M$) and $\mathrm{Var}(M)+\mathrm{Var}(\varepsilon_Y)=0.45$ for $M$
+(directly) --- an exact tie.
+Without a mechanism to block the indirect path $X\to M\to Y$, PCI cannot
+distinguish direct from indirect causation, mirroring the DMXY failure of both
+SHAP variants.
+
+Fixing the third variable as witness resolves this.
+With $M=1$ held fixed, $X$'s path to $Y$ is severed: the necessity-world outcome
+is $y^n = 1+\varepsilon_Y$, so $\mathrm{PCI}(X\to Y\mid M)\approx 0.252$ reflects only
+residual noise in $\varepsilon_Y$, not a causal signal.
+With $X=1$ held fixed, $M$'s direct link $M\to Y$ is unobstructed, giving
+$\mathrm{PCI}(M\to Y\mid X)\approx 0.677$.
+The gap $0.677>0.252$ satisfies DMXY.
+A caveat applies: the DXY value ($0.252$) is positive by the desideratum's
+criterion but is noise-driven, not a genuine signal --- the witness over-blocks by
+severing $X$'s only causal path.
+The comparison also relies on different witness sets for the two cells, so it is
+illustrative rather than a single-game ranking.
+D-ind is not applicable to PCI, which carries no local-accuracy axiom.
+
 Stepping back from the individual desiderata, the failures above are not
 artifacts of a particular feature set or parameter choice: each traces to a
 structural limitation of the SHAP/Causal SHAP framework. Causal SHAP strictly
@@ -2049,7 +2097,9 @@ conditioning distribution cannot exclude~(DYM, DMX). Shapley averaging cannot
 distinguish direct from indirect causal paths~(DMXY). And the local-accuracy
 axiom ties attribution to the prediction $f(x)$ rather than to the realized
 outcome, so noise that drives $B$ away from $f(x)$ is invisible by
-construction~(D-ind).
+construction~(D-ind). PCI addresses the first two sources through the structural
+intervention framework and the witness mechanism; the third (D-ind) is outside
+its design scope.
 
 Read together with the OBCB analysis of Section~\ref{sec:obcb_shap} --- where
 plain SHAP fails \textbf{D-A-rank} on the 2-feature game, and Causal SHAP
