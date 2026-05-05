@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1777926367.84209 "main.aux" "main.bbl" "main" 1777985633.26465 0
+["bibtex main"] 1777997428.37639 "main.aux" "main.bbl" "main" 1777997430.66058 0
   "./references.bib" 1777465707.5404 18360 3b821f0b2476345804af89e47a87ae45 ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "main.aux" 1777985632.99238 18597 4895ad9bcd086e1dd274b87e2320840d "pdflatex"
+  "main.aux" 1777997430.40358 23929 46442c82e0bcb083ec487a5bac75cd0d "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1777985631.83425 "main.tex" "main.pdf" "main" 1777985633.2648 0
+["pdflatex"] 1777997428.43809 "main.tex" "main.pdf" "main" 1777997430.66079 0
   "/etc/texmf/web2c/texmf.cnf" 1774532046.6442 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -45,7 +45,6 @@
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm" 1136768653 768 1321e9409b4137d6fb428ac9dc956269 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm" 1136768653 768 d7b9a2629a0c353102ad947dc9221d49 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb" 1248133631 34811 78b52f49e893bcba91bd7581cdc144c0 ""
-  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx5.pfb" 1248133631 32034 6149cc3792d7e291632994f6e6ca6d68 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb" 1248133631 32378 2b20eba6bb36c716382b6d96240eaa69 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb" 1248133631 32007 e8fa0078355f39467039935974716569 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb" 1248133631 32298 c6d25bb16d1eac01ebdc6d7084126a1e ""
@@ -278,16 +277,20 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1777292533.05307 5349216 bf3a80e68d946c7acd95ff030fd9bb63 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1777292260 6830983 29ffe65982be5ed2f8d3be41113c730e ""
-  "main.aux" 1777985632.99238 18597 4895ad9bcd086e1dd274b87e2320840d "pdflatex"
-  "main.bbl" 1777926367.86954 6646 ea23d6077d95a66291d0533b82ab06d3 "bibtex main"
-  "main.out" 1777985632.99338 2673 6e20722500f73ff6fe050a093e8f7109 "pdflatex"
-  "main.tex" 1777985624.39115 6942 89160015c203c61bd39321f06e022395 ""
-  "main.toc" 1777985632.99338 1659 8b00f4ac97da538473c8b0cc38428243 "pdflatex"
+  "figures/synthetic_causal_model.png" 1777291385.4947 80336 6f737f974308c3f2b8b8592e36af1a85 ""
+  "figures/synthetic_causal_model_responsibility_attribution.png" 1777291385.4947 131759 925dae4e4be6856cef310a366fcbfa0b ""
+  "figures/synthetic_causal_model_summary.png" 1777291385.4957 258298 1c664b9bbc35105ad1a42364ec272ef1 ""
+  "main.aux" 1777997430.40358 23929 46442c82e0bcb083ec487a5bac75cd0d "pdflatex"
+  "main.bbl" 1777997428.43061 6646 ea23d6077d95a66291d0533b82ab06d3 "bibtex main"
+  "main.out" 1777997430.40558 3295 169da709ad08d0f49ff01d63fc6dfbc3 "pdflatex"
+  "main.tex" 1777991104.12025 6974 2c53a077a06d134102350a9d851d6395 ""
+  "main.toc" 1777997430.40558 2025 a6c6fd2cc28c7cb75825cefc119b1513 "pdflatex"
   "neurips_2024.sty" 1714668730 11625 b5f853b54a7a098e9e5b837f826d5daa ""
   "sections/sec1_intro.tex" 1777985558.41899 5684 c5c3e82561118cc23df9c28e52edcbdb ""
   "sections/sec2_motivations.tex" 1777985558.42008 22363 0a2db79ffa2c17b7e6000cb6b94d1ce7 ""
-  "sections/sec3_definitions.tex" 1777985558.42115 55244 8285e1f9993b8acb88e06bb7ae29bf67 ""
-  "sections/sec4_examples.tex" 1777985558.42217 38895 345da211bfe87495287caae32c2e2ea6 ""
+  "sections/sec3_definitions.tex" 1777997405.67702 56758 42c813ed75092e04e9f803fde8e1a2fc ""
+  "sections/sec4_examples.tex" 1777997206.1496 40584 17545aa47f8b0bc2193eca68d6bd00dd ""
+  "sections/sec5_synthetic.tex" 1777991101.76129 5902 1a0b228a74bee3357e1b941c5bfbaef6 ""
   (generated)
   "main.aux"
   "main.log"

@@ -1,0 +1,11 @@
+numpy
+pandas
+scipy
+torch
+torchvision
+pyro-ppl
+chirho @ git+https://github.com/BasisResearch/chirho.git
+matplotlib
+seaborn
+tqdm
+graphviz

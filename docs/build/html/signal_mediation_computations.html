@@ -1,0 +1,622 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signal with Mediation — SHAP, Causal SHAP and PCI &mdash; PCI Paper  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Old Boys’ Club Bank — PN, PS, PNS, PCI and SHAP" href="obcb_computations.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PCI Paper
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="obcb_computations.html">Old Boys’ Club Bank — PN, PS, PNS, PCI and SHAP</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Signal with Mediation — SHAP, Causal SHAP and PCI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Outline">Outline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Model-and-setup">1. Model and setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Optimal-predictors">2. Optimal predictors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Plain-SHAP">3. Plain SHAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Causal-SHAP">4. Causal SHAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#5.-PCI-without-witnesses">5. PCI without witnesses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#6.-PCI-with-witnesses">6. PCI with witnesses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#7.-Desiderata-table-and-key-findings">7. Desiderata table and key findings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Key-findings">Key findings</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PCI Paper</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Signal with Mediation — SHAP, Causal SHAP and PCI</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/signal_mediation_computations.ipynb" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Signal-with-Mediation-—-SHAP,-Causal-SHAP-and-PCI">
+<h1>Signal with Mediation — SHAP, Causal SHAP and PCI<a class="headerlink" href="#Signal-with-Mediation-—-SHAP,-Causal-SHAP-and-PCI" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><strong>Summary.</strong> Verifies all numerical values in Sections 4.4–4.6 of the paper for the chain model <span class="math notranslate nohighlight">\(X \to M \to Y\)</span>. Computes plain SHAP, Causal SHAP, and PCI (with and without witnesses) for a fixed factual instance, then assembles the full desiderata table.</p>
+</div></blockquote>
+<section id="Outline">
+<h2>Outline<a class="headerlink" href="#Outline" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Model and setup</p></li>
+<li><p>Optimal predictors</p></li>
+<li><p>Plain SHAP</p></li>
+<li><p>Causal SHAP</p></li>
+<li><p>PCI without witnesses</p></li>
+<li><p>PCI with witnesses</p></li>
+<li><p>Desiderata table and key findings</p></li>
+</ol>
+</section>
+<section id="1.-Model-and-setup">
+<h2>1. Model and setup<a class="headerlink" href="#1.-Model-and-setup" title="Link to this heading"></a></h2>
+<p><strong>SCM:</strong> linear chain <span class="math notranslate nohighlight">\(X \to M \to Y\)</span> with additive Gaussian noise.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Distribution</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(X\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathcal{N}(0.5,\; 0.25)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(M\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(X + \varepsilon_M\)</span>, <span class="math notranslate nohighlight">\(\varepsilon_M \sim \mathcal{N}(0,\, 0.1)\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(Y\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(M + \varepsilon_Y\)</span>, <span class="math notranslate nohighlight">\(\varepsilon_Y \sim \mathcal{N}(0,\, 0.1)\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Factual instance:</strong> <span class="math notranslate nohighlight">\(x^\star = m^\star = y^\star = 1\)</span> (both noise terms are zero).</p>
+<p><strong>PCI contrast function:</strong> <span class="math notranslate nohighlight">\(\mathrm{ci}(y^s, y^n, y^\star) = |y^n - y^\star| - |y^s - y^\star|\)</span>. Since <span class="math notranslate nohighlight">\(y^s = y^\star = 1\)</span> always, this reduces to <span class="math notranslate nohighlight">\(|y^n - 1|\)</span>. Alternative <span class="math notranslate nohighlight">\(A' \sim P(A)\)</span>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">2_000_000</span>
+
+<span class="n">mu_X</span><span class="p">,</span> <span class="n">var_X</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span>
+<span class="n">var_eM</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">var_eY</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">var_M</span>  <span class="o">=</span> <span class="n">var_X</span> <span class="o">+</span> <span class="n">var_eM</span>   <span class="c1"># 0.35</span>
+<span class="n">var_Y</span>  <span class="o">=</span> <span class="n">var_M</span> <span class="o">+</span> <span class="n">var_eY</span>   <span class="c1"># 0.45</span>
+<span class="n">cov_XM</span> <span class="o">=</span> <span class="n">var_X</span>            <span class="c1"># 0.25</span>
+<span class="n">cov_XY</span> <span class="o">=</span> <span class="n">var_X</span>            <span class="c1"># 0.25</span>
+<span class="n">cov_MY</span> <span class="o">=</span> <span class="n">var_M</span>            <span class="c1"># 0.35</span>
+<span class="n">mu_M</span> <span class="o">=</span> <span class="n">mu_X</span><span class="p">;</span> <span class="n">mu_Y</span> <span class="o">=</span> <span class="n">mu_X</span>
+<span class="n">x_star</span><span class="p">,</span> <span class="n">m_star</span><span class="p">,</span> <span class="n">y_star</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Var(X)=</span><span class="si">{</span><span class="n">var_X</span><span class="si">}</span><span class="s2">, Var(M)=</span><span class="si">{</span><span class="n">var_M</span><span class="si">}</span><span class="s2">, Var(Y)=</span><span class="si">{</span><span class="n">var_Y</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cov(X,M)=</span><span class="si">{</span><span class="n">cov_XM</span><span class="si">}</span><span class="s2">, Cov(X,Y)=</span><span class="si">{</span><span class="n">cov_XY</span><span class="si">}</span><span class="s2">, Cov(M,Y)=</span><span class="si">{</span><span class="n">cov_MY</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Var(X)=0.25, Var(M)=0.35, Var(Y)=0.44999999999999996
+Cov(X,M)=0.25, Cov(X,Y)=0.25, Cov(M,Y)=0.35
+</pre></div></div>
+</div>
+</section>
+<section id="2.-Optimal-predictors">
+<h2>2. Optimal predictors<a class="headerlink" href="#2.-Optimal-predictors" title="Link to this heading"></a></h2>
+<p><span class="math notranslate nohighlight">\(f_Y(x, m) = m\)</span> is exact. <span class="math notranslate nohighlight">\(f_M\)</span> and <span class="math notranslate nohighlight">\(f_X\)</span> are the linear least-squares predictors from the joint Gaussian (conditional expectations under the model distribution).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">f_Y</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span> <span class="k">return</span> <span class="n">m</span>
+
+<span class="n">Sigma_XY</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">var_X</span><span class="p">,</span> <span class="n">cov_XY</span><span class="p">],[</span><span class="n">cov_XY</span><span class="p">,</span> <span class="n">var_Y</span><span class="p">]])</span>
+<span class="n">coeff_fM</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cov_XM</span><span class="p">,</span> <span class="n">cov_MY</span><span class="p">])</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Sigma_XY</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f_M</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span> <span class="k">return</span> <span class="n">mu_M</span> <span class="o">+</span> <span class="n">coeff_fM</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu_X</span><span class="p">)</span> <span class="o">+</span> <span class="n">coeff_fM</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">mu_Y</span><span class="p">)</span>
+
+<span class="n">Sigma_MY</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">var_M</span><span class="p">,</span> <span class="n">cov_MY</span><span class="p">],[</span><span class="n">cov_MY</span><span class="p">,</span> <span class="n">var_Y</span><span class="p">]])</span>
+<span class="n">coeff_fX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cov_XM</span><span class="p">,</span> <span class="n">cov_XY</span><span class="p">])</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">Sigma_MY</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f_X</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span> <span class="k">return</span> <span class="n">mu_X</span> <span class="o">+</span> <span class="n">coeff_fX</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">mu_M</span><span class="p">)</span> <span class="o">+</span> <span class="n">coeff_fX</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">mu_Y</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;f_M(X,Y) = 0.5 + </span><span class="si">{</span><span class="n">coeff_fM</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">*(X-0.5) + </span><span class="si">{</span><span class="n">coeff_fM</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">*(Y-0.5)  [expect 0.5X + 0.5Y]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;f_X(M,Y) = 0.5 + </span><span class="si">{</span><span class="n">coeff_fX</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">*(M-0.5) + </span><span class="si">{</span><span class="n">coeff_fX</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">*(Y-0.5)  [expect (5/7)*(M-0.5)]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;f_Y(1,1)=</span><span class="si">{</span><span class="n">f_Y</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  f_M(1,1)=</span><span class="si">{</span><span class="n">f_M</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  f_X(1,1)=</span><span class="si">{</span><span class="n">f_X</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  [1, 1, </span><span class="si">{</span><span class="mi">5</span><span class="o">/</span><span class="mi">14</span><span class="o">+</span><span class="mf">0.5</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+f_M(X,Y) = 0.5 + 0.5000*(X-0.5) + 0.5000*(Y-0.5)  [expect 0.5X + 0.5Y]
+f_X(M,Y) = 0.5 + 0.7143*(M-0.5) + 0.000000*(Y-0.5)  [expect (5/7)*(M-0.5)]
+f_Y(1,1)=1.0000  f_M(1,1)=1.0000  f_X(1,1)=0.8571  [1, 1, 0.8571]
+</pre></div></div>
+</div>
+</section>
+<section id="3.-Plain-SHAP">
+<h2>3. Plain SHAP<a class="headerlink" href="#3.-Plain-SHAP" title="Link to this heading"></a></h2>
+<p>Coalition values use conditional expectations: <span class="math notranslate nohighlight">\(v(S) = \mathbb{E}[B \mid X_S = x_S^\star]\)</span>, marginalising missing features over their marginal distributions. With <span class="math notranslate nohighlight">\(|N| = 2\)</span> the Shapley formula reduces to</p>
+<div class="math notranslate nohighlight">
+\[\phi_i = \tfrac{1}{2}\bigl(v(\{i\}) - v(\emptyset)\bigr)
+          + \tfrac{1}{2}\bigl(v(N) - v(N \setminus \{i\})\bigr).\]</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">E_cond</span><span class="p">(</span><span class="n">tmean</span><span class="p">,</span> <span class="n">cov_to</span><span class="p">,</span> <span class="n">var_o</span><span class="p">,</span> <span class="n">oval</span><span class="p">,</span> <span class="n">omean</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">tmean</span> <span class="o">+</span> <span class="n">cov_to</span> <span class="o">/</span> <span class="n">var_o</span> <span class="o">*</span> <span class="p">(</span><span class="n">oval</span> <span class="o">-</span> <span class="n">omean</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">shapley2</span><span class="p">(</span><span class="n">vA</span><span class="p">,</span> <span class="n">vB</span><span class="p">,</span> <span class="n">vAB</span><span class="p">,</span> <span class="n">v0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">vA</span><span class="o">-</span><span class="n">v0</span><span class="p">)</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">vAB</span><span class="o">-</span><span class="n">vB</span><span class="p">),</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">vB</span><span class="o">-</span><span class="n">v0</span><span class="p">)</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">vAB</span><span class="o">-</span><span class="n">vA</span><span class="p">)</span>
+
+<span class="n">EY_X1</span> <span class="o">=</span> <span class="n">E_cond</span><span class="p">(</span><span class="n">mu_Y</span><span class="p">,</span> <span class="n">cov_XY</span><span class="p">,</span> <span class="n">var_X</span><span class="p">,</span> <span class="n">x_star</span><span class="p">,</span> <span class="n">mu_X</span><span class="p">)</span>
+<span class="n">EX_Y1</span> <span class="o">=</span> <span class="n">E_cond</span><span class="p">(</span><span class="n">mu_X</span><span class="p">,</span> <span class="n">cov_XY</span><span class="p">,</span> <span class="n">var_Y</span><span class="p">,</span> <span class="n">y_star</span><span class="p">,</span> <span class="n">mu_Y</span><span class="p">)</span>
+<span class="n">EM_Y1</span> <span class="o">=</span> <span class="n">E_cond</span><span class="p">(</span><span class="n">mu_M</span><span class="p">,</span> <span class="n">cov_MY</span><span class="p">,</span> <span class="n">var_Y</span><span class="p">,</span> <span class="n">y_star</span><span class="p">,</span> <span class="n">mu_Y</span><span class="p">)</span>
+
+<span class="n">vY_e</span><span class="p">,</span> <span class="n">vY_X</span><span class="p">,</span> <span class="n">vY_M</span><span class="p">,</span> <span class="n">vY_XM</span> <span class="o">=</span> <span class="n">mu_M</span><span class="p">,</span> <span class="n">E_cond</span><span class="p">(</span><span class="n">mu_M</span><span class="p">,</span> <span class="n">cov_XM</span><span class="p">,</span> <span class="n">var_X</span><span class="p">,</span> <span class="n">x_star</span><span class="p">,</span> <span class="n">mu_X</span><span class="p">),</span> <span class="n">m_star</span><span class="p">,</span> <span class="mf">1.0</span>
+<span class="n">vM_e</span> <span class="o">=</span> <span class="n">f_M</span><span class="p">(</span><span class="n">mu_X</span><span class="p">,</span> <span class="n">mu_Y</span><span class="p">)</span>
+<span class="n">vM_X</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">x_star</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">EY_X1</span>
+<span class="n">vM_Y</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">EX_Y1</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">y_star</span>
+<span class="n">vM_XY</span> <span class="o">=</span> <span class="n">f_M</span><span class="p">(</span><span class="n">x_star</span><span class="p">,</span> <span class="n">y_star</span><span class="p">)</span>
+<span class="n">vX_e</span> <span class="o">=</span> <span class="n">f_X</span><span class="p">(</span><span class="n">mu_M</span><span class="p">,</span> <span class="n">mu_Y</span><span class="p">)</span>
+<span class="n">vX_M</span> <span class="o">=</span> <span class="n">f_X</span><span class="p">(</span><span class="n">m_star</span><span class="p">,</span> <span class="n">mu_Y</span><span class="p">)</span>
+<span class="n">vX_Y</span> <span class="o">=</span> <span class="n">f_X</span><span class="p">(</span><span class="n">EM_Y1</span><span class="p">,</span> <span class="n">y_star</span><span class="p">)</span>
+<span class="n">vX_MY</span> <span class="o">=</span> <span class="n">f_X</span><span class="p">(</span><span class="n">m_star</span><span class="p">,</span> <span class="n">y_star</span><span class="p">)</span>
+
+<span class="n">phi_X_Y_plain</span><span class="p">,</span> <span class="n">phi_M_Y_plain</span> <span class="o">=</span> <span class="n">shapley2</span><span class="p">(</span><span class="n">vY_X</span><span class="p">,</span> <span class="n">vY_M</span><span class="p">,</span> <span class="n">vY_XM</span><span class="p">,</span> <span class="n">vY_e</span><span class="p">)</span>
+<span class="n">phi_X_M_plain</span><span class="p">,</span> <span class="n">phi_Y_M_plain</span> <span class="o">=</span> <span class="n">shapley2</span><span class="p">(</span><span class="n">vM_X</span><span class="p">,</span> <span class="n">vM_Y</span><span class="p">,</span> <span class="n">vM_XY</span><span class="p">,</span> <span class="n">vM_e</span><span class="p">)</span>
+<span class="n">phi_M_X_plain</span><span class="p">,</span> <span class="n">phi_Y_X_plain</span> <span class="o">=</span> <span class="n">shapley2</span><span class="p">(</span><span class="n">vX_M</span><span class="p">,</span> <span class="n">vX_Y</span><span class="p">,</span> <span class="n">vX_MY</span><span class="p">,</span> <span class="n">vX_e</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plain SHAP:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  phi_X^Y=</span><span class="si">{</span><span class="n">phi_X_Y_plain</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.250]  phi_M^Y=</span><span class="si">{</span><span class="n">phi_M_Y_plain</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.250]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  phi_X^M=</span><span class="si">{</span><span class="n">phi_X_M_plain</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.306]  phi_Y^M=</span><span class="si">{</span><span class="n">phi_Y_M_plain</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.194]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  phi_M^X=</span><span class="si">{</span><span class="n">phi_M_X_plain</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.219]  phi_Y^X=</span><span class="si">{</span><span class="n">phi_Y_X_plain</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.139]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Plain SHAP:
+  phi_X^Y=0.2500 [0.250]  phi_M^Y=0.2500 [0.250]
+  phi_X^M=0.3056 [0.306]  phi_Y^M=0.1944 [0.194]
+  phi_M^X=0.2183 [0.219]  phi_Y^X=0.1389 [0.139]
+</pre></div></div>
+</div>
+</section>
+<section id="4.-Causal-SHAP">
+<h2>4. Causal SHAP<a class="headerlink" href="#4.-Causal-SHAP" title="Link to this heading"></a></h2>
+<p>Coalition values use interventional expectations: <span class="math notranslate nohighlight">\(v(S) = \mathbb{E}[B \mid \mathrm{do}(X_S = x_S^\star)]\)</span>. Non-coalition features are sampled interventionally — descendants of <span class="math notranslate nohighlight">\(S\)</span> from their structural equations after the do-operator; non-descendants from their marginals.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vcY_e</span><span class="p">,</span> <span class="n">vcY_X</span><span class="p">,</span> <span class="n">vcY_M</span><span class="p">,</span> <span class="n">vcY_XM</span> <span class="o">=</span> <span class="n">mu_M</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span>
+<span class="n">vcM_e</span> <span class="o">=</span> <span class="n">f_M</span><span class="p">(</span><span class="n">mu_X</span><span class="p">,</span> <span class="n">mu_Y</span><span class="p">)</span>
+<span class="n">vcM_X</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">x_star</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="mf">1.0</span>   <span class="c1"># E[Y|do(X=1)] = 1</span>
+<span class="n">vcM_Y</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">mu_X</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">y_star</span>  <span class="c1"># E[X|do(Y=1)] = mu_X (breaks M-&gt;Y)</span>
+<span class="n">vcM_XY</span> <span class="o">=</span> <span class="n">f_M</span><span class="p">(</span><span class="n">x_star</span><span class="p">,</span> <span class="n">y_star</span><span class="p">)</span>
+<span class="n">vcX_e</span> <span class="o">=</span> <span class="n">f_X</span><span class="p">(</span><span class="n">mu_M</span><span class="p">,</span> <span class="n">mu_Y</span><span class="p">)</span>
+<span class="n">vcX_M</span> <span class="o">=</span> <span class="n">f_X</span><span class="p">(</span><span class="n">m_star</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>        <span class="c1"># do(M=1); Y coeff~0</span>
+<span class="n">vcX_Y</span> <span class="o">=</span> <span class="n">f_X</span><span class="p">(</span><span class="n">mu_M</span><span class="p">,</span> <span class="n">y_star</span><span class="p">)</span>       <span class="c1"># do(Y=1) breaks M-&gt;Y; E[M|do(Y=1)]=mu_M</span>
+<span class="n">vcX_MY</span> <span class="o">=</span> <span class="n">f_X</span><span class="p">(</span><span class="n">m_star</span><span class="p">,</span> <span class="n">y_star</span><span class="p">)</span>
+
+<span class="n">phi_X_Y_c</span><span class="p">,</span> <span class="n">phi_M_Y_c</span> <span class="o">=</span> <span class="n">shapley2</span><span class="p">(</span><span class="n">vcY_X</span><span class="p">,</span> <span class="n">vcY_M</span><span class="p">,</span> <span class="n">vcY_XM</span><span class="p">,</span> <span class="n">vcY_e</span><span class="p">)</span>
+<span class="n">phi_X_M_c</span><span class="p">,</span> <span class="n">phi_Y_M_c</span> <span class="o">=</span> <span class="n">shapley2</span><span class="p">(</span><span class="n">vcM_X</span><span class="p">,</span> <span class="n">vcM_Y</span><span class="p">,</span> <span class="n">vcM_XY</span><span class="p">,</span> <span class="n">vcM_e</span><span class="p">)</span>
+<span class="n">phi_M_X_c</span><span class="p">,</span> <span class="n">phi_Y_X_c</span> <span class="o">=</span> <span class="n">shapley2</span><span class="p">(</span><span class="n">vcX_M</span><span class="p">,</span> <span class="n">vcX_Y</span><span class="p">,</span> <span class="n">vcX_MY</span><span class="p">,</span> <span class="n">vcX_e</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Causal SHAP:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  phi_X^Y=</span><span class="si">{</span><span class="n">phi_X_Y_c</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.250]  phi_M^Y=</span><span class="si">{</span><span class="n">phi_M_Y_c</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.250]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  phi_X^M=</span><span class="si">{</span><span class="n">phi_X_M_c</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.375]  phi_Y^M=</span><span class="si">{</span><span class="n">phi_Y_M_c</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.125]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  phi_M^X=</span><span class="si">{</span><span class="n">phi_M_X_c</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.357]  phi_Y^X=</span><span class="si">{</span><span class="n">phi_Y_X_c</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> [0.000]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Causal SHAP:
+  phi_X^Y=0.2500 [0.250]  phi_M^Y=0.2500 [0.250]
+  phi_X^M=0.3750 [0.375]  phi_Y^M=0.1250 [0.125]
+  phi_M^X=0.3571 [0.357]  phi_Y^X=0.0000 [0.000]
+</pre></div></div>
+</div>
+</section>
+<section id="5.-PCI-without-witnesses">
+<h2>5. PCI without witnesses<a class="headerlink" href="#5.-PCI-without-witnesses" title="Link to this heading"></a></h2>
+<p><strong>Setup:</strong> <span class="math notranslate nohighlight">\(\mathbf{S}\)</span> = both input features of target <span class="math notranslate nohighlight">\(B\)</span>; <span class="math notranslate nohighlight">\(\mathbf{W}=\emptyset\)</span> (so <span class="math notranslate nohighlight">\(T=\emptyset\)</span> forced). <span class="math notranslate nohighlight">\(\Gamma_s\)</span> uniform over the 3 non-empty subsets of <span class="math notranslate nohighlight">\(\mathbf{S}\)</span>; valid pairs have <span class="math notranslate nohighlight">\(C\ni A\)</span> (weight <span class="math notranslate nohighlight">\(\tfrac{1}{3}\)</span> each, two such subsets giving total Γ-weight <span class="math notranslate nohighlight">\(\tfrac{2}{3}\)</span>).</p>
+<p>Expected contrast <span class="math notranslate nohighlight">\(\mathbb{E}[|y^n - 1|]\)</span> is computed in closed form via the folded-normal formula, with Monte Carlo verification (<span class="math notranslate nohighlight">\(N = 2\times10^6\)</span>).</p>
+<p><strong>Why values halve vs. single-suspect:</strong> with <span class="math notranslate nohighlight">\(|C|=1\)</span> and <span class="math notranslate nohighlight">\(|C|=2\)</span> both weighted <span class="math notranslate nohighlight">\(\tfrac{1}{3}\)</span>, the sum over <span class="math notranslate nohighlight">\(C\ni A\)</span> is <span class="math notranslate nohighlight">\(\tfrac{2}{3}\times 0.677\)</span>, not <span class="math notranslate nohighlight">\(0.677\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">E_abs_N</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;E[|Z|] for Z ~ N(mu, sigma2) using the folded-normal formula.&quot;&quot;&quot;</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sigma2</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">/</span> <span class="n">sigma</span>
+    <span class="k">return</span> <span class="n">mu</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">norm</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+<span class="n">X_alt</span>  <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mu_X</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var_X</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">M_alt</span>  <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mu_M</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var_M</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">eM_s</span>   <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var_eM</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">eY_s</span>   <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var_eY</span><span class="p">),</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">eX_s</span>   <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var_X</span><span class="p">),</span>  <span class="n">N</span><span class="p">)</span>   <span class="c1"># for DXM C={X,Y} mc check</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># S = {two input features of target}, W = empty.</span>
+<span class="c1"># Valid (C, T) pairs: C in {A} and C in {A, other}, each with Gamma_s weight 1/3.</span>
+<span class="c1"># Sufficiency term = 0 throughout (abducted factual noise, y^s = y*).</span>
+<span class="c1">#</span>
+<span class="c1"># DXY  S={X,M}: C={X}  do(X=X&#39;)         -&gt; Y^n = X&#39;+eM+eY  ~ N(mu_X, var_X+var_eM+var_eY)</span>
+<span class="c1">#              C={X,M} do(X=X&#39;, M=M&#39;)   -&gt; Y^n = M&#39; +eY    ~ N(mu_M, var_M +var_eY)</span>
+<span class="c1">#       Both give Y^n-1 ~ N(-0.5, 0.45). pci = (1/3+1/3) * E_abs_N(...)</span>
+<span class="n">e1</span> <span class="o">=</span> <span class="n">E_abs_N</span><span class="p">(</span><span class="n">mu_X</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">,</span> <span class="n">var_X</span> <span class="o">+</span> <span class="n">var_eM</span> <span class="o">+</span> <span class="n">var_eY</span><span class="p">)</span>   <span class="c1"># C={X}</span>
+<span class="n">e2</span> <span class="o">=</span> <span class="n">E_abs_N</span><span class="p">(</span><span class="n">mu_M</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">,</span> <span class="n">var_M</span> <span class="o">+</span> <span class="n">var_eY</span><span class="p">)</span>             <span class="c1"># C={X,M}: Y^n = M&#39;+eY</span>
+<span class="n">pci_DXY_nw</span> <span class="o">=</span> <span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="n">e2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+<span class="n">mc_DXY_nw</span>  <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X_alt</span> <span class="o">+</span> <span class="n">eM_s</span> <span class="o">+</span> <span class="n">eY_s</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">))</span>
+              <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">M_alt</span> <span class="o">+</span> <span class="n">eY_s</span>          <span class="o">-</span> <span class="n">y_star</span><span class="p">)))</span> <span class="o">/</span> <span class="mi">3</span>
+
+<span class="c1"># DMY  S={X,M}: C={M}  do(M=M&#39;)         -&gt; Y^n = M&#39; +eY  ~ N(-0.5, 0.45)</span>
+<span class="c1">#              C={X,M} do(X=X&#39;, M=M&#39;)   -&gt; Y^n = M&#39; +eY  (same)</span>
+<span class="n">pci_DMY_nw</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">E_abs_N</span><span class="p">(</span><span class="n">mu_M</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">,</span> <span class="n">var_M</span> <span class="o">+</span> <span class="n">var_eY</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+<span class="n">mc_DMY_nw</span>  <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">M_alt</span> <span class="o">+</span> <span class="n">eY_s</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">))</span> <span class="o">/</span> <span class="mi">3</span>
+
+<span class="c1"># DXM  S={X,Y}: C={X}   do(X=X&#39;)        -&gt; M^n = X&#39;+eM  ~ N(-0.5, 0.35)</span>
+<span class="c1">#               C={X,Y} do(X=X&#39;, Y=Y&#39;)  -&gt; M^n = X&#39;+eM  (Y not in M&#39;s eq)</span>
+<span class="n">pci_DXM_nw</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">E_abs_N</span><span class="p">(</span><span class="n">mu_X</span> <span class="o">-</span> <span class="n">m_star</span><span class="p">,</span> <span class="n">var_X</span> <span class="o">+</span> <span class="n">var_eM</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+<span class="n">mc_DXM_nw</span>  <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X_alt</span> <span class="o">+</span> <span class="n">eM_s</span> <span class="o">-</span> <span class="n">m_star</span><span class="p">))</span> <span class="o">/</span> <span class="mi">3</span>
+
+<span class="c1"># DYX, DYM, DMX: suspect has no structural path to target -&gt; X^n=X* or M^n=M* exactly.</span>
+<span class="n">pci_DYX_nw</span> <span class="o">=</span> <span class="n">pci_DYM_nw</span> <span class="o">=</span> <span class="n">pci_DMX_nw</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PCI without witnesses — S={two inputs}, W=∅ (closed-form | MC):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DXY: </span><span class="si">{</span><span class="n">pci_DXY_nw</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">mc_DXY_nw</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  [expect 0.451]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DMY: </span><span class="si">{</span><span class="n">pci_DMY_nw</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">mc_DMY_nw</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  [expect 0.451]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DXM: </span><span class="si">{</span><span class="n">pci_DXM_nw</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">mc_DXM_nw</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  [expect 0.421]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DYX: </span><span class="si">{</span><span class="n">pci_DYX_nw</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  DYM: </span><span class="si">{</span><span class="n">pci_DYM_nw</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  DMX: </span><span class="si">{</span><span class="n">pci_DMX_nw</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DMXY without witnesses: DXY == DMY (exact tie) =&gt; FAILS&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Both equal </span><span class="si">{</span><span class="n">pci_DXY_nw</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> because path-variance from X&#39; to Y = &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;Var(X)+Var(eM)+Var(eY) = </span><span class="si">{</span><span class="n">var_X</span><span class="o">+</span><span class="n">var_eM</span><span class="o">+</span><span class="n">var_eY</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> = &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;Var(M)+Var(eY) = </span><span class="si">{</span><span class="n">var_M</span><span class="o">+</span><span class="n">var_eY</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">; tie holds for every C.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PCI without witnesses — S={two inputs}, W=∅ (closed-form | MC):
+  DXY: 0.4516 | 0.4515  [expect 0.451]
+  DMY: 0.4516 | 0.4516  [expect 0.451]
+  DXM: 0.4208 | 0.4205  [expect 0.421]
+  DYX: 0.0000  DYM: 0.0000  DMX: 0.0000
+
+DMXY without witnesses: DXY == DMY (exact tie) =&gt; FAILS
+  Both equal 0.4516 because path-variance from X&#39; to Y = Var(X)+Var(eM)+Var(eY) = 0.45 = Var(M)+Var(eY) = 0.45; tie holds for every C.
+</pre></div></div>
+</div>
+</section>
+<section id="6.-PCI-with-witnesses">
+<h2>6. PCI with witnesses<a class="headerlink" href="#6.-PCI-with-witnesses" title="Link to this heading"></a></h2>
+<p><strong>Setup:</strong> <span class="math notranslate nohighlight">\(\mathbf{S}\)</span> = both input features of target <span class="math notranslate nohighlight">\(B\)</span>; <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> = the third variable (neither <span class="math notranslate nohighlight">\(A\)</span> nor <span class="math notranslate nohighlight">\(B\)</span>); <span class="math notranslate nohighlight">\(\Gamma_s\)</span> uniform over 3 non-empty subsets of <span class="math notranslate nohighlight">\(\mathbf{S}\)</span>; <span class="math notranslate nohighlight">\(\Gamma_w\)</span> uniform over <span class="math notranslate nohighlight">\(\{\emptyset,\{W\}\}\)</span>.</p>
+<p>Valid <span class="math notranslate nohighlight">\((C,T)\)</span> pairs with <span class="math notranslate nohighlight">\(C\ni A\)</span> and <span class="math notranslate nohighlight">\(T\cap C=\emptyset\)</span>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>desid</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(C\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(T\)</span></p></th>
+<th class="head"><p>weight</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(B^n\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>DXY (<span class="math notranslate nohighlight">\(A{=}X\)</span>, <span class="math notranslate nohighlight">\(W{=}M\)</span>)</p></td>
+<td><p><span class="math notranslate nohighlight">\(\{X\}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\emptyset\)</span></p></td>
+<td><p>1/6</p></td>
+<td><p><span class="math notranslate nohighlight">\(X'+\varepsilon_M+\varepsilon_Y\)</span></p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><span class="math notranslate nohighlight">\(\{X\}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\{M\}\)</span></p></td>
+<td><p>1/6</p></td>
+<td><p><span class="math notranslate nohighlight">\(1+\varepsilon_Y\)</span> (path severed)</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><span class="math notranslate nohighlight">\(\{X,M\}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\emptyset\)</span></p></td>
+<td><p>1/6</p></td>
+<td><p><span class="math notranslate nohighlight">\(M'+\varepsilon_Y\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>DMY (<span class="math notranslate nohighlight">\(A{=}M\)</span>, <span class="math notranslate nohighlight">\(W{=}X\)</span>)</p></td>
+<td><p><span class="math notranslate nohighlight">\(\{M\}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\emptyset\)</span></p></td>
+<td><p>1/6</p></td>
+<td><p><span class="math notranslate nohighlight">\(M'+\varepsilon_Y\)</span></p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><span class="math notranslate nohighlight">\(\{M\}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\{X\}\)</span></p></td>
+<td><p>1/6</p></td>
+<td><p><span class="math notranslate nohighlight">\(M'+\varepsilon_Y\)</span> (<span class="math notranslate nohighlight">\(X\)</span> not in <span class="math notranslate nohighlight">\(Y\)</span>’s eq)</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><span class="math notranslate nohighlight">\(\{X,M\}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\emptyset\)</span></p></td>
+<td><p>1/6</p></td>
+<td><p><span class="math notranslate nohighlight">\(M'+\varepsilon_Y\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>DXM (<span class="math notranslate nohighlight">\(A{=}X\)</span>, <span class="math notranslate nohighlight">\(W{=}Y\)</span>)</p></td>
+<td><p><span class="math notranslate nohighlight">\(\{X\}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\emptyset\)</span></p></td>
+<td><p>1/6</p></td>
+<td><p><span class="math notranslate nohighlight">\(X'+\varepsilon_M\)</span></p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><span class="math notranslate nohighlight">\(\{X\}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\{Y\}\)</span></p></td>
+<td><p>1/6</p></td>
+<td><p><span class="math notranslate nohighlight">\(X'+\varepsilon_M\)</span> (<span class="math notranslate nohighlight">\(Y\)</span> not in <span class="math notranslate nohighlight">\(M\)</span>’s eq)</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><span class="math notranslate nohighlight">\(\{X,Y\}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\emptyset\)</span></p></td>
+<td><p>1/6</p></td>
+<td><p><span class="math notranslate nohighlight">\(X'+\varepsilon_M\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<p>Sufficiency term = 0 throughout (abducted factual noise gives <span class="math notranslate nohighlight">\(B^s=B^\star\)</span>).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ---------- DXY: S={X,M}, W={M} ----------</span>
+<span class="c1"># (C={X}, T=∅)  1/6: do(X=X&#39;)        -&gt; Y^n = X&#39;+eM+eY     E = 0.677</span>
+<span class="c1"># (C={X}, T={M}) 1/6: do(X=X&#39;, M=1)  -&gt; Y^n = 1 + eY       E = sqrt(0.2/pi) ~ 0.252</span>
+<span class="c1"># (C={X,M}, T=∅) 1/6: do(X=X&#39;, M=M&#39;) -&gt; Y^n = M&#39; + eY     E = 0.677</span>
+<span class="c1"># (C={X,M}, T={M}): INVALID (M in C∩T)</span>
+<span class="n">e_XY_free</span>  <span class="o">=</span> <span class="n">E_abs_N</span><span class="p">(</span><span class="n">mu_X</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">,</span> <span class="n">var_X</span> <span class="o">+</span> <span class="n">var_eM</span> <span class="o">+</span> <span class="n">var_eY</span><span class="p">)</span>   <span class="c1"># 0.677</span>
+<span class="n">e_XY_block</span> <span class="o">=</span> <span class="n">E_abs_N</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span>           <span class="n">var_eY</span><span class="p">)</span>                      <span class="c1"># 0.252</span>
+<span class="n">e_XM_free</span>  <span class="o">=</span> <span class="n">E_abs_N</span><span class="p">(</span><span class="n">mu_M</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">,</span> <span class="n">var_M</span> <span class="o">+</span> <span class="n">var_eY</span><span class="p">)</span>             <span class="c1"># 0.677 (M&#39; + eY)</span>
+<span class="n">pci_DXY_w</span>  <span class="o">=</span> <span class="p">(</span><span class="n">e_XY_free</span> <span class="o">+</span> <span class="n">e_XY_block</span> <span class="o">+</span> <span class="n">e_XM_free</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span>
+
+<span class="n">mc_DXY_w</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X_alt</span> <span class="o">+</span> <span class="n">eM_s</span> <span class="o">+</span> <span class="n">eY_s</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">))</span>   <span class="c1"># C={X}, T=∅</span>
+            <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mf">1.0</span>   <span class="o">+</span>         <span class="n">eY_s</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">))</span> <span class="c1"># C={X}, T={M}</span>
+            <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">M_alt</span> <span class="o">+</span>         <span class="n">eY_s</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">))</span> <span class="c1"># C={X,M}, T=∅</span>
+           <span class="p">)</span> <span class="o">/</span> <span class="mi">6</span>
+
+<span class="c1"># ---------- DMY: S={X,M}, W={X} ----------</span>
+<span class="c1"># All three valid pairs give Y^n = M&#39; + eY  -&gt;  E = 0.677</span>
+<span class="c1"># (C={M}, T=∅): do(M=M&#39;)            Y^n=M&#39;+eY</span>
+<span class="c1"># (C={M}, T={X}): do(M=M&#39;, X=1)     Y^n=M&#39;+eY  (X not in Y&#39;s eq)</span>
+<span class="c1"># (C={X,M}, T=∅): do(X=X&#39;, M=M&#39;)   Y^n=M&#39;+eY</span>
+<span class="n">pci_DMY_w</span>  <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">E_abs_N</span><span class="p">(</span><span class="n">mu_M</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">,</span> <span class="n">var_M</span> <span class="o">+</span> <span class="n">var_eY</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span>
+<span class="n">mc_DMY_w</span>   <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">M_alt</span> <span class="o">+</span> <span class="n">eY_s</span> <span class="o">-</span> <span class="n">y_star</span><span class="p">))</span> <span class="o">/</span> <span class="mi">6</span>
+
+<span class="c1"># ---------- DXM: S={X,Y}, W={Y} ----------</span>
+<span class="c1"># All three valid pairs give M^n = X&#39; + eM  -&gt;  E = 0.631</span>
+<span class="c1"># (C={X}, T=∅): do(X=X&#39;)            M^n=X&#39;+eM</span>
+<span class="c1"># (C={X}, T={Y}): do(X=X&#39;, Y=1)     M^n=X&#39;+eM  (Y not in M&#39;s eq)</span>
+<span class="c1"># (C={X,Y}, T=∅): do(X=X&#39;, Y=Y&#39;)   M^n=X&#39;+eM</span>
+<span class="n">pci_DXM_w</span>  <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">E_abs_N</span><span class="p">(</span><span class="n">mu_X</span> <span class="o">-</span> <span class="n">m_star</span><span class="p">,</span> <span class="n">var_X</span> <span class="o">+</span> <span class="n">var_eM</span><span class="p">)</span> <span class="o">/</span> <span class="mi">6</span>
+<span class="n">mc_DXM_w</span>   <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X_alt</span> <span class="o">+</span> <span class="n">eM_s</span> <span class="o">-</span> <span class="n">m_star</span><span class="p">))</span> <span class="o">/</span> <span class="mi">6</span>
+
+<span class="c1"># ---------- zero desiderata ----------</span>
+<span class="c1"># DYX: X exogenous, X^n=X*=1 always -&gt; ci=0</span>
+<span class="c1"># DYM: Y has no structural path to M (S={Y only}) -&gt; ci=0</span>
+<span class="c1"># DMX: X exogenous -&gt; ci=0</span>
+<span class="n">pci_DYX_w</span> <span class="o">=</span> <span class="n">pci_DYM_w</span> <span class="o">=</span> <span class="n">pci_DMX_w</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PCI with witnesses — S={two inputs}, W={third variable} (closed-form | MC):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DXY (W=M): </span><span class="si">{</span><span class="n">pci_DXY_w</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">mc_DXY_w</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  [expect 0.268]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DMY (W=X): </span><span class="si">{</span><span class="n">pci_DMY_w</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">mc_DMY_w</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  [expect 0.338]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DXM (W=Y): </span><span class="si">{</span><span class="n">pci_DXM_w</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">mc_DXM_w</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  [expect 0.316]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DYX: </span><span class="si">{</span><span class="n">pci_DYX_w</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  DYM: </span><span class="si">{</span><span class="n">pci_DYM_w</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  DMX: </span><span class="si">{</span><span class="n">pci_DMX_w</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DMXY with witnesses: DMY=</span><span class="si">{</span><span class="n">pci_DMY_w</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> &gt; DXY=</span><span class="si">{</span><span class="n">pci_DXY_w</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">  =&gt; SATISFIED&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Mechanism: M-witness case (weight 1/6) cuts X&#39;s path (0.252), lowering DXY&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  but X-witness has no effect on DMY (X not in Y&#39;s eq), leaving DMY = 0.338.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PCI with witnesses — S={two inputs}, W={third variable} (closed-form | MC):
+  DXY (W=M): 0.2679 | 0.2678  [expect 0.268]
+  DMY (W=X): 0.3387 | 0.3387  [expect 0.338]
+  DXM (W=Y): 0.3156 | 0.3154  [expect 0.316]
+  DYX: 0.0000  DYM: 0.0000  DMX: 0.0000
+
+DMXY with witnesses: DMY=0.339 &gt; DXY=0.268  =&gt; SATISFIED
+  Mechanism: M-witness case (weight 1/6) cuts X&#39;s path (0.252), lowering DXY
+  but X-witness has no effect on DMY (X not in Y&#39;s eq), leaving DMY = 0.338.
+</pre></div></div>
+</div>
+</section>
+<section id="7.-Desiderata-table-and-key-findings">
+<h2>7. Desiderata table and key findings<a class="headerlink" href="#7.-Desiderata-table-and-key-findings" title="Link to this heading"></a></h2>
+<p><span class="math notranslate nohighlight">\(\checkmark\)</span> = desideratum satisfied; <span class="math notranslate nohighlight">\(\times\)</span> = violated.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="s2">&quot;✓&quot;</span><span class="p">;</span> <span class="n">X</span> <span class="o">=</span> <span class="s2">&quot;×&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">mark</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ok_fn</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">T</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">ok_fn</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">X</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">gt0</span><span class="p">(</span><span class="n">v</span><span class="p">):</span> <span class="k">return</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="mf">1e-9</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">eq0</span><span class="p">(</span><span class="n">v</span><span class="p">):</span> <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-9</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;DXY&quot;</span><span class="p">,</span>  <span class="s2">&quot;R(X⇝Y) &gt; 0&quot;</span><span class="p">,</span>
+     <span class="n">phi_X_Y_plain</span><span class="p">,</span> <span class="n">phi_X_Y_c</span><span class="p">,</span> <span class="n">pci_DXY_nw</span><span class="p">,</span> <span class="n">pci_DXY_w</span><span class="p">,</span> <span class="n">gt0</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;DMY&quot;</span><span class="p">,</span>  <span class="s2">&quot;R(M⇝Y) &gt; 0&quot;</span><span class="p">,</span>
+     <span class="n">phi_M_Y_plain</span><span class="p">,</span> <span class="n">phi_M_Y_c</span><span class="p">,</span> <span class="n">pci_DMY_nw</span><span class="p">,</span> <span class="n">pci_DMY_w</span><span class="p">,</span> <span class="n">gt0</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;DXM&quot;</span><span class="p">,</span>  <span class="s2">&quot;R(X⇝M) &gt; 0&quot;</span><span class="p">,</span>
+     <span class="n">phi_X_M_plain</span><span class="p">,</span> <span class="n">phi_X_M_c</span><span class="p">,</span> <span class="n">pci_DXM_nw</span><span class="p">,</span> <span class="n">pci_DXM_w</span><span class="p">,</span> <span class="n">gt0</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;DYX&quot;</span><span class="p">,</span>  <span class="s2">&quot;R(Y⇝X) = 0&quot;</span><span class="p">,</span>
+     <span class="n">phi_Y_X_plain</span><span class="p">,</span> <span class="n">phi_Y_X_c</span><span class="p">,</span> <span class="n">pci_DYX_nw</span><span class="p">,</span> <span class="n">pci_DYX_w</span><span class="p">,</span> <span class="n">eq0</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;DYM&quot;</span><span class="p">,</span>  <span class="s2">&quot;R(Y⇝M) = 0&quot;</span><span class="p">,</span>
+     <span class="n">phi_Y_M_plain</span><span class="p">,</span> <span class="n">phi_Y_M_c</span><span class="p">,</span> <span class="n">pci_DYM_nw</span><span class="p">,</span> <span class="n">pci_DYM_w</span><span class="p">,</span> <span class="n">eq0</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;DMX&quot;</span><span class="p">,</span>  <span class="s2">&quot;R(M⇝X) = 0&quot;</span><span class="p">,</span>
+     <span class="n">phi_M_X_plain</span><span class="p">,</span> <span class="n">phi_M_X_c</span><span class="p">,</span> <span class="n">pci_DMX_nw</span><span class="p">,</span> <span class="n">pci_DMX_w</span><span class="p">,</span> <span class="n">eq0</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Desid&#39;</span><span class="si">:</span><span class="s2">&lt;5</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;Condition&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;Plain&#39;</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;Causal&#39;</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;PCI W=∅&#39;</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39;PCI W=3rd&#39;</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">74</span><span class="p">)</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">cond</span><span class="p">,</span> <span class="n">plain</span><span class="p">,</span> <span class="n">causal</span><span class="p">,</span> <span class="n">pci_nw</span><span class="p">,</span> <span class="n">pci_w</span><span class="p">,</span> <span class="n">ok</span><span class="p">)</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="si">:</span><span class="s2">&lt;5</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">cond</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">mark</span><span class="p">(</span><span class="n">plain</span><span class="p">,</span><span class="n">ok</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">mark</span><span class="p">(</span><span class="n">causal</span><span class="p">,</span><span class="n">ok</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">  &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mark</span><span class="p">(</span><span class="n">pci_nw</span><span class="p">,</span><span class="n">ok</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">mark</span><span class="p">(</span><span class="n">pci_w</span><span class="p">,</span><span class="n">ok</span><span class="p">)</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DMXY  R(M⇝Y) &gt; R(X⇝Y)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Plain:       </span><span class="si">{</span><span class="n">phi_M_Y_plain</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">phi_X_Y_plain</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">X</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Causal:      </span><span class="si">{</span><span class="n">phi_M_Y_c</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">phi_X_Y_c</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">X</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  PCI W=∅:     </span><span class="si">{</span><span class="n">pci_DMY_nw</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">pci_DXY_nw</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">X</span><span class="si">}</span><span class="s2">  (path-variances cancel)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  PCI W=3rd:   </span><span class="si">{</span><span class="n">pci_DMY_w</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> &gt; </span><span class="si">{</span><span class="n">pci_DXY_w</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s2">  (witness breaks X’s indirect path)&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Desid  Condition                 Plain     Causal    PCI W=∅   PCI W=3rd
+--------------------------------------------------------------------------
+DXY    R(X⇝Y) &gt; 0              0.250 ✓    0.250 ✓    0.452 ✓     0.268 ✓
+DMY    R(M⇝Y) &gt; 0              0.250 ✓    0.250 ✓    0.452 ✓     0.339 ✓
+DXM    R(X⇝M) &gt; 0              0.306 ✓    0.375 ✓    0.421 ✓     0.316 ✓
+DYX    R(Y⇝X) = 0              0.139 ×    0.000 ✓    0.000 ✓     0.000 ✓
+DYM    R(Y⇝M) = 0              0.194 ×    0.125 ×    0.000 ✓     0.000 ✓
+DMX    R(M⇝X) = 0              0.218 ×    0.357 ×    0.000 ✓     0.000 ✓
+
+DMXY  R(M⇝Y) &gt; R(X⇝Y)
+  Plain:       0.250 = 0.250  ×
+  Causal:      0.250 = 0.250  ×
+  PCI W=∅:     0.452 = 0.452  ×  (path-variances cancel)
+  PCI W=3rd:   0.339 &gt; 0.268  ✓  (witness breaks X’s indirect path)
+</pre></div></div>
+</div>
+<section id="Key-findings">
+<h3>Key findings<a class="headerlink" href="#Key-findings" title="Link to this heading"></a></h3>
+<p><strong>Without witnesses</strong> (<span class="math notranslate nohighlight">\(\mathbf{W} = \emptyset\)</span>): PCI satisfies the six single-variable desiderata but <strong>fails DMXY</strong> — the same failure as both SHAP variants. Both DXY and DMY equal <strong>0.451</strong>, a tie driven by the path-variance identity: <span class="math notranslate nohighlight">\(\mathrm{Var}(X) + \mathrm{Var}(\varepsilon_M) + \mathrm{Var}(\varepsilon_Y) = 0.45 = \mathrm{Var}(M) + \mathrm{Var}(\varepsilon_Y)\)</span>. Without pinning anything, PCI cannot distinguish <span class="math notranslate nohighlight">\(X\)</span>’s indirect effect from <span class="math notranslate nohighlight">\(M\)</span>’s direct effect.</p>
+<p><strong>With witnesses</strong> (<span class="math notranslate nohighlight">\(\mathbf{W} =\)</span> third variable): PCI satisfies all six desiderata <strong>and</strong> DMXY. For <span class="math notranslate nohighlight">\(R(X \rightsquigarrow Y)\)</span>, one of the three valid <span class="math notranslate nohighlight">\((C,T)\)</span> pairs pins <span class="math notranslate nohighlight">\(M\)</span> as an active witness, severing <span class="math notranslate nohighlight">\(X\)</span>’s indirect path (contribution <span class="math notranslate nohighlight">\(\approx 0.252\)</span>); the other two let <span class="math notranslate nohighlight">\(M\)</span> propagate freely (<span class="math notranslate nohighlight">\(\approx 0.677\)</span> each). Averaging over the six <span class="math notranslate nohighlight">\((C,T)\)</span> slots gives <span class="math notranslate nohighlight">\(\mathrm{PCI}(X \rightsquigarrow Y) \approx 0.268\)</span>. For
+<span class="math notranslate nohighlight">\(R(M \rightsquigarrow Y)\)</span> the <span class="math notranslate nohighlight">\(X\)</span>-witness has no effect (X does not appear in <span class="math notranslate nohighlight">\(Y\)</span>’s structural equation), so all three cases contribute <span class="math notranslate nohighlight">\(\approx 0.677\)</span> and <span class="math notranslate nohighlight">\(\mathrm{PCI}(M \rightsquigarrow Y) \approx 0.338 &gt; 0.268\)</span>. The witness mechanism is the ingredient that exposes the direct/indirect gap.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="obcb_computations.html" class="btn btn-neutral float-left" title="Old Boys’ Club Bank — PN, PS, PNS, PCI and SHAP" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Rafal Urbaniak.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

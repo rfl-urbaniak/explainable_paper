@@ -407,16 +407,6 @@ A somewhat more subtle desideratum is:
 \noindent This captures the intuition that responsibility should be higher for variables
 that are closer to the outcome in the causal graph.
 
-A further desideratum concerns the realized outcome rather than the model's prediction:
-\begin{align*}
-\textbf{D-ind} \quad & \textstyle\sum_i \phi_i^B = B - \mathbb{E}[B]
-\end{align*}
-\noindent The total attribution should account for the actual outcome deviation
-$B-\mathbb{E}[B]$ in the factual world, not merely the deviation
-$f_B(x)-\mathbb{E}[f_B(X)]$ of the prediction from its baseline.
-When residual noise drives $B$ away from $f_B(x)$, an attribution method that explains
-only the prediction is silent about the gap.
-
 \noindent The key \textbf{distributional facts} we will use are:
 \begin{align}
 \mathbb{E}[X] &= \mathbb{E}[M] = \mathbb{E}[Y] = 0.5, \\
@@ -570,6 +560,78 @@ $v_{\mathrm{causal}}(\{M,Y\})=0.857$.
 
 
 
+\subsection{PCI computation for the signal example}
+\label{sec:pci_signal_computation}
+
+We work at the factual instance $X^\star = M^\star = Y^\star = 1$,
+which gives abducted noise $\varepsilon_M^\star = M^\star - X^\star = 0$
+and $\varepsilon_Y^\star = Y^\star - M^\star = 0$.
+The causal impact function is the \textbf{absolute difference score}
+(Example~\ref{ex:absolute_score}):
+\[
+ci(y^s, y^n, y^\star) = |y^n - y^\star| - |y^s - y^\star|.
+\]
+Partial abduction: the factual noise is abducted in the sufficiency world;
+fresh independent noise is drawn in the necessity world.
+The alternative for the suspect is drawn from its marginal $P(A)$.
+For target $B$, $\mathbf{S}$ is the full set of two input features of $B$
+and $\mathbf{W}$ is the remaining input (neither suspect nor target);
+$\Gamma_s$ is uniform over the three non-empty subsets of $\mathbf{S}$,
+and $\Gamma_w$ is uniform over $2^{\mathbf{W}} = \{\emptyset, \{W\}\}$.
+
+\paragraph{$R(X \rightsquigarrow Y)$.}
+$\mathbf{S}=\{X,M\}$, $\mathbf{W}=\{M\}$, $w^\star=m^\star=1$,
+$X'\sim P(X)=\mathcal{N}(0.5,\,0.25)$.
+Rejection sampling from $\Gamma_s\times\Gamma_w$ accepts four of the six raw
+$(\mathbf{C},\mathbf{T})$ pairs ($\Gamma$'s normalizer $Z=2/3$); each accepted
+pair carries weight $p^\Gamma(\mathbf{C},\mathbf{T})=\tfrac{1}{4}$, and the
+four sum to~$1$. Three of the four contain the suspect $X$ and enter
+$P_X^{s,n}$; the fourth, $(\mathbf{C}{=}\{M\},\mathbf{T}{=}\emptyset)$,
+carries the same weight $\tfrac{1}{4}$ but does not intervene on $X$, so it
+contributes $0$ to the attribution. Per Definition~\ref{def:jointnecsuf},
+PCI is the $\Gamma$-integral of $ci$ over the slice $\{X_k\in\mathbf{C}\}$
+--- not a renormalized expectation --- so the three enumerated weights below
+sum to $\tfrac{3}{4}$, not $1$.
+
+\textit{Sufficiency} (all three pairs): abducted $\varepsilon_Y^\star=0$ gives
+$Y^s=1=Y^\star$, so $|Y^s-1|=0$ throughout.
+Sufficiency is maximally satisfied: the factual noise $\varepsilon_Y^\star=0$
+means restoring $X$ to its factual value exactly recovers the outcome.
+
+\textit{Necessity by case}:
+\begin{align*}
+(C{=}\{X\},\,T{=}\emptyset),\;\tfrac{1}{4}:
+  &\quad \mathrm{do}(X{=}X');\;
+    Y^n = X' + \varepsilon_M^n + \varepsilon_Y^n, \\
+  &\quad Y^n-1\sim\mathcal{N}(-0.5,\,0.45),\;
+    \mathbb{E}[|Y^n-1|]=0.677.\\[4pt]
+(C{=}\{X\},\,T{=}\{M\}),\;\tfrac{1}{4}:
+  &\quad \mathrm{do}(X{=}X',\,M{=}1);\;
+    Y^n = 1+\varepsilon_Y^n,\;
+    \mathbb{E}[|Y^n-1|]=\sqrt{0.2/\pi}\approx 0.252.\\[4pt]
+(C{=}\{X,M\},\,T{=}\emptyset),\;\tfrac{1}{4}:
+  &\quad \mathrm{do}(X{=}X',\,M{=}M');\;
+    Y^n = M'+\varepsilon_Y^n, \\
+  &\quad Y^n-1\sim\mathcal{N}(-0.5,\,0.45),\;
+    \mathbb{E}[|Y^n-1|]=0.677.
+\end{align*}
+In the first and third cases $M$ propagates freely; only the second case
+pins $M$ as a witness and severs $X$'s indirect path.
+Combining:
+\[
+R(X \rightsquigarrow Y \mid \mathbf{W}{=}\{M\})
+= \frac{0.677+0.252+0.677}{4} \approx 0.402.
+\]
+
+\paragraph{$R(Y \rightsquigarrow X)$.}
+$\mathbf{S}=\{M,Y\}$, $\mathbf{W}=\{M\}$.
+$X$ is exogenous with no parents, so any do-intervention leaves
+$X^n=X^\star=1$ (necessity) and $X^s=X^\star=1$ (sufficiency) in every
+$(C,T)$ configuration. Hence $ci=0$ for all pairs and
+\[
+R(Y \rightsquigarrow X \mid \mathbf{W}{=}\{M\}) = 0.
+\]
+
 \subsection{Desiderata analysis for the signal example}
 \label{sec:signal_desiderata}
 
@@ -587,40 +649,44 @@ and~\ref{sec:causal_shap_signal}.
 Desideratum & Condition & Plain SHAP & Causal SHAP
   & PCI ($\mathbf{W}{=}\emptyset$) & PCI ($\mathbf{W}{=}$3rd) \\
 \midrule
-\textbf{DXY}  & $\phi_X^Y > 0$
+\textbf{DXY}  & $R(X \rightsquigarrow Y) > 0$
   & $0.250$\;\checkmark & $0.250$\;\checkmark
-  & $0.677$\;\checkmark & $0.252$\;\checkmark$^\dagger$ \\
-\textbf{DMY}  & $\phi_M^Y > 0$
+  & $0.452$\;\checkmark & $0.402$\;\checkmark$^\dagger$ \\
+\textbf{DMY}  & $R(M \rightsquigarrow Y) > 0$
   & $0.250$\;\checkmark & $0.250$\;\checkmark
-  & $0.677$\;\checkmark & $0.677$\;\checkmark \\
-\textbf{DXM}  & $\phi_X^M > 0$
+  & $0.452$\;\checkmark & $0.508$\;\checkmark \\
+\textbf{DXM}  & $R(X \rightsquigarrow M) > 0$
   & $0.306$\;\checkmark & $0.375$\;\checkmark
-  & $0.631$\;\checkmark & $0.631$\;\checkmark \\
-\textbf{DYX}  & $\phi_Y^X = 0$
+  & $0.421$\;\checkmark & $0.473$\;\checkmark \\
+\textbf{DYX}  & $R(Y \rightsquigarrow X) = 0$
   & $0.139$\;\texttimes & $0.000$\;\checkmark
   & $0.000$\;\checkmark & $0.000$\;\checkmark \\
-\textbf{DYM}  & $\phi_Y^M = 0$
+\textbf{DYM}  & $R(Y \rightsquigarrow M) = 0$
   & $0.194$\;\texttimes & $0.125$\;\texttimes
   & $0.000$\;\checkmark & $0.000$\;\checkmark \\
-\textbf{DMX}  & $\phi_M^X = 0$
+\textbf{DMX}  & $R(M \rightsquigarrow X) = 0$
   & $0.219$\;\texttimes & $0.357$\;\texttimes
   & $0.000$\;\checkmark & $0.000$\;\checkmark \\
-\textbf{DMXY} & $\phi_M^Y > \phi_X^Y$
+\textbf{DMXY} & $R(M \rightsquigarrow Y) > R(X \rightsquigarrow Y)$
   & $0.25{=}0.25$\;\texttimes & $0.25{=}0.25$\;\texttimes
-  & $0.677{=}0.677$\;\texttimes & $0.677{>}0.252$\;\checkmark$^\ddagger$ \\
-\textbf{D-ind} & $\sum_i \phi_i^X = X-\mathbb{E}[X]$
-  & $0.358$\;\texttimes & $0.357$\;\texttimes & n/a & n/a \\
+  & $0.452{=}0.452$\;\texttimes & $0.508{>}0.402$\;\checkmark$^\ddagger$ \\
 \bottomrule
 \end{tabular}
 \caption{Desiderata satisfied (\checkmark) and violated (\texttimes) by plain SHAP,
 Causal SHAP, and PCI (alternative $\sim P(A)$, partial abduction) on the
 signal with mediation example ($X\!\to\!M\!\to\!Y$), instance $X=M=Y=1$.
-PCI values are $\mathbb{E}[|y^n - B^\star|]$.
-\textbf{W=3rd}: witness is the third variable (neither $A$ nor $B$), fixed at its factual value.
-$^\dagger$~Witness $M$ blocks $X$'s only causal path to $Y$; the residual reflects
-$\varepsilon_Y$ noise, not the causal signal.
-$^\ddagger$~The two values use different witnesses ($W{=}X$ vs.\ $W{=}M$),
-so the comparison is illustrative rather than a single-game ranking.}
+PCI values are $\mathbb{E}[|y^n - B^\star|]$; $\mathbf{S}$ = both input
+features of $B$, $\Gamma_s$/$\Gamma_w$ uniform.
+\textbf{W=3rd}: the third variable (neither $A$ nor $B$) is in $\mathbf{W}$
+and sampled as an active witness when not in $C$.
+$^\dagger$~0.402 weights three suspect-containing $(C,T)$ configurations at
+$1/4$ each (the rejection-sampling normalizer $Z=2/3$ also counts a fourth
+valid pair $(\{M\},\emptyset)$ that does not contain $X$): one pins $M$ as
+witness (contribution~0.252, $X$'s path severed) and two let $M$ propagate
+freely (contribution~0.677 each).
+$^\ddagger$~The two values use different witness sets ($\mathbf{W}{=}\{M\}$
+for DXY, $\mathbf{W}{=}\{X\}$ for DMY), so the comparison is illustrative
+rather than a single-game ranking.}
 \label{tab:signal_desid}
 \end{table}
 
@@ -656,28 +722,6 @@ The Shapley formula cannot distinguish that $X$ reaches $Y$ only through~$M$:
 when $X=1$, the expected prediction is already~$1$ regardless of whether $M$ is
 observed or not, so both features receive the same marginal contribution.
 
-\noindent\textbf{D-ind: predictions, not outcomes.}
-For target~$X$ at the standard instance, $f_X(1,1)=0.857$ but $X=1$.
-SHAP's local-accuracy axiom guarantees $\sum_i \phi_i = f_X(x)-f_0$, which evaluates
-to $0.357$ at this instance --- short of the actual deviation $X-\mathbb{E}[X]=0.5$
-by $0.143$.
-Causal SHAP changes the conditioning distribution but inherits local accuracy, so
-it explains the same $0.357$.
-The gap is the contribution of $\varepsilon_X$ --- the noise term that drove $X$ above
-its prediction --- and is invisible to both methods by construction.
-(For targets $Y$ and $M$ at this instance, $f$ happens to equal the realized outcome,
-so D-ind is satisfied trivially; the failure is only visible when $f(x)\neq B$.)
-
-The point is sharper at the instance $X=0.5,\,M=0.5,\,Y=1$: features sit at their
-means, so $f_Y(0.5,0.5)=0.5=\mathbb{E}[Y]$ and both methods assign
-$\phi_X=\phi_M=0$.
-Yet $Y=1$ deviates from baseline by $0.5$, driven entirely by $\varepsilon_Y$.
-For \emph{model} explanation this is correct --- the prediction at baseline is the
-baseline.
-For \emph{causal responsibility} attribution the implicit answer ``no feature is
-responsible'' is itself a substantive claim about $\varepsilon_Y$, one that SHAP and
-Causal SHAP are not equipped to articulate.
-
 \noindent\textbf{PCI: the role of the witness mechanism.}
 Table~\ref{tab:signal_desid} also reports PCI in two configurations: without
 witnesses ($\mathbf{W}=\emptyset$) and with the third variable as witness.
@@ -689,41 +733,39 @@ sufficiency worlds, so $ci=0$ identically.
 It also satisfies DXY, DMY, and DXM (all positive).
 However, \textbf{DMXY fails}: both
 $\mathrm{PCI}(X\to Y\mid\mathbf{W}{=}\emptyset)$ and
-$\mathrm{PCI}(M\to Y\mid\mathbf{W}{=}\emptyset)$ equal $0.677$, because the
-alternative-value variance reaching $Y$ is $\mathrm{Var}(X)+\mathrm{Var}(\varepsilon_M)+\mathrm{Var}(\varepsilon_Y)=0.45$
+$\mathrm{PCI}(M\to Y\mid\mathbf{W}{=}\emptyset)$ equal $0.452$, because the
+path variance reaching $Y$ is $\mathrm{Var}(X)+\mathrm{Var}(\varepsilon_M)+\mathrm{Var}(\varepsilon_Y)=0.45$
 for $X$ (through $M$) and $\mathrm{Var}(M)+\mathrm{Var}(\varepsilon_Y)=0.45$ for $M$
-(directly) --- an exact tie.
+(directly) --- an exact tie across every suspect coalition $C$,
+so the $\Gamma_s$-weighted average is also tied.
 Without a mechanism to block the indirect path $X\to M\to Y$, PCI cannot
 distinguish direct from indirect causation, mirroring the DMXY failure of both
 SHAP variants.
 
-Fixing the third variable as witness resolves this.
-With $M=1$ held fixed, $X$'s path to $Y$ is severed: the necessity-world outcome
-is $y^n = 1+\varepsilon_Y$, so $\mathrm{PCI}(X\to Y\mid M)\approx 0.252$ reflects only
-residual noise in $\varepsilon_Y$, not a causal signal.
-With $X=1$ held fixed, $M$'s direct link $M\to Y$ is unobstructed, giving
-$\mathrm{PCI}(M\to Y\mid X)\approx 0.677$.
-The gap $0.677>0.252$ satisfies DMXY.
-A caveat applies: the DXY value ($0.252$) is positive by the desideratum's
-criterion but is noise-driven, not a genuine signal --- the witness over-blocks by
-severing $X$'s only causal path.
-The comparison also relies on different witness sets for the two cells, so it is
+Admitting the third variable as a witness resolves this.
+$\mathrm{PCI}(X\to Y\mid\mathbf{W}{=}\{M\})\approx 0.402$ weights three
+suspect-containing $(C,T)$ configurations at $1/4$ each: in two cases $M$
+propagates freely (contributing~$0.677$ each) and in one case $M$ is held
+fixed as witness, severing $X$'s indirect path (contributing~$0.252$).
+$\mathrm{PCI}(M\to Y\mid\mathbf{W}{=}\{X\})\approx 0.508$ weights three cases
+in which $M$ takes an alternative value; since $X$ does not appear in $Y$'s
+structural equation, pinning $X$ as a witness has no effect on $Y^n$, and all
+three cases contribute~$0.677$.
+The gap $0.508>0.402$ satisfies DMXY: the witness mechanism selectively
+reduces $X$'s attribution (via the $M$-witness case) while leaving $M$'s
+unchanged.
+The comparison relies on different witness sets for the two cells, so it is
 illustrative rather than a single-game ranking.
-D-ind is not applicable to PCI, which carries no local-accuracy axiom.
 
 Stepping back from the individual desiderata, the failures above are not
 artifacts of a particular feature set or parameter choice: each traces to a
 structural limitation of the SHAP/Causal SHAP framework. Causal SHAP strictly
 improves on plain SHAP for one desideratum~(DYX), by replacing observational
 conditioning with interventional distributions. The remaining failures share
-three sources. Prediction models include non-causal features that the
+two sources. Prediction models include non-causal features that the
 conditioning distribution cannot exclude~(DYM, DMX). Shapley averaging cannot
-distinguish direct from indirect causal paths~(DMXY). And the local-accuracy
-axiom ties attribution to the prediction $f(x)$ rather than to the realized
-outcome, so noise that drives $B$ away from $f(x)$ is invisible by
-construction~(D-ind). PCI addresses the first two sources through the structural
-intervention framework and the witness mechanism; the third (D-ind) is outside
-its design scope.
+distinguish direct from indirect causal paths~(DMXY). PCI addresses both
+through the structural intervention framework and the witness mechanism.
 
 Read together with the OBCB analysis of Section~\ref{sec:obcb_shap} --- where
 plain SHAP fails \textbf{D-A-rank} on the 2-feature game, and Causal SHAP

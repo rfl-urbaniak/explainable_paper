@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pci-paper"
+version = "0.1"
+description = "Computational notebooks for the PCI paper."
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "Rafal Urbaniak" }]
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "torch",
+    "torchvision",
+    "pyro-ppl",
+    "chirho @ git+https://github.com/BasisResearch/chirho.git",
+    "matplotlib",
+    "seaborn",
+    "tqdm",
+    "graphviz",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.20.2",
+    "nbqa>=1.9.1",
+    "pytest>=9.0.3",
+    "ruff>=0.15.12",
+]
+docs = [
+    "sphinx",
+    "nbsphinx",
+    "sphinx-rtd-theme",
+    "myst-parser",
+    "sphinxcontrib-jquery",
+    "sphinx-autodoc-typehints",
+    "jupyter",
+    "ipykernel",
+    "nbconvert",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pci*"]
+
+[tool.mypy]
+ignore_missing_imports = true
+warn_unused_ignores = true
+exclude = ["build"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.flake8]
+max-line-length = 120
+
+[tool.ruff.lint]
+extend-ignore = ["E203"]
+select = [
+  "F",       # pyflakes
+  "I",       # isort
+  "PERF",    # performance
+  "UP"       # pyupgrade
+]
