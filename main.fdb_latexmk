@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1777926367.84209 "main.aux" "main.bbl" "main" 1777926757.72193 0
+["bibtex main"] 1777926367.84209 "main.aux" "main.bbl" "main" 1777985633.26465 0
   "./references.bib" 1777465707.5404 18360 3b821f0b2476345804af89e47a87ae45 ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "main.aux" 1777926757.53852 18597 4895ad9bcd086e1dd274b87e2320840d "pdflatex"
+  "main.aux" 1777985632.99238 18597 4895ad9bcd086e1dd274b87e2320840d "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1777926756.83385 "main.tex" "main.pdf" "main" 1777926757.72206 0
+["pdflatex"] 1777985631.83425 "main.tex" "main.pdf" "main" 1777985633.2648 0
   "/etc/texmf/web2c/texmf.cnf" 1774532046.6442 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -278,12 +278,16 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1777292533.05307 5349216 bf3a80e68d946c7acd95ff030fd9bb63 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1777292260 6830983 29ffe65982be5ed2f8d3be41113c730e ""
-  "main.aux" 1777926757.53852 18597 4895ad9bcd086e1dd274b87e2320840d "pdflatex"
+  "main.aux" 1777985632.99238 18597 4895ad9bcd086e1dd274b87e2320840d "pdflatex"
   "main.bbl" 1777926367.86954 6646 ea23d6077d95a66291d0533b82ab06d3 "bibtex main"
-  "main.out" 1777926757.53952 2673 6e20722500f73ff6fe050a093e8f7109 "pdflatex"
-  "main.tex" 1777926712.21387 129007 0dc5dde09faa39e615518746f09c32b5 ""
-  "main.toc" 1777926757.53952 1659 8b00f4ac97da538473c8b0cc38428243 "pdflatex"
+  "main.out" 1777985632.99338 2673 6e20722500f73ff6fe050a093e8f7109 "pdflatex"
+  "main.tex" 1777985624.39115 6942 89160015c203c61bd39321f06e022395 ""
+  "main.toc" 1777985632.99338 1659 8b00f4ac97da538473c8b0cc38428243 "pdflatex"
   "neurips_2024.sty" 1714668730 11625 b5f853b54a7a098e9e5b837f826d5daa ""
+  "sections/sec1_intro.tex" 1777985558.41899 5684 c5c3e82561118cc23df9c28e52edcbdb ""
+  "sections/sec2_motivations.tex" 1777985558.42008 22363 0a2db79ffa2c17b7e6000cb6b94d1ce7 ""
+  "sections/sec3_definitions.tex" 1777985558.42115 55244 8285e1f9993b8acb88e06bb7ae29bf67 ""
+  "sections/sec4_examples.tex" 1777985558.42217 38895 345da211bfe87495287caae32c2e2ea6 ""
   (generated)
   "main.aux"
   "main.log"

@@ -1,0 +1,93 @@
+\section{Introduction}
+\label{sec:intro}
+
+Causal attribution is a central reasoning task in many important problems, such as
+gauging the efficacy of medical treatments \citep{Shepherd2024}, pinpointing drivers
+of economic growth \citep{CheshireMagrini2009}, root cause analysis in automated
+systems \citep{Papageorgiou2022}, or assessing the impact of public policy
+\citep{HeckmanPinto2022CausalPolicyAnalysis}. We may want to understand why an
+adverse outcome occurred so as to prevent recurrence, or how a predicted positive
+outcome could be brought about.
+
+In the absence of scalable, formal causal attribution tools, analysts often resort to
+ad-hoc methods --- strong correlation, historical comparison, domain expertise, or
+non-causal attribution like Granger causality \citep{Granger1969} and SHAP
+\citep{lundberg2017unified}. Even researchers with an advanced command of
+statistical and experimental methods may not possess a thorough understanding of how
+to ascribe cause \citep{Shepherd2024}, and would benefit from scalable automation.
+Here we present a tool for accurate and tractable causal attribution applicable to a
+wide array of causal, probabilistic, machine-learned models.
+
+Current methods for attributing causes to specific outcomes, such as actual causality
+\citep{actualCausalityHalpern}, are intractable in general, with no clear
+approximation \citep{eiterComplexityResultsStructurebased2002}. Explanation
+methods that \textit{do} scale are either non-causal \citep{lundberg2017unified} or
+amount to local, gradient-based sensitivity analyses \citep{butler2022differential}.
+SHAP \citep{lundberg2017unified} grounds attribution in observational correlations,
+so a feature can receive high attribution merely for being correlated with a true
+cause. Causal SHAP \citep{heskes2020causal} addresses this to some extent, but some
+failure modes persist
+(Section~\ref{sec:shap_examples}). \citet{butler2022differential}'s Differential
+Causal Effect (DCE) relies on gradients, which requires model differentiability and
+does not capture effects from non-infinitesimal changes in potential causes. (DCE is,
+fairly, not designed for responsibility attribution:
+\citeauthor{butler2022differential} target rates of change of treatment.)
+
+We introduce \emph{probabilistic causal impacts} (\Ourapproach), an attribution
+framework that combines the context-sensitivity of actual causality with the
+scalability of probability-of-causation methods. \Ourapproach\ generalises Pearl's
+probability of necessary and sufficient causation \citep{pearl2022probabilities} from
+binary to arbitrary variable domains, and incorporates the \emph{witness} mechanism
+from actual causality \citep{actualCausalityHalpern} via integration over a
+distribution of witness sets rather than existential quantification.
+
+\ourapproach\ also makes partial contact with the literature on \emph{descriptive
+normality} \citep{Halpern2015-HALGCA, icardNormalityActualCausal2017}: attributions
+are computed as expectations against a distribution over counterfactual worlds
+conditioned on upstream factual context, a concrete operationalisation of the
+normality intuition. Several components have precedents --- expectations over
+exogenous noise \citep{actualCausalityHalpern}, weighting by alternative-value
+probabilities \citep{Beckers2015CombiningPC}, aggregation over witness sets
+\citep{Beckers2015CombiningPC, actualCausalityHalpern} --- but no prior construction
+combines them into a single tractable estimator handling arbitrary variable domains.
+
+\ourapproach\ presumes access to a trained probabilistic causal model from which
+counterfactual outcomes can be sampled --- a stronger requirement than methods that
+work from observational data and a causal graph alone (e.g., PN/PS/PNS bounds, Causal
+SHAP). Within that requirement, however, we place no strong restrictions on the form
+of the model, distributions, or types of variables.
+Such models can comprise standard machine learning components such as neural networks
+or Gaussian processes.
+
+With this breadth of application, and a measure that surfaces its design choices ---
+the variable selection distribution, alternative value distribution, and causal impact
+function --- as explicit user-facing components rather than hidden defaults,
+\ourapproach\ hopes to provide causal attribution and explanation tooling for a
+wide array of users and applications.
+
+We validate \ourapproach\ along four lines:
+\begin{enumerate}[itemsep=2pt, topsep=2pt, parsep=0pt]
+    \item \textbf{Theoretical connection to actual causality.} Under suitable choices
+    of $\Gamma$ and $\Delta$, \ourapproach\ recovers Halpern's actual-causality
+    verdicts exactly (Section~\ref{sec:th_ac}). A more extensive conceptual
+    discussion appears in Appendix~\ref{app:conceptual}.
+
+    \item \textbf{Recovery on canonical actual-causality failure cases.} On scaled-up
+    overdetermination and undercutting examples, \ourapproach\ produces attributions
+    matching the literature's intuitive judgements
+    (Section~\ref{sec:ac_benchmark}); the same holds in the continuous version
+    (Section~\ref{sec:con_benchmark}).
+
+    \item \textbf{Scalability to ML-grade models.} \Ourapproach\ produces
+    individual-level attributions on a causal spatio-temporal model with
+    machine-learned components trained on millions of data points
+    (Section~\ref{sec:avm}), where SHAP yields qualitatively different
+    explanations.
+
+    \item \textbf{Comparison to gradient-based attribution.} Against Differential
+    Causal Effect \citep{butler2022differential}, \ourapproach\ better reveals
+    non-infinitesimal causal effects (Appendix~\ref{app:DCE}).
+\end{enumerate}
+
+
+
