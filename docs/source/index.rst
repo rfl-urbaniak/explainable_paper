@@ -7,3 +7,4 @@ PCI Paper — Computational Notebooks
 
    obcb_computations
    signal_mediation_computations
+   responsibility_archetypes

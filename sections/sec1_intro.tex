@@ -29,9 +29,9 @@ cause. Causal SHAP \citep{heskes2020causal} addresses this to some extent, but s
 failure modes persist
 (Section~\ref{sec:shap_examples}). \citet{butler2022differential}'s Differential
 Causal Effect (DCE) relies on gradients, which requires model differentiability and
-does not capture effects from non-infinitesimal changes in potential causes. (DCE is,
+does not capture effects from non-infinitesimal changes in potential causes.\footnote{DCE is,
 fairly, not designed for responsibility attribution:
-\citeauthor{butler2022differential} target rates of change of treatment.)
+\citeauthor{butler2022differential} target rates of change of treatment.}
 
 We introduce \emph{probabilistic causal impacts} (\Ourapproach), an attribution
 framework that combines the context-sensitivity of actual causality with the

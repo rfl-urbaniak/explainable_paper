@@ -9,15 +9,19 @@
 \contentsline {subsection}{\numberline {4.2}OBCB: SHAP and Causal SHAP}{20}{subsection.4.2}%
 \contentsline {subsection}{\numberline {4.3}Signal with mediation}{23}{subsection.4.3}%
 \contentsline {subsection}{\numberline {4.4}SHAP values for the signal with mediation example}{24}{subsection.4.4}%
-\contentsline {paragraph}{Target $Y$, Features $\{X, M\}$.}{24}{section*.12}%
-\contentsline {paragraph}{Target $M$, features $\{X,Y\}$.}{24}{section*.13}%
-\contentsline {paragraph}{Target $X$, features $\{M,Y\}$.}{24}{section*.14}%
+\contentsline {paragraph}{Target $Y$, Features $\{X, M\}$.}{24}{section*.14}%
+\contentsline {paragraph}{Target $M$, features $\{X,Y\}$.}{24}{section*.15}%
+\contentsline {paragraph}{Target $X$, features $\{M,Y\}$.}{24}{section*.16}%
 \contentsline {subsection}{\numberline {4.5}Causal SHAP for the signal example}{24}{subsection.4.5}%
-\contentsline {paragraph}{Target $Y$, features $\{X,M\}$.}{24}{section*.16}%
-\contentsline {paragraph}{Target $M$, features $\{X,Y\}$.}{25}{section*.17}%
-\contentsline {paragraph}{Target $X$, features $\{M,Y\}$.}{25}{section*.18}%
+\contentsline {paragraph}{Target $Y$, features $\{X,M\}$.}{24}{section*.18}%
+\contentsline {paragraph}{Target $M$, features $\{X,Y\}$.}{25}{section*.19}%
+\contentsline {paragraph}{Target $X$, features $\{M,Y\}$.}{25}{section*.20}%
 \contentsline {subsection}{\numberline {4.6}PCI computation for the signal example}{25}{subsection.4.6}%
-\contentsline {paragraph}{$R(X \rightsquigarrow Y)$.}{25}{section*.19}%
-\contentsline {paragraph}{$R(Y \rightsquigarrow X)$.}{26}{section*.20}%
+\contentsline {paragraph}{$R(X \rightsquigarrow Y)$.}{25}{section*.21}%
+\contentsline {paragraph}{$R(Y \rightsquigarrow X)$.}{26}{section*.22}%
 \contentsline {subsection}{\numberline {4.7}Desiderata analysis for the signal example}{26}{subsection.4.7}%
 \contentsline {section}{\numberline {5}Synthetic evaluation with overdetermination and undercutting}{27}{section.5}%
+\contentsline {paragraph}{Causal impact, decomposed.}{28}{section*.25}%
+\contentsline {paragraph}{Two factual cases.}{29}{section*.26}%
+\contentsline {paragraph}{Desiderata and measurements.}{29}{section*.27}%
+\contentsline {section}{\numberline {6}Relation with Actual Causality}{29}{section.6}%

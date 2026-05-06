@@ -1,0 +1,125 @@
+\section{Relation with Actual Causality} \label{sec:relation_with_ac}
+
+The notion of explanation-extended distribution is not meant to explicate Halpern's notion of actual
+causality; rather, the goal was to combine the intuitions underlying Halpern's notion with those
+motivating Pearl's notion of probability of necessity and sufficiency to provide a more general
+tool for causal attribution. Nevertheless, to show that we preserve the spirit of Halpern's
+definition, in this section, we discuss the connection between actual causality and the notions of
+explanation-extended distribution (for proofs, see the appendix). The goal is to show that there is
+a natural choice of parameters for our method that makes it give verdicts that agree with actual
+causality. With one caveat: probability of causation maximization will not identify subset-minimal
+causes that are not cardinality-minimal.
+
+
+
+Let's start with the main definition used by Halpern:
+
+\begin{definition} \label{def:ac}
+    \(\mathbf{C} = \mathbf{c}\) is an actual cause of \(\varphi\) in the causal setting \((M, \mathbf{u})\) if the following three conditions hold:
+    \begin{itemize}
+        \item \textbf{Factivity}: \((M, \mathbf{u}) \vDash (\mathbf{C} = \mathbf{c}\,)\) and \((M, \mathbf{u}) \vDash \varphi\),
+        \item \textbf{Context-sensitive Necessity}: There is a set of variables \(\mathbf{T} \subseteq \mathbf{V}\) and an alternative setting \(\mathbf{c'}\) of variables in \(\mathbf{C}\) such that if \((M, \mathbf{u}) \vDash \mathbf{T} = \mathbf{t^\star}\), then
+            \[(M, \mathbf{u}) \vDash [\mathbf{C} \leftarrow \mathbf{c'}, \mathbf{T} \leftarrow \mathbf{t^\star}] \neg \varphi,\]
+        \item \textbf{Minimality}: \(\mathbf{C}\) is minimal; there is no strict subset \(\mathbf{C_{sub}} \subset \mathbf{C}\) such that \(\mathbf{C_{sub}} = \mathbf{c_{sub}}\) satisfies the above two conditions where $\mathbf{c_{sub}}$ is the restriction of \(\mathbf{c}\) to the variables in \(\mathbf{C_{sub}}\).
+    \end{itemize}
+\end{definition}
+
+
+First, we notice that if the actual causality holds, there are some fairly natural settings of
+suspects and witnesses such that for any (regular) witness and suspect biases, the resulting
+integrated probability of causality (still parameterized by noise) is greater than zero.
+
+
+\begin{theorem}\label{th:ac-exp}
+    Suppose that $\mathbf{C}$ is an actual cause with a witness set $\mathbf{T}$ in $(M, \mathbf{u})$.  Take any  $\{\mathbf{S} = \mathbf{s}\} \supseteq \mathbf{C}$ as the potential cause set, and follow the definition in taking the set of all endogenous variables $\mathbf{V} \supseteq \mathbf{T}$ as the potential witness set. Then for any suspect bias  $ - 0.5 < b_s < 0.5$, and  any witness  bias $ - 0.5 < b_w < 0.5$ we have: \begin{align}
+    P^{E}_{b_s, b_w , \varphi, \{\mathbf{S} = \mathbf{s}\}, \mathbf{V}}(\mathbf{u}, \mathbf{v}, C, T) > 0 \label{eq:pect}\\
+    \text{ and therefore } \nonumber\\
+\sum_{\mathbf{T} \subseteq \mathbf{V}}\, P^E_{b_s, b_w , \varphi, \{\mathbf{S} = \mathbf{s}\}, \mathbf{V}}(\mathbf{u}, \mathbf{v}, C, T) > 0 \end{align}
+\end{theorem}
+
+
+There is also a clear connection in the opposite direction: if the same noise-parameterized
+probability of causation is greater than zero, the necessity condition in the definition of actual
+causality holds.
+
+
+\begin{theorem}\label{th:exp-ac} Moreover, if
+$\sum_{T \subseteq \mathbf{V}} P^{E}_{b_s, b_w, \varphi, \mathbf{C}, \mathbf{V}}(\mathbf{u}, \mathbf{v}, \mathbf{C}, \mathbf{T}) > 0$,  the context-sensitive necessity condition in Definition \ref{def:ac} holds. \label{th:if_pr_then_nec}
+\end{theorem}
+
+
+
+
+
+
+With minimality, the situation is somewhat more complicated. For one thing, our choice of suspect
+and witness preemption biases will have an impact on probability-preferred set sizes. On the other
+hand, the way that  $P^{\mathit{set}}_{b_s,b_w, \{\mathbf{S}=\mathbf{s}\}, \mathbf{V}}(\mathbf{C}, \mathbf{T})$ is defined makes sets comparable in light of their cardinalities, whereas the minimality Definition \ref{def:ac}  is formulated in terms of the subset relation, which is bound to produce some misalignment. Some useful observations can be made, though.
+
+One of them is that there is a somewhat degenerate simplified setting in which positive
+explanation-extended probability, on the assumption of factivity, entails minimality wrt. to the
+same parameters: it is enough to assume null witness bias and that the suspect bias prefers smaller
+explanations. The strategy used in the proof entails that we can safely marginalize out the
+witnesses as well.
+
+
+\begin{theorem} \label{th:local_max_to_ac} Write $\Phi (\mathbf{C}, \mathbf{T})$ for $P^{E}_{b_s, b_w, \varphi, \mathbf{C}, \mathbf{V}}(\mathbf{u}, \mathbf{v}, \mathbf{C}, \mathbf{T})$. Consider the set of optimizers  $\Gamma = \arg\max_{\mathbf{C} \subseteq \{\mathbf{S} = \mathbf{s}\}, \mathbf{T} \subseteq \mathbf{V}} \Phi(\mathbf{C}, \mathbf{T})$.  Assume $(\mathbf{C^\dagger}, \mathbf{T^\dagger})\in \Gamma$ with $\Phi(\mathbf{C^\dagger}, \mathbf{T^\dagger})>0$ and assume further that factivity is satisfied for $\mathbf{C^\dagger}$ (as in Definition \ref{def:ac}). Let the witness bias be $b_w=0$ and let the suspect preemption bias be $b_s>0$ (that is, we positively prefer suspect preemption, thus building preference for smaller cause sets into our search). Then $C^\dagger$ is an actual cause of $\varphi$ according to Definition \ref{def:ac}.
+\end{theorem}
+
+
+
+\begin{corollary}\label{cor:marginalize} Let's keep the notation from Theorem \ref{th:local_max_to_ac}. Consider the set   of optimizers  $\Delta = \arg\max_{\mathbf{C} \subseteq \{\mathbf{S} = \mathbf{s}\}} \sum_{\mathbf{T} \subseteq \mathbf{V}} \Phi(\mathbf{C}, \mathbf{T})$.  Assume $\mathbf{C^\dagger}\in \Delta$ with \[\sum_{\mathbf{T} \subseteq \mathbf{V}} \Phi(\mathbf{C^\dagger}, \mathbf{T})>0\] and assume still that factivity is satisfied for $\mathbf{C^\dagger}$. Keep $b_w=0$ and $p_s>0$  as in Theorem \ref{th:local_max_to_ac}. Then $\mathbf{C^\dagger}$ is an actual cause of $\varphi$ according to Definition \ref{def:ac}.
+\end{corollary}
+
+
+
+Now we can return to the misalignment we have mentioned and elaborate on the nuance. One can
+imagine a reasoning mode when one looks for causes of an outcome by inspecting probabilities of
+causation $P(C \rightarrow \varphi)$ not knowing what the values of $\mathbf{u}$ are, but knowing that $\varphi$ occurred. It is worth pointing out that  $\arg\max_{\mathbf{C} \subseteq \mathbf{X}}P(\mathbf{C} \rightarrow \varphi)$ might fail to include some $\mathbf{C}$ such that for some setting $\mathbf{u}$, $\mathbf{C}$ is nevertheless an actual cause of $\varphi$.
+
+
+\begin{observation}\label{obs:misalignment} Define $\Xi = \arg\max_{\mathbf{C} \subseteq {X}} P(C \rightarrow \varphi)$. It is not the case that if $C^\dagger$ is an actual cause in $(M, \mathbf{u})$ for some $\mathbf{u}$, $C^\dagger \in \Xi$.
+\end{observation}
+
+The rather straightforward reason for this is that actual cause sets might be subset-minimal
+without being cardinality-minimal, while the probability of causality maximization will drop those
+that are not cardinality-minimal.
+
+This can be relatively easily alleviated by not maximizing the probability of causation if one
+searches for actual causes, but rather finding all cause sets with non-zero probabilities (by our
+previous theorems, all of those should satisfy the necessity requirement) and subsequently
+filtering for subset-minimality.
+
+However, we find that some idiosyncratic components of the notion of actual causality don't make
+it directly scalable anyway, so at this point, we wrap up a discussion of that notion and move to
+the discussion of a related, more probabilistic, and more scalable notion.
+
+
+% \begin{observation} Consider
+% \begin{align*}\Xi & = \left\{C \vert \left(\sum_{\mathbf{T} \subseteq \mathbf{V}} \Phi(C, T)>0\right),  \neg \exists C' \subset C \left( \sum_{\mathbf{T} \subseteq \mathbf{V}} \Phi(C', T)\right) \right\}
+% \end{align*}
+
+% \begin{enumerate}
+% \item $\Delta \subseteq \Xi$.
+% \item If $C^\dagger \in \Xi$, $C^\dagger$ is an actual cause.
+% \end{enumerate}
+% \end{observation}
+
+
+
+% \begin{proof}
+% TODO
+% \end{proof}
+
+
+% \subsection{Factivity}
+
+% Our definition of explanation-extended distribution does not enforce the criteria of factivity but that can be easily achieved by conditioning. We also believe that the factivity is a restricting condition since we do not wish to limit our causal reasoning to a particular factual world. We wish to generalize to other possible worlds as well.
+
+
+
+% \section{Questions}
+% \begin{itemize}
+%     \item These definitions do not exactly coincide with Halpern and Pearl's definitions. How do we want to go about justifying these definitions?
+%     \item Are there any other quantities that people think we can define above?
+% \end{itemize}

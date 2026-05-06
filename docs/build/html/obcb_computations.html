@@ -67,6 +67,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="signal_mediation_computations.html">Signal with Mediation — SHAP, Causal SHAP and PCI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="responsibility_archetypes.html">Design C — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance</a></li>
 </ul>
 
         </div>
@@ -162,7 +163,7 @@
 </tr>
 </tbody>
 </table>
-<p>All PN/PS/PNS values use <strong>partial abduction</strong>: context variables (gender, credit) are conditioned on; noise for <code class="docutils literal notranslate"><span class="pre">check</span></code> is marginalised out, not fixed by the observation of <code class="docutils literal notranslate"><span class="pre">loan</span></code>.</p>
+<p>All PN/PS/PNS values condition on the factual values of the observed variables (gender, credit) and marginalise over the unobserved noise in <code class="docutils literal notranslate"><span class="pre">check</span></code> through the structural equations — consistent with integrating over <span class="math notranslate nohighlight">\(P_{\mathbf{U}}\)</span> in the PCI definition.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -362,7 +363,7 @@ PN(credit=bad    | Bob)   = 0.9000
 \[\mathrm{PS}(C = c^\star,\, Y = 0) = P(\mathrm{loan}_{C=c^\star} = 0 \mid C = c',\, Y = 1)\]</div>
 <p><em>Had the cause been present when it was absent, would the outcome have occurred?</em></p>
 <p><strong>Population level:</strong> marginalise over credit using <span class="math notranslate nohighlight">\(P(\text{credit} \mid C = c', \text{loan} = 1)\)</span>.</p>
-<p><strong>Note:</strong> partial abduction — noise for <code class="docutils literal notranslate"><span class="pre">check</span></code> is marginalised out, not fixed by the observation of <code class="docutils literal notranslate"><span class="pre">loan</span> <span class="pre">=</span> <span class="pre">1</span></code>. This matches the paper’s population values.</p>
+<p><strong>Note:</strong> noise for <code class="docutils literal notranslate"><span class="pre">check</span></code> is marginalised out through the structural equations, since it is not directly observed — consistent with integrating over <span class="math notranslate nohighlight">\(P_{\mathbf{U}}\)</span> in the PCI definition. This matches the paper’s population values.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -572,6 +573,7 @@ PNS_c(credit=bad    | gender=male) [Bob]   = 0.8595
 <ul class="simple">
 <li><p>Suspects <span class="math notranslate nohighlight">\(S \in \bigl\{\{g\},\, \{c\},\, \{g, c\}\bigr\}\)</span>; <span class="math notranslate nohighlight">\(\Gamma_s\)</span> uniform (<span class="math notranslate nohighlight">\(\tfrac{1}{3}\)</span> each).</p></li>
 <li><p>Witnesses <span class="math notranslate nohighlight">\(W \in \{\emptyset,\, \{\text{check\_failed}\}\}\)</span>; <span class="math notranslate nohighlight">\(\Gamma_w\)</span> uniform (<span class="math notranslate nohighlight">\(\tfrac{1}{2}\)</span> each).</p></li>
+<li><p>The joint <span class="math notranslate nohighlight">\(\Gamma\)</span> is built by rejection sampling from <span class="math notranslate nohighlight">\(\Gamma_s \times \Gamma_w\)</span>. Since <span class="math notranslate nohighlight">\(S \cap W = \emptyset\)</span> here (gender/credit vs. check_failed), no draws are rejected, <span class="math notranslate nohighlight">\(Z = 1\)</span>, and <span class="math notranslate nohighlight">\(p^\Gamma(C, T) = p_s^\Gamma(C) \cdot p_w^\Gamma(T)\)</span> on every accepted pair.</p></li>
 <li><p>Alternative: point mass on the only other binary value.</p></li>
 <li><p>Contrast: PNS binary, <span class="math notranslate nohighlight">\(y^\star = \text{loan} = 0\)</span>.</p></li>
 </ul>

@@ -1,69 +1,154 @@
 \section{Synthetic evaluation with overdetermination and undercutting}
 \label{sub:synthetic}
 
+To evaluate \ourapproach in a setting that exhibits multiple distinct causal patterns
+simultaneously, we construct a synthetic structural causal model carrying three archetypes
+--- linear necessary-and-sufficient, overdetermined-not-necessary, and preempted (gated)
+--- together with an irrelevance control.\footnote{The classical motivating example is
+Sally and Billy throwing stones at a bottle: Sally's stone arrives first and shatters it;
+Billy's would have done the same had Sally's not preempted it. The case is canonical in
+the actual-causality literature \citep{actualCausalityHalpern} and motivates the preempted
+archetype below; we use generic letters rather than personal names to keep variable
+labelling tight.}
 
-In this evaluation, we build off the existing counterexamples to the but-for clause as an explanation tool. Recall that the  initial intuition one might have is the following:
-
-\begin{quote}
-$X=x$ is responsible for $Y=y$ just in case $Y$ would have been different had we intervened on $X$ to be different, i.e. if $Y_{x'} = y'$ for some $x' \neq x, y' \neq y$.
-\end{quote}
-
-A typical counterexample to this is cast in terms of categorical variables \cite{actualCausalityHalpern}:
-
-\begin{quote} Sally and Billy pick up stones and throw them at a bottle. Sally’s stone gets there first, shattering the bottle. Both throws are perfectly accurate, so Billy’s stone would have shattered the bottle had it not been preempted by Sally’s throw. The intuition is that Sally's throw is responsible for the shattering, but not so Billy's. However, it is false that had Sally not thrown the stone, the bottle would not have shattered, so the simple counterfactual condition fails.
-\end{quote}
-
-What we want to investigate is the performance of responsibility attribution, using the same implementation as the one used in Appendix \ref{sub:amv}, following the discussion in Section \ref{sec:scaling}, in the context of a synthetic generalization of this problem. Suppose we use continuous variables in a model with a similar overdetermination and undercutting structure. Is the tool capable of meeting our expectations when it comes to responsibility attribution?
-
-The answer is positive. We first introduce the model, introduce intuitive qualitative desiderata, and investigate their satisfaction for 500 local explanations, for events generated using the same generative process, with responsibility scores for all features estimated using one sample of size 5000.
-
-The way we generalize is as follows. The input and output variables are continuous. The $A$ variables are like Sally's throw: they have an unblocked impact on the outcome. The $C$ variables are like Billy's throw: if their linear combination is high enough, they are active and can have an impact on the outcome. Otherwise, their impact is blocked. $B$ and $D$ are like `Sally hits' and `Bill hits', except continuous, and $E$ is some final outcome, except now we don't use a disjunction, but rather addition.
-
-
+The model has six independent root variables and three deterministic branches feeding the
+outcome $E$:
 \begin{align*}
-\text{For } i = 0, 1, 2: &  \\
-&\quad A_i \sim \mathcal{N}(0, 1), \\
-&\quad C_i \sim \mathcal{N}(0, 1), \\
-\text{and}  & \\
- B & = 0 \cdot A_0 + 5 \cdot A_1 + 10 \cdot A_2, \\
- cs\_dot & = 0 \cdot C_0 + 5 \cdot C_1 + 10 \cdot C_2, \\
- cs\_win &= \mathbf{1}\{ cs\_dot > B \}, \\
- D & = cs\_dot \cdot cs\_win, \\
- E& = B + D.
+L_1, L_2 &\sim \mathcal{N}(0, 1), \quad O_1, O_2 \sim \mathcal{N}(1, 1), \quad
+  P, D \sim \mathcal{N}(0, 1), \\
+\mathrm{lin}      &= 5 L_1 + 10 L_2, \\
+\mathrm{od}       &= \max(5 O_1,\, 5 O_2), \\
+\mathrm{gate}     &= \mathbb{1}\{\lvert L_2 \rvert \le \tau\}, \\
+\mathrm{p\_branch}&= 5 P \cdot \mathrm{gate}, \\
+E &= \mathrm{lin} + \mathrm{od} + \mathrm{p\_branch}.
 \end{align*}
-
-
-\noindent See Figure \ref{fig:synthetic_model} for a visualization of the model structure.
-
-
-Say we denote the mean causal impact of a variable $V$ by $ci(V)$. We do not expect to see zero estimates for irrelevant properties, as the score also results from sampling other potential causes and witnesses, so there will always be some distance between the outcomes in both sufficiency and necessity worlds. But we do expect the following qualitative/comparative statements to hold:
-
-Most of the time, $ci(A0) < ci(A1) < ci(A2)$, with $ci(A1)$ and $ci(A2)$ closer to each other and potentially the $ci(A1) > ci(A2)$ for cases where $A1 >> A2$.
-
-Similarly, for the $C$ variables, when their impact is not blocked (i.e. if `cs\_win =1`). Otherwise, we expect $ci(C1) \approx ci(C2) \approx ci(C3)$. Given the difference in means between $ci(A0)$ and $ci(A2)$ close to $6$, let's explicate this proximity as the absolute difference between sampled values being $<2$. Mean estimated scores for all the features involved and the frequency of the binary claims satisfaction are as expected, and can be inspected in Figures \ref{fig:synthetic_attribution} and \ref{fig:synthetic_summary}
-
-
-
+We pick $\tau = 0.674$ so the gate is on / off about half the time
+($\Pr(\lvert L_2 \rvert \le 0.674) \approx 0.5$ for $L_2 \sim \mathcal{N}(0,1)$).
+The DAG is shown in Figure~\ref{fig:design_c_dag}. The variable $D$ is sampled but never
+enters $E$ --- it serves as an irrelevance control, so any non-zero score for $D$ is the
+noise floor of the procedure.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width= 11cm]{figures/synthetic_causal_model.png}
-\caption{Synthetic model involving overdetermination and undercutting used in the evaluation loop.}
-\label{fig:synthetic_model}
+\includegraphics[width=0.78\linewidth]{figures/design_c_dag.pdf}
+\caption{Design~C. Roots (circles) are independent draws:
+$L_1, L_2 \sim \mathcal{N}(0,1)$ (linear, purple); $O_1, O_2 \sim \mathcal{N}(1,1)$
+(overdetermined via $\max$, blue); $P \sim \mathcal{N}(0,1)$ (gated by
+$\lvert L_2 \rvert \le \tau$, green); $D \sim \mathcal{N}(0,1)$ (irrelevance control,
+grey). Mediators (white ellipses) carry the deterministic functions of their parents.
+Outcome $E$ (orange double-circle) is the sum
+$\mathrm{lin} + \mathrm{od} + \mathrm{p\_branch}$. The variable $D$ has no outgoing edges
+by construction.}
+\label{fig:design_c_dag}
 \end{figure}
 
+The \ourapproach evaluation treats the six roots as the suspect set; deterministic
+mediators are not suspects. Restricting suspects to roots loses no causal information here
+since downstream values are determined by the roots (formal statement deferred to
+Section~\ref{sec:causal_impact}).
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.9\linewidth]{figures/synthetic_causal_model_responsibility_attribution.png}
-    \caption{Mean attribution scores to all upstream features in the synthetic model, 500 individual explanations, all based on a single search sample of size 5000. When `cs\_win=0', the $C$ variables are not activated, and so we expect total scores for all of them to be similar (red, violet, dark brown on the left-hand side). We still expect the scores for $A0$, $A1$, and $A2$ generally to increase independently of what happens with the $C$ variables, which we see on both sides (blue, light brown, and green on both sides). We also expect the scores for $C$ variables to increase if they are activated (red, violet, dark brown on the right-hand side). These expectations are satisfied.}
-    \label{fig:synthetic_attribution}
-\end{figure}
+\paragraph{Causal impact, decomposed.}
+We follow the impact function $ci(y^s, y^n, y^\star) = \lvert y^n - y^\star \rvert -
+\lvert y^s - y^\star \rvert$ defined in Section~\ref{sec:causal_impact}, but report its
+two components separately as $ci_N$ and $ci_S$:
+\begin{align*}
+ci_N(V) &= \mathbb{E}\!\left[\,\lvert Y^n - y^\star \rvert \,\big|\, V \text{ intervened}\right]
+  \quad \text{(necessity)}, \\
+ci_S(V) &= -\,\mathbb{E}\!\left[\,\lvert Y^s - y^\star \rvert \,\big|\, V \text{ pinned at factual}\right]
+  \quad \text{(sufficiency)},
+\end{align*}
+with $ci(V) = ci_N(V) + ci_S(V)$. Higher $ci_N$ means more necessary; higher $ci_S$
+(closer to zero) means more sufficient. The raw scores carry a co-intervention baseline
+that does not vanish for $D$, so we report \emph{excess} over $D$ within each case:
+\[
+\Delta_N(V) = ci_N(V) - ci_N(D),
+\qquad
+\Delta_S(V) = ci_S(V) - ci_S(D).
+\]
+$D$ is the noise floor; any other variable's $\Delta$ is its causal signal above it. SHAP
+attributions \citep{lundberg2017unified}, defined for a comparable prediction function,
+are introduced in Section~\ref{sec:shap_defs} and recalled in the comparison block below.
 
+\paragraph{Two factual cases.}
+We instantiate the model with one batch of $500$ events and select two factual
+observations to read all archetypes off.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.9\linewidth]{figures/synthetic_causal_model_summary.png}
-    \caption{Qualitative claims satisfaction frequency for causal attribution in the synthetic model, 500 local explanations all based on a single search sample of size 5000. Most of the time, the ordering of the scores for $A$ variables agrees with the ordering of the coefficients. Most of the time, close proximity of scores for inactive $C$ variables is quite high; most often, the ordering for active $C$ variables agrees with the ordering of the coefficients. We do not, however, want an explanation to track coefficients only, which, for instance, is illustrated by the last statement: if scores are reversed, this is mostly due to the disparate direction of the difference between the variable values.}
-    \label{fig:synthetic_summary}
-\end{figure}
+\textit{Case 1 (preempted, contestable $O$ pair).} Filter:
+$\lvert L_2 \rvert > \tau$ (gate off, so $\mathrm{p\_branch} = 0$ regardless of $P$) and
+$\lvert O_1 - O_2 \rvert < \delta$ with $\delta = 1$ (the two overdetermined contributors
+are close --- the winner is barely the winner). Linear N+S on the $L$s, between-variable
+sufficiency asymmetry on a contestable $O$ pair, and noise floor for both $P$ and $D$
+should all be readable from this single observation.
+
+\textit{Case 2 (unpreempted, dominant $O$ winner).} Filter:
+$\lvert L_2 \rvert \le \tau$ (gate on, $P$ branch active) and
+$\lvert O_1 - O_2 \rvert > \delta$. The dominant winner is what makes the
+within-variable $S$-not-$N$ gap visible: the winner is large enough that alternatives
+rarely beat it (high $\Delta_S$), and the loser provides a partial floor when the winner
+is intervened (reduced $\Delta_N$). A contestable pair cannot show this within-variable
+gap --- pin either one and the partner can still flip the max.
+
+The two cases together test the structural-role-not-identity claim: the same variable $P$
+should sit at the noise floor in Case~1 and mirror $L_1$ in Case~2.
+
+\paragraph{Desiderata and measurements.}
+Table~\ref{tab:design_c_desiderata} pairs each archetype expectation with the formal
+inequality on the excess scores $\Delta_N, \Delta_S$, the check identifier from the
+companion notebook, and the measured value. All thirteen desiderata are met within the
+chosen tolerances, which are deliberately small relative to the range of the raw scores
+(typically $8$--$11$) and slightly wider for the cross-regime $D$-baseline check ---
+co-intervention variance is structurally larger in the gate-on regime than in the
+gate-off regime, so the noise-floor variable $D$ legitimately drifts across cases.
+
+\begin{sidewaystable}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{r p{9cm} l c c}
+\toprule
+\# & Formal desideratum & Check id & Measured & Result \\
+\midrule
+1  & $\Delta_N(L_2)$ is the largest excess necessity, Case~1
+   & \texttt{C1.L2\_dominates\_N}                    & $+2.214$ & \checkmark \\
+2  & $\Delta_N(L_2)$ is the largest excess necessity, Case~2
+   & \texttt{C2.L2\_dominates\_N}                    & $+0.610$ & \checkmark \\
+3  & $\Delta_S(O_w) - \Delta_S(O_l) > \epsilon_{\text{dom}}$,
+       Case~1 (contestable)
+   & \texttt{C1.O\_sufficiency\_asymmetry}           & $+0.350$ & \checkmark \\
+4  & $\Delta_S(O_w) - \Delta_S(O_l) > \epsilon_{\text{dom}}$,
+       Case~2 (dominant)
+   & \texttt{C2.O\_sufficiency\_asymmetry}           & $+0.779$ & \checkmark \\
+5  & $\lvert \Delta_N(O_w) - \Delta_N(O_l) \rvert < \epsilon_{\text{close}}$,
+       Case~1
+   & \texttt{C1.O\_necessity\_symmetric}             & $+0.075$ & \checkmark \\
+6  & $\Delta_S(O_w) - \Delta_N(O_w) > \epsilon_{\text{dom}}$, Case~2
+       \emph{(within-variable $S$-not-$N$ signature)}
+   & \texttt{C2.O\_winner\_S\_exceeds\_N}            & $+0.462$ & \checkmark \\
+7  & $\Delta_N(L_2) - \Delta_N(O_w) > \epsilon_{\text{dom}}$, Case~2
+   & \texttt{C2.L2\_more\_necessary\_than\_O\_winner} & $+1.157$ & \checkmark \\
+8  & $\lvert \Delta_N(P) \rvert < \epsilon_{\text{close}}$,
+       Case~1 (gate off)
+   & \texttt{C1.P\_at\_noise\_floor\_N}              & $+0.190$ & \checkmark \\
+9  & $\Delta_N(L_1) - \Delta_N(P) > \epsilon_{\text{dom}}$, Case~1
+   & \texttt{C1.L1\_above\_P\_N}                     & $+0.402$ & \checkmark \\
+10 & $\Delta_N(P) > \epsilon_{\text{signal}}$, Case~2 (gate on)
+   & \texttt{C2.P\_above\_floor\_N}                  & $+0.505$ & \checkmark \\
+11 & $\lvert \Delta_N(P) - \Delta_N(L_1) \rvert < \epsilon_{\text{close}}$,
+       Case~2
+   & \texttt{C2.P\_mirrors\_L1\_N}                   & $+0.277$ & \checkmark \\
+12 & $\Delta_N(P, \text{Case~2}) - \Delta_N(P, \text{Case~1}) > \epsilon_{\text{dom}}$
+       \emph{(regime flip on $P$)}
+   & \texttt{CROSS.P\_flips\_N}                      & $+0.315$ & \checkmark \\
+13 & $\lvert ci_N(D, \text{Case~1}) - ci_N(D, \text{Case~2}) \rvert <
+       \epsilon_{\text{baseline}}$
+   & \texttt{CROSS.D\_baseline\_stable}              & $+1.088$ & \checkmark \\
+\bottomrule
+\end{tabular}
+\caption{Desiderata satisfaction on Design~C. Tolerances:
+$\epsilon_{\text{dom}} = \epsilon_{\text{signal}} = 0.15$,
+$\epsilon_{\text{close}} = 0.5$, $\epsilon_{\text{baseline}} = 2.0$. Subscripts $w / l$
+denote the winner / loser of the $\max(5 O_1, 5 O_2)$ branch in the given case. Check
+ids match the qualitative-check cell in the companion notebook
+(\texttt{responsibility\_archetypes.ipynb}).}
+\label{tab:design_c_desiderata}
+\end{sidewaystable}

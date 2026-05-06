@@ -16,6 +16,7 @@ Requires-Dist: matplotlib
 Requires-Dist: seaborn
 Requires-Dist: tqdm
 Requires-Dist: graphviz
+Requires-Dist: shap>=0.51.0
 
 # PCI Paper — Computational Notebooks
 

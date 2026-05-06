@@ -563,17 +563,15 @@ $v_{\mathrm{causal}}(\{M,Y\})=0.857$.
 \subsection{PCI computation for the signal example}
 \label{sec:pci_signal_computation}
 
-We work at the factual instance $X^\star = M^\star = Y^\star = 1$,
-which gives abducted noise $\varepsilon_M^\star = M^\star - X^\star = 0$
-and $\varepsilon_Y^\star = Y^\star - M^\star = 0$.
+We work at the factual instance $X^\star = M^\star = Y^\star = 1$.
 The causal impact function is the \textbf{absolute difference score}
 (Example~\ref{ex:absolute_score}):
 \[
 ci(y^s, y^n, y^\star) = |y^n - y^\star| - |y^s - y^\star|.
 \]
-Partial abduction: the factual noise is abducted in the sufficiency world;
-fresh independent noise is drawn in the necessity world.
-The alternative for the suspect is drawn from its marginal $P(A)$.
+Both worlds run the SCM with fresh exogenous noise drawn from $P_{\mathbf{U}}$:
+the necessity world replaces the suspect with $A'\sim P(A)$ and propagates,
+the sufficiency world restores the suspect to $a^\star$ and propagates.
 For target $B$, $\mathbf{S}$ is the full set of two input features of $B$
 and $\mathbf{W}$ is the remaining input (neither suspect nor target);
 $\Gamma_s$ is uniform over the three non-empty subsets of $\mathbf{S}$,
@@ -593,41 +591,50 @@ PCI is the $\Gamma$-integral of $ci$ over the slice $\{X_k\in\mathbf{C}\}$
 --- not a renormalized expectation --- so the three enumerated weights below
 sum to $\tfrac{3}{4}$, not $1$.
 
-\textit{Sufficiency} (all three pairs): abducted $\varepsilon_Y^\star=0$ gives
-$Y^s=1=Y^\star$, so $|Y^s-1|=0$ throughout.
-Sufficiency is maximally satisfied: the factual noise $\varepsilon_Y^\star=0$
-means restoring $X$ to its factual value exactly recovers the outcome.
+For each suspect-containing pair we compute the necessity expectation
+$\mathbb{E}[|Y^n-1|]$ and the sufficiency expectation $\mathbb{E}[|Y^s-1|]$
+in closed form via the folded-normal formula, then take the signed
+difference $\bar c = \mathbb{E}[|Y^n-1|] - \mathbb{E}[|Y^s-1|]$.
 
-\textit{Necessity by case}:
+\textit{Per-pair contributions}:
 \begin{align*}
 (C{=}\{X\},\,T{=}\emptyset),\;\tfrac{1}{4}:
-  &\quad \mathrm{do}(X{=}X');\;
+  &\quad \mathrm{do}(X{=}X'):\;
     Y^n = X' + \varepsilon_M^n + \varepsilon_Y^n, \\
-  &\quad Y^n-1\sim\mathcal{N}(-0.5,\,0.45),\;
-    \mathbb{E}[|Y^n-1|]=0.677.\\[4pt]
+  &\quad \mathrm{do}(X{=}1):\;
+    Y^s = 1 + \varepsilon_M^s + \varepsilon_Y^s, \\
+  &\quad \mathbb{E}[|Y^n-1|]=0.677,\;
+    \mathbb{E}[|Y^s-1|]=\sqrt{0.4/\pi}\approx 0.357,\;
+    \bar c \approx 0.320.\\[4pt]
 (C{=}\{X\},\,T{=}\{M\}),\;\tfrac{1}{4}:
-  &\quad \mathrm{do}(X{=}X',\,M{=}1);\;
-    Y^n = 1+\varepsilon_Y^n,\;
-    \mathbb{E}[|Y^n-1|]=\sqrt{0.2/\pi}\approx 0.252.\\[4pt]
+  &\quad \mathrm{do}(X{=}X',\,M{=}1):\;
+    Y^n = 1+\varepsilon_Y^n, \\
+  &\quad \mathrm{do}(X{=}1,\,M{=}1):\;
+    Y^s = 1+\varepsilon_Y^s, \\
+  &\quad \mathbb{E}[|Y^n-1|]=\mathbb{E}[|Y^s-1|]=\sqrt{0.2/\pi}\approx 0.252,\;
+    \bar c = 0.\\[4pt]
 (C{=}\{X,M\},\,T{=}\emptyset),\;\tfrac{1}{4}:
-  &\quad \mathrm{do}(X{=}X',\,M{=}M');\;
+  &\quad \mathrm{do}(X{=}X',\,M{=}M'):\;
     Y^n = M'+\varepsilon_Y^n, \\
-  &\quad Y^n-1\sim\mathcal{N}(-0.5,\,0.45),\;
-    \mathbb{E}[|Y^n-1|]=0.677.
+  &\quad \mathrm{do}(X{=}1,\,M{=}1):\;
+    Y^s = 1+\varepsilon_Y^s, \\
+  &\quad \mathbb{E}[|Y^n-1|]=0.677,\;
+    \mathbb{E}[|Y^s-1|]=0.252,\;
+    \bar c \approx 0.425.
 \end{align*}
-In the first and third cases $M$ propagates freely; only the second case
-pins $M$ as a witness and severs $X$'s indirect path.
-Combining:
+The witness pair $(C{=}\{X\},\,T{=}\{M\})$ contributes 0: pinning $M$ at
+$m^\star$ in both worlds equalizes their distributions. The other two
+pairs let $M$ propagate freely. Combining:
 \[
 R(X \rightsquigarrow Y \mid \mathbf{W}{=}\{M\})
-= \frac{0.677+0.252+0.677}{4} \approx 0.402.
+= \tfrac{1}{4}\bigl(0.320 + 0 + 0.425\bigr) \approx 0.186.
 \]
 
 \paragraph{$R(Y \rightsquigarrow X)$.}
 $\mathbf{S}=\{M,Y\}$, $\mathbf{W}=\{M\}$.
-$X$ is exogenous with no parents, so any do-intervention leaves
-$X^n=X^\star=1$ (necessity) and $X^s=X^\star=1$ (sufficiency) in every
-$(C,T)$ configuration. Hence $ci=0$ for all pairs and
+$X$ is exogenous: no do-intervention on $\{M,Y\}$ alters $X$'s structural
+equation. The necessity and sufficiency distributions of $X$ coincide (both
+draw $X$ from its marginal $P(X)$), so $ci=0$ for every $(C,T)$ pair and
 \[
 R(Y \rightsquigarrow X \mid \mathbf{W}{=}\{M\}) = 0.
 \]
@@ -651,13 +658,13 @@ Desideratum & Condition & Plain SHAP & Causal SHAP
 \midrule
 \textbf{DXY}  & $R(X \rightsquigarrow Y) > 0$
   & $0.250$\;\checkmark & $0.250$\;\checkmark
-  & $0.452$\;\checkmark & $0.402$\;\checkmark$^\dagger$ \\
+  & $0.249$\;\checkmark & $0.186$\;\checkmark$^\dagger$ \\
 \textbf{DMY}  & $R(M \rightsquigarrow Y) > 0$
   & $0.250$\;\checkmark & $0.250$\;\checkmark
-  & $0.452$\;\checkmark & $0.508$\;\checkmark \\
+  & $0.283$\;\checkmark & $0.319$\;\checkmark \\
 \textbf{DXM}  & $R(X \rightsquigarrow M) > 0$
   & $0.306$\;\checkmark & $0.375$\;\checkmark
-  & $0.421$\;\checkmark & $0.473$\;\checkmark \\
+  & $0.253$\;\checkmark & $0.284$\;\checkmark \\
 \textbf{DYX}  & $R(Y \rightsquigarrow X) = 0$
   & $0.139$\;\texttimes & $0.000$\;\checkmark
   & $0.000$\;\checkmark & $0.000$\;\checkmark \\
@@ -669,21 +676,21 @@ Desideratum & Condition & Plain SHAP & Causal SHAP
   & $0.000$\;\checkmark & $0.000$\;\checkmark \\
 \textbf{DMXY} & $R(M \rightsquigarrow Y) > R(X \rightsquigarrow Y)$
   & $0.25{=}0.25$\;\texttimes & $0.25{=}0.25$\;\texttimes
-  & $0.452{=}0.452$\;\texttimes & $0.508{>}0.402$\;\checkmark$^\ddagger$ \\
+  & $0.283{>}0.249$\;\checkmark & $0.319{>}0.186$\;\checkmark$^\ddagger$ \\
 \bottomrule
 \end{tabular}
 \caption{Desiderata satisfied (\checkmark) and violated (\texttimes) by plain SHAP,
-Causal SHAP, and PCI (alternative $\sim P(A)$, partial abduction) on the
+Causal SHAP, and PCI (alternative $\sim P(A)$, prior-noise sufficiency) on the
 signal with mediation example ($X\!\to\!M\!\to\!Y$), instance $X=M=Y=1$.
-PCI values are $\mathbb{E}[|y^n - B^\star|]$; $\mathbf{S}$ = both input
-features of $B$, $\Gamma_s$/$\Gamma_w$ uniform.
+PCI values are signed $\bar c = \mathbb{E}[|Y^n-B^\star|] - \mathbb{E}[|Y^s-B^\star|]$;
+$\mathbf{S}$ = both input features of $B$, $\Gamma_s$/$\Gamma_w$ uniform.
 \textbf{W=3rd}: the third variable (neither $A$ nor $B$) is in $\mathbf{W}$
 and sampled as an active witness when not in $C$.
-$^\dagger$~0.402 weights three suspect-containing $(C,T)$ configurations at
+$^\dagger$~0.186 weights three suspect-containing $(C,T)$ configurations at
 $1/4$ each (the rejection-sampling normalizer $Z=2/3$ also counts a fourth
 valid pair $(\{M\},\emptyset)$ that does not contain $X$): one pins $M$ as
-witness (contribution~0.252, $X$'s path severed) and two let $M$ propagate
-freely (contribution~0.677 each).
+witness (contribution~0, necessity and sufficiency coincide) and two let
+$M$ propagate freely (contributions~0.320 and 0.425).
 $^\ddagger$~The two values use different witness sets ($\mathbf{W}{=}\{M\}$
 for DXY, $\mathbf{W}{=}\{X\}$ for DMY), so the comparison is illustrative
 rather than a single-game ranking.}
@@ -722,40 +729,43 @@ The Shapley formula cannot distinguish that $X$ reaches $Y$ only through~$M$:
 when $X=1$, the expected prediction is already~$1$ regardless of whether $M$ is
 observed or not, so both features receive the same marginal contribution.
 
-\noindent\textbf{PCI: the role of the witness mechanism.}
-Table~\ref{tab:signal_desid} also reports PCI in two configurations: without
+\noindent\textbf{PCI: structural intervention separates the paths; witnesses
+sharpen the gap.}
+Table~\ref{tab:signal_desid} reports PCI in two configurations: without
 witnesses ($\mathbf{W}=\emptyset$) and with the third variable as witness.
 
-Without witnesses, PCI satisfies DYX, DYM, and DMX exactly --- zero attribution
-to non-causes --- because intervening on a variable that does not structurally
-affect the target leaves the target unchanged in both the necessity and
-sufficiency worlds, so $ci=0$ identically.
-It also satisfies DXY, DMY, and DXM (all positive).
-However, \textbf{DMXY fails}: both
-$\mathrm{PCI}(X\to Y\mid\mathbf{W}{=}\emptyset)$ and
-$\mathrm{PCI}(M\to Y\mid\mathbf{W}{=}\emptyset)$ equal $0.452$, because the
-path variance reaching $Y$ is $\mathrm{Var}(X)+\mathrm{Var}(\varepsilon_M)+\mathrm{Var}(\varepsilon_Y)=0.45$
-for $X$ (through $M$) and $\mathrm{Var}(M)+\mathrm{Var}(\varepsilon_Y)=0.45$ for $M$
-(directly) --- an exact tie across every suspect coalition $C$,
-so the $\Gamma_s$-weighted average is also tied.
-Without a mechanism to block the indirect path $X\to M\to Y$, PCI cannot
-distinguish direct from indirect causation, mirroring the DMXY failure of both
-SHAP variants.
+Without witnesses, PCI satisfies all six single-variable desiderata.
+DYX, DYM, and DMX are zero exactly: intervening on a variable that does not
+structurally affect the target leaves both the necessity and sufficiency
+worlds with identical distributions, so $ci=0$ identically.
+DXY, DMY, and DXM are positive.
+DMXY also \textbf{passes} at $\mathrm{PCI}(M\to Y)\approx 0.283 > \mathrm{PCI}(X\to Y)\approx 0.249$,
+but only by a margin of $0.034$. The asymmetry comes from the sufficiency
+world: at $C{=}\{X\}$, $X$'s path to $Y$ accumulates
+$\varepsilon_M+\varepsilon_Y$ in $|Y^s-Y^\star|$, while at $C{=}\{M\}$, $M$'s
+path accumulates only $\varepsilon_Y$. The necessity expectations match
+across paths ($\mathrm{Var}(X)+\mathrm{Var}(\varepsilon_M)+\mathrm{Var}(\varepsilon_Y)
+=\mathrm{Var}(M)+\mathrm{Var}(\varepsilon_Y)=0.45$), so the gap is carried
+entirely by the sufficiency variance asymmetry $\mathrm{Var}(\varepsilon_M)$.
+A small structural margin like this is fragile: under any perturbation of
+the noise variances or the contrast function the $\mathbf{W}=\emptyset$
+verdict could flip.
 
-Admitting the third variable as a witness resolves this.
-$\mathrm{PCI}(X\to Y\mid\mathbf{W}{=}\{M\})\approx 0.402$ weights three
+Admitting the third variable as a witness amplifies the gap by roughly
+fourfold.
+$\mathrm{PCI}(X\to Y\mid\mathbf{W}{=}\{M\})\approx 0.186$ weights three
 suspect-containing $(C,T)$ configurations at $1/4$ each: in two cases $M$
-propagates freely (contributing~$0.677$ each) and in one case $M$ is held
-fixed as witness, severing $X$'s indirect path (contributing~$0.252$).
-$\mathrm{PCI}(M\to Y\mid\mathbf{W}{=}\{X\})\approx 0.508$ weights three cases
+propagates freely (contributing~$0.320$ and $0.425$) and in one case $M$ is
+pinned as witness in both worlds, equalizing them and contributing~$0$.
+$\mathrm{PCI}(M\to Y\mid\mathbf{W}{=}\{X\})\approx 0.319$ weights three cases
 in which $M$ takes an alternative value; since $X$ does not appear in $Y$'s
-structural equation, pinning $X$ as a witness has no effect on $Y^n$, and all
-three cases contribute~$0.677$.
-The gap $0.508>0.402$ satisfies DMXY: the witness mechanism selectively
-reduces $X$'s attribution (via the $M$-witness case) while leaving $M$'s
-unchanged.
-The comparison relies on different witness sets for the two cells, so it is
-illustrative rather than a single-game ranking.
+structural equation, pinning $X$ has no effect on $Y^n$ or $Y^s$, and all
+three cases contribute the same $0.425$.
+The gap widens from $0.034$ at $\mathbf{W}=\emptyset$ to
+$0.319-0.186=0.133$ at $\mathbf{W}=\{$third$\}$ --- DMXY is now a
+\emph{robust} attribution rather than a marginal one.
+The comparison relies on different witness sets for the two cells, so it
+remains illustrative rather than a single-game ranking.
 
 Stepping back from the individual desiderata, the failures above are not
 artifacts of a particular feature set or parameter choice: each traces to a
@@ -764,8 +774,10 @@ improves on plain SHAP for one desideratum~(DYX), by replacing observational
 conditioning with interventional distributions. The remaining failures share
 two sources. Prediction models include non-causal features that the
 conditioning distribution cannot exclude~(DYM, DMX). Shapley averaging cannot
-distinguish direct from indirect causal paths~(DMXY). PCI addresses both
-through the structural intervention framework and the witness mechanism.
+distinguish direct from indirect causal paths~(DMXY). PCI addresses both:
+the structural intervention framework already produces a structural gap on
+DMXY through path-noise asymmetry in the sufficiency world; the witness
+mechanism then turns that gap into a robust margin.
 
 Read together with the OBCB analysis of Section~\ref{sec:obcb_shap} --- where
 plain SHAP fails \textbf{D-A-rank} on the 2-feature game, and Causal SHAP
