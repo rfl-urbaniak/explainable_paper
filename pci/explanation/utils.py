@@ -5,51 +5,10 @@ from typing import Any
 import pyro
 import pyro.distributions as dist
 import torch
-from chirho.observational.handlers import condition
 
 from pci.explanation.excised import sample_alternatives
 
 logger = logging.getLogger(__name__)
-
-
-def lean_get_alternative_sample(
-    upstream_model: Callable,
-    n_size: int,
-    active_antecedents: list[str],
-    factual_dictionary: dict,
-    witness_data: dict | None = None,
-    equality_epsilon: float = 0.05,
-    batch_dim: int = -3,
-) -> dict[str, Any | None]:
-    # -----------------
-    # sample alternatives avoiding factuals
-    # -----------------
-
-    # note: we only need the upstream model here
-    factual_to_avoid = {
-        key: val for key, val in factual_dictionary.items() if key in active_antecedents
-    }
-
-    with torch.no_grad():
-        with pyro.poutine.trace() as tr:
-            with sample_alternatives(
-                factuals=factual_to_avoid, epsilon=torch.tensor(equality_epsilon)
-            ):
-                with condition(data=witness_data if witness_data is not None else {}):
-                    upstream_model(n=n_size)
-
-    sampled_values = {
-        name: site["value"]
-        for name, site in tr.trace.nodes.items()
-        if name in active_antecedents
-    }
-
-    for key in factual_to_avoid.keys():
-        sampled = sampled_values[key]
-        assert isinstance(sampled, torch.Tensor)
-        factual = factual_to_avoid[key]
-        assert torch.all(torch.abs(sampled - factual) >= equality_epsilon / 2)
-    return sampled_values
 
 
 def get_alternative_sample(
@@ -225,10 +184,19 @@ def broadcast_mask(mask: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     return mask.view(*view_shape).expand(target.shape)
 
 
-def sample_k_indices(k_min=1, k_max=4, n=24, sample_size=5, invert_selection=False):
+def sample_k_indices(
+    k_min=1,
+    k_max=4,
+    n=24,
+    sample_size=5,
+    invert_selection=False,
+    weighting="cardinality",
+):
     """
-    Sample multiple sets of indices with random sizes. First the set size k is uniformly sampled
-    from the range ``[k_min, k_max]``. Then, k (n-k, if ``invert_selection=True``) out of n indices are uniformly selected
+    Sample multiple sets of indices with random sizes. The set size $k$ is sampled
+    from ``[k_min, k_max]`` according to ``weighting``; then $k$ (or $n-k$ if
+    ``invert_selection=True``) of $n$ indices are uniformly selected without
+    replacement.
 
     :param k_min:
         Minimum number of indices to select.
@@ -239,7 +207,17 @@ def sample_k_indices(k_min=1, k_max=4, n=24, sample_size=5, invert_selection=Fal
     :param sample_size:
         Number of samples to draw (batch size).
     :param invert_selection:
-        If True, select n - k indices instead of k.
+        If True, select ``n - k`` indices instead of ``k``.
+    :param weighting:
+        How to weight the cardinality $k$ before the uniform within-cardinality
+        draw. One of:
+
+        * ``"cardinality"`` (default) — uniform on $k$, then uniform over
+          size-$k$ subsets. Marginal distribution over subsets is
+          $\\propto 1/\\binom{n}{k}$.
+        * ``"subsets"`` — $k$ weighted by $\\binom{n}{k}$, then uniform
+          over size-$k$ subsets. Marginal is uniform over all subsets in the
+          allowed cardinality range.
 
     :returns:
         List of ``sample_size`` boolean tensors of length ``n``,
@@ -249,9 +227,22 @@ def sample_k_indices(k_min=1, k_max=4, n=24, sample_size=5, invert_selection=Fal
         - The number of True entries in each tensor is random, drawn from ``k_min..k_max``.
         - If ``invert_selection=True``, the number of selected indices is ``n - k``.
     """
+    import math
+
+    if weighting == "cardinality":
+        probs = torch.ones(k_max - k_min + 1)
+    elif weighting == "subsets":
+        probs = torch.tensor(
+            [float(math.comb(n, k)) for k in range(k_min, k_max + 1)]
+        )
+    else:
+        raise ValueError(
+            f"Unknown weighting={weighting!r}; expected 'cardinality' or 'subsets'."
+        )
+
     with pyro.plate("batch", sample_size):
         k = (
-            pyro.sample("k", dist.Categorical(probs=torch.ones(k_max - k_min + 1)))
+            pyro.sample("k", dist.Categorical(probs=probs))
             + k_min
         )
 

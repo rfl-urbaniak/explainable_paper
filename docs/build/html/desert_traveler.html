@@ -1,0 +1,612 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PCI on Pearl’s Desert Traveler — Verification &mdash; PCI Paper  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Actual Causality Benchmark" href="actual_causality_benchmark.html" />
+    <link rel="prev" title="Causal Archetypes — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance" href="responsibility_archetypes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PCI Paper
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="obcb_computations.html">Old Boys’ Club Bank — PN, PS, PNS, PCI and SHAP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signal_mediation_computations.html">Signal with Mediation — SHAP, Causal SHAP and PCI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="responsibility_archetypes.html">Causal Archetypes — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PCI on Pearl’s Desert Traveler — Verification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#1.-Setup">1. Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#2.-Original-desert-traveler-—-hand-rolled-HP-style-PCI">2. Original desert traveler — hand-rolled HP-style PCI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Unconditional-(uniform-prior-on-u)">Unconditional (uniform prior on <span class="math notranslate nohighlight">\(u\)</span>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Conditional-on-forensic-evidence-(no-cyanide-\Rightarrow-u-=-1)">Conditional on forensic evidence (no cyanide <span class="math notranslate nohighlight">\(\Rightarrow u = 1\)</span>)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#3.-Weak-poison-variant-—-PCI-and-Pearl's-PS">3. Weak-poison variant — PCI and Pearl’s PS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#PCI-necessity-per-scenario">PCI necessity per scenario</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Pearl's-PS-in-closed-form">Pearl’s PS in closed form</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#4.-Cross-check-with-the-framework's-ThinSearchSampler">4. Cross-check with the framework’s <code class="docutils literal notranslate"><span class="pre">ThinSearchSampler</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="actual_causality_benchmark.html">Actual Causality Benchmark</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sir_benchmark.html">PCI on a dynamical SIR model with policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gradient_based_attribution.html">Gradient-Based Attribution vs PCI</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PCI Paper</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">PCI on Pearl’s Desert Traveler — Verification</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/desert_traveler.ipynb" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="PCI-on-Pearl's-Desert-Traveler-—-Verification">
+<h1>PCI on Pearl’s Desert Traveler — Verification<a class="headerlink" href="#PCI-on-Pearl's-Desert-Traveler-—-Verification" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><strong>Goal.</strong> Reproduce numerically the claims in <code class="docutils literal notranslate"><span class="pre">claude_notes/2026-05-26_pearl_paac_proposal.md</span></code>:</p>
+<ol class="arabic simple">
+<li><p>On Pearl’s original desert traveler, PCI’s necessity expectation under uniform <span class="math notranslate nohighlight">\(\Gamma\)</span> and uniform <span class="math notranslate nohighlight">\(u\)</span> prior is <span class="math notranslate nohighlight">\(\tfrac{1}{8}\)</span> for each cause (singleton <span class="math notranslate nohighlight">\(\mathbf{C}=\{X\}\)</span> or <span class="math notranslate nohighlight">\(\mathbf{C}=\{P\}\)</span>), with <span class="math notranslate nohighlight">\(\mathbf{T}\)</span> ranging over subsets of <span class="math notranslate nohighlight">\(\{c, d\}\)</span>.</p></li>
+<li><p>After forensic conditioning on <em>no cyanide</em> (<span class="math notranslate nohighlight">\(u=1\)</span>), the necessity expectation becomes <span class="math notranslate nohighlight">\(\tfrac{1}{4}\)</span> for the shooter, <span class="math notranslate nohighlight">\(0\)</span> for the poisoner.</p></li>
+<li><p>In the weak-poison variant, Pearl’s <span class="math notranslate nohighlight">\(\mathrm{PS}\)</span> values are <span class="math notranslate nohighlight">\(\mathrm{PS}(P) = 0.1\)</span> and <span class="math notranslate nohighlight">\(\mathrm{PS}(X) \approx 0.76\)</span>.</p></li>
+</ol>
+<p class="rubric" id="outline">Outline</p>
+<ol class="arabic simple">
+<li><p>Setup</p></li>
+<li><p>Original desert traveler — hand-rolled HP-style PCI</p></li>
+<li><p>Weak-poison variant — hand-rolled PCI and closed-form Pearl PS</p></li>
+<li><p>Cross-check with the framework’s <code class="docutils literal notranslate"><span class="pre">ThinSearchSampler</span></code></p></li>
+</ol>
+</div></blockquote>
+<section id="1.-Setup">
+<h2>1. Setup<a class="headerlink" href="#1.-Setup" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pci.explanation.regime</span><span class="w"> </span><span class="kn">import</span> <span class="n">condition_on_interventional_regime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pci.explanation.scores</span><span class="w"> </span><span class="kn">import</span> <span class="n">abs_diff_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pci.explanation.searchable</span><span class="w"> </span><span class="kn">import</span> <span class="n">SearchableModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pci.explanation.thin_search</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThinSearchSampler</span>
+
+<span class="n">smoke_test</span> <span class="o">=</span> <span class="s2">&quot;CI&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
+<span class="n">NUM_TS_SAMPLES</span> <span class="o">=</span> <span class="mi">100</span> <span class="k">if</span> <span class="n">smoke_test</span> <span class="k">else</span> <span class="mi">4000</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;torch._C.Generator at 0x7ba474218f50&gt;
+</pre></div></div>
+</div>
+</section>
+<section id="2.-Original-desert-traveler-—-hand-rolled-HP-style-PCI">
+<h2>2. Original desert traveler — hand-rolled HP-style PCI<a class="headerlink" href="#2.-Original-desert-traveler-—-hand-rolled-HP-style-PCI" title="Link to this heading"></a></h2>
+<p><strong>SCM</strong> (Pearl, <em>Causality</em> 2nd ed., p. 323):</p>
+<div class="math notranslate nohighlight">
+\[c = P\,(u' \vee X'), \qquad d = X\,(u \vee P'), \qquad y = c \vee d.\]</div>
+<p><strong>Factuals.</strong> <span class="math notranslate nohighlight">\(X = 1\)</span>, <span class="math notranslate nohighlight">\(P = 1\)</span>, so <span class="math notranslate nohighlight">\(y^\star = 1\)</span> in both noise states; the factual mediator values are <span class="math notranslate nohighlight">\((c, d) = (1, 0)\)</span> at <span class="math notranslate nohighlight">\(u = 0\)</span> and <span class="math notranslate nohighlight">\((0, 1)\)</span> at <span class="math notranslate nohighlight">\(u = 1\)</span>.</p>
+<p><strong>PCI ingredients.</strong> Suspects <span class="math notranslate nohighlight">\(\mathbf{S} = \{X, P\}\)</span>; candidate cause sets the two singletons; witness pool <span class="math notranslate nohighlight">\(\mathbf{W} = \{c, d\}\)</span> (four subsets); <span class="math notranslate nohighlight">\(\Delta\)</span> deterministically flips <span class="math notranslate nohighlight">\(1 \to 0\)</span>. The AC-aligned kernel reduces, on this binary deterministic model, to <span class="math notranslate nohighlight">\(\Phi &gt; 0\)</span> iff <span class="math notranslate nohighlight">\(Y\)</span> flips when <span class="math notranslate nohighlight">\(\mathbf{C}\)</span> is set to its alternative and <span class="math notranslate nohighlight">\(\mathbf{T}\)</span> is pinned at factual.</p>
+<p>We enumerate the 4 (witness sets) × 2 (noise states) = 8 configurations per cause and count flips.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Structural equations for the original desert traveler.</span>
+<span class="c1"># `c_pin` / `d_pin`: if provided, the mediator is held at the given value</span>
+<span class="c1"># (witness pinning).</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">desert_eqs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">c_pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d_pin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">c_pin</span> <span class="k">if</span> <span class="n">c_pin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">P</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">u</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">X</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">d_pin</span> <span class="k">if</span> <span class="n">d_pin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">X</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">P</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">y</span>
+
+
+<span class="c1"># PCI necessity expectation: fraction of (witness, noise) configurations</span>
+<span class="c1"># in which the alternative intervention on `cause_var` flips y away from y*.</span>
+<span class="c1"># Uniform Gamma over `witness_subsets`, uniform prior over `noise_states`.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pci_necessity</span><span class="p">(</span><span class="n">cause_var</span><span class="p">,</span> <span class="n">alt_value</span><span class="p">,</span> <span class="n">factual</span><span class="p">,</span> <span class="n">witness_subsets</span><span class="p">,</span> <span class="n">noise_states</span><span class="p">):</span>
+    <span class="n">flips</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">noise_states</span><span class="p">:</span>
+        <span class="n">f_c</span><span class="p">,</span> <span class="n">f_d</span><span class="p">,</span> <span class="n">f_y</span> <span class="o">=</span> <span class="n">desert_eqs</span><span class="p">(</span><span class="n">factual</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="n">factual</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">],</span> <span class="n">u</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">w_set</span> <span class="ow">in</span> <span class="n">witness_subsets</span><span class="p">:</span>
+            <span class="n">c_pin</span> <span class="o">=</span> <span class="n">f_c</span> <span class="k">if</span> <span class="s2">&quot;c&quot;</span> <span class="ow">in</span> <span class="n">w_set</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">d_pin</span> <span class="o">=</span> <span class="n">f_d</span> <span class="k">if</span> <span class="s2">&quot;d&quot;</span> <span class="ow">in</span> <span class="n">w_set</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">X_int</span> <span class="o">=</span> <span class="n">alt_value</span> <span class="k">if</span> <span class="n">cause_var</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="n">factual</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]</span>
+            <span class="n">P_int</span> <span class="o">=</span> <span class="n">alt_value</span> <span class="k">if</span> <span class="n">cause_var</span> <span class="o">==</span> <span class="s2">&quot;P&quot;</span> <span class="k">else</span> <span class="n">factual</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">y_int</span> <span class="o">=</span> <span class="n">desert_eqs</span><span class="p">(</span><span class="n">X_int</span><span class="p">,</span> <span class="n">P_int</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">c_pin</span><span class="o">=</span><span class="n">c_pin</span><span class="p">,</span> <span class="n">d_pin</span><span class="o">=</span><span class="n">d_pin</span><span class="p">)</span>
+            <span class="n">flips</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y_int</span> <span class="o">!=</span> <span class="n">f_y</span><span class="p">)</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">flips</span> <span class="o">/</span> <span class="n">total</span><span class="p">,</span> <span class="n">flips</span><span class="p">,</span> <span class="n">total</span>
+
+
+<span class="n">witness_subsets</span> <span class="o">=</span> <span class="p">[(),</span> <span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,),</span> <span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">,),</span> <span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<section id="Unconditional-(uniform-prior-on-u)">
+<h3>Unconditional (uniform prior on <span class="math notranslate nohighlight">\(u\)</span>)<a class="headerlink" href="#Unconditional-(uniform-prior-on-u)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">factual</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">noise_states</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">cause</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">]:</span>
+    <span class="n">p</span><span class="p">,</span> <span class="n">flips</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="n">pci_necessity</span><span class="p">(</span><span class="n">cause</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">factual</span><span class="p">,</span> <span class="n">witness_subsets</span><span class="p">,</span> <span class="n">noise_states</span><span class="p">)</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">target</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-6</span> <span class="k">else</span> <span class="s2">&quot;MISMATCH&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PCI necessity, C = </span><span class="se">{{</span><span class="si">{</span><span class="n">cause</span><span class="si">}</span><span class="se">}}</span><span class="s2">:  </span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  = </span><span class="si">{</span><span class="n">flips</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2">     &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;(predicted </span><span class="si">{</span><span class="n">target</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> = 1/8)   </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PCI necessity, C = {X}:  0.1250  = 1/8     (predicted 0.1250 = 1/8)   OK
+PCI necessity, C = {P}:  0.1250  = 1/8     (predicted 0.1250 = 1/8)   OK
+</pre></div></div>
+</div>
+</section>
+<section id="Conditional-on-forensic-evidence-(no-cyanide-\Rightarrow-u-=-1)">
+<h3>Conditional on forensic evidence (no cyanide <span class="math notranslate nohighlight">\(\Rightarrow u = 1\)</span>)<a class="headerlink" href="#Conditional-on-forensic-evidence-(no-cyanide-\Rightarrow-u-=-1)" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">cause</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">]:</span>
+    <span class="n">p</span><span class="p">,</span> <span class="n">flips</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="n">pci_necessity</span><span class="p">(</span><span class="n">cause</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">factual</span><span class="p">,</span> <span class="n">witness_subsets</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}[</span><span class="n">cause</span><span class="p">]</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;OK&quot;</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">target</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-6</span> <span class="k">else</span> <span class="s2">&quot;MISMATCH&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PCI necessity, C = </span><span class="se">{{</span><span class="si">{</span><span class="n">cause</span><span class="si">}</span><span class="se">}}</span><span class="s2">:  </span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  = </span><span class="si">{</span><span class="n">flips</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2">     &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;(predicted </span><span class="si">{</span><span class="n">target</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)   </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PCI necessity, C = {X}:  0.2500  = 1/4     (predicted 0.2500)   OK
+PCI necessity, C = {P}:  0.0000  = 0/4     (predicted 0.0000)   OK
+</pre></div></div>
+</div>
+<p><strong>Result.</strong> All four numbers match the proposal exactly: <span class="math notranslate nohighlight">\(\tfrac{1}{8}\)</span> each unconditionally, <span class="math notranslate nohighlight">\(\tfrac{1}{4}\)</span> for <span class="math notranslate nohighlight">\(X\)</span> and <span class="math notranslate nohighlight">\(0\)</span> for <span class="math notranslate nohighlight">\(P\)</span> after the forensic report. Pearl’s Def. 10.3.5 gives the same ranking with different units (1/2 each unconditionally, 1 and 0 after forensics).</p>
+</section>
+</section>
+<section id="3.-Weak-poison-variant-—-PCI-and-Pearl's-PS">
+<h2>3. Weak-poison variant — PCI and Pearl’s PS<a class="headerlink" href="#3.-Weak-poison-variant-—-PCI-and-Pearl's-PS" title="Link to this heading"></a></h2>
+<p><strong>SCM</strong>: same as Pearl’s original except the cyanide path now has a fatality noise <span class="math notranslate nohighlight">\(\xi \sim \mathrm{Bern}(\alpha)\)</span> with <span class="math notranslate nohighlight">\(\alpha = 0.1\)</span> (small dose, mostly non-fatal):</p>
+<div class="math notranslate nohighlight">
+\[c = P\,(u' \vee X'), \quad V_C = c \cdot \xi, \quad
+  d = X\,(u \vee P'), \quad y = V_C \vee d.\]</div>
+<p>Two factual scenarios under the same observation <span class="math notranslate nohighlight">\(X=1, P=1, Y=1\)</span>:</p>
+<ul class="simple">
+<li><p><em>Scenario A</em> — cyanide killed: forensic positive <span class="math notranslate nohighlight">\(\Rightarrow\)</span> <span class="math notranslate nohighlight">\(u=0, \xi=1\)</span></p></li>
+<li><p><em>Scenario B</em> — dehydration killed: forensic negative <span class="math notranslate nohighlight">\(\Rightarrow\)</span> <span class="math notranslate nohighlight">\(u=1\)</span></p></li>
+</ul>
+<p>We compute (i) PCI’s necessity factor in each scenario and (ii) Pearl’s <span class="math notranslate nohighlight">\(\mathrm{PS}\)</span> for each cause in closed form. Sufficiency is where the methods diverge, and that is what we want to read off.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ALPHA</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">weak_poison_eqs</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">c_pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d_pin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">V_C_pin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">c_pin</span> <span class="k">if</span> <span class="n">c_pin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">P</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">u</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">X</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">d_pin</span> <span class="k">if</span> <span class="n">d_pin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">X</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">P</span><span class="p">)</span>
+    <span class="n">V_C</span> <span class="o">=</span> <span class="n">V_C_pin</span> <span class="k">if</span> <span class="n">V_C_pin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">c</span> <span class="o">*</span> <span class="n">xi</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">V_C</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">V_C</span><span class="p">,</span> <span class="n">y</span>
+
+
+<span class="c1"># `noise_states` is a list of (u, xi, weight) tuples.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">weak_pci_necessity</span><span class="p">(</span><span class="n">cause_var</span><span class="p">,</span> <span class="n">alt_value</span><span class="p">,</span> <span class="n">factual</span><span class="p">,</span> <span class="n">witness_subsets</span><span class="p">,</span> <span class="n">noise_states</span><span class="p">):</span>
+    <span class="n">f_X</span><span class="p">,</span> <span class="n">f_P</span> <span class="o">=</span> <span class="n">factual</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="n">factual</span><span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]</span>
+    <span class="n">flips_w</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">total_w</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">noise_states</span><span class="p">:</span>
+        <span class="n">f_c</span><span class="p">,</span> <span class="n">f_d</span><span class="p">,</span> <span class="n">f_V_C</span><span class="p">,</span> <span class="n">f_y</span> <span class="o">=</span> <span class="n">weak_poison_eqs</span><span class="p">(</span><span class="n">f_X</span><span class="p">,</span> <span class="n">f_P</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">w_set</span> <span class="ow">in</span> <span class="n">witness_subsets</span><span class="p">:</span>
+            <span class="n">c_pin</span> <span class="o">=</span> <span class="n">f_c</span> <span class="k">if</span> <span class="s2">&quot;c&quot;</span> <span class="ow">in</span> <span class="n">w_set</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">d_pin</span> <span class="o">=</span> <span class="n">f_d</span> <span class="k">if</span> <span class="s2">&quot;d&quot;</span> <span class="ow">in</span> <span class="n">w_set</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">V_C_pin</span> <span class="o">=</span> <span class="n">f_V_C</span> <span class="k">if</span> <span class="s2">&quot;V_C&quot;</span> <span class="ow">in</span> <span class="n">w_set</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">X_int</span> <span class="o">=</span> <span class="n">alt_value</span> <span class="k">if</span> <span class="n">cause_var</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="n">f_X</span>
+            <span class="n">P_int</span> <span class="o">=</span> <span class="n">alt_value</span> <span class="k">if</span> <span class="n">cause_var</span> <span class="o">==</span> <span class="s2">&quot;P&quot;</span> <span class="k">else</span> <span class="n">f_P</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">y_int</span> <span class="o">=</span> <span class="n">weak_poison_eqs</span><span class="p">(</span>
+                <span class="n">X_int</span><span class="p">,</span> <span class="n">P_int</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">c_pin</span><span class="o">=</span><span class="n">c_pin</span><span class="p">,</span> <span class="n">d_pin</span><span class="o">=</span><span class="n">d_pin</span><span class="p">,</span> <span class="n">V_C_pin</span><span class="o">=</span><span class="n">V_C_pin</span>
+            <span class="p">)</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">prob</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">witness_subsets</span><span class="p">)</span>
+            <span class="n">flips_w</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">y_int</span> <span class="o">!=</span> <span class="n">f_y</span><span class="p">)</span>
+            <span class="n">total_w</span> <span class="o">+=</span> <span class="n">w</span>
+    <span class="k">return</span> <span class="n">flips_w</span> <span class="o">/</span> <span class="n">total_w</span>
+
+
+<span class="c1"># All subsets of {c, d, V_C}</span>
+<span class="n">weak_witnesses</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">combo</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">([</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;V_C&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">):</span>
+        <span class="n">weak_witnesses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">combo</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of candidate witness subsets: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">weak_witnesses</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Number of candidate witness subsets: 8
+</pre></div></div>
+</div>
+<section id="PCI-necessity-per-scenario">
+<h3>PCI necessity per scenario<a class="headerlink" href="#PCI-necessity-per-scenario" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">posterior_A</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)]</span>                            <span class="c1"># Scenario A: forensic positive</span>
+<span class="n">posterior_B</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">ALPHA</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ALPHA</span><span class="p">)]</span>        <span class="c1"># Scenario B: forensic negative</span>
+<span class="n">factual</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+<span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">posterior</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;A (cyanide killed)&quot;</span><span class="p">,</span> <span class="n">posterior_A</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s2">&quot;B (dehydration killed)&quot;</span><span class="p">,</span> <span class="n">posterior_B</span><span class="p">)]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Scenario </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">cause</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">]:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">weak_pci_necessity</span><span class="p">(</span><span class="n">cause</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">factual</span><span class="p">,</span> <span class="n">weak_witnesses</span><span class="p">,</span> <span class="n">posterior</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  PCI necessity, C = </span><span class="se">{{</span><span class="si">{</span><span class="n">cause</span><span class="si">}</span><span class="se">}}</span><span class="s2">:  </span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Scenario A (cyanide killed):
+  PCI necessity, C = {X}:  0.0000
+  PCI necessity, C = {P}:  0.1250
+
+Scenario B (dehydration killed):
+  PCI necessity, C = {X}:  0.4875
+  PCI necessity, C = {P}:  0.0000
+</pre></div></div>
+</div>
+<p>The necessity factor agrees with the diagnosis: <span class="math notranslate nohighlight">\(P\)</span> is the necessary cause in Scenario A and <span class="math notranslate nohighlight">\(X\)</span> is in Scenario B. (The magnitudes differ from the original case because the witness pool is larger — 8 vs 4 subsets — so the per-witness Γ-fraction is smaller.) Pearl Def. 10.3.5 makes the same diagnosis with full posterior certainty in each scenario, so on necessity-only readings the two methods agree.</p>
+</section>
+<section id="Pearl's-PS-in-closed-form">
+<h3>Pearl’s PS in closed form<a class="headerlink" href="#Pearl's-PS-in-closed-form" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[\mathrm{PS}(\bullet) \;=\; P\!\left(Y_{\bullet=1} = 1
+  \,\middle|\, \bullet=0,\, Y=0\right),\]</div>
+<p>with roots <span class="math notranslate nohighlight">\(X, P \sim \mathrm{Bern}(0.5)\)</span> and <span class="math notranslate nohighlight">\(u \sim \mathrm{Bern}(0.5)\)</span>, <span class="math notranslate nohighlight">\(\xi \sim \mathrm{Bern}(\alpha)\)</span>, all independent.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pearl&#39;s PS at population level: marginalise over the noise prior,</span>
+<span class="c1"># condition on the cause being absent and the outcome being absent, then</span>
+<span class="c1"># intervene to set the cause to 1 and report Pr(Y=1).</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">closed_form_PS</span><span class="p">(</span><span class="n">cause_var</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">ALPHA</span><span class="p">):</span>
+    <span class="n">cond_total</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">cond_outcome</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">P_val</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">xi</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">cause_var</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="ow">and</span> <span class="n">X_val</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">cause_var</span> <span class="o">==</span> <span class="s2">&quot;P&quot;</span> <span class="ow">and</span> <span class="n">P_val</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">alpha</span> <span class="k">if</span> <span class="n">xi</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">y_obs</span> <span class="o">=</span> <span class="n">weak_poison_eqs</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">P_val</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">y_obs</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+        <span class="n">cond_total</span> <span class="o">+=</span> <span class="n">prob</span>
+        <span class="n">X_int</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">cause_var</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="n">X_val</span>
+        <span class="n">P_int</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">cause_var</span> <span class="o">==</span> <span class="s2">&quot;P&quot;</span> <span class="k">else</span> <span class="n">P_val</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">y_int</span> <span class="o">=</span> <span class="n">weak_poison_eqs</span><span class="p">(</span><span class="n">X_int</span><span class="p">,</span> <span class="n">P_int</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">y_int</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">cond_outcome</span> <span class="o">+=</span> <span class="n">prob</span>
+    <span class="k">return</span> <span class="n">cond_outcome</span> <span class="o">/</span> <span class="n">cond_total</span>
+
+
+<span class="k">for</span> <span class="n">cause</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">]:</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="n">closed_form_PS</span><span class="p">(</span><span class="n">cause</span><span class="p">)</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mf">0.76</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">}[</span><span class="n">cause</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PS(</span><span class="si">{</span><span class="n">cause</span><span class="si">}</span><span class="s2">) = </span><span class="si">{</span><span class="n">ps</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  (proposal target: </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PS(X) = 0.7632  (proposal target: 0.76)
+PS(P) = 0.1000  (proposal target: 0.1)
+</pre></div></div>
+</div>
+<p><strong>Result.</strong> <span class="math notranslate nohighlight">\(\mathrm{PS}(P) = 0.1\)</span> exactly (the cyanide-fatality rate <span class="math notranslate nohighlight">\(\alpha\)</span>); <span class="math notranslate nohighlight">\(\mathrm{PS}(X) = 0.7632\)</span> (matches the <span class="math notranslate nohighlight">\(\approx 0.76\)</span> in the proposal). A composite <span class="math notranslate nohighlight">\(ci\)</span> that combines necessity and sufficiency therefore ranks the shooter in Scenario B substantially above the poisoner in Scenario A, even though Def. 10.3.5 calls both “<span class="math notranslate nohighlight">\(P(\text{caused}) = 1\)</span>.” This is the sufficiency discrimination the proposal claims.</p>
+</section>
+</section>
+<section id="4.-Cross-check-with-the-framework's-ThinSearchSampler">
+<h2>4. Cross-check with the framework’s <code class="docutils literal notranslate"><span class="pre">ThinSearchSampler</span></code><a class="headerlink" href="#4.-Cross-check-with-the-framework's-ThinSearchSampler" title="Link to this heading"></a></h2>
+<p>For completeness we also run the framework’s <code class="docutils literal notranslate"><span class="pre">ThinSearchSampler</span></code> on the original desert traveler.</p>
+<p><strong>Caveat.</strong> The framework’s witness mechanism pins <em>non-deterministic</em> sites — i.e., the model’s root variables — at their factual values, not <em>mediator</em> variables. The paper’s HP-style witness mechanism (used in Sections 2 and 3 above) treats mediators <span class="math notranslate nohighlight">\(c, d\)</span> as valid witnesses, which is necessary to make <span class="math notranslate nohighlight">\(X\)</span> flip <span class="math notranslate nohighlight">\(Y\)</span> in the cyanide-vs-dehydration setup. So the framework’s per-suspect numbers will differ in magnitude from the hand-rolled <span class="math notranslate nohighlight">\(\tfrac{1}{8}\)</span> — they’re
+measuring a related but distinct quantity. This is useful to note when designing a future PCI implementation that supports mediator pinning.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># idx 0: u=0 (cyanide); idx 1: u=1 (dehydration)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">desert_model</span><span class="p">(</span><span class="n">kwargs_iterable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">kwargs_iterable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs_iterable</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;observations_dict&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;n_size&quot;</span><span class="p">:</span> <span class="n">BATCH_SIZE</span><span class="p">},</span> <span class="p">{},</span> <span class="p">{}]</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">kwargs_iterable</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;n_size&quot;</span><span class="p">]</span>
+    <span class="n">logits</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">logits</span><span class="o">=</span><span class="n">logits</span><span class="p">))</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">logits</span><span class="o">=</span><span class="n">logits</span><span class="p">))</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">logits</span><span class="o">=</span><span class="n">logits</span><span class="p">))</span>
+    <span class="n">uf</span><span class="p">,</span> <span class="n">Xf</span><span class="p">,</span> <span class="n">Pf</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">float</span><span class="p">(),</span> <span class="n">X</span><span class="o">.</span><span class="n">float</span><span class="p">(),</span> <span class="n">P</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">Pf</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">uf</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">Xf</span><span class="p">),</span> <span class="n">event_dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="n">Xf</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">uf</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">Pf</span><span class="p">),</span> <span class="n">event_dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">),</span> <span class="n">event_dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;categorical&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;u&quot;</span><span class="p">:</span> <span class="n">u</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">X</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="n">P</span><span class="p">},</span>
+        <span class="s2">&quot;continuous&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">c</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">d</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">},</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_int</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>  <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_float</span><span class="p">(</span><span class="n">values</span><span class="p">):</span> <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<span class="n">factual_struct</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;categorical&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;u&quot;</span><span class="p">:</span> <span class="n">_make_int</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+        <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="n">_make_int</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+        <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="n">_make_int</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;continuous&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">_make_float</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]),</span>
+        <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">_make_float</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span>
+        <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">_make_float</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="n">searchable</span> <span class="o">=</span> <span class="n">SearchableModel</span><span class="p">(</span>
+    <span class="n">structured_model</span><span class="o">=</span><span class="n">desert_model</span><span class="p">,</span>
+    <span class="n">sites_of_interest</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span>
+    <span class="n">suspects</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">],</span>
+    <span class="n">deterministic_sites</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span>
+    <span class="n">shared_noise_sites</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;u&quot;</span><span class="p">],</span>
+    <span class="n">outcome_variable</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">ThinSearchSampler</span><span class="p">(</span>
+    <span class="n">structured_model</span><span class="o">=</span><span class="n">searchable</span><span class="p">,</span>
+    <span class="n">conditioned_alternatives</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">factual_exclusion</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">max_antecedents</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">max_witnesses_dropped</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Suspects:  </span><span class="si">{</span><span class="n">sampler</span><span class="o">.</span><span class="n">suspects</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Witnesses: </span><span class="si">{</span><span class="n">sampler</span><span class="o">.</span><span class="n">witnesses</span><span class="si">}</span><span class="s2">  (mediators c, d not included)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Suspects:  [&#39;X&#39;, &#39;P&#39;]
+Witnesses: [&#39;u&#39;, &#39;X&#39;, &#39;P&#39;]  (mediators c, d not included)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">factual_struct</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="n">NUM_TS_SAMPLES</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Got </span><span class="si">{</span><span class="n">NUM_TS_SAMPLES</span><span class="si">}</span><span class="s2"> samples; necessity[&#39;y&#39;] shape: &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">necessity</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;P&quot;</span><span class="p">]:</span>
+    <span class="n">conditioned</span> <span class="o">=</span> <span class="n">condition_on_interventional_regime</span><span class="p">(</span>
+        <span class="n">results_dictionary</span><span class="o">=</span><span class="n">results</span><span class="p">,</span>
+        <span class="n">reference_variable_names</span><span class="o">=</span><span class="p">[</span><span class="n">v</span><span class="p">],</span>
+        <span class="n">antecedent_regimes</span><span class="o">=</span><span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">y_nec</span> <span class="o">=</span> <span class="n">conditioned</span><span class="p">[</span><span class="s2">&quot;regime_necessity&quot;</span><span class="p">][</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+    <span class="n">y_suff</span> <span class="o">=</span> <span class="n">conditioned</span><span class="p">[</span><span class="s2">&quot;regime_sufficiency&quot;</span><span class="p">][</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+    <span class="n">y_fact</span> <span class="o">=</span> <span class="n">factual_struct</span><span class="p">[</span><span class="s2">&quot;continuous&quot;</span><span class="p">][</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
+    <span class="n">sc</span> <span class="o">=</span> <span class="n">abs_diff_score</span><span class="p">(</span><span class="n">factual_outcomes</span><span class="o">=</span><span class="n">y_fact</span><span class="p">,</span>
+                         <span class="n">suff_outcomes</span><span class="o">=</span><span class="n">y_suff</span><span class="p">,</span>
+                         <span class="n">nec_outcomes</span><span class="o">=</span><span class="n">y_nec</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Framework score for </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  necessity   per batch: </span><span class="si">{</span><span class="n">sc</span><span class="p">[</span><span class="s1">&#39;nec&#39;</span><span class="p">][:,</span><span class="w"> </span><span class="p">:,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  sufficiency per batch: </span><span class="si">{</span><span class="n">sc</span><span class="p">[</span><span class="s1">&#39;suff&#39;</span><span class="p">][:,</span><span class="w"> </span><span class="p">:,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  necessity overall: </span><span class="si">{</span><span class="n">sc</span><span class="p">[</span><span class="s1">&#39;nec&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nanmean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+100%|██████████| 4000/4000 [00:07&lt;00:00, 541.50it/s]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+Got 4000 samples; necessity[&#39;y&#39;] shape: (4000, 2, 1, 1)
+
+Framework score for X:
+  necessity   per batch: [0.698113203048706, 0.6964285969734192]
+  sufficiency per batch: [0.0, 0.0]
+  necessity overall: 0.6973
+
+Framework score for P:
+  necessity   per batch: [0.6879761219024658, 0.6886386275291443]
+  sufficiency per batch: [0.0, 0.0]
+  necessity overall: 0.6883
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+
+</pre></div></div>
+</div>
+<p><strong>Reading the framework output.</strong> The framework reports much higher necessity (<span class="math notranslate nohighlight">\(\approx 0.7\)</span> for each cause) than the HP-style hand-rolled <span class="math notranslate nohighlight">\(\tfrac{1}{8}\)</span>. The reason is in the caveat above: without mediator pinning, intervening <span class="math notranslate nohighlight">\(X \to 0\)</span> allows the cyanide path to fire (because <span class="math notranslate nohighlight">\(P\)</span> is sampled fresh in the necessity world and frequently becomes <span class="math notranslate nohighlight">\(0\)</span>, or because the partially-pinned witnesses don’t block the relevant path). What the framework computes is correct <em>for
+the witness mechanism it implements</em>; the implementation just does not yet match the broader <span class="math notranslate nohighlight">\(\mathbf{W} \subseteq \mathbf{V}\)</span> specification the paper assumes. The hand-rolled enumeration in §§2–3 reproduces the proposal’s numbers because it pins mediators as witnesses, matching the paper’s spec.</p>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Claim in the proposal</p></th>
+<th class="head"><p>Verified value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PCI necessity for <span class="math notranslate nohighlight">\(\{X\}\)</span> on original DT, uniform prior</p></td>
+<td><p><span class="math notranslate nohighlight">\(1/8 = 0.1250\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>PCI necessity for <span class="math notranslate nohighlight">\(\{P\}\)</span> on original DT, uniform prior</p></td>
+<td><p><span class="math notranslate nohighlight">\(1/8 = 0.1250\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>PCI necessity for <span class="math notranslate nohighlight">\(\{X\}\)</span> on original DT, given <span class="math notranslate nohighlight">\(\neg\)</span>cyanide</p></td>
+<td><p><span class="math notranslate nohighlight">\(1/4 = 0.2500\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>PCI necessity for <span class="math notranslate nohighlight">\(\{P\}\)</span> on original DT, given <span class="math notranslate nohighlight">\(\neg\)</span>cyanide</p></td>
+<td><p><span class="math notranslate nohighlight">\(0\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>Pearl’s <span class="math notranslate nohighlight">\(\mathrm{PS}(P)\)</span> in weak-poison variant</p></td>
+<td><p><span class="math notranslate nohighlight">\(0.1\)</span> exactly</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pearl’s <span class="math notranslate nohighlight">\(\mathrm{PS}(X)\)</span> in weak-poison variant</p></td>
+<td><p><span class="math notranslate nohighlight">\(0.7632 \approx 0.76\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<p>All match. The proposal’s quantitative claims are sound.</p>
+<p><strong>Implementation note.</strong> The current <code class="docutils literal notranslate"><span class="pre">ThinSearchSampler</span></code> does not pin mediator variables as witnesses, only co-root variables. The hand-rolled enumeration in this notebook matches what the paper’s PCI specification calls for; extending the framework to support mediator witnesses would make its output align with the hand-rolled numbers on this canonical example.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="responsibility_archetypes.html" class="btn btn-neutral float-left" title="Causal Archetypes — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="actual_causality_benchmark.html" class="btn btn-neutral float-right" title="Actual Causality Benchmark" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Rafal Urbaniak.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -8,17 +8,17 @@
 \newtheorem{example}[theorem]{Example}
 \newtheorem{observation}[theorem]{Observation}
 \newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{attempt}{Attempt}
 
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{bbm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
 \usepackage[font=small]{caption}
 \captionsetup[table]{skip=14pt}
-
-\newtheorem*{theoremacpositive}{Theorem \ref{th:ac->positive} (Formal)}
-\newtheorem*{theoremcihalpern}{Theorem \ref{th:ci_halpern} (Formal)}
 
 \usepackage{tikz}
 \usetikzlibrary{bayesnet}
@@ -41,6 +41,7 @@
 \usepackage{rotating}
 \usepackage{enumitem}
 \usepackage{siunitx}
+\usepackage{xspace}
 \sisetup{group-separator = {,}}
 
 
@@ -130,8 +131,8 @@
 \usepackage{xcolor}   % for colors
 \newcommand{\CITE}{\colorbox{green!30}{\textbf{CITE}}}
 \newcommand{\TODO}{\colorbox{orange!30}{\textbf{TODO}}}
-\newcommand{\ourapproach}{PCI }
-\newcommand{\Ourapproach}{PCI}
+\newcommand{\ourapproach}{PCI\xspace}
+\newcommand{\Ourapproach}{PCI\xspace}
 \newcommand{\dom}{\operatorname{dom}\,}
 \usepackage{hyperref}
 \usepackage[capitalise]{cleveref}
@@ -170,7 +171,45 @@
 \maketitle
 
 \begin{abstract}%
-  Causal attribution and explanation are mainstays of philosophical, scientific, and policy analysis. Some current frameworks, however, such as actual causality, suffer from an inability to scale causal reasoning to large problems, while attribution methods that do scale---such as SHAP or LIME---are not causally aware. To address this two-fold problem, we present Probabilistic Causal Impact (\Ourapproach). Inspired by Halpern and Pearl's actual causality and Pearl's probability of necessary and sufficient causation, \ourapproach provides tractable causal explanations in causal probabilistic machine learning models. By the same token, \ourapproach provides explanations for events in the world, insofar as the model adequately represents real mechanisms. By re-conceptualizing explanation as an estimation problem on an expanded, causal probabilistic model, \ourapproach allows for the use of well-established approximation algorithms, unlocking computationally tractable, truly causal explanations for large models. We test \ourapproach on scaled-up, but canonical test cases for actual causation involving overdetermination and undercutting, finding that we recover results deemed intuitive by the literature, and illustrate that the correct behavior is preserved in the continuous version of the problem. We apply \ourapproach to a real-life causal spatio-temporal model with complex machine-learned components trained on millions of data points. In this setting, we compare \ourapproach to the non-causal (yet scalable) attribution method SHAP, and find that our approach yields explanations that agree with domain expert opinion, while SHAP does not. 
+  Explaining why a specific outcome occurred---and which inputs deserve the
+  blame or credit---is central to philosophical, scientific, and policy analysis.
+  The available tools fall into two camps that do not meet. On one side, the
+  Halpern--Pearl theory of \emph{actual causality} gives principled answers to the
+  question ``did variable $X$ cause outcome $Y$ in this case?'', but its verdicts
+  are computed by enumerating counterfactual scenarios and so only work on small,
+  toy-sized models. On the other side, attribution methods that do scale to
+  modern machine-learning models---SHAP, LIME, and the like---assign importance
+  scores without reference to the causal structure that generated the data, and
+  so can give answers that conflict with what a careful causal analysis would
+  conclude. We close this gap with Probabilistic Causal Impact (\Ourapproach).
+
+  \ourapproach builds on actual causality and on Pearl's notions of probability
+  of necessity and sufficiency, but recasts the question ``which variables
+  explain this outcome?'' as an estimation problem on a probabilistic causal
+  model that one can solve by Monte Carlo sampling. To compute a \ourapproach
+  score, the analyst specifies three ingredients: a distribution $\Gamma$ over
+  which subsets of variables to consider as candidate explanations, a
+  distribution $\Delta$ over the counterfactual values to which those variables
+  might be changed, and a function $ci$ that measures how much such a change
+  shifts the outcome. The result is a tractable, causally grounded explanation
+  procedure that applies to large models. A correspondence theorem shows that,
+  on the small models where actual causality is well-defined, \ourapproach's
+  verdicts agree with it.
+
+  We evaluate \ourapproach in a sequence of increasingly demanding settings.
+  On a synthetic structural causal model featuring redundant and
+  preempting causes---the textbook stress tests for theories of causation---%
+  \ourapproach recovers the verdicts that the actual-causality literature
+  treats as correct, for both binary and continuous variables. A scaled-up
+  benchmark with many binary candidate causes shows that \ourapproach
+  remains tractable in regimes where exhaustively enumerating actual causes
+  becomes computationally infeasible. A dynamical SIR (epidemiological)
+  benchmark with continuous outcomes and asymmetrically interacting causes
+  extends the comparison to settings where actual causality offers no verdict
+  at all. Finally, we demonstrate feasibility on a production causal
+  spatio-temporal model with deep machine-learned components trained on
+  millions of data points, where \ourapproach and SHAP attributions diverge
+  in the same qualitative ways as in the synthetic setting.
  
   
   % %
@@ -186,7 +225,13 @@
 \input{sections/sec3_definitions}
 \input{sections/sec4_examples}
 \input{sections/sec5_synthetic}
-\input{sections/sec6_actual_causality}
+\input{sections/sec6_dce}
+\input{sections/sec7_actual_causality}
+\input{sections/sec7b_paac}
+\input{sections/sec8_ac_benchmark}
+\input{sections/sec9_sir_benchmark}
+\input{sections/sec10_avm}
+\input{sections/sec11_discussion}
 
 \bibliographystyle{plainnat}
 \bibliography{references}

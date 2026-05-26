@@ -68,6 +68,11 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="signal_mediation_computations.html">Signal with Mediation — SHAP, Causal SHAP and PCI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="responsibility_archetypes.html">Design C — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actual_causality_benchmark.html">`Overview &lt;#toc0_&gt;`__</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actual_causality_benchmark.html#Code">`Code &lt;#toc0_&gt;`__</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sir_benchmark.html">PCI on a dynamical SIR model with policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gradient_based_attribution.html">`Overview &lt;#toc0_&gt;`__</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gradient_based_attribution.html#Code">`Code &lt;#toc0_&gt;`__</a></li>
 </ul>
 
         </div>
@@ -168,7 +173,14 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="c1"># Smoke-test mode is triggered by ``CI=1``. The OBCB notebook is fully</span>
+<span class="c1"># analytical (no Monte Carlo, no fitting), so the flag merely keeps the</span>
+<span class="c1"># convention consistent with the heavier notebooks in this docs/source set.</span>
+<span class="n">smoke_test</span> <span class="o">=</span> <span class="s2">&quot;CI&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="c1"># ── Model parameters ─────────────────────────────────────────────────────────</span>
@@ -943,7 +955,7 @@ Bob (gender=M, credit=bad)
 <div class="highlight"><pre>
 &lt;&gt;:2: SyntaxWarning: invalid escape sequence &#39;\{&#39;
 &lt;&gt;:2: SyntaxWarning: invalid escape sequence &#39;\{&#39;
-/tmp/ipykernel_38089/1635022816.py:2: SyntaxWarning: invalid escape sequence &#39;\{&#39;
+/tmp/ipykernel_33604/1635022816.py:2: SyntaxWarning: invalid escape sequence &#39;\{&#39;
   &#34;&#34;&#34;
 </pre></div></div>
 </div>

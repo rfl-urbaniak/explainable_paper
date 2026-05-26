@@ -43,9 +43,9 @@ $S=s^\star$ is causally responsible for  $Y=y^\star$  in $(M, \mathbf{u})$ if an
 \noindent 
 In a given context, $S$ is causally responsible for an outcome only when intervening on $S$ with some alternative value would change that outcome. 
 Bob’s credit score satisfies this condition: had his credit score been higher, the loan might have been approved. 
-However, this cause test is too coarse.
 
-Consider another case:
+
+However, this cause test is too coarse. Consider another case:
 \begin{example}[Alice at OBCB] 
 Alice is a woman with bad credit.
 She applies for a loan with OBCB and is rejected.
@@ -100,7 +100,8 @@ an intervention.
 Under this definition, to determine the cause of an outcome, we need to find a cause set $\mathbf{C}$, alternative values 
 $\mathbf{c}'$ (trivial if the variables are binary and less so if they are categorical or continuous),
 and a witness set $\mathbf{T}$.
-$\mathbf{C}$ and $\mathbf{T}$ are drawn from sets of size at most $2^{|\mathbf{V}|}$, so a brute-force computation of these sets is expensive.
+$\mathbf{C}$ and $\mathbf{T}$ are drawn from sets of size at most $2^{|\mathbf{V}|}$, so a brute-force computation
+ is expensive.
 
 Putting computational difficulties aside, we have so far considered deterministic models, but would like to capture probabilistic models as well, so we now consider a stochastic variant of the OBCB problem.
 
@@ -146,7 +147,7 @@ if the effect is counterfactually likely in the presence of the cause.
 We now formalize these ideas and discuss them in the context of the running example.
 
 \begin{definition}[Probability of Necessity]
-Let the probability of necessity be the probability that the outcome $Y=y$ would not have occurred in the absence of  $C = c^\star$, given that both occurred: \[\pn(C = c^\star, Y = y^\star) = P\!\left(Y_{c'} \neq y^\star \;\middle|\; C = c^\star, Y = y^\star\right),\] where $Y_{c'}$ is the value of $Y$ after intervening on $C$ with $c'\neq c^\star$.
+Let the probability of necessity be the probability that the outcome $Y=y$ would not have occurred in the absence of  $C = c^\star$, given that both occurred: \[\pn(C = c^\star, Y = y^\star) = P\!\left(Y_{c'} \neq y^\star \;\middle|\; C = c^\star, Y = y^\star\right),\] where $Y_{c'}$ is the value of $Y$ after intervening on $C$ with $c'\neq c^\star$.\footnote{Read in twin-network fashion: one draws an exogenous noise $\mathbf{u}\sim P_{\mathbf{U}}$, computes the factual $Y$ under the unintervened structural equations and the counterfactual $Y_{c'}$ under the intervened equations, and conditions on the joint event $\{C=c^\star,Y=y^\star\}$. Both $Y$ and $Y_{c'}$ live on the same probability space and share the same $\mathbf{u}$.}
 \end{definition}
 
 Strictly speaking, the probability of necessity is less specific to a particular situation than the actual cause test discussed above. 
@@ -294,14 +295,40 @@ Actual causality offers more specificity, but requires modification to deal with
 To see the intuition, consider Alice's case once more.
 When \ourapproach evaluates gender's causal impact on her denial, it considers counterfactual worlds in which her gender is changed, while drawing witness sets from a distribution that includes $\varname{check-failed}$ at its factual value of $F$ --- the credit check was never performed.
 In those worlds, changing gender to male, with $\varname{check-failed}$ held fixed at $F$ (by intervention, so unlike in the case of 
-patched-up PNS, the mediator value does not get overriden), leads to loan approval: a large counterfactual shift, and so high attribution.
+patched-up PNS, the mediator value does not get overridden), leads to loan approval: a large counterfactual shift, and so high attribution.
 When \ourapproach evaluates credit's causal impact, it searches for witness sets that, held fixed, would make a change to good credit matter for Alice --- but no such context exists, because the credit check was never run.
 The distribution over witness sets therefore assigns low weight to any world in which credit is relevant for Alice, and her credit receives low attribution.
 Unlike actual causality, \ourapproach does not ask whether \emph{some} witness set validates a counterfactual dependency; it integrates over the distribution of all witness sets, weighting each by its probability.
 Unlike PNS, it inherits the context-sensitivity of actual causality through this integration.
 The formal definitions in Section~\ref{sec:causal_impact} make this expectation precise --- but
- the intuition is the one we have just seen: \ourapproach inherits the witness mechanism of actual causality 
+ the intuition is the one we have just seen: \ourapproach inherits the witness mechanism of actual causality
  and the probabilistic language of PN/PNS, and generalizes and combines them into a tractable estimation problem even when variables are continuous.
+
+Before moving to the formal development, we flag the closest neighbour of
+\ourapproach{} in the existing literature, so that the comparison does not come out
+of nowhere later.
+Pearl \citep[Ch.~10]{causalityPearl} defines the \emph{probability of actual
+causation} as
+\begin{equation*}
+P(\text{caused}(x,y\mid e)) \;=\; \frac{P(U_{xy}\cap U_e)}{P(U_e)}
+\qquad \text{(Def.\ 10.3.5)},
+\end{equation*}
+where $U_{xy}$ is the set of noise states $\mathbf{u}$ in which the chosen
+actual-causation predicate ``$X{=}x$ is an actual cause of $Y{=}y$'' holds, and
+$U_e$ is the set of states compatible with the observed evidence $e$. The
+actual-causality predicate plugged in is Pearl's causal-beam definition
+\citep[Ch.~10]{causalityPearl} or the Halpern--Pearl AC1--AC3
+\citep{actualCausalityHalpern}. The formula is Bayes' rule applied to actual
+causation: each $\mathbf{u}$ determines a deterministic world through the structural
+equations, so ``is $X{=}x$ an actual cause of $Y{=}y$?'' has a yes/no answer once
+$\mathbf{u}$ is fixed; $U_{xy}$ collects the yes-states. The ratio rewrites cleanly
+to $P(\mathbf{u}\in U_{xy}\mid \mathbf{u}\in U_e)$, i.e.\ the posterior probability,
+given the evidence, that we are in a noise state for which the actual-cause verdict
+holds. This is Pearl's bridge from actual causality to \emph{probability of} actual
+causality. As \ourapproach{} proposes a seemingly similar bridge, and as Pearl's
+notion gives the same rankings in typical simple cases, we devote
+Section~\ref{sub:pearl_actual_cause_prob} to a side-by-side comparison once enough
+technical machinery is on the page to make the discussion precise.
 
 
 

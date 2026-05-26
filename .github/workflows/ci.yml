@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pytest:
+    name: pytest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Install project (with dev group)
+        run: uv sync --group dev
+      - name: Run pytest
+        run: uv run --group dev pytest tests
+
+  notebooks-smoke:
+    name: notebooks (smoke test, CI=1)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Install project (with docs group)
+        run: uv sync --group docs
+      - name: Execute every notebook in docs/source under CI=1
+        env:
+          CI: "1"
+        run: make -C docs notebooks-smoke

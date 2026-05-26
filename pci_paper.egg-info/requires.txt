@@ -4,9 +4,10 @@ scipy
 torch
 torchvision
 pyro-ppl
-chirho @ git+https://github.com/BasisResearch/chirho.git
+chirho[dynamical] @ git+https://github.com/BasisResearch/chirho.git
 matplotlib
 seaborn
 tqdm
 graphviz
 shap>=0.51.0
+loguru

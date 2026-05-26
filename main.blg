@@ -4,45 +4,45 @@ The top-level auxiliary file: main.aux
 The style file: plainnat.bst
 Database file #1: references.bib
 Warning--empty publisher in pearl2022probabilities
-You've used 19 entries,
+You've used 27 entries,
             2773 wiz_defined-function locations,
-            749 strings with 9148 characters,
-and the built_in function-call counts, 9583 in all, are:
-= -- 916
-> -- 451
-< -- 23
-+ -- 153
-- -- 134
-* -- 745
-:= -- 1438
-add.period$ -- 80
-call.type$ -- 19
-change.case$ -- 98
-chr.to.int$ -- 19
-cite$ -- 39
-duplicate$ -- 466
-empty$ -- 802
-format.name$ -- 165
-if$ -- 2066
+            801 strings with 10793 characters,
+and the built_in function-call counts, 13665 in all, are:
+= -- 1294
+> -- 669
+< -- 29
++ -- 227
+- -- 200
+* -- 1050
+:= -- 2034
+add.period$ -- 110
+call.type$ -- 27
+change.case$ -- 143
+chr.to.int$ -- 27
+cite$ -- 55
+duplicate$ -- 679
+empty$ -- 1140
+format.name$ -- 241
+if$ -- 2960
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 22
-newline$ -- 122
-num.names$ -- 82
-pop$ -- 182
+missing$ -- 31
+newline$ -- 166
+num.names$ -- 114
+pop$ -- 282
 preamble$ -- 1
-purify$ -- 80
+purify$ -- 118
 quote$ -- 0
-skip$ -- 365
+skip$ -- 533
 stack$ -- 0
-substring$ -- 423
-swap$ -- 91
-text.length$ -- 10
+substring$ -- 559
+swap$ -- 142
+text.length$ -- 13
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 194
+type$ -- 277
 warning$ -- 1
-while$ -- 92
+while$ -- 127
 width$ -- 0
-write$ -- 302
+write$ -- 414
 (There was 1 warning)

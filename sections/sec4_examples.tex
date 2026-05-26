@@ -4,11 +4,31 @@ Shapley values have become one of the most widely used tools for explaining the
 predictions of complex machine learning models. Grounded in cooperative game theory,
 they provide a principled decomposition of a model's prediction into additive
 contributions from individual features.
-\citet{heskes2020causal} propose Causal SHAP, which refines this by replacing the
-observational marginal used for features outside the active coalition with an
-interventional distribution: when a dropped feature is causally downstream of a
-coalition member, its distribution under the intervention differs from its marginal,
-and Causal SHAP corrects for this using Pearl's do-calculus.
+\citet{janzing2020feature} argued that the conditional expectation in plain SHAP is the
+conceptually wrong way to model feature removal --- a dropped feature should be
+marginalised under a $do$-intervention, not under conditioning.
+\citet{heskes2020causal} propose Causal SHAP, which implements this prescription by
+replacing the observational marginal used for features outside the active coalition
+with an interventional distribution: when a dropped feature is causally downstream of
+a coalition member, its distribution under the intervention differs from its marginal,
+and Causal SHAP corrects for this using Pearl's do-calculus.\footnote{%
+A different counterfactual line is taken by \citet{sharma2022cfshapley}, whose
+CF-Shapley values use a structural causal model to attribute the change in a metric
+from a single fixed reference $x^{\text{ref}}$ to the observed $x$:
+$\phi_j \propto \sum_{\mathcal{S}\subseteq N\setminus\{j\}}
+[f(x_\mathcal{S}, x_j^{\text{ref}}) - f(x_\mathcal{S}, x_j)]$.
+This is the closest neighbour to \ourapproach{} in spirit --- single contrastive
+scenario, $do$-style intervention --- and differs in three ways.
+\emph{(i)} CF-Shapley commits to one reference $x^{\text{ref}}$, while \ourapproach{}
+integrates over an alternative-value distribution $\Delta(\mathbf{x})$ and need not pick
+a single contrast.
+\emph{(ii)} CF-Shapley returns a one-axis contrast
+$f(\cdot, x_j^{\text{ref}}) - f(\cdot, x_j)$, while \ourapproach{} reports a joint
+$(Y^s, Y^n)$ measure and applies a user-chosen $ci$, decomposing necessity and
+sufficiency separately.
+\emph{(iii)} CF-Shapley has no witness mechanism, so it cannot break the
+overdetermination and undercutting symmetries that \ourapproach{}'s witness set
+$\mathbf{W}$ resolves on the OBCB and signal walkthroughs of this section.}
 Formal definitions of both are given in Section~\ref{sec:shap_defs}.
 
 Despite this repair, both methods share deeper limitations. First, both plain and
@@ -34,43 +54,44 @@ diverge, and we examine what Causal SHAP fixes and what it does not.
 
 \subsection{SHAP and Causal SHAP}\label{sec:shap_defs}
 
-In this section we adopt the SHAP literature's standard notation: $S \subseteq N$ denotes a
-coalition (a subset of features held to their factual values during evaluation), playing the same
-role here that $\mathbf{C} \subseteq \mathbf{S}$ played in Section~\ref{sec:causal_impact}. We
-retain the literature's symbol throughout for ease of cross-reference; the bold $\mathbf{S}$
-refers exclusively to PCI's full suspect set.
+In this section $\mathcal{S} \subseteq N$ denotes a SHAP coalition (a subset of features held
+to their factual values during evaluation), playing the same role here that
+$\mathbf{C} \subseteq \mathbf{S}$ played in Section~\ref{sec:causal_impact}. We use the
+calligraphic $\mathcal{S}$ to keep the SHAP coalition typographically distinct from PCI's
+suspect set $\mathbf{S}$ on the printed page; the SHAP literature's plain $S$ is the same
+object.
 
 \begin{definition}[SHAP]
 A cooperative game is a pair $(N, v)$,
 where $N = \{1, \ldots, n\}$ is the set of players and $v: 2^N \to \mathbb{R}$
 is the \emph{characteristic function} mapping each subset
-(coalition) $S \subseteq N$ to the value that coalition can produce. The Shapley value
+(coalition) $\mathcal{S} \subseteq N$ to the value that coalition can produce. The Shapley value
 \citep{shapley1953} is the unique attribution satisfying four axioms:
 \begin{enumerate}
 \item \textbf{Efficiency}: $\sum_i \phi_i = v(N) - v(\emptyset)$
-\item \textbf{Symmetry}: If $v(S \cup \{i\}) = v(S \cup \{j\})$ for all $S$, then
+\item \textbf{Symmetry}: If $v(\mathcal{S} \cup \{i\}) = v(\mathcal{S} \cup \{j\})$ for all $\mathcal{S}$, then
       $\phi_i = \phi_j$
-\item \textbf{Dummy}: If $v(S \cup \{i\}) = v(S)$ for all $S$, then $\phi_i = 0$
+\item \textbf{Dummy}: If $v(\mathcal{S} \cup \{i\}) = v(\mathcal{S})$ for all $\mathcal{S}$, then $\phi_i = 0$
 \item \textbf{Linearity}: For two games $v_1, v_2$: $\phi_i(\alpha_1 v_1 + \alpha_2 v_2)
       = \alpha_1 \phi_i(v_1) + \alpha_2 \phi_i(v_2)$
 \end{enumerate}
 The unique solution is:
 \begin{equation}
-\phi_i = \sum_{S \subseteq N \setminus \{i\}}
-\frac{|S|!\,(|N|-|S|-1)!}{|N|!}
-\bigl[v(S \cup \{i\}) - v(S)\bigr]
+\phi_i = \sum_{\mathcal{S} \subseteq N \setminus \{i\}}
+\frac{|\mathcal{S}|!\,(|N|-|\mathcal{S}|-1)!}{|N|!}
+\bigl[v(\mathcal{S} \cup \{i\}) - v(\mathcal{S})\bigr]
 \label{eq:shapley}
 \end{equation}
-The weight $\frac{|S|!(|N|-|S|-1)!}{|N|!}$ equals the probability that, in a uniformly
-random ordering of all players, exactly the members of $S$ precede $i$. Equivalently,
+The weight $\frac{|\mathcal{S}|!(|N|-|\mathcal{S}|-1)!}{|N|!}$ equals the probability that, in a uniformly
+random ordering of all players, exactly the members of $\mathcal{S}$ precede $i$. Equivalently,
 $\phi_i$ is the average marginal contribution of $i$ across all orderings.
 \citet{lundberg2017unified} apply Shapley values to explain model predictions by taking
 players to be input features, and the characteristic function to be the expected model
 output given a subset of features:
 \begin{equation}
-v(S) = \mathbb{E}_{X_{\bar{S}}}\bigl[f(X_S = x_S,\, X_{\bar{S}})\bigr]
+v(\mathcal{S}) = \mathbb{E}_{X_{\bar{\mathcal{S}}}}\bigl[f(X_{\mathcal{S}} = x_{\mathcal{S}},\, X_{\bar{\mathcal{S}}})\bigr]
 \end{equation}
-\noindent where $\bar{S} = N \setminus S$ and missing features are marginalized over
+\noindent where $\bar{\mathcal{S}} = N \setminus \mathcal{S}$ and missing features are marginalized over
 their marginal distribution.
 \end{definition}
 
@@ -79,18 +100,18 @@ interventional expectation \citep{heskes2020causal}:
 
 \begin{definition}[Causal SHAP]\label{def:causalshap}
 \begin{equation}
-v_{\text{causal}}(S) = \mathbb{E}\bigl[f(X) \mid do(X_S = x_S)\bigr]
-= \int P(X_{\bar{S}} \mid do(X_S = x_S))\, f(X_{\bar{S}}, x_S)\, dX_{\bar{S}}
+v_{\text{causal}}(\mathcal{S}) = \mathbb{E}\bigl[f(X) \mid do(X_{\mathcal{S}} = x_{\mathcal{S}})\bigr]
+= \int P(X_{\bar{\mathcal{S}}} \mid do(X_{\mathcal{S}} = x_{\mathcal{S}}))\, f(X_{\bar{\mathcal{S}}}, x_{\mathcal{S}})\, dX_{\bar{\mathcal{S}}}
 \label{eq:causal_v}
 \end{equation}
-By the rules of do-calculus, intervening on $X_S$ only affects the distribution of
-descendants of $X_S$. For non-descendants, $P(X_j \mid do(X_S = x_S)) = P(X_j)$.
-Writing $X_{\bar{S},\,\mathrm{nd}}$ for the features in $\bar{S}$ that are not
-descendants of any member of $S$, and $X_{\bar{S},\,\mathrm{d}}$ for those that are,
+By the rules of do-calculus, intervening on $X_{\mathcal{S}}$ only affects the distribution of
+descendants of $X_{\mathcal{S}}$. For non-descendants, $P(X_j \mid do(X_{\mathcal{S}} = x_{\mathcal{S}})) = P(X_j)$.
+Writing $X_{\bar{\mathcal{S}},\,\mathrm{nd}}$ for the features in $\bar{\mathcal{S}}$ that are not
+descendants of any member of $\mathcal{S}$, and $X_{\bar{\mathcal{S}},\,\mathrm{d}}$ for those that are,
 equation~\eqref{eq:causal_v} is equivalent to:
 \begin{equation}
-v_{\text{causal}}(S) = \mathbb{E}_{X_{\bar{S},\,\mathrm{nd}} \sim P(\cdot),\;
-X_{\bar{S},\,\mathrm{d}} \sim P(\cdot \mid do(X_S=x_S))}\bigl[f(X_{\bar{S}}, x_S)\bigr]
+v_{\text{causal}}(\mathcal{S}) = \mathbb{E}_{X_{\bar{\mathcal{S}},\,\mathrm{nd}} \sim P(\cdot),\;
+X_{\bar{\mathcal{S}},\,\mathrm{d}} \sim P(\cdot \mid do(X_{\mathcal{S}}=x_{\mathcal{S}}))}\bigl[f(X_{\bar{\mathcal{S}}}, x_{\mathcal{S}})\bigr]
 \end{equation}
 The Shapley formula~\eqref{eq:shapley} is otherwise unchanged. The method retains all
 four Shapley axioms.
@@ -101,7 +122,7 @@ At the level of subset weighting alone, \ourapproach{} (with $J=1$, $K=|\mathbf{
 SHAP are not distinguishable: $\Gamma$'s subset weights match the Shapley kernel. The
 distinction lies in the integrand. SHAP averages marginal contributions using the
 observational conditional
-$\mathbb{E}[f(\mathbf{X}_S = \mathbf{x}_S, \mathbf{X}_{\bar{S}})]$, marginalising over the
+$\mathbb{E}[f(\mathbf{X}_{\mathcal{S}} = \mathbf{x}_{\mathcal{S}}, \mathbf{X}_{\bar{\mathcal{S}}})]$, marginalising over the
 empirical distribution of non-coalition features; a feature merely correlated with a true
 cause can therefore receive positive attribution. \ourapproach{} evaluates counterfactual
 outcomes
@@ -148,7 +169,7 @@ $f(\text{M},\text{bad})=0.045$, $f(\text{M},\text{good})=0.900$, with the three
 internal variables integrated out. We apply SHAP to the rejection probability
 $g(x)=1-f(x)$ for Alice and Bob from Example~\ref{ex:obcb_stochastic},
 attributing responsibility for the denial outcome.\footnote{Because $g=1-f$,
-the characteristic functions satisfy $v_g(S)=1-v_f(S)$ and
+the characteristic functions satisfy $v_g(\mathcal{S})=1-v_f(\mathcal{S})$ and
 $\phi^g_i=-\phi^f_i$; we compute $\phi^f$ and flip signs. With $|N|=2$ and
 uniform marginals $P(\varname{gender})=P(\varname{credit})=\tfrac{1}{2}$,
 equation~\eqref{eq:shapley} reduces to
@@ -157,14 +178,14 @@ By the SHAP definition (and equivalently by Definition~\ref{def:causalshap}
 once we note that no dropped feature is a descendant of any coalition member),
 the value function on the 2-feature game is
 \[
-v(S) \;=\; \mathbb{E}\!\left[f(X)\,\big|\,X_S = x_S^\star\right]
-\;=\; \sum_{x_{N\setminus S}\in\{0,1\}^{|N\setminus S|}} P(X_{N\setminus S}=x_{N\setminus S})\,f(x_S^\star,\,x_{N\setminus S}).
+v(\mathcal{S}) \;=\; \mathbb{E}\!\left[f(X)\,\big|\,X_{\mathcal{S}} = x_{\mathcal{S}}^\star\right]
+\;=\; \sum_{x_{N\setminus S}\in\{0,1\}^{|N\setminus S|}} P(X_{N\setminus S}=x_{N\setminus S})\,f(x_{\mathcal{S}}^\star,\,x_{N\setminus S}).
 \]
 Under independent uniform marginals
 $P(\varname{gender})=P(\varname{credit})=\tfrac{1}{2}$ this specialises to
 \begin{align*}
 v(\emptyset)                              &= \tfrac{1}{4}\sum_{g,c\in\{0,1\}} f(g,c),
-&&[\text{both features dropped: weight } P(g)\,P(c) = \tfrac{1}{2}\cdot\tfrac{1}{2}] \\
+&&[\text{both dropped: weight } \tfrac{1}{2}\cdot\tfrac{1}{2}] \\
 v(\{\varname{gender}\})                   &= \tfrac{1}{2}\!\left[f(g^\star,0)+f(g^\star,1)\right],
 &&[\text{only credit dropped: weight } P(c) = \tfrac{1}{2}] \\
 v(\{\varname{credit}\})                   &= \tfrac{1}{2}\!\left[f(0,c^\star)+f(1,c^\star)\right],
@@ -181,7 +202,7 @@ and PCI.
 \centering
 \begin{tabular}{lcc}
 \toprule
-$S$ & $v(S)$ for Alice & $v(S)$ for Bob \\
+$\mathcal{S}$ & $v(\mathcal{S})$ for Alice & $v(\mathcal{S})$ for Bob \\
 \midrule
 $\emptyset$                              & $0.281$ & $0.281$ \\
 $\{\varname{gender}\}$                   & $0.090$ & $0.473$ \\
@@ -189,7 +210,7 @@ $\{\varname{credit}\}$                   & $0.023$ & $0.023$ \\
 $\{\varname{gender},\varname{credit}\}$  & $0.000$ & $0.045$ \\
 \bottomrule
 \end{tabular}
-\caption{Coalition values $v(S)=\mathbb{E}[f(X)\mid X_S=x_S^\star]$ for the
+\caption{Coalition values $v(\mathcal{S})=\mathbb{E}[f(X)\mid X_{\mathcal{S}}=x_{\mathcal{S}}^\star]$ for the
 2-feature game ($N=\{\varname{gender},\varname{credit}\}$).
 $v(\emptyset)=\mathbb{E}[f(X)]=0.281$ is the population baseline; $v(N)$ is
 the factual prediction $f(x^\star)$. Plain SHAP and Causal SHAP coincide on
@@ -212,7 +233,7 @@ Bob   & \varname{credit} & 0.860 & \phantom{$-$}0.343 & 0.228 & \textbf{0.119} \
 \end{tabular}
 \caption{Responsibility attributions for Alice and Bob. SHAP values are signed
 ($\phi^g_i$ for $P(\varname{loan}=0\mid x)$); desiderata compare magnitudes
-$|\cdot|$. PNS and PCI values from Table~\ref{tab:pci_obcb}.}
+$|\cdot|$. PNS and PCI values from Table~\ref{tab:pci_decomp}.}
 \label{tab:shap_obcb}
 \end{table}
 
@@ -243,7 +264,7 @@ Causal SHAP coincides exactly with plain SHAP under Option~A: both features
 are exogenous roots, so
 $P(\varname{credit}\mid do(\varname{gender}=g))=P(\varname{credit})$ and vice
 versa, no dropped feature is a descendant of any coalition member, and
-$v_{\mathrm{causal}}(S)=v_{\mathrm{plain}}(S)$ for every coalition. Option~A
+$v_{\mathrm{causal}}(\mathcal{S})=v_{\mathrm{plain}}(\mathcal{S})$ for every coalition. Option~A
 therefore reduces to a single SHAP analysis, and the failures
 above belong to both methods.
 
@@ -262,16 +283,16 @@ was bad, so $\varname{check\text{-}failed}=1$ together with
 $\varname{credit}=\text{good}$ is impossible under the PSCM and has no
 observational data to condition on. We leave $\tilde f$ undefined on this cell.
 
-Both methods need a value function $v(S)$: the expected value of $\tilde f$
-when the features in $S$ are held at their factual values $x_S^\star$ and the
+Both methods need a value function $v(\mathcal{S})$: the expected value of $\tilde f$
+when the features in $\mathcal{S}$ are held at their factual values $x_{\mathcal{S}}^\star$ and the
 remaining features are averaged out. The methods differ in how that average
 is taken. Plain SHAP averages over each dropped feature using its own
 observational marginal $P(X_i)$, with the dropped features treated as
 independent of one another. Causal SHAP averages over the joint distribution
-the PSCM produces under the intervention $do(X_S = x_S^\star)$, so the dropped
+the PSCM produces under the intervention $do(X_{\mathcal{S}} = x_{\mathcal{S}}^\star)$, so the dropped
 features keep whatever joint dependencies the PSCM imposes on them. Whether
 either average ever lands on the impossible cell $(c{=}1, cf{=}1)$ --- and so
-whether $v(S)$ is finite --- depends on both the method and on which features
+whether $v(\mathcal{S})$ is finite --- depends on both the method and on which features
 are held fixed at which factual values. Table~\ref{tab:vS_optionB} works out
 all eight coalition values for both individuals.
 
@@ -282,7 +303,7 @@ all eight coalition values for both individuals.
 \toprule
 & \multicolumn{2}{c}{Alice $(g,c,cf){=}(0,0,0)$} & \multicolumn{2}{c}{Bob $(g,c,cf){=}(1,0,1)$} \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
-$S$ & $v_{\mathrm{plain}}$ & $v_{\mathrm{causal}}$ & $v_{\mathrm{plain}}$ & $v_{\mathrm{causal}}$ \\
+$\mathcal{S}$ & $v_{\mathrm{plain}}$ & $v_{\mathrm{causal}}$ & $v_{\mathrm{plain}}$ & $v_{\mathrm{causal}}$ \\
 \midrule
 $\emptyset$    & \textbf{NaN} & $0.281$ & \textbf{NaN} & $0.281$ \\
 $\{g\}$        & \textbf{NaN} & $0.090$ & \textbf{NaN} & $0.473$ \\
@@ -300,7 +321,7 @@ Bold \textbf{NaN} entries flag coalitions whose value function evaluates
 $\tilde f$ at the impossible cell $(c{=}1,cf{=}1)$ with positive weight.
 Plain SHAP and Causal SHAP coincide whenever neither $\varname{credit}$ nor
 $\varname{check\text{-}failed}$ is dropped, since the only structural coupling
-in the model is between these two; they diverge whenever one is in $S$ and the
+in the model is between these two; they diverge whenever one is in $\mathcal{S}$ and the
 other is not.}
 \label{tab:vS_optionB}
 \end{table}
@@ -312,12 +333,12 @@ over all four $(c, cf)$ combinations, with the impossible $(c{=}1, cf{=}1)$
 combination receiving weight
 $P(c{=}1)\cdot P(cf{=}1) = 0.5\cdot 0.275 \approx 0.140$ ---
 the same nonzero weight as any other corner. For Alice, both $\varname{credit}$ and
-$\varname{check\text{-}failed}$ are dropped at $S\in\{\emptyset,\{\varname{gender}\}\}$,
+$\varname{check\text{-}failed}$ are dropped at $\mathcal{S}\in\{\emptyset,\{\varname{gender}\}\}$,
 the first two NaN
 entries in Table~\ref{tab:vS_optionB}. For Bob the same two coalitions fail,
 and two more break for an additional reason: at
-$S=\{\varname{check\text{-}failed}\}$ and
-$S=\{\varname{gender},\varname{check\text{-}failed}\}$ the value $cf^\star=1$
+$\mathcal{S}=\{\varname{check\text{-}failed}\}$ and
+$\mathcal{S}=\{\varname{gender},\varname{check\text{-}failed}\}$ the value $cf^\star=1$
 is held fixed while $\varname{credit}$ is sampled from its marginal, so the $c{=}1$ branch
 enters with weight $0.5$ and again hits the impossible cell. Plain SHAP gives
 undefined Shapley values for both individuals.\footnote{The underlying issue
@@ -341,8 +362,8 @@ fails: credit outranks gender, exactly the same pathology plain SHAP exhibited
 on the 2-feature game.
 
 \textbf{Causal SHAP for Bob.}
-Two coalitions break for Bob: $S=\{\varname{check\text{-}failed}\}$ and
-$S=\{\varname{gender},\varname{check\text{-}failed}\}$. Both hold
+Two coalitions break for Bob: $\mathcal{S}=\{\varname{check\text{-}failed}\}$ and
+$\mathcal{S}=\{\varname{gender},\varname{check\text{-}failed}\}$. Both hold
 $\varname{check\text{-}failed}$ at Bob's factual value $cf^\star=1$ and average
 $\varname{credit}$ over its
 marginal. To see why this is fatal, apply
@@ -675,24 +696,21 @@ Desideratum & Condition & Plain SHAP & Causal SHAP
 \end{tabular}%
 }
 \caption{Desiderata satisfied (\checkmark) and violated (\texttimes) by plain SHAP,
-Causal SHAP, and PCI (alternative $\sim P(A)$, prior-noise sufficiency) on the
-signal with mediation example ($X\!\to\!M\!\to\!Y$), instance $X=M=Y=1$.
-PCI values are signed $\bar c = \mathbb{E}[|B^n-B^\star|] - \mathbb{E}[|B^s-B^\star|]$;
-$\mathbf{S}$ = both input features of $B$, with $\Gamma_s$ uniform over
-non-empty subsets of $\mathbf{S}$ and $\Gamma_w$ uniform over $2^{\mathbf{W}}$,
-rejecting draws with $\mathbf{C}\cap\mathbf{T}\neq\emptyset$.
-\textbf{W=3rd}: the third variable (neither $A$ nor $B$) is in $\mathbf{W}$
-and sampled as an active witness when not in $\mathbf{C}$; note that this
-variable lies in both $\mathbf{S}$ and $\mathbf{W}$, with the rejection step
-ensuring it never plays both roles in the same draw.
+Causal SHAP, and PCI on the signal-with-mediation example
+($X\!\to\!M\!\to\!Y$), instance $X=M=Y=1$. PCI uses
+$\bar c = \mathbb{E}[|B^n-B^\star|] - \mathbb{E}[|B^s-B^\star|]$ with $\Gamma_s,\Gamma_w$
+uniform over non-empty subsets and rejection on
+$\mathbf{C}\cap\mathbf{T}\neq\emptyset$. \textbf{W=3rd} sets the third variable
+(neither $A$ nor $B$) as the witness when not in $\mathbf{C}$.
 $^\dagger$~0.186 weights three suspect-containing $(C,T)$ configurations at
 $1/4$ each (the rejection-sampling normalizer $Z=2/3$ also counts a fourth
 valid pair $(\{M\},\emptyset)$ that does not contain $X$): one pins $M$ as
 witness (contribution~0, necessity and sufficiency coincide) and two let
 $M$ propagate freely (contributions~0.320 and 0.425).
 $^\ddagger$~The two values use different witness sets ($\mathbf{W}{=}\{M\}$
-for D-XY, $\mathbf{W}{=}\{X\}$ for D-MY), so the comparison is illustrative
-rather than a single-game ranking.}
+for D-XY, $\mathbf{W}{=}\{X\}$ for D-MY); this column reports the amplified
+verdict under an asymmetric witness rule. The $\mathbf{W}{=}\emptyset$ column
+above is the corresponding single-game ranking and already passes D-MXY.}
 \label{tab:signal_desid}
 \end{table}
 
@@ -855,6 +873,7 @@ through three ingredients the SHAP framework systematically lacks --- the
 witness mechanism, the suspect-set distribution $\Gamma_s$, and the use of
 the realized outcome rather than the prediction baseline; the path-noise
 asymmetry in the sufficiency world produces a structural gap on D-MXY,
-which the witness mechanism turns into a robust margin.
+which appears already in the witness-free single game and is amplified into a
+robust margin under a witness rule.
 
 

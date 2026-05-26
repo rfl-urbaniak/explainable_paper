@@ -162,7 +162,7 @@ $\mathbf{T}$ is pruned so that $\mathbf{T} \cap \mathbf{C} = \emptyset$.
 To evaluate the causal impact of a variable on an outcome, we consider two interventional regimes: the \emph{necessity regime}, 
 in which we intervene on the variables $\mathbf{C} \subseteq \mathbf{S}$ to have an alternative value, and the sufficiency regime,
  in which we intervene so that $\mathbf{C}$ takes on factual values. 
-Moreover, we hold some elements $\mathbf{T} \subseteq \mathbf{W}$ of the context fixed (i.e., intervened on to retain factual values, despite intervention on $\mathbf{C}$).
+Moreover, we hold some elements $\mathbf{T} \subseteq \mathbf{W}$ of the context fixed (i.e., intervened on to retain factual values, despite intervention on $\mathbf{C}$). This is exactly what makes the necessity component \emph{context-sensitive} in Halpern's sense \citep{actualCausalityHalpern}: the alternative cause is evaluated against a held-fixed witness configuration, not in isolation. We will reuse this terminology throughout: ``context-sensitive necessity'' refers to the necessity regime evaluated under an active witness set $\mathbf{T}$.
 When looking for an explanation, we perform a search across possible cause sets and possible contexts.
 Complete model samples in these regimes will be called \emph{necessity worlds}  and \emph{sufficiency worlds}, respectively.
 
@@ -216,7 +216,13 @@ cardinality sensitivity analysis: if rankings are stable as $K$ increases from $
 $|\mathbf{S}|$, the simpler choice is supported; if they diverge, higher-order
 interactions are materially relevant and the full powerset should be used. The key
 advantage of \ourapproach is that this commitment is made transparently rather than
-absorbed into an implicit default.
+absorbed into an implicit default.\footnote{SHAP faces an analogous decision without
+flagging it as one: by averaging over all $2^{|N|}$ feature coalitions, plain SHAP and
+Causal SHAP commit to the maximum interaction order $K=|N|$ as an unstated default,
+with no diagnostic offered for whether that level of joint conditioning is right for a
+given model. Restricting Shapley to $K<|N|$ would break the efficiency axiom, so the
+choice is hardcoded into the framework rather than treated as a tunable. \ourapproach{}
+surfaces the same decision as an explicit knob.}
 
 \noindent In particular, we will be using variable selection distributions for the powerset of causal suspects $\mathbf{S}$ and for the powerset of witnesses $\mathbf{W}$. One simple pattern of suspect and witness selection can be derived by setting size limits on the number of activated suspects or witnesses, and sampling uniformly otherwise.
 
@@ -234,7 +240,7 @@ We note that the weighting alone does not distinguish PCI from SHAP at $J=1$,
 $K=|\mathbf{X}|$: the subset weights are identical. The distinction lies in the
 integrand, and it matters for what is being evaluated and what results follow. SHAP
 averages marginal contributions using the observational conditional
-$\mathbb{E}[f(\mathbf{X}_S = \mathbf{x}_S, \mathbf{X}_{\bar{S}})]$, marginalising over
+$\mathbb{E}[f(\mathbf{X}_{\mathcal{S}} = \mathbf{x}_{\mathcal{S}}, \mathbf{X}_{\bar{\mathcal{S}}})]$, marginalising over
 the empirical distribution of non-suspect features; this means a variable that is merely
 correlated with a cause --- but not itself causally active --- can receive positive
 attribution. PCI instead evaluates counterfactual outcomes
@@ -249,11 +255,11 @@ SHAP, and Causal SHAP on concrete examples is given in
 Section~\ref{sec:shap_examples}.}
 \end{example}
 
-In \ourapproach\ the variable selection distribution $\Gamma$ is a probability
+In \ourapproach the variable selection distribution $\Gamma$ is a probability
 mass function on $2^{\mathbf{S}} \times 2^{\mathbf{W}}$, governing the joint
 choice of an active suspect set $\mathbf{C} \subseteq \mathbf{S}$ and an active
 witness set $\mathbf{T} \subseteq \mathbf{W}$. The recommended construction
-samples antecedents and witnesses separately and then enforces the constraint
+samples suspects and witnesses separately and then enforces the constraint
 that no variable plays both roles in the same draw: pick a marginal $\Gamma_s$
 on $2^{\mathbf{S}}$ and a marginal $\Gamma_w$ on $2^{\mathbf{W}}$, draw
 $\mathbf{C}\sim\Gamma_s$ and $\mathbf{T}\sim\Gamma_w$ independently, and
@@ -282,9 +288,9 @@ to the product of marginals. In larger suspect sets the choice of cardinality
 range becomes substantive: sampling uniformly from the full powerset yields an
 expected intervention size of $|\mathbf{S}|/2$, which spreads attribution
 across large coalitions and may make individual feature contributions harder
-to isolate; we return to this isssue in the experimental section.
-
-\todo{Add refs to sections when paper done.}
+to isolate; we return to this issue in Section~\ref{sec:ac_benchmark}, where
+the cardinality cap is treated as a tunable hyperparameter and a
+dynamic-set-sizes ablation measures the empirical cost of bounding it.
 
 Causal attribution hinges on questions such as ``if $X$ had, contrary to fact, been fixed to $x'\ne x$ instead of $x$, what would the outcome have been?'' For non-binary causes, this is ambiguous. To resolve this in a way that does not require committing to a single, contrastive causal event \citep{kawakammi_2024_poc_for_cont_and_vec}, we rely on a \textit{distribution} over alternative values.
 
@@ -305,7 +311,7 @@ falls on the factual value $\mathbf{x}$ itself, so every sampled alternative is 
 counterfactual departure rather than a noisy copy of what actually happened. 
 
 \medskip\noindent When $\Delta(\mathbf{x})$ is a posterior conditioned on upstream
-factual values --- the construction we use throughout --- alternatives are weighted by
+factual values (possibly with some excised regions around the factual values, read on for details)--- the construction we use throughout --- alternatives are weighted by
 their plausibility under the structural model with upstream context held fixed.
 The upstream-only conditioning is itself a normality-respecting choice: factual upstream
 values play the role of the \emph{default} against which counterfactual alternatives are
@@ -316,6 +322,18 @@ This is the operational link to the descriptive-normality literature
 PCI does not aim to resolve the counterexamples motivating that line of work, only to
 share its core intuition that causal attribution depends on what counts as a plausible
 counterfactual.
+
+\medskip\noindent Three alternatives to upstream-only conditioning were considered and
+not adopted as the default. \emph{Uniform} alternatives over $\dom(\mathbf{X})$ assign
+equal density to every non-factual value regardless of context, including values the
+structural model itself rules near-zero --- unrealistic and potentially incompatible
+with $M$. \emph{Fully-conditional} alternatives, conditioned on every observed value
+including downstream evidence, leak the consequence back into the counterfactual:
+$\Delta(\mathbf{x})$ would be tightened by knowledge of the very outcome whose causes
+we are interrogating. \emph{Marginal} (empirical) alternatives drop covariate
+dependence entirely, producing alternatives that need not be plausible given the rest
+of the factual instance. The framework permits any of these --- $\Delta$ is
+user-pluggable --- but we recommend upstream-only as the principled default.
 
 
 \noindent One natural alternative value distribution results from taking the one currently embodied in the model and excising it around the factual setting. Then, the semantics for  ``alternative value'' means ``a sufficiently different value, following the original distribution otherwise''. In the discrete case, of course, the analogue is simply the probability mass function conditioned on the factual value not holding.
@@ -352,17 +370,38 @@ $\varname{gender}=1$ and $\Delta(\varname{credit}=0)$ a point mass on
 $\varname{credit}=1$ --- no distributional choice is required. The binary case is exactly
 where $\Delta$ is unambiguous; it is for continuous suspects such as income or loan amount
 that the $\epsilon$-excised distribution becomes essential, forcing an explicit commitment
-to what counts as a meaningfully different value.\footnote{Any method that asks ``what would happen if $\mathbf{X}$ had been different'' must operationalise what \emph{different} means. Using the empirical distribution $p(\mathbf{x}')$ directly --- as in kernel SHAP \citep{lundberg2017unified} --- is not a neutral choice: because $p$ places mass near the factual value $\mathbf{x}$, sampled alternatives may be practically indistinguishable from $\mathbf{x}$, conflating the necessity question (``what if $\mathbf{x}$ had genuinely differed?'') with evaluating essentially the same setting.
-More generally, three natural choices exist for $\Delta$. The observational marginal
-$p(\mathbf{x}')$ conflates the necessity question with the factual setting, as noted
-above. The fully conditional posterior $p(x_k' \mid \mathbf{x}_{-k})$ conditions on all
-other observed features --- potentially including descendants of $X_k$ --- which imposes
-structural constraints that may rule out otherwise plausible counterfactuals, and still
-concentrates mass near $x_k$ when features are correlated. The $\epsilon$-excised
-distribution occupies the middle ground: it draws from the marginal informed by upstream
-variables only, excising the factual neighbourhood to guarantee genuine departure without
-downstream conditioning.
-The $\epsilon$-excised distribution makes the commitment explicit and tunable: \emph{different} means outside $B_\epsilon(\mathbf{x})$, with $\epsilon$ set by the practitioner to reflect the minimum change deemed meaningful. This parallels the Region of Practical Equivalence (ROPE) in Bayesian hypothesis testing \citep{kruschke2018}: just as ROPE forces an explicit decision about what difference is large enough to matter, $\epsilon$-excision forces an explicit decision about what counterfactual is sufficiently far from the factual to count as genuinely alternative. The practitioner makes this commitment regardless of method; the only question is whether it is made transparently or absorbed into a default. For practical guidance on choosing $\epsilon$: when $X$ is standardised to $\mathcal{N}(0,1)$, the choice acquires a direct probabilistic interpretation --- the excised mass $\Phi(x^\star+\epsilon)-\Phi(x^\star-\epsilon)$ is the fraction of the distribution ruled out as insufficiently different from the factual value $x^\star$. At $x^\star=0$, setting $\epsilon=0.2$ excises approximately 15.9\% of the distribution, $\epsilon=0.5$ excises 38.3\%, and $\epsilon=0.8$ excises 57.6\%, corresponding roughly to small, medium, and large effect thresholds in the sense of \citet{cohen1988statistical}. Alternatively, $\epsilon$ can reflect measurement precision (the smallest meaningful increment of $X$) or a decision-relevant threshold (the minimum change in $X$ that would alter a downstream outcome). As with ROPE, a sensitivity analysis across a range of $\epsilon$ values is advisable when the appropriate scale is unclear. For concrete examples of how SHAP's implicit choice leads to problematic attributions, see Section~\ref{sec:shap_examples}.}
+to what counts as a meaningfully different value.
+
+\paragraph{Why $\epsilon$-excision?}
+Any method that asks ``what would happen if $\mathbf{X}$ had been different'' must
+operationalise what \emph{different} means. Three natural choices for $\Delta$ are
+available. The observational marginal $p(\mathbf{x}')$ --- as in kernel SHAP
+\citep{lundberg2017unified} --- places mass near the factual value $\mathbf{x}$,
+conflating the necessity question (``what if $\mathbf{x}$ had genuinely differed?'')
+with evaluating essentially the same setting. The fully conditional posterior
+$p(x_k' \mid \mathbf{x}_{-k})$ conditions on all other observed features --- potentially
+including descendants of $X_k$ --- which imposes structural constraints that may rule
+out otherwise plausible counterfactuals, and still concentrates mass near $x_k$ when
+features are correlated. The $\epsilon$-excised distribution occupies the middle
+ground: it draws from the marginal informed by upstream variables only, excising the
+factual neighbourhood to guarantee genuine departure without downstream conditioning.
+
+The choice parallels the Region of Practical Equivalence (ROPE) in Bayesian hypothesis
+testing \citep{kruschke2018}: just as ROPE forces an explicit decision about what
+difference is large enough to matter, $\epsilon$-excision forces an explicit decision
+about what counterfactual is sufficiently far from the factual to count as genuinely
+alternative. The practitioner makes this commitment regardless of method; the only
+question is whether it is made transparently or absorbed into a default. When $X$ is
+standardised to $\mathcal{N}(0,1)$ the choice acquires a direct probabilistic
+interpretation: the excised mass $\Phi(x^\star+\epsilon)-\Phi(x^\star-\epsilon)$ is the
+fraction of the distribution ruled out as insufficiently different from $x^\star$. At
+$x^\star=0$, $\epsilon=0.2,\,0.5,\,0.8$ excise approximately $16\%, 38\%, 58\%$ of the
+distribution, corresponding to small, medium, and large effect thresholds in the sense
+of \citet{cohen1988statistical}. Alternatively, $\epsilon$ can reflect measurement
+precision or a decision-relevant threshold; sensitivity analysis across $\epsilon$
+values is advisable when the appropriate scale is unclear. For concrete examples of how
+SHAP's implicit choice leads to problematic attributions, see
+Section~\ref{sec:shap_examples}.
 
 % \begin{definition}[search densities] Suppose we start with some active suspects and witnesses distributions, together with a distribution for alternative values, with corresponding probability functions $p^\Gamma_s(\cdot), p^\Gamma_w(\cdot)$ and $p_\Delta(\cdot)$. Then the \textbf{sufficiency intervention} is obtained by setting the values of $\mathbf{C}, \mathbf{T}$ to their factual values, $\mathbf{c}^\star, \mathbf{t}^\star$, while the \textbf{necessity intervention} is obtained by setting the values of $\mathbf{C}$ to $\mathbf{c'}$ and keeping the values of $\mathbf{T}$ fixed at $\mathbf{t}^\star$; these result in the corresponding intervened densities in two interventional regimes (where $\mathbf{u}$ is the noise), which can further be weighted by the corresponding activation probabilities, and marginalized over all witness sets and all causal candidate sets containing the variable of interest $X_k$. 
 
@@ -406,27 +445,39 @@ and for each $\mathbf{C}\subseteq\mathbf{S}$ let
 $\Delta_{\mathbf{C}}(\mathbf{s}^\star)$ denote the pushforward of
 $\Delta(\mathbf{s}^\star)$ under the restriction map
 $\mathbf{s}'\mapsto \mathbf{s}'\!\mid_{\mathbf{C}}$.\footnote{For an assignment $\mathbf{x}$ to a collection of variables $\mathbf{X}$ and any subset $\mathbf{Y}\subseteq\mathbf{X}$, the restriction $\mathbf{x}\!\mid_{\mathbf{Y}}$ denotes the sub-assignment of $\mathbf{x}$ to the variables in $\mathbf{Y}$.}
-For any measurable $A\subseteq\dom(Y)$ and exogenous realization $\mathbf{u}$, the \emph{sufficiency} and \emph{necessity} measures are defined as follows. The \emph{sufficiency measure} $P_k^s(A\mid\mathbf{u})$ intervenes on each active suspect set $\mathbf{C}$ to its factual values $\mathbf{s}^\star\!\mid_{\mathbf{C}}$, holding active witnesses $\mathbf{T}$ fixed, and computes the $\Gamma$-weighted sum of $P(Y\in A\mid\mathbf{u},\mathrm{do}(\cdot))$ under factual cause restoration. The \emph{necessity measure} $P_k^n(A\mid\mathbf{u})$ instead integrates over alternative values $\mathbf{c}'$ for $\mathbf{C}$, again holding $\mathbf{T}$ fixed at factual values, and computes the $\Gamma$-weighted average of $P(Y\in A\mid\mathbf{u},\mathrm{do}(\cdot))$ over alternative cause values.
-\begin{align}
+For any measurable $A\subseteq\dom(Y)$ and exogenous realization $\mathbf{u}$, define three
+sub-probability measures on $\dom(Y)$ (the first two) and $\dom(Y)\times\dom(Y)$ (the third).
+
+\textbf{(i) Sufficiency measure.} $P_k^s(\cdot\mid\mathbf{u})$ intervenes on each
+active suspect set $\mathbf{C}$ to its factual values $\mathbf{s}^\star\!\mid_{\mathbf{C}}$,
+holds the active witnesses $\mathbf{T}$ fixed, and takes the $\Gamma$-weighted sum of
+$P(Y\in A\mid\mathbf{u},\mathrm{do}(\cdot))$ under factual cause restoration:
+\begin{equation}
 P_k^{s}(A\mid\mathbf{u})
-&=
+=
 \sum_{\substack{(\mathbf{C},\mathbf{T})\\X_k\in\mathbf{C}}}
 P\!\left(Y\in A \mid \mathbf{u},
 \mathrm{do}\!\left(\mathbf{C}=\mathbf{s}^\star\!\mid_{\mathbf{C}},
 \mathbf{T}=\mathbf{w}^\star\!\mid_{\mathbf{T}}\right)\right)
-\,p^\Gamma(\mathbf{C},\mathbf{T}),
-\\[6pt]
+\,p^\Gamma(\mathbf{C},\mathbf{T}).
+\end{equation}
+
+\textbf{(ii) Necessity measure.} $P_k^n(\cdot\mid\mathbf{u})$ instead integrates
+over alternative values $\mathbf{c}'$ for $\mathbf{C}$ (with $\mathbf{T}$ still pinned at
+factual values), and takes the $\Gamma$-weighted average over alternative cause values:
+\begin{equation}
 P_k^{n}(A\mid\mathbf{u})
-&=
+=
 \sum_{\substack{(\mathbf{C},\mathbf{T})\\X_k\in\mathbf{C}}}
 \int
 P\!\left(Y\in A \mid \mathbf{u},
 \mathrm{do}\!\left(\mathbf{C}=\mathbf{c}',\mathbf{T}=\mathbf{w}^\star\!\mid_{\mathbf{T}}\right)\right)
 \Delta_{\mathbf{C}}(\mathbf{s}^\star)(d\mathbf{c}')
 \,p^\Gamma(\mathbf{C},\mathbf{T}).
-\end{align}
+\end{equation}
 
-The joint necessity-sufficiency measure then is given by
+\textbf{(iii) Joint necessity-sufficiency measure.} On product rectangles
+$A\times B\subseteq\dom(Y)\times\dom(Y)$, set
 \begin{equation}
 P_k^{s,n}(A\times B)
 \;:=\;
@@ -435,7 +486,10 @@ P_k^{s}(A\mid\mathbf{u})\,
 P_k^{n}(B\mid\mathbf{u})\,
 P_{\mathbf{U}}(d\mathbf{u}).
 \end{equation}
-
+This rectangle-by-rectangle specification extends uniquely (by Carath\'eodory's
+extension theorem) to a sub-probability measure on the product $\sigma$-algebra
+of $\dom(Y)\times\dom(Y)$, with total mass
+$\Pr_\Gamma[X_k\in\mathbf{C}]^2 \leq 1$.
 \end{definition}
 
 \medskip\noindent
@@ -477,6 +531,12 @@ For any measurable function $ci: \dom(Y)^3\to\mathbb{R}$, the
 ci(y^s,y^n,y^\star)\,
 P_k^{s,n}(d y^s, d y^n).
 \end{equation}
+The integral is taken against the sub-probability $P_k^{s,n}$ directly, not against
+its renormalisation; the symbol $\mathbb{E}[\cdot]$ is shorthand for this
+sub-probability integral throughout. Suspect configurations with
+$X_k\notin\mathbf{C}$ contribute zero mass to $P_k^s$ and $P_k^n$ (and hence to
+$P_k^{s,n}$), correctly capturing that those configurations make no claim on $X_k$'s
+attribution.
 \end{definition}
 
 \medskip\noindent Informally, $ci$ is a user-defined scoring rule that translates
@@ -490,7 +550,7 @@ beyond measurability.
 
 For the OBCB analysis we instantiate $ci$ as the PNS binary score defined in the
 following example, with $y^\star = \varname{loan} = 0$. This is the choice that produces
-the values in Table~\ref{tab:pci_obcb}.
+the values in Table~\ref{tab:pci_decomp}.
 
 \begin{example}[PNS for Binary Outcomes]
 Assume the outcome $Y$ is binary with $\dom(Y)=\{0,1\}$, and let $y^\star=1$ denote
@@ -587,28 +647,42 @@ and $y^\star=\varname{loan}=0$:
   &\approx 0.026 + 0.237 = 0.263.
 \end{align*}
 
-Table~\ref{tab:pci_obcb} gives the full results for Alice and Bob under these
-parameter choices, comparing PNS, PCI without witnesses, and PCI with the
-$\varname{check\text{-}failed}$ witness active.
+Table~\ref{tab:pci_decomp} gives the full results for Alice and Bob under these
+parameter choices: Pearl's PN/PS/PNS, PCI without witnesses
+($\mathbf{W}=\emptyset$), and PCI with the $\varname{check\text{-}failed}$ witness
+active --- with the latter further decomposed into its necessity and sufficiency
+marginals.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{llccc}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l c c c c c c c}
 \toprule
-Person & Feature & PNS & PCI (no witnesses) & PCI (with witnesses) \\
+& \multicolumn{3}{c}{Pearl} & PCI & \multicolumn{3}{c}{PCI ($\mathbf{W}=\{\varname{check\text{-}failed}\}$)} \\
+\cmidrule(lr){2-4} \cmidrule(lr){6-8}
+Person, Variable & PN & PS & PNS & ($\mathbf{W}=\emptyset$) & Necessity & Sufficiency & Total \\
 \midrule
-Alice & \varname{gender} & 0.045 & 0.210 & \textbf{0.263} \\
-Alice & \varname{credit} & 0.180 & 0.240 & \textbf{0.199} \\
-Bob   & \varname{gender} & 0.000 & 0.038 & \textbf{0.019} \\
-Bob   & \varname{credit} & 0.860 & 0.228 & \textbf{0.119} \\
+Alice (\varname{gender}) & $0.045$ & $1.000$ & $0.045$ & $0.210$
+                          & $0.394$ & $0.667$ & $\mathbf{0.263}$ \\
+Alice (\varname{credit}) & $0.180$ & $1.000$ & $0.180$ & $0.240$
+                          & $0.298$ & $0.667$ & $\mathbf{0.199}$ \\
+Bob   (\varname{gender}) & $0.000$ & ---     & $0.000$ & $0.038$
+                          & $0.030$ & $0.637$ & $\mathbf{0.019}$ \\
+Bob   (\varname{credit}) & $0.900$ & $0.955$ & $0.860$ & $0.228$
+                          & $0.188$ & $0.637$ & $\mathbf{0.119}$ \\
 \bottomrule
 \end{tabular}
-\caption{Expected causal impact of \varname{gender} and \varname{credit} on
-$\varname{loan}=0$ for Alice (female, bad credit) and Bob (male, bad credit) in the
-stochastic OBCB model. PNS uses no suspect or witness structure; PCI without witnesses
-sets $\mathbf{W}=\emptyset$; PCI with witnesses sets
-$\mathbf{W}=\{\varname{check\text{-}failed}\}$.}
-\label{tab:pci_obcb}
+\caption{Per-individual responsibility scores for \varname{gender} and \varname{credit}
+on $\varname{loan}=0$ in the stochastic OBCB model. Pearl's PN/PS/PNS, PCI without
+witnesses ($\mathbf{W}=\emptyset$), and PCI with the \varname{check\text{-}failed}
+witness shown side by side; the rightmost three columns decompose PCI($\mathbf{W}=\{\varname{check\text{-}failed}\}$)
+into its necessity and sufficiency marginals (their joint expectation is the bold
+total). Bob's PS for gender is undefined because the conditioning event
+$(\text{female}, \text{bad}, \varname{loan}=1)$ has probability zero in the OBCB model;
+the PCI marginals are well-defined throughout, since they integrate over $P_{\mathbf{U}}$
+rather than conditioning on the factual outcome.}
+\label{tab:pci_decomp}
 \end{table}
 
 For Alice, PNS and PCI without witnesses both fail \textbf{D-A-rank} (p.~\pageref{desid}):
@@ -657,11 +731,13 @@ $|\mathbf{S}|=2$ deliberately, to demonstrate joint-subset attribution.
 
 \noindent The causal impact function $ci$ is a user-defined component of \ourapproach, and different choices encode different causal questions. In the benchmarking experiments of Section~\ref{sec:ac_benchmark}, we instantiate $ci$ using only the necessity component, since Halpern’s actual causality has no sufficiency counterpart --- necessity-only attribution allows a direct parallel comparison. The full framework incorporating both $Y^s$ and $Y^n$ is instantiated in the PNS binary
 example above and in the Absolute Difference example below; the OBCB analysis of this
-section (Tables~\ref{tab:pci_obcb}--\ref{tab:desiderata}) provides a concrete
+section (Tables~\ref{tab:pci_decomp}--\ref{tab:desiderata}) provides a concrete
 validation, since the PNS binary $ci$ jointly conditions on $Y^s=y^\star$ and
 $Y^n\neq y^\star$ and it is precisely this combination that produces the correct
-\textbf{D-A-rank} ordering. Further experiments using the full $ci$ are presented in
-Section~\ref{sec:TODO}. \todo{Add cross-reference to sufficiency experiments once written.}
+\textbf{D-A-rank} ordering. Further experiments using the full $ci$ on continuous outcomes are presented in
+the signal-with-mediation example (Section~\ref{sec:signal}), the synthetic
+evaluation (Section~\ref{sub:synthetic}), and the SIR benchmark
+(Section~\ref{sec:sir_benchmark}).
 
 When the outcome variable $Y$ is continuous rather than binary, indicators are replaced by a distance-based score that measures how far the necessity and sufficiency worlds land from the factual value $y^\star$.
 The natural choice, paralleling L1-based scores such as ATE and SHAP, is the absolute difference.
@@ -683,8 +759,7 @@ value distribution, joint necessity-sufficiency measure, and causal impact funct
   corresponding one-sided $ci$ choices.
 \item \textbf{Connection to actual causality.} For suitable $\Gamma$
   and $\Delta$, \ourapproach recovers Halpern's actual causality judgements
-  (Section~\ref{sec:th_ac}).  
-  \todo{REF to the section when paper done.}
+  (Section~\ref{sec:relation_with_ac}).
 \item \textbf{Necessity--sufficiency decomposition.} $P_k^s$ and $P_k^n$ are defined and
   interpretable independently; practitioners may choose a $ci$ that uses either alone
   or both, depending on whether the causal question concerns necessity, sufficiency,
@@ -692,9 +767,10 @@ value distribution, joint necessity-sufficiency measure, and causal impact funct
 \item \textbf{Witness-mediated symmetry breaking.} Holding intermediate variables fixed
   via $\mathbf{W}$ disambiguates overdetermination and undercutting scenarios where
   necessity-only methods assign equal or zero attribution, as demonstrated above for
-  Alice and Bob, and in other examples that will follow.
-
-  \todo{Add sections refs when paper done.}
+  Alice and Bob, and further developed in Section~\ref{sec:shap_examples} (SHAP and
+  Causal SHAP comparison), Section~\ref{sub:synthetic} (synthetic overdetermination
+  and undercutting archetypes), and Section~\ref{sec:ac_benchmark} (witness ablation
+  on the scaled throwing problem).
 \item \textbf{Composability.} $\Gamma$, $\Delta$, and $ci$ are probability distributions
   and a measurable function respectively; they slot naturally into Bayesian pipelines,
   accept posteriors as inputs, and admit Monte Carlo estimation without modification to
@@ -702,7 +778,7 @@ value distribution, joint necessity-sufficiency measure, and causal impact funct
 \end{enumerate}
 
 Table~\ref{tab:desiderata} verifies the seven desiderata introduced at the start of this
-section (p.~\pageref{desid}) against the values in Table~\ref{tab:pci_obcb}.
+section (p.~\pageref{desid}) against the values in Table~\ref{tab:pci_decomp}.
 PCI with witnesses satisfies all seven; PCI without witnesses fails \textbf{D-A-rank};
 PNS fails \textbf{D-A-rank} and \textbf{D-B1}.
 (The table uses the shorthand $|R(V\mid\text{person})|$ for
@@ -738,7 +814,7 @@ Desideratum & PNS & PCI (no wit.) & PCI (with wit.) \\
 \bottomrule
 \end{tabular}}
 \caption{Verification of the seven desiderata (p.~\pageref{desid}) against the values in
-Table~\ref{tab:pci_obcb}. PCI with witnesses satisfies all seven; PCI without witnesses
+Table~\ref{tab:pci_decomp}. PCI with witnesses satisfies all seven; PCI without witnesses
 fails \textbf{D-A-rank}; PNS fails \textbf{D-A-rank} and \textbf{D-B1}.}
 \label{tab:desiderata}
 \end{table}
@@ -776,37 +852,10 @@ The two marginals are independent given $\mathbf{u}$.
 The components are not identical to Pearl's: $\mathrm{PN}$ and $\mathrm{PS}$ condition
 on the factual outcome and consider a single counterfactual flip; PCI's marginals
 integrate over $P_{\mathbf{U}}$, average over suspect sets weighted by $\Gamma$, and
-hold the witness configurations fixed when active. Table~\ref{tab:pci_decomp} shows
-both decompositions side by side for \varname{gender} and \varname{credit}.
+hold the witness configurations fixed when active. Table~\ref{tab:pci_decomp} (presented
+earlier) places both decompositions side by side for \varname{gender} and
+\varname{credit}.
 
-\begin{table}[h]
-\centering
-\begin{tabular}{l c c c c c c}
-\toprule
-& \multicolumn{3}{c}{Pearl}
-& \multicolumn{3}{c}{PCI (with witnesses)} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7}
-Person, Variable & PN & PS & PNS
-                 & Necessity & Sufficiency & $\mathrm{PCI}$ \\
-\midrule
-Alice (\varname{gender}) & $0.045$ & $1.000$ & $0.045$
-                          & $0.394$ & $0.667$ & $0.263$ \\
-Alice (\varname{credit}) & $0.180$ & $1.000$ & $0.180$
-                          & $0.298$ & $0.667$ & $0.199$ \\
-Bob   (\varname{gender}) & $0.000$ & ---     & $0.000$
-                          & $0.030$ & $0.637$ & $0.019$ \\
-Bob   (\varname{credit}) & $0.900$ & $0.955$ & $0.860$
-                          & $0.188$ & $0.637$ & $0.119$ \\
-\bottomrule
-\end{tabular}
-\caption{Pearl's $\mathrm{PN}/\mathrm{PS}/\mathrm{PNS}$ alongside PCI's necessity and
-sufficiency marginals (with $\mathbf{W} = \{\varname{check\text{-}failed}\}$ active).
-Bob's $\mathrm{PS}$ for \varname{gender} is undefined because the conditioning event
-$(\text{female}, \text{bad}, \text{loan}=1)$ has probability zero in the OBCB model.
-The PCI marginal counterparts are well-defined throughout, since they integrate over
-$P_{\mathbf{U}}$ rather than conditioning on the factual outcome.}
-\label{tab:pci_decomp}
-\end{table}
 
 For Alice's gender, $\mathrm{PN} = 0.045$ is the bare probability that a male with bad
 credit would have been approved; PCI's necessity marginal is $0.394$, nearly an order of

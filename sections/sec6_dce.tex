@@ -1,0 +1,160 @@
+\section{Comparison to Differential Causal Effect}\label{sec:DCE}
+
+Having tested \ourapproach against ground truth in
+Section~\ref{sub:synthetic}, we now compare it with gradient-based
+attribution on a continuous-input credit-limit example.
+
+A natural baseline for continuous-input attribution is to read causal influence off
+the gradient of an interventional mean function. The motivation is direct:
+$\mathbb{E}\!\bigl[Y\mid do(X{=}1)\bigr]-\mathbb{E}\!\bigl[Y\mid do(X{=}0)\bigr]$
+is the binary ATE, and for a continuous cause one ``arrives at derivative
+calculus'' \citep[Section~7.4.3]{ness2025causal} by letting the contrast shrink:
+$\partial_x\,\mathbb{E}\!\bigl[Y\mid do(X{=}x)\bigr]$. Generalised to a vector
+$\mathbf{x}=(x_1,\ldots,x_d)$ with interventional mean
+$m(\mathbf{x})=\mathbb{E}\!\bigl[Y_{\mathbf{X}=\mathbf{x}}\bigr]$, the
+\emph{causal gradient} is
+\[
+\nabla_{\mathbf{x}}\,m(\mathbf{x})
+=\Bigl(\partial_{x_1}\mathbb{E}\!\bigl[Y_{\mathbf{X}=\mathbf{x}}\bigr],\;\ldots,\;
+        \partial_{x_d}\mathbb{E}\!\bigl[Y_{\mathbf{X}=\mathbf{x}}\bigr]\Bigr),
+\]
+and each partial is the \emph{differential causal effect} (DCE) of a single
+variable at $\mathbf{x}$. \citet{butler2022differential} introduced this
+quantity in the Gaussian Process regression setting, where, with the posterior
+expected mean expressible as $\sum_n k(x,x^{(n)})\alpha_n$, the DCE has the
+closed form $\partial_{x_i}\hat{F}=\sum_n \partial_{x_i}k(x,x^{(n)})\alpha_n$.
+
+\ourapproach and DCE are not direct competitors --- DCE estimates a rate of
+change, \ourapproach estimates token-level responsibility --- but
+\ourapproach inherits the territory of continuous attribution, so a contrast
+on a single example is informative. We highlight three differences:
+\begin{enumerate}
+\item DCE requires $y=F(\mathbf{X},\epsilon)$ with $F$ differentiable;
+  \ourapproach requires only that the causal model be sampleable, and the
+  inference algorithm for the expanded model is the user's choice (we use Monte
+  Carlo throughout).
+\item DCE inherits the units of both $\mathbf{X}$ and $Y$, so cross-feature
+  comparison is unit-sensitive. The \ourapproach score integrates over the
+  necessity- and sufficiency-world densities, so changes to input scale leave
+  the score essentially unchanged.
+\item DCE varies abruptly with the local geometry of $F$. The \ourapproach
+  score depends on where the factual value sits relative to the
+  necessity/sufficiency densities and is therefore non-zero in flat regions
+  while remaining locally informative.
+\end{enumerate}
+
+\begin{example}[credit-limit assignment]\label{ex:age}
+We model an applicant's approved credit limit as a function of \emph{age} and
+the \emph{time of application}. The deterministic component is a sigmoidal
+rise in age with a small sinusoidal modulation in time-of-day; intuitively,
+age should dominate. We consider four settings on two axes: time measured in
+hours vs.\ minutes (a units rescaling that should not affect attribution), and
+an age prior centred at $30$ vs.\ $40$ (a genuine change in what counts as
+unusual). The deterministic component is shown in
+Figure~\ref{fig:internal}; marginals after the Bayesian wrap are in
+Figure~\ref{fig:marginals_age}. Computational details and code are in
+\texttt{docs/source/gradient\_based\_attribution.ipynb}.
+\end{example}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figures/internal_model_predictions.png}
+    \caption{Deterministic component of the credit-limit model
+    (Example~\ref{ex:age}). Top: time in hours; bottom: time in minutes.
+    The two scales describe the same dependence modulo a linear transform;
+    age dominates the limit, with a small sinusoidal modulation from time of
+    day.}\label{fig:internal}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/marginal_distributions_age_hours.png}
+    \caption{Marginals of age and approved limit for the two age priors in the
+    Bayesian wrap. The shift in the age prior pushes the limit distribution to
+    the upper plateau in the second model.}\label{fig:marginals_age}
+\end{figure}
+
+\paragraph{\ourapproach scores.} We instantiate $ci$ as the absolute-difference
+score from Example~\ref{ex:absolute_score}, $ci(y^s,y^n,y^\star)=|y^n-y^\star|-|y^s-y^\star|$,
+and run the search of Section~\ref{sec:causal_impact} on each setting,
+conditioning on age and on time of application as singleton suspects.
+Figure~\ref{fig:search_age} shows that, when age is the active suspect,
+the necessity-world outcome tracks the deterministic curve while the
+sufficiency-world outcome stays near factual, yielding mean total scores of
+$100.45$ and $97.95$ for the age-$30$ prior (hours and minutes) and $177.87$
+and $176.56$ for the age-$40$ prior. The dependence on prior is expected
+(more unusual factual age $\Rightarrow$ larger search-space displacement);
+the near-equality across hours and minutes reflects the unit-invariance
+above. Figure~\ref{fig:search_hour} shows the same picture for time of
+application, with means $68.61$, $66.51$, $117.97$, $118.42$ ---
+systematically about two-thirds of the corresponding age scores in each row,
+reflecting that time is responsible but less so.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/search_samples_age_norm.png}
+    \caption{Necessity-world (green), sufficiency-world (orange) and total-score
+    (purple) samples conditional on age being an active suspect, factual
+    marked by the dashed line. Rows: hours vs.\ minutes; columns: age-$30$ vs.\
+    age-$40$ priors. Means in title.}\label{fig:search_age}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.85\linewidth]{figures/search_samples_hour_norm.png}
+    \caption{Same as Figure~\ref{fig:search_age} for time of application. The
+    sufficiency outcome is bimodal because the search occasionally explores age
+    even with time as the named suspect; total-score variance reflects the
+    smaller necessity-world displacement.}\label{fig:search_hour}
+\end{figure}
+
+\paragraph{Score difference across the input grid.}
+Plotting the difference (age score minus time-of-application score) on the
+input grid for the age-$30$ prior in hours, Figure~\ref{fig:search_contour}
+shows that age is consistently more responsible than time of application,
+with the gap modulated by how unusual the applicant is and how close the age
+falls to the steep region of the sigmoid. The other three settings give
+qualitatively the same picture; the second prior is in
+Figure~\ref{fig:search_contour_age2}.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/contour_diff_hours_age_1.png}
+    \caption{Difference between the \ourapproach scores assigned to age and
+    to time of application, on the hour scale and age-$30$ prior. Positive
+    everywhere; the difference is largest near the steep region of the
+    age-limit sigmoid and grows for ages further from the prior mean.}
+    \label{fig:search_contour}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/contour_diff_hours_age_2.png}
+    \caption{Same as Figure~\ref{fig:search_contour} on the age-$40$
+    prior.}\label{fig:search_contour_age2}
+\end{figure}
+
+\paragraph{DCE on the same grid.} Figure~\ref{fig:dce_grid} shows the DCE for
+both inputs across the same grid of factual values. Two observations make the
+contrast with \ourapproach explicit. First, on the hour scale the DCE for
+time of application takes absolute values larger than the DCE for age over
+most of the grid, and exhibits a visible sine wave; \ourapproach instead
+reports age as the more responsible variable everywhere, in line with the
+intuition that the age sigmoid moves the outcome by a much larger absolute
+amount than the daily modulation does. Second, switching the time unit from
+hours to minutes flattens the time DCE by roughly a factor of $60$,
+illustrating the unit sensitivity discussed above. Both are direct
+consequences of DCE's role as a rate-of-change estimator rather than a
+responsibility score, but they make the score harder to compare across
+features and across reparameterisations.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/dce_age_time_hours_minutes.png}
+    \caption{DCE for age (left) and time of application (right) over the input
+    grid, on both unit scales. The age DCE is large only inside the narrow
+    steep region of the sigmoid; outside it, time of application has the
+    larger absolute DCE on the hour scale, and a comparatively flat DCE on the
+    minute scale, illustrating both shape sensitivity and unit sensitivity.}
+    \label{fig:dce_grid}
+\end{figure}

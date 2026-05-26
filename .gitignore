@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Smoke-test cache spillover (CI runs use sub-second runtime budgets)
+docs/source/ac_benchmark/*_time0.0*.pkl
+docs/source/ac_benchmark/*_time0.0*_*.pkl
+docs/source/dynamical_benchmark/*_time0.0*.pkl
+
+# LaTeX build artefacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# OS
+.DS_Store

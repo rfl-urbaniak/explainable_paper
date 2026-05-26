@@ -77,6 +77,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="responsibility_archetypes.html">Design C — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actual_causality_benchmark.html">`Overview &lt;#toc0_&gt;`__</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actual_causality_benchmark.html#Code">`Code &lt;#toc0_&gt;`__</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sir_benchmark.html">PCI on a dynamical SIR model with policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gradient_based_attribution.html">`Overview &lt;#toc0_&gt;`__</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gradient_based_attribution.html#Code">`Code &lt;#toc0_&gt;`__</a></li>
 </ul>
 
         </div>
@@ -147,11 +152,18 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
 
+<span class="c1"># Smoke-test mode is triggered by ``CI=1``. It shrinks the Monte Carlo sample</span>
+<span class="c1"># size used to cross-check the closed-form PCI values. Closed-form numbers in</span>
+<span class="c1"># the paper are unaffected; only the ``mc_*`` cross-checks get noisier.</span>
+<span class="n">smoke_test</span> <span class="o">=</span> <span class="s2">&quot;CI&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
+
 <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
-<span class="n">N</span> <span class="o">=</span> <span class="mi">2_000_000</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">10_000</span> <span class="k">if</span> <span class="n">smoke_test</span> <span class="k">else</span> <span class="mi">2_000_000</span>
 
 <span class="n">mu_X</span><span class="p">,</span> <span class="n">var_X</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span>
 <span class="n">var_eM</span> <span class="o">=</span> <span class="mf">0.1</span>

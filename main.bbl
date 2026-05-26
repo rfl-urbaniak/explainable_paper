@@ -1,4 +1,4 @@
-\begin{thebibliography}{19}
+\begin{thebibliography}{27}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -26,6 +26,15 @@ Paul Cheshire and Stefano Magrini.
   Heidelberg, 2009.
 \newblock ISBN 978-3-642-01016-3, 978-3-642-01017-0.
 \newblock \doi{10.1007/978-3-642-01017-0_16}.
+
+\bibitem[Chockler and
+  Halpern(2004)]{chocklerResponsibilityBlameStructuralModel2004}
+H.~Chockler and J.~Y. Halpern.
+\newblock Responsibility and {{Blame}}: {{A Structural-Model Approach}}.
+\newblock \emph{Journal of Artificial Intelligence Research}, 22:\penalty0
+  93--115, October 2004.
+\newblock ISSN 1076-9757.
+\newblock \doi{10.1613/jair.1391}.
 
 \bibitem[Cohen(1988)]{cohen1988statistical}
 Jacob Cohen.
@@ -70,6 +79,12 @@ James~J. Heckman and Rodrigo Pinto.
 \newblock \doi{10.1146/annurev-economics-051520-015456}.
 \newblock URL \url{https://doi.org/10.1146/annurev-economics-051520-015456}.
 
+\bibitem[Hensman et~al.(2013)Hensman, Fusi, and Lawrence]{hensman2013gaussian}
+James Hensman, Nicol{\`o} Fusi, and Neil~D Lawrence.
+\newblock Gaussian processes for big data.
+\newblock In \emph{Proceedings of the Twenty-Ninth Conference on Uncertainty in
+  Artificial Intelligence}, pages 282--290, 2013.
+
 \bibitem[Heskes et~al.(2020)Heskes, Sijben, Bucur, and
   Claassen]{heskes2020causal}
 Tom Heskes, Evi Sijben, Ioan~Gabriel Bucur, and Tom Claassen.
@@ -85,6 +100,24 @@ Thomas~F. Icard, Jonathan~F. Kominsky, and Joshua Knobe.
 \newblock \emph{Cognition}, 161:\penalty0 80--93, April 2017.
 \newblock ISSN 00100277.
 \newblock \doi{10.1016/j.cognition.2017.01.010}.
+
+\bibitem[Janzing et~al.(2020)Janzing, Minorics, and
+  Bl{\"o}baum]{janzing2020feature}
+Dominik Janzing, Lenon Minorics, and Patrick Bl{\"o}baum.
+\newblock Feature relevance quantification in explainable {AI}: A causal
+  problem.
+\newblock In \emph{International Conference on Artificial Intelligence and
+  Statistics ({AISTATS})}, 2020.
+
+\bibitem[Karimi et~al.(2021)Karimi, Sch\"{o}lkopf, and Valera]{Karimi2021}
+Amir-Hossein Karimi, Bernhard Sch\"{o}lkopf, and Isabel Valera.
+\newblock Algorithmic recourse: from counterfactual explanations to
+  interventions.
+\newblock In \emph{Proceedings of the 2021 ACM Conference on Fairness,
+  Accountability, and Transparency}, FAccT ’21, page 353–362. ACM, March
+  2021.
+\newblock \doi{10.1145/3442188.3445899}.
+\newblock URL \url{http://dx.doi.org/10.1145/3442188.3445899}.
 
 \bibitem[Kawakami et~al.(2024)Kawakami, Kuroki, and
   Tian]{kawakammi_2024_poc_for_cont_and_vec}
@@ -108,6 +141,11 @@ Scott~M Lundberg and Su-In Lee.
 \newblock A unified approach to interpreting model predictions.
 \newblock In \emph{Advances in Neural Information Processing Systems},
   volume~30, pages 4766--4777, 2017.
+
+\bibitem[Ness(2025)]{ness2025causal}
+Robert~Osazuwa Ness.
+\newblock \emph{Causal AI}.
+\newblock Simon and Schuster, 2025.
 
 \bibitem[Papageorgiou et~al.(2022)Papageorgiou, Theodosiou, Rapti,
   Papageorgiou, Dimitriou, Tzovaras, and Margetis]{Papageorgiou2022}
@@ -142,6 +180,12 @@ Lloyd~S. Shapley.
   Mathematics Studies}, pages 307--317. Princeton University Press, Princeton,
   1953.
 
+\bibitem[Sharma et~al.(2022)Sharma, Li, and Jiao]{sharma2022cfshapley}
+Amit Sharma, Hua Li, and Jian Jiao.
+\newblock The counterfactual-{S}hapley value: Attributing change in system
+  metrics.
+\newblock \emph{arXiv preprint arXiv:2208.08399}, 2022.
+
 \bibitem[Shepherd et~al.(2024)Shepherd, Amor, and
   Moreno‐Betancur]{Shepherd2024}
 Daisy~A. Shepherd, David~J. Amor, and Margarita Moreno‐Betancur.
@@ -149,5 +193,20 @@ Daisy~A. Shepherd, David~J. Amor, and Margarita Moreno‐Betancur.
 \newblock \emph{Developmental Medicine \& Child Neurology}, 66\penalty0
   (11):\penalty0 1408--1418, 2024.
 \newblock \doi{10.1111/dmcn.15948}.
+
+\bibitem[Titsias(2009)]{titsias2009variational}
+Michalis Titsias.
+\newblock Variational learning of inducing variables in sparse {G}aussian
+  processes.
+\newblock In \emph{Artificial Intelligence and Statistics}, pages 567--574.
+  PMLR, 2009.
+
+\bibitem[Verma et~al.(2024)Verma, Boonsanong, Hoang, Hines, Dickerson, and
+  Shah]{verma2022recourses}
+Sahil Verma, Varich Boonsanong, Minh Hoang, Keegan Hines, John Dickerson, and
+  Chirag Shah.
+\newblock Counterfactual explanations and algorithmic recourses for machine
+  learning: A review.
+\newblock \emph{ACM Computing Surveys}, 56\penalty0 (12):\penalty0 1--42, 2024.
 
 \end{thebibliography}

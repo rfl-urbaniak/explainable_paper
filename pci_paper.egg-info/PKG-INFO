@@ -11,12 +11,13 @@ Requires-Dist: scipy
 Requires-Dist: torch
 Requires-Dist: torchvision
 Requires-Dist: pyro-ppl
-Requires-Dist: chirho @ git+https://github.com/BasisResearch/chirho.git
+Requires-Dist: chirho[dynamical] @ git+https://github.com/BasisResearch/chirho.git
 Requires-Dist: matplotlib
 Requires-Dist: seaborn
 Requires-Dist: tqdm
 Requires-Dist: graphviz
 Requires-Dist: shap>=0.51.0
+Requires-Dist: loguru
 
 # PCI Paper — Computational Notebooks
 

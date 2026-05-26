@@ -24,14 +24,14 @@ E &= \mathrm{lin} + \mathrm{od} + \mathrm{p\_branch}.
 \end{align*}
 We pick $\tau = 0.674$ so the gate is on / off about half the time
 ($\Pr(\lvert L_2 \rvert \le 0.674) \approx 0.5$ for $L_2 \sim \mathcal{N}(0,1)$).
-The DAG is shown in Figure~\ref{fig:design_c_dag}. The variable $D$ is sampled but never
+The DAG is shown in Figure~\ref{fig:archetypes_dag}. The variable $D$ is sampled but never
 enters $E$ --- it serves as an irrelevance control, so any non-zero score for $D$ is the
 noise floor of the procedure.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.78\linewidth]{figures/design_c_dag.pdf}
-\caption{Design~C. Roots (circles) are independent draws:
+\includegraphics[width=0.78\linewidth]{figures/archetypes_dag.pdf}
+\caption{Synthetic archetype model. Roots (circles) are independent draws:
 $L_1, L_2 \sim \mathcal{N}(0,1)$ (linear, purple); $O_1, O_2 \sim \mathcal{N}(1,1)$
 (overdetermined via $\max$, blue); $P \sim \mathcal{N}(0,1)$ (gated by
 $\lvert L_2 \rvert \le \tau$, green); $D \sim \mathcal{N}(0,1)$ (irrelevance control,
@@ -39,7 +39,7 @@ grey). Mediators (white ellipses) carry the deterministic functions of their par
 Outcome $E$ (orange double-circle) is the sum
 $\mathrm{lin} + \mathrm{od} + \mathrm{p\_branch}$. The variable $D$ has no outgoing edges
 by construction.}
-\label{fig:design_c_dag}
+\label{fig:archetypes_dag}
 \end{figure}
 
 The \ourapproach evaluation treats the six roots as the suspect set; deterministic
@@ -76,7 +76,9 @@ observations to read all archetypes off.
 \textit{Case 1 (preempted, contestable $O$ pair).} Filter:
 $\lvert L_2 \rvert > \tau$ (gate off, so $\mathrm{p\_branch} = 0$ regardless of $P$) and
 $\lvert O_1 - O_2 \rvert < \delta$ with $\delta = 1$ (the two overdetermined contributors
-are close --- the winner is barely the winner). Linear N+S on the $L$s, between-variable
+are close --- the winner is barely the winner; we call such a pair \emph{contestable},
+since a small perturbation to either contributor could flip which one wins
+$\max(5O_1, 5O_2)$). Linear N+S on the $L$s, between-variable
 sufficiency asymmetry on a contestable $O$ pair, and noise floor for both $P$ and $D$
 should all be readable from this single observation.
 
@@ -92,63 +94,123 @@ The two cases together test the structural-role-not-identity claim: the same var
 should sit at the noise floor in Case~1 and mirror $L_1$ in Case~2.
 
 \paragraph{Desiderata and measurements.}
-Table~\ref{tab:design_c_desiderata} pairs each archetype expectation with the formal
-inequality on the excess scores $\Delta_N, \Delta_S$, the check identifier from the
-companion notebook, and the measured value. All thirteen desiderata are met within the
-chosen tolerances, which are deliberately small relative to the range of the raw scores
-(typically $8$--$11$) and slightly wider for the cross-regime $D$-baseline check ---
-co-intervention variance is structurally larger in the gate-on regime than in the
-gate-off regime, so the noise-floor variable $D$ legitimately drifts across cases.
+Table~\ref{tab:archetypes_desiderata} pairs each archetype expectation with the formal
+inequality on the excess scores $\Delta_N, \Delta_S$, the measured value at the
+production sample budget ($N = 20\,000$ Monte Carlo draws per intervention), and a
+bootstrap 95\% confidence interval (4\,000 resamples, joint across $V$ and $D$ so
+per-sample correlations are preserved). The noise-floor variable $D$ itself drifts
+across the two cases: co-intervention variance is structurally larger in the gate-on
+regime than in the gate-off regime, so $\mathrm{ci}_N(D)$ shifts between regimes by a
+non-negligible amount. This is exactly why every archetype claim is stated on the
+excess scores $\Delta_N, \Delta_S$ rather than raw ci values --- subtracting $D$ within
+each case normalises out the regime-dependent floor, so the archetype patterns can be
+read off stably regardless of $D$'s absolute drift.
 
-\begin{sidewaystable}
+\paragraph{The threshold from the data, not from a guess.}
+The directional desiderata of the form $\Delta > \epsilon$ or $\lvert \Delta \rvert <
+\epsilon$ all depend on a single tolerance $\epsilon$. Rather than hand-pick it, we
+derive it from the Monte Carlo budget. For every $\Delta$ score appearing in any
+desideratum we bootstrap a standard error $\sigma_V$ and take
+\[
+\epsilon \;=\; 1.645 \cdot \sigma_{\max},
+\qquad
+\sigma_{\max} \;=\; \max_{V,\text{case}}\, \sigma_V,
+\]
+the one-sided $95\%$ Z-quantile times the largest standard error across all measured
+$\Delta$s. Under the null hypothesis $\Delta = 0$, fewer than $5\%$ of measurements
+would exceed $\epsilon$; a $\Delta$ that clears $\epsilon$ is therefore not Monte Carlo
+chatter at the chosen budget. At $N = 20\,000$ samples we measure $\sigma_{\max} \approx
+0.092$, giving $\epsilon \approx 0.151$. Smaller budgets give a noisier $\epsilon$ that
+defeats the point (e.g.\ at $N = 5\,000$, $\sigma_{\max} \approx 0.18$ would push
+$\epsilon$ into the signal range); this fixes the production sample size for the
+section. Ten of the twelve desiderata listed in earlier drafts survive this honest
+threshold; the two that do not (cross-regime $P$ flip, and quantitative match of
+$\Delta_N(P)$ to $\Delta_N(L_1)$ in Case~2) are discussed below as diagnostics.
+
+\begin{table}[h]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{5pt}
-\begin{tabular}{r p{9cm} l c c}
+\begin{tabular}{r p{8.2cm} r r r}
 \toprule
-\# & Formal desideratum & Check id & Measured & Result \\
+\# & Formal desideratum & Measured & 95\% CI & Result \\
 \midrule
 1  & $\Delta_N(L_2)$ is the largest excess necessity, Case~1
-   & \texttt{C1.L2\_dominates\_N}                    & $+2.214$ & \checkmark \\
+   & $+2.129$ & $[+1.953,\,+2.300]$ & \checkmark \\
 2  & $\Delta_N(L_2)$ is the largest excess necessity, Case~2
-   & \texttt{C2.L2\_dominates\_N}                    & $+0.610$ & \checkmark \\
-3  & $\Delta_S(O_w) - \Delta_S(O_l) > \epsilon_{\text{dom}}$,
-       Case~1 (contestable)
-   & \texttt{C1.O\_sufficiency\_asymmetry}           & $+0.350$ & \checkmark \\
-4  & $\Delta_S(O_w) - \Delta_S(O_l) > \epsilon_{\text{dom}}$,
-       Case~2 (dominant)
-   & \texttt{C2.O\_sufficiency\_asymmetry}           & $+0.779$ & \checkmark \\
-5  & $\lvert \Delta_N(O_w) - \Delta_N(O_l) \rvert < \epsilon_{\text{close}}$,
-       Case~1
-   & \texttt{C1.O\_necessity\_symmetric}             & $+0.075$ & \checkmark \\
-6  & $\Delta_S(O_w) - \Delta_N(O_w) > \epsilon_{\text{dom}}$, Case~2
+   & $+0.642$ & $[+0.476,\,+0.813]$ & \checkmark \\
+3  & $\Delta_S(O_w) - \Delta_S(O_l) > \epsilon$, Case~1 (contestable)
+   & $+0.347$ & $[+0.216,\,+0.473]$ & \checkmark \\
+4  & $\Delta_S(O_w) - \Delta_S(O_l) > \epsilon$, Case~2 (dominant)
+   & $+0.529$ & $[+0.387,\,+0.667]$ & \checkmark \\
+5  & $\lvert \Delta_N(O_w) - \Delta_N(O_l) \rvert < \epsilon$, Case~1
+   & $-0.093$ & $[-0.266,\,+0.081]$ & \checkmark \\
+6  & $\Delta_S(O_w) - \Delta_N(O_w) > \epsilon$, Case~2
        \emph{(within-variable $S$-not-$N$ signature)}
-   & \texttt{C2.O\_winner\_S\_exceeds\_N}            & $+0.462$ & \checkmark \\
-7  & $\Delta_N(L_2) - \Delta_N(O_w) > \epsilon_{\text{dom}}$, Case~2
-   & \texttt{C2.L2\_more\_necessary\_than\_O\_winner} & $+1.157$ & \checkmark \\
-8  & $\lvert \Delta_N(P) \rvert < \epsilon_{\text{close}}$,
-       Case~1 (gate off)
-   & \texttt{C1.P\_at\_noise\_floor\_N}              & $+0.190$ & \checkmark \\
-9  & $\Delta_N(L_1) - \Delta_N(P) > \epsilon_{\text{dom}}$, Case~1
-   & \texttt{C1.L1\_above\_P\_N}                     & $+0.402$ & \checkmark \\
-10 & $\Delta_N(P) > \epsilon_{\text{signal}}$, Case~2 (gate on)
-   & \texttt{C2.P\_above\_floor\_N}                  & $+0.505$ & \checkmark \\
-11 & $\lvert \Delta_N(P) - \Delta_N(L_1) \rvert < \epsilon_{\text{close}}$,
-       Case~2
-   & \texttt{C2.P\_mirrors\_L1\_N}                   & $+0.277$ & \checkmark \\
-12 & $\Delta_N(P, \text{Case~2}) - \Delta_N(P, \text{Case~1}) > \epsilon_{\text{dom}}$
-       \emph{(regime flip on $P$)}
-   & \texttt{CROSS.P\_flips\_N}                      & $+0.315$ & \checkmark \\
-13 & $\lvert ci_N(D, \text{Case~1}) - ci_N(D, \text{Case~2}) \rvert <
-       \epsilon_{\text{baseline}}$
-   & \texttt{CROSS.D\_baseline\_stable}              & $+1.088$ & \checkmark \\
+   & $+0.487$ & $[+0.256,\,+0.712]$ & \checkmark \\
+7  & $\Delta_N(L_2) - \Delta_N(O_w) > \epsilon$, Case~2
+   & $+1.082$ & $[+0.915,\,+1.251]$ & \checkmark \\
+8  & $\lvert \Delta_N(P) \rvert < \epsilon$, Case~1 (gate off)
+   & $+0.112$ & $[-0.058,\,+0.280]$ & \checkmark \\
+9  & $\Delta_N(L_1) - \Delta_N(P) > \epsilon$, Case~1
+   & $+0.670$ & $[+0.499,\,+0.843]$ & \checkmark \\
+10 & $\Delta_N(P) > \epsilon$, Case~2 (gate on)
+   & $+0.250$ & $[+0.079,\,+0.422]$ & \checkmark \\
 \bottomrule
 \end{tabular}
-\caption{Desiderata satisfaction on Design~C. Tolerances:
-$\epsilon_{\text{dom}} = \epsilon_{\text{signal}} = 0.15$,
-$\epsilon_{\text{close}} = 0.5$, $\epsilon_{\text{baseline}} = 2.0$. Subscripts $w / l$
-denote the winner / loser of the $\max(5 O_1, 5 O_2)$ branch in the given case. Check
-ids match the qualitative-check cell in the companion notebook
-(\texttt{responsibility\_archetypes.ipynb}).}
-\label{tab:design_c_desiderata}
-\end{sidewaystable}
+\caption{Desiderata satisfaction on the synthetic archetype model.
+Threshold $\epsilon = 1.645 \cdot \sigma_{\max} \approx 0.151$ is the smallest $\Delta$
+gap that, at $N = 20\,000$ samples, exceeds Monte Carlo noise at one-sided $95\%$
+confidence. Subscripts $w/l$ denote the winner / loser of the
+$\max(5 O_1, 5 O_2)$ branch in the given case. Per-row check identifiers and the
+underlying numerical computations are listed in the companion notebook
+\texttt{responsibility\_archetypes.ipynb}.}
+\label{tab:archetypes_desiderata}
+\end{table}
+
+Figure~\ref{fig:archetypes_threshold_forest} visualises the same ten claims as a forest
+plot: each row carries a plain-language statement of the structural expectation; the
+dot is the point estimate of the relevant $\Delta$ score (or difference of $\Delta$
+scores); the horizontal bar is its bootstrap $95\%$ CI; and the green band is the row's
+\emph{pass region}, i.e.\ the set of $\Delta$ values that would confirm that row's
+claim given $\epsilon$. The pass region depends on the claim type: $\Delta > \epsilon$
+claims pass to the right of $\epsilon$; $\lvert \Delta \rvert < \epsilon$ closeness
+claims pass inside the strip $(-\epsilon, +\epsilon)$; rank claims (\#1 and \#2) pass
+to the right of $0$, since they compare $\Delta_N(L_2)$ against the largest competing
+suspect. A row is counted confirmed when the point estimate lies in its green band; the
+CI is shown separately so the reader can see when a measurement is statistically tight
+and when its CI crosses the pass boundary. All ten dots fall inside their pass bands.
+The tightest row is \#10 ($\Delta_N(P) > \epsilon$ in Case~2, gate on): the point
+estimate $+0.250$ clears $\epsilon \approx 0.151$ by roughly one $\sigma$, with its CI
+lower edge at $+0.079$ still inside the band on the right side of zero.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/archetypes_threshold_forest.png}
+\caption{Forest plot of the ten numbered archetype desiderata. Each row carries a
+plain-language statement of the structural expectation (the case label C1 / C2 marks
+the factual observation it applies to); the dot is the bootstrap point estimate of the
+relevant $\Delta$ score, the horizontal bar is its $95\%$ CI, and the green band is
+the row's \emph{pass region} --- the set of $\Delta$ values that would confirm that
+row's claim given the bootstrap-derived threshold $\epsilon \approx 0.151$. The
+right-hand column annotates the formula and its point estimate. All ten dots fall
+inside their pass bands. Underlying numerical computations are in the companion
+notebook \texttt{responsibility\_archetypes.ipynb}.}
+\label{fig:archetypes_threshold_forest}
+\end{figure}
+
+\paragraph{Diagnostics that do not survive the bootstrap-derived threshold.}
+Two claims from earlier drafts of this section, both about the preempted variable $P$,
+fail at the honest threshold and are reported as diagnostics rather than numbered
+desiderata. (D1) The cross-regime flip
+$\Delta_N(P,\text{Case~2}) - \Delta_N(P,\text{Case~1})$ measures $+0.139$ with CI
+$[-0.081, +0.365]$ --- the CI straddles zero, so $P$'s rise across regimes is not, on
+its own, statistically resolved at the production budget. The qualitative content of
+this claim is already carried by desiderata \#8 (P at the noise floor in Case~1) and
+\#10 (P above $\epsilon$ in Case~2): if both pass, the regime flip is a corollary, not
+an independent claim. (D2) The quantitative match
+$\lvert \Delta_N(P) - \Delta_N(L_1) \rvert < \epsilon$ in Case~2 measures $-0.267$ with
+CI $[-0.441, -0.106]$, whose magnitude is well above $\epsilon$. At this sample budget,
+gated $P$ does not quantitatively mirror ungated $L_1$; what we can claim is the
+weaker, qualitative statement that both clear the noise floor in Case~2, which is
+exactly desideratum \#10 for $P$ and built into Case~2 by construction for $L_1$.

@@ -17,8 +17,6 @@
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -44,11 +42,15 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Notebooks</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="obcb_computations.html">Old Boys’ Club Bank — PN, PS, PNS, PCI and SHAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_mediation_computations.html">Signal with Mediation — SHAP, Causal SHAP and PCI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="responsibility_archetypes.html">Design C — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="responsibility_archetypes.html">Causal Archetypes — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desert_traveler.html">PCI on Pearl’s Desert Traveler — Verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="actual_causality_benchmark.html">Actual Causality Benchmark</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sir_benchmark.html">PCI on a dynamical SIR model with policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gradient_based_attribution.html">Gradient-Based Attribution vs PCI</a></li>
 </ul>
 
         </div>
@@ -77,51 +79,99 @@
              
   <section id="pci-paper-computational-notebooks">
 <h1>PCI Paper — Computational Notebooks<a class="headerlink" href="#pci-paper-computational-notebooks" title="Link to this heading"></a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="obcb_computations.html">Old Boys’ Club Bank — PN, PS, PNS, PCI and SHAP</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="obcb_computations.html#Outline">Outline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="obcb_computations.html#1.-Model">1. Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="obcb_computations.html#2.-Probability-of-Necessity-(PN)">2. Probability of Necessity (PN)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="obcb_computations.html#3.-Probability-of-Sufficiency-(PS)">3. Probability of Sufficiency (PS)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="obcb_computations.html#4.-Probability-of-Necessity-and-Sufficiency-(PNS)">4. Probability of Necessity and Sufficiency (PNS)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="obcb_computations.html#5.-PCI-—-Probabilistic-Causal-Impact">5. PCI — Probabilistic Causal Impact</a></li>
-<li class="toctree-l2"><a class="reference internal" href="obcb_computations.html#6.-SHAP-—-2-feature-game">6. SHAP — 2-feature game</a></li>
-<li class="toctree-l2"><a class="reference internal" href="obcb_computations.html#7.-3-feature-extension">7. 3-feature extension</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="signal_mediation_computations.html">Signal with Mediation — SHAP, Causal SHAP and PCI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#Outline">Outline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#1.-Model-and-setup">1. Model and setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#2.-Optimal-predictors">2. Optimal predictors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#3.-Plain-SHAP">3. Plain SHAP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#4.-Causal-SHAP">4. Causal SHAP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#5.-PCI-without-witnesses">5. PCI without witnesses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#6.-PCI-with-witnesses">6. PCI with witnesses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#7.-Desiderata-table-and-key-findings">7. Desiderata table and key findings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#8.-General-analytic-forms-and-helpers">8. General analytic forms and helpers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#9.-Instance-2:-baseline-(X=0.5,-M=0.5,-Y=0.5)">9. Instance 2: baseline (<span class="math notranslate nohighlight">\(X=0.5\)</span>, <span class="math notranslate nohighlight">\(M=0.5\)</span>, <span class="math notranslate nohighlight">\(Y=0.5\)</span>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#10.-Instance-3:-counter-responsible-X-(X=-0.75,-M=1,-Y=1)">10. Instance 3: counter-responsible <span class="math notranslate nohighlight">\(X\)</span> (<span class="math notranslate nohighlight">\(X=-0.75\)</span>, <span class="math notranslate nohighlight">\(M=1\)</span>, <span class="math notranslate nohighlight">\(Y=1\)</span>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="signal_mediation_computations.html#11.-Three-instance-comparison">11. Three-instance comparison</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="responsibility_archetypes.html">Design C — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="responsibility_archetypes.html#Outline">Outline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="responsibility_archetypes.html#1.-Model-and-setup">1. Model and setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="responsibility_archetypes.html#2.-Two-factual-cases">2. Two factual cases</a></li>
-<li class="toctree-l2"><a class="reference internal" href="responsibility_archetypes.html#3.-PCI-necessity-and-sufficiency">3. PCI necessity and sufficiency</a></li>
-<li class="toctree-l2"><a class="reference internal" href="responsibility_archetypes.html#4.-Desiderata">4. Desiderata</a></li>
-<li class="toctree-l2"><a class="reference internal" href="responsibility_archetypes.html#5.-Sufficiency-direction-diagnostic">5. Sufficiency direction diagnostic</a></li>
-<li class="toctree-l2"><a class="reference internal" href="responsibility_archetypes.html#6.-Marginal-SHAP">6. Marginal SHAP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="responsibility_archetypes.html#7.-Causal-SHAP">7. Causal SHAP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="responsibility_archetypes.html#8.-Comparison-table">8. Comparison table</a></li>
-<li class="toctree-l2"><a class="reference internal" href="responsibility_archetypes.html#9.-Reading-the-comparison">9. Reading the comparison</a></li>
-<li class="toctree-l2"><a class="reference internal" href="responsibility_archetypes.html#Notes">Notes</a></li>
-</ul>
-</li>
-</ul>
+<p>Companion notebooks for the paper <em>Probabilistic Causal Impact (PCI)</em>.
+Each notebook reproduces a specific chunk of the paper’s quantitative content
+— verifying the numbers, generating the figures, and stress-testing PCI
+against alternatives (PN/PS/PNS, marginal SHAP, causal SHAP, gradient-based
+attribution, classical actual-cause probabilities).</p>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h2>
+<p>Requires <a class="reference external" href="https://docs.astral.sh/uv/">uv</a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>sync<span class="w"> </span>--group<span class="w"> </span>docs
+make<span class="w"> </span>-C<span class="w"> </span>docs<span class="w"> </span>html<span class="w">       </span><span class="c1"># build this HTML site</span>
+make<span class="w"> </span>-C<span class="w"> </span>docs<span class="w"> </span>serve<span class="w">      </span><span class="c1"># browse at http://localhost:8000</span>
+</pre></div>
 </div>
+<p>The notebooks are intended to be <strong>read here</strong>, on the rendered HTML site —
+each one ships with its full publication-quality outputs (figures, tables,
+print statements). Raw <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> files live under <code class="docutils literal notranslate"><span class="pre">docs/source/</span></code> if you
+want to inspect or modify the source.</p>
+</section>
+<section id="the-notebooks">
+<h2>The notebooks<a class="headerlink" href="#the-notebooks" title="Link to this heading"></a></h2>
+<p>The set divides cleanly into two halves: closed-form verification of the
+worked examples (Sections 2 and 4 of the paper) and empirical benchmarks
+that compare PCI to existing attribution and actual-cause machinery.</p>
+<p><strong>Closed-form verification.</strong> Small, hand-checkable models where every number
+quoted in the paper can be recomputed analytically.</p>
+<dl class="simple">
+<dt><a class="reference internal" href="obcb_computations.html"><span class="doc">Old Boys’ Club Bank — PN, PS, PNS, PCI and SHAP</span></a> — <em>Old Boys’ Club Bank: PN, PS, PNS, PCI, SHAP.</em></dt><dd><p>Recomputes every number in Section 2 of the paper for the stochastic OBCB
+example. Population-level and individual (Alice, Bob) versions of Pearl’s
+PN, PS, PNS; PCI with and without witnesses; plain SHAP and causal SHAP
+on both the 2-feature and 3-feature games. Closes with a four-method
+comparison table that drives the paper’s “what each method picks up”
+discussion. Closed-form throughout — no Monte Carlo, no fitting.</p>
+</dd>
+</dl>
+<p><a class="reference internal" href="signal_mediation_computations.html"><span class="doc">Signal with Mediation — SHAP, Causal SHAP and PCI</span></a> — <em>Signal with mediation: chain
+X → M → Y.</em></p>
+<blockquote>
+<div><p>Verifies the numerical content of Sections 4.4–4.6 on a linear Gaussian
+chain with additive noise. Computes plain SHAP, causal SHAP, and PCI
+(without and with the third variable as witness) on three factual
+instances, then assembles the full desiderata table. A Monte Carlo
+cross-check sits alongside each closed-form value.</p>
+</div></blockquote>
+<p><a class="reference internal" href="responsibility_archetypes.html"><span class="doc">Causal Archetypes — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance</span></a> — <em>Three causal archetypes plus an
+irrelevance control.</em></p>
+<blockquote>
+<div><p>Synthetic SCM with linear-necessary-and-sufficient inputs, an
+overdetermined branch, a preempted branch, and a disconnected control.
+Runs PCI’s necessity / sufficiency decomposition on two contrasting
+factual cases (preempted vs. unpreempted regime) and compares against
+marginal SHAP and causal SHAP on the same model. Demonstrates the
+methodological gap that motivates the N / S split: SHAP returns one
+number per feature; PCI returns two, and the two numbers carry distinct
+structural information.</p>
+</div></blockquote>
+<dl class="simple">
+<dt><a class="reference internal" href="desert_traveler.html"><span class="doc">PCI on Pearl’s Desert Traveler — Verification</span></a> — <em>Pearl’s desert traveler: PCI vs Definition 10.3.5.</em></dt><dd><p>Reproduces analytically the PCI necessity expectations on Pearl’s original
+desert-traveler example (under HP-style mediator witnesses), then
+introduces a weak-poison variant in which Pearl’s <code class="docutils literal notranslate"><span class="pre">PS</span></code> reading separates
+the two enemies’ degrees of responsibility while his
+probability-of-actual-causation posterior cannot. Includes a cross-check
+against the framework’s <code class="docutils literal notranslate"><span class="pre">ThinSearchSampler</span></code> and a flag on the
+witness-mechanism gap between the paper’s specification and the current
+implementation.</p>
+</dd>
+</dl>
+<p><strong>Empirical benchmarks.</strong> Larger experiments that compare PCI to existing
+machinery on synthetic SCMs and a dynamical SIR model.</p>
+<dl class="simple">
+<dt><a class="reference internal" href="actual_causality_benchmark.html"><span class="doc">Actual Causality Benchmark</span></a> — <em>PCI vs. classical actual causality.</em></dt><dd><p>Compares PCI against Halpern–Pearl-style actual-cause probabilities on
+the generalised throwing problem. Exact actual-cause computations (one
+pair, two pairs, scaling sweep) followed by approximate estimation via
+<code class="docutils literal notranslate"><span class="pre">SearchForExplanation</span></code>. The runtime / search-space / accuracy plots in
+the paper come from this notebook.</p>
+</dd>
+<dt><a class="reference internal" href="sir_benchmark.html"><span class="doc">PCI on a dynamical SIR model with policies</span></a> — <em>PCI on a dynamical SIR model with policies.</em></dt><dd><p>Applies PCI to a Bayesian SIR epidemiological model with two interacting
+non-pharmaceutical policies (lockdown, mask-wearing). Mirrors the chirho
+tutorial on explainable reasoning in dynamical systems but swaps the
+explanatory machinery for the PCI thin-search sampler. Recovers chirho’s
+qualitative finding — lockdown is the dominant cause of excessive
+overshoot — while exposing the necessity / sufficiency decomposition
+that classical actual causality collapses.</p>
+</dd>
+<dt><a class="reference internal" href="gradient_based_attribution.html"><span class="doc">Gradient-Based Attribution vs PCI</span></a> — <em>PCI vs. gradient-based attribution.</em></dt><dd><p>Compares PCI’s responsibility scores against gradient / sensitivity-based
+attribution methods on a controlled synthetic model. Probes invariance
+to feature scale, sensitivity to priors, and the differential causal
+effect. Targets the paper’s discussion of why gradient methods are not
+causally faithful even when their numbers look plausible.</p>
+</dd>
+</dl>
+<div class="toctree-wrapper compound">
+</div>
+</section>
 </section>
 
 

@@ -18,5 +18,6 @@
         "titleBar.inactiveBackground": "#b80afe99",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.color": "#b80afe"
+    "peacock.color": "#b80afe",
+    "window.title": "${rootName}${separator}${activeRepositoryBranchName}${separator}[Branch: main]"
 }

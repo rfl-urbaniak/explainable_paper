@@ -1,27 +1,44 @@
 \contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
+\contentsline {paragraph}{Paper structure.}{3}{section*.3}%
 \contentsline {section}{\numberline {2}Causal Impact: motivations}{4}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Actual Causality}{4}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Probability of Necessity and Sufficiency}{5}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.2}Probability of Necessity and Sufficiency}{6}{subsection.2.2}%
 \contentsline {subsection}{\numberline {2.3}Path forward}{8}{subsection.2.3}%
 \contentsline {section}{\numberline {3}Causal Impact: definitions}{9}{section.3}%
-\contentsline {section}{\numberline {4}Examples and comparison to SHAP and Causal SHAP}{18}{section.4}%
-\contentsline {subsection}{\numberline {4.1}SHAP and Causal SHAP}{19}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}OBCB: SHAP and Causal SHAP}{20}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Signal with mediation}{23}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}SHAP values for the signal with mediation example}{24}{subsection.4.4}%
-\contentsline {paragraph}{Target $Y$, Features $\{X, M\}$.}{24}{section*.14}%
-\contentsline {paragraph}{Target $M$, features $\{X,Y\}$.}{24}{section*.15}%
-\contentsline {paragraph}{Target $X$, features $\{M,Y\}$.}{24}{section*.16}%
-\contentsline {subsection}{\numberline {4.5}Causal SHAP for the signal example}{24}{subsection.4.5}%
-\contentsline {paragraph}{Target $Y$, features $\{X,M\}$.}{24}{section*.18}%
-\contentsline {paragraph}{Target $M$, features $\{X,Y\}$.}{25}{section*.19}%
-\contentsline {paragraph}{Target $X$, features $\{M,Y\}$.}{25}{section*.20}%
-\contentsline {subsection}{\numberline {4.6}PCI computation for the signal example}{25}{subsection.4.6}%
-\contentsline {paragraph}{$R(X \rightsquigarrow Y)$.}{25}{section*.21}%
-\contentsline {paragraph}{$R(Y \rightsquigarrow X)$.}{26}{section*.22}%
-\contentsline {subsection}{\numberline {4.7}Desiderata analysis for the signal example}{26}{subsection.4.7}%
-\contentsline {section}{\numberline {5}Synthetic evaluation with overdetermination and undercutting}{27}{section.5}%
-\contentsline {paragraph}{Causal impact, decomposed.}{28}{section*.25}%
-\contentsline {paragraph}{Two factual cases.}{29}{section*.26}%
-\contentsline {paragraph}{Desiderata and measurements.}{29}{section*.27}%
-\contentsline {section}{\numberline {6}Relation with Actual Causality}{29}{section.6}%
+\contentsline {paragraph}{Why $\epsilon $-excision?}{14}{section*.5}%
+\contentsline {section}{\numberline {4}Examples and comparison to SHAP and Causal SHAP}{20}{section.4}%
+\contentsline {subsection}{\numberline {4.1}SHAP and Causal SHAP}{20}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}OBCB: SHAP and Causal SHAP}{21}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Signal with mediation}{25}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Computations and desiderata analysis}{25}{subsection.4.4}%
+\contentsline {paragraph}{Plain SHAP.}{26}{section*.11}%
+\contentsline {paragraph}{Causal SHAP.}{26}{section*.12}%
+\contentsline {paragraph}{PCI computation.}{27}{section*.13}%
+\contentsline {paragraph}{Desiderata analysis.}{27}{section*.14}%
+\contentsline {paragraph}{Instance 2 (baseline).}{28}{section*.16}%
+\contentsline {subsection}{\numberline {4.5}Summary across both examples}{29}{subsection.4.5}%
+\contentsline {section}{\numberline {5}Synthetic evaluation with overdetermination and undercutting}{29}{section.5}%
+\contentsline {paragraph}{Causal impact, decomposed.}{30}{section*.19}%
+\contentsline {paragraph}{Two factual cases.}{30}{section*.20}%
+\contentsline {paragraph}{Desiderata and measurements.}{31}{section*.21}%
+\contentsline {paragraph}{The threshold from the data, not from a guess.}{31}{section*.22}%
+\contentsline {paragraph}{Diagnostics that do not survive the bootstrap-derived threshold.}{32}{section*.25}%
+\contentsline {section}{\numberline {6}Comparison to Differential Causal Effect}{32}{section.6}%
+\contentsline {paragraph}{PCI\xspace scores.}{33}{section*.28}%
+\contentsline {paragraph}{Score difference across the input grid.}{34}{section*.31}%
+\contentsline {paragraph}{DCE on the same grid.}{34}{section*.34}%
+\contentsline {section}{\numberline {7}Relation with Actual Causality}{36}{section.7}%
+\contentsline {section}{\numberline {8}Relation with the Probability of Actual Causality}{42}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Pearl's worked example: the desert traveller}{42}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}PCI on the same example}{42}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}PCI expectation vs the AC machinery}{43}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Desert traveller with stochastic mechanisms}{44}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Further differences between Pearl's probability of causation and PCI}{45}{subsection.8.5}%
+\contentsline {section}{\numberline {9}Scaling actual-cause computation: an empirical comparison}{45}{section.9}%
+\contentsline {section}{\numberline {10}Dynamical SIR benchmark: PCI on continuous outcomes}{49}{section.10}%
+\contentsline {section}{\numberline {11}Scaling PCI\xspace to a real-world automated valuation model}{51}{section.11}%
+\contentsline {paragraph}{Setting.}{52}{section*.42}%
+\contentsline {paragraph}{Causal model.}{52}{section*.43}%
+\contentsline {paragraph}{Feasibility at production scale.}{52}{section*.45}%
+\contentsline {paragraph}{Qualitative comparison to SHAP.}{52}{section*.46}%
+\contentsline {section}{\numberline {12}Discussion and Conclusions}{54}{section.12}%
