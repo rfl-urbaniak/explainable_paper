@@ -4,6 +4,13 @@ The central difficulty in causal attribution is not computing counterfactuals --
 The closest predecessors of this approach, taken individually, fail to capture this: actual causality handles context sensitivity but is computationally intractable and not general enough;
 the probability of necessity and sufficiency scales well, but lacks context sensitivity.
 This section builds intuition for both limitations through a running example, setting up the design choices that motivate \ourapproach in Section~\ref{sec:causal_impact}.
+We proceed in three steps: revisit Halpern's actual-cause construction on a
+deterministic OBCB example to see what witnesses do and why a plain but-for clause
+misses Alice's case; turn to Pearl's PN/PS/PNS on a stochastic OBCB to introduce
+the probabilistic machinery actual causality lacks while showing that, without
+witnesses, PN/PS/PNS cannot register Alice's missing credit check; and close with a
+``Path forward'' subsection that distils what \ourapproach must inherit from each
+predecessor before Section~\ref{sec:causal_impact} formalises it.
 
 \subsection{Actual Causality}
 
@@ -329,6 +336,14 @@ causality. As \ourapproach{} proposes a seemingly similar bridge, and as Pearl's
 notion gives the same rankings in typical simple cases, we devote
 Section~\ref{sub:pearl_actual_cause_prob} to a side-by-side comparison once enough
 technical machinery is on the page to make the discussion precise.
+
+\medskip\noindent With the limitations of both predecessors in mind, we turn
+in Section~\ref{sec:causal_impact} to the formal development. The next section
+introduces \ourapproach piece by piece --- PSCM scaffolding, the variable
+selection distribution $\Gamma$, the alternative-value distribution $\Delta$, the
+joint necessity-sufficiency measure, and the user-chosen causal impact function
+$ci$ --- and verifies on the same Alice/Bob example that the resulting attribution
+satisfies all seven desiderata stated at the start of that section.
 
 
 

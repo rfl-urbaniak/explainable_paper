@@ -1,5 +1,25 @@
 \section{Examples and comparison to SHAP and Causal SHAP}\label{sec:shap_examples}
 
+\paragraph{Where we are.} Section~\ref{sec:causal_impact} defined \ourapproach
+and verified, on Alice and Bob, that the resulting attribution satisfies all seven
+desiderata of that section, where PN/PS/PNS fail at least two. The natural next
+question is how \ourapproach compares to the dominant practical alternative for
+feature attribution in the ML literature --- SHAP and Causal SHAP --- since these
+are the tools practitioners typically reach for. This section runs that comparison
+on two examples, recording where each method passes or fails an explicit
+desideratum. We first define SHAP and Causal SHAP formally
+(Section~\ref{sec:shap_defs}), then re-run OBCB
+(Section~\ref{sec:obcb_shap}) --- where the two SHAP variants coincide because the
+feature set is exogenous, so the divergence between PCI and SHAP is the only
+contrast to draw. We then introduce a continuous mediation example
+(Section~\ref{sec:signal}) where plain and Causal SHAP do diverge --- one
+desideratum (D-YX) is fixed by the interventional correction, others (D-YM,
+D-MX, D-MXY) are not --- and tabulate the desiderata in
+Section~\ref{sec:shap_signal}. Section~\ref{sec:shap_summary} traces every
+failure to one of three structural gaps in the SHAP framework that PCI's witness
+mechanism, suspect-set distribution $\Gamma_s$, and realised-outcome reference
+jointly close.
+
 Shapley values have become one of the most widely used tools for explaining the
 predictions of complex machine learning models. Grounded in cooperative game theory,
 they provide a principled decomposition of a model's prediction into additive
@@ -875,5 +895,15 @@ the realized outcome rather than the prediction baseline; the path-noise
 asymmetry in the sufficiency world produces a structural gap on D-MXY,
 which appears already in the witness-free single game and is amplified into a
 robust margin under a witness rule.
+
+\paragraph{Where we go next.} The two examples in this section are small enough
+to inspect every desideratum individually, but they cover only two causal
+patterns. Section~\ref{sub:synthetic} stress-tests \ourapproach on a synthetic
+structural model carrying three textbook archetypes --- linear
+necessary-and-sufficient, overdetermined-not-necessary, and preempted (gated)
+--- plus an irrelevance control, and verifies that \ourapproach separates them
+at a Monte Carlo budget small enough to bootstrap honest error bars.
+Section~\ref{sec:DCE} then contrasts \ourapproach with gradient-based attribution
+on a continuous credit-limit example.
 
 

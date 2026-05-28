@@ -1,6 +1,16 @@
 \section{Synthetic evaluation with overdetermination and undercutting}
 \label{sub:synthetic}
 
+\paragraph{Where we are.} Section~\ref{sec:shap_examples} has compared \ourapproach
+with SHAP and Causal SHAP on two small examples and shown where the SHAP
+framework's desiderata fail. Those examples cover only two causal patterns ---
+overdetermination through a gating mediator (OBCB) and correlated mediation
+(signal). This section stress-tests \ourapproach across a wider catalogue of
+patterns, with an analytic ground truth available throughout: the question is
+whether \ourapproach correctly separates linear, overdetermined, and preempted
+contributions on a single structural model, and stays at the noise floor on a
+variable that plays no role.
+
 To evaluate \ourapproach in a setting that exhibits multiple distinct causal patterns
 simultaneously, we construct a synthetic structural causal model carrying three archetypes
 --- linear necessary-and-sufficient, overdetermined-not-necessary, and preempted (gated)
@@ -214,3 +224,12 @@ CI $[-0.441, -0.106]$, whose magnitude is well above $\epsilon$. At this sample 
 gated $P$ does not quantitatively mirror ungated $L_1$; what we can claim is the
 weaker, qualitative statement that both clear the noise floor in Case~2, which is
 exactly desideratum \#10 for $P$ and built into Case~2 by construction for $L_1$.
+
+\paragraph{Where we go next.} The archetype evaluation establishes that \ourapproach
+recovers the right qualitative pattern on every standard causal motif against an
+analytic ground truth. Section~\ref{sec:DCE} now turns to a complementary
+continuous-input comparison: how does \ourapproach behave next to gradient-based
+attribution (Differential Causal Effect of \citealp{butler2022differential}) when
+the same continuous cause is rescaled or moved out of the steep region of the
+response surface, where the gradient itself collapses but causal responsibility
+arguably should not?

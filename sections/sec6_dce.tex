@@ -158,3 +158,17 @@ features and across reparameterisations.
     minute scale, illustrating both shape sensitivity and unit sensitivity.}
     \label{fig:dce_grid}
 \end{figure}
+
+\paragraph{Where we go next.} Sections~\ref{sec:shap_examples}--\ref{sec:DCE}
+have positioned \ourapproach against the dominant feature-attribution baselines
+(SHAP, Causal SHAP, gradient-based DCE) and a synthetic ground-truth catalogue.
+We now turn to the third leg of the comparison: the formal and empirical link
+between \ourapproach and \emph{actual causality}.
+Section~\ref{sec:relation_with_ac} states a correspondence theorem
+identifying, for suitable choices of $\Gamma$ and $\Delta$, the configurations
+on which \ourapproach is positive with Halpern's actual causes;
+Section~\ref{sub:pearl_actual_cause_prob} compares \ourapproach to Pearl's
+\emph{probability of actual causation}, the closest construction in the
+literature; Section~\ref{sec:ac_benchmark} then measures the empirical gap in
+runtime and verdict recovery between exact AC enumeration and the necessity-only
+PCI estimator as model size grows.

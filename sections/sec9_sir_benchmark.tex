@@ -181,3 +181,14 @@ diverge; the contexts experiment further distinguishes robust from
 context-sensitive causes. The same machinery applies to any chirho
 probabilistic program with a continuous outcome and a tractable enumeration
 over interventional regimes.
+
+\paragraph{Where we go next.} The SIR benchmark scales \ourapproach to a
+research-grade Bayesian dynamical model and demonstrates that the joint kernel
+captures patterns that AC cannot adjudicate. Section~\ref{sec:avm} pushes the
+demonstration one step further: a deployed automated valuation model trained on
+millions of points, with deep neural-network components and a sparse variational
+GP outcome head. The question there is no longer whether \ourapproach agrees with
+a known ground truth --- on a proprietary production model none is available ---
+but whether the computation is feasible at all, and whether the qualitative
+SHAP-vs-PCI divergences observed on the synthetic side persist on a real trained
+system.

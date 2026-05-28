@@ -409,3 +409,12 @@ Section~\ref{sub:synthetic}, and the SIR benchmark of
 Section~\ref{sec:sir_benchmark} --- are where these constructions answer
 recognisably different questions, and the question PCI answers is the one we need
 for ML-grade causal attribution.
+
+\paragraph{Where we go next.} Sections~\ref{sec:relation_with_ac}--\ref{sub:pearl_actual_cause_prob}
+have laid out the formal relation between \ourapproach and actual causality (and
+its Pearlian probabilistic wrapper). Section~\ref{sec:ac_benchmark} now turns to the
+\emph{empirical} side of that comparison: a generalised stone-throwing problem
+where exact subset enumeration of actual causes scales as $\bigl(2^{2n}-1\bigr)^2$
+cause-witness pairs and is therefore the natural pressure test for the
+necessity-only PCI estimator. We report runtime, search-space size, and
+attribution-accuracy curves as the problem size grows.

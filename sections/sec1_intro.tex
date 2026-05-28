@@ -69,6 +69,18 @@ function --- as explicit user-facing components rather than hidden defaults,
 wide array of users and applications.
 
 \paragraph{Paper structure.}
+The paper proceeds in four phases: motivation and formalism
+(Sections~\ref{sec:motivations}--\ref{sec:causal_impact}); positioning against
+existing attribution methods --- SHAP, Causal SHAP, and gradient-based DCE ---
+on small and continuous examples (Sections~\ref{sec:shap_examples}--\ref{sec:DCE});
+formal and empirical relation to actual causality, including a side-by-side
+comparison with Pearl's probability of actual causation and a scaling benchmark
+where AC enumeration breaks
+(Sections~\ref{sec:relation_with_ac}--\ref{sec:ac_benchmark}); and continuous-outcome
+and production-scale demonstrations on a dynamical SIR model and a deployed
+automated valuation model (Sections~\ref{sec:sir_benchmark}--\ref{sec:avm}).
+Section~\ref{sec:discussion} closes with discussion. The section-by-section
+breakdown is as follows.
 \begin{itemize}[itemsep=2pt, topsep=2pt, parsep=0pt]
     \item \textbf{Section~\ref{sec:motivations}} works through a running example that
     surfaces what actual causality and the probability of necessity/sufficiency each

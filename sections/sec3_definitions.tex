@@ -1,13 +1,30 @@
 \section{Causal Impact: definitions}\label{sec:causal_impact}
 
-Explanation and causal attribution seek to connect a potentially causal \textit{event} $X=x$ to an outcome event $Y=y$.\footnote{This is quite different from type-level causal queries, where one is interested in some group-level attribution, as when one estimates average treatment effect or conditional average treatment effect.} 
+Explanation and causal attribution seek to connect a potentially causal \textit{event} $X=x$ to an outcome event $Y=y$.\footnote{This is quite different from type-level causal queries, where one is interested in some group-level attribution, as when one estimates average treatment effect or conditional average treatment effect.}
 % To measure the strength of causation, we (i) intervene to change $X$ and measure the extent to which this changes $Y$ (call this a \emph{necessity intervention}), and (ii) intervene on $X$ to have the actual value and measure the extent to which this ensures $Y=y$ (call this a \emph{sufficiency intervention}), while (iii) preserving context-sensitivity, and (iv) allowing for some variation in which parts of the contexts are fixed and in what combinations the cause candidates are intervened on, to account for interactions.
 % Moreover, (v) to search for causes, we also need to perform a search through potential sets of causes.
 In this section, we present a formal development. To ground it, we return to Example~\ref{ex:obcb_stochastic} and
- use Alice and Bob as running illustrations throughout this section. Both are rejected for a loan; the question is 
- which of their attributes---\varname{gender} and \varname{credit}---was causally responsible for each rejection, 
+ use Alice and Bob as running illustrations throughout this section. Both are rejected for a loan; the question is
+ which of their attributes---\varname{gender} and \varname{credit}---was causally responsible for each rejection,
  and to what degree. While the example is discrete, the machinery applies to continuous and mixed-type variables;
   a continuous illustration is given in Sections~\ref{sec:signal} and~\ref{sub:synthetic}.
+
+\paragraph{Roadmap of this section.}
+The development proceeds in five steps: (1) write down a list of seven
+\emph{desiderata} that any responsibility attribution for Alice and Bob should
+satisfy, so that the formal construction can be judged against an explicit
+target; (2) introduce the probabilistic structural causal model (PSCM) and
+interventions, the substrate on which everything else rests; (3) introduce the
+two distributions \ourapproach exposes to the user --- the variable selection
+distribution $\Gamma$ over suspect/witness pairs and the alternative-value
+distribution $\Delta$ over counterfactual cause settings; (4) combine them into
+the joint necessity-sufficiency measure $P_k^{s,n}$ and the user-chosen causal
+impact function $ci$ whose expectation is the \ourapproach score; (5) compute
+the score on the OBCB example, verify that all seven desiderata hold, and
+contrast \ourapproach's necessity/sufficiency decomposition with Pearl's
+PN/PS/PNS. The closing paragraph then points forward to
+Section~\ref{sec:shap_examples}, which positions \ourapproach against SHAP
+and Causal SHAP.
 
 Let $R(V \rightsquigarrow \varname{loan} \mid \text{person})$ denote the causal responsibility of variable $V$
 for the loan outcome at the individual level ($R$ is a placeholder for any attribution score and
@@ -418,6 +435,15 @@ Section~\ref{sec:shap_examples}.
 % %p^{en}_{C, T}( y \vert \mathbf{u}, C, T) 
 % \end{align}
 % \end{definition}
+
+\paragraph{Where we are.} The PSCM and intervention apparatus give us a notion of
+counterfactual outcome for any fixed noise realisation $\mathbf{u}$; $\Gamma$ tells
+us which suspect/witness configurations to ask about; $\Delta$ tells us which
+non-factual values to substitute when evaluating necessity. What remains is to plug
+those distributions into the counterfactual mechanics and read out a number. The
+next two definitions do exactly that --- first the joint necessity-sufficiency
+measure $P_k^{s,n}$, then its expectation against a user-chosen impact function
+$ci$, with the OBCB scores and the desiderata verification immediately after.
 
 We are now ready to state the main definitions of \Ourapproach. The core idea is to
 measure two complementary things for a variable of interest $X_k$: (a) how much $X_k$'s
@@ -870,4 +896,7 @@ gender in opening the evaluation.
 The next section turns from comparing PCI with Pearl's family of counterfactual scores
 to comparing it with the SHAP family --- methods grounded in cooperative game theory
 rather than in structural counterfactual reasoning.
+Section~\ref{sec:shap_examples} re-runs the OBCB analysis under plain and Causal
+SHAP, then introduces a continuous mediation example where the two SHAP variants
+diverge from each other and from PCI, with explicit desiderata recorded throughout.
 

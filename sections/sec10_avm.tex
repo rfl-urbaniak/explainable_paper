@@ -1,5 +1,15 @@
 \section{Scaling \ourapproach to a real-world automated valuation model}\label{sec:avm}
 
+\paragraph{Where we are.} The synthetic archetypes of
+Section~\ref{sub:synthetic}, the AC benchmark of
+Section~\ref{sec:ac_benchmark}, and the SIR benchmark of
+Section~\ref{sec:sir_benchmark} have all controlled the model and the ground
+truth, so that \ourapproach could be judged against either an analytic verdict or
+a competing AC enumeration. This section drops both: we apply \ourapproach to a
+deployed production model on which neither ground truth nor exact AC enumeration
+is available, and ask whether the computation remains feasible and whether the
+qualitative SHAP-vs-PCI divergence persists.
+
 In this section, we apply \ourapproach to a valuation model for residential housing.
 Disclosure constraints on the trained model and its training data prevent us from
 publishing a quantitative accuracy comparison against ground truth on this system;
@@ -115,3 +125,10 @@ concentrated on a small number of downstream variables. The qualitative pattern 
 the controlled-setting comparison of Section~\ref{sub:synthetic}.}
 \label{fig:avm_attribution}
 \end{figure}
+
+\paragraph{Where we go next.} Section~\ref{sec:discussion} closes the paper by
+articulating the relationship between \ourapproach and the two traditions it
+inherits from --- Halpern's actual causality and Pearl's PN/PS/PNS --- against
+the background of what every preceding section has shown, and points out the
+limitations of the present construction along with the natural follow-up
+directions.

@@ -1,5 +1,15 @@
 \section{Relation with Actual Causality} \label{sec:relation_with_ac}
 
+\paragraph{Where we are.} Sections~\ref{sec:shap_examples}--\ref{sec:DCE} have
+positioned \ourapproach against feature-attribution baselines. We now turn to
+\ourapproach's relation to the causal-attribution tradition it inherits the
+witness mechanism from --- Halpern's actual causality. This section establishes
+the \emph{formal} connection (Theorems~\ref{th:ac-exp}--\ref{th:exp-ac} and
+Proposition~\ref{prop:filter}); Section~\ref{sub:pearl_actual_cause_prob} adds
+the side-by-side comparison with Pearl's \emph{probability of actual
+causation}; and Section~\ref{sec:ac_benchmark} measures the empirical gap in
+runtime and verdict recovery.
+
 \ourapproach{} is not meant to explicate Halpern's notion of actual causality; the goal
 is to combine the intuitions underlying Halpern's notion with those motivating Pearl's
 probabilities of necessity and sufficiency to provide a more general tool for causal
@@ -452,3 +462,13 @@ over noise misaligns with subset-minimality; and
 verdicts exactly. The empirical counterpart of the correspondence --- a benchmark of
 the necessity-only PCI estimator against exact subset enumeration on a scaled
 stone-throwing problem --- is reported in Section~\ref{sec:ac_benchmark}.
+
+\paragraph{Where we go next.} Before turning to the empirical benchmark, the next
+section locates \ourapproach against the construction in the literature closest to
+its expectation form: Pearl's \emph{probability of actual causation}. The two share
+the same surface idea --- ``how often, under the noise, does the actual-cause
+verdict fire?'' --- and they coincide on standard examples, but they disagree on
+graded responsibility patterns that PCI registers and Pearl's binary AC verdict
+discards. Section~\ref{sub:pearl_actual_cause_prob} walks through Pearl's
+canonical desert-traveller illustration and a weak-poison variant to make the
+distinction concrete.
