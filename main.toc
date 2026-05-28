@@ -3,7 +3,7 @@
 \contentsline {section}{\numberline {2}Causal Impact: motivations}{4}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Actual Causality}{5}{subsection.2.1}%
 \contentsline {subsection}{\numberline {2.2}Probability of Necessity and Sufficiency}{6}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Path forward}{8}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.3}Path forward}{9}{subsection.2.3}%
 \contentsline {section}{\numberline {3}Causal Impact: definitions}{10}{section.3}%
 \contentsline {paragraph}{Roadmap of this section.}{10}{section*.5}%
 \contentsline {paragraph}{Why $\epsilon $-excision?}{15}{section*.6}%

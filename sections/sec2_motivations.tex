@@ -91,15 +91,24 @@ Let us focus on the mediator $\varname{check-failed}$ between $\varname{gender}$
 If we fix this variable at the factual value by intervening, then counterfactually, Alice would have been granted the loan if she were male.
 However, there is no context fixed at the actual value such that, had her credit score been higher, she would have been granted the loan.
 This motivates the following formalization:
-\begin{definition}[Actual cause] 
-Let $\mathbf{C} \subseteq \mathbf{S}$ be a cause set,
-$\mathbf{W} \subseteq \mathbf{V}$ be a set of possible witnesses. $\mathbf{C} = \mathbf{c}^\star$ is causally 
-responsible for $Y = y^\star$ in $(M, \mathbf{u})$  
-just in case there is a $\mathbf{T}$ (an actual witness set to be held fixed) s.t. $\mathbf{T} \subseteq \mathbf{W}, \mathbf{T} \cap \mathbf{C} = \emptyset$  
-and $(M, \mathbf{u}) \models \mathbf{C}=\mathbf{c}^\star, Y=y^\star$
-and  $(M, \mathbf{u})[\mathbf{C} \leftarrow \mathbf{c}', \mathbf{T} \leftarrow \mathbf{t}^\star] \not\models Y = y^\star,$
-for some \(\mathbf{c}'\)
-distinct everywhere from  \(\mathbf{c}^\star\), where no proper subset of \(\mathbf{C}\) satisfies this property.
+\begin{definition}[Actual cause]
+Let $\mathbf{S}\subseteq\mathbf{V}$ be a suspect pool and
+$\mathbf{W}\subseteq\mathbf{V}$ a witness pool, observed in $(M,\mathbf{u})$ at
+factual values $\mathbf{S}=\mathbf{s}^\star$ and $\mathbf{W}=\mathbf{w}^\star$.
+A cause set $\mathbf{C}\subseteq\mathbf{S}$ at its factual setting
+$\mathbf{C}=\mathbf{c}^\star$ is an \emph{actual cause} of $Y=y^\star$ in
+$(M,\mathbf{u})$ just in case there is an active witness set
+$\mathbf{T}\subseteq\mathbf{W}$ disjoint from $\mathbf{C}$, at its factual
+setting $\mathbf{T}=\mathbf{t}^\star$, such that
+\begin{align*}
+&(M,\mathbf{u})\models \mathbf{C}=\mathbf{c}^\star,\;
+                       \mathbf{W}=\mathbf{w}^\star,\; Y=y^\star, \\
+&(M,\mathbf{u})\bigl[\mathbf{C}\leftarrow\mathbf{c}',\;
+                     \mathbf{T}\leftarrow\mathbf{t}^\star\bigr]
+  \not\models Y=y^\star
+\end{align*}
+for some $\mathbf{c}'$ distinct everywhere from $\mathbf{c}^\star$, where no
+proper subset of $\mathbf{C}$ satisfies these conditions.
 \end{definition}
 
 \noindent This definition extends but-for causality with a witness set $\mathbf{T}$ that is fixed to its factual value by 
