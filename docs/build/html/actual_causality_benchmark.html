@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="PCI on a dynamical SIR model with policies" href="sir_benchmark.html" />
-    <link rel="prev" title="Causal Archetypes — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance" href="responsibility_archetypes.html" /> 
+    <link rel="prev" title="PCI on Pearl’s Desert Traveller" href="desert_traveler.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="obcb_computations.html">Old Boys’ Club Bank — PN, PS, PNS, PCI and SHAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_mediation_computations.html">Signal with Mediation — SHAP, Causal SHAP and PCI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="responsibility_archetypes.html">Causal Archetypes — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desert_traveler.html">PCI on Pearl’s Desert Traveller</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Actual Causality Benchmark</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Overview">Overview</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Motivations">Motivations</a></li>
@@ -4855,7 +4856,7 @@ success rate tensor(nan)
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ---------------------- PLOT 1 ----------------------</span>
 <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Runtime per Single World&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Runtime Per Single World&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;No of Variables in the Model&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Runtime (s)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 
@@ -4960,7 +4961,7 @@ success rate tensor(nan)
 <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
     <span class="n">subsets_df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">subsets_df</span><span class="p">[</span><span class="s2">&quot;search_space&quot;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Exact&quot;</span>
 <span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Log Number of Sets Searched (by Number of Variables)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Log Number Of Sets Searched (By Number Of Variables)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;No of Variables in the Model&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Log Number of Sets Searched&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 
@@ -5022,7 +5023,7 @@ success rate tensor(nan)
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ---------------------- PLOT 3 ----------------------</span>
 <span class="n">fig3</span><span class="p">,</span> <span class="n">ax3</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 
-<span class="n">ax3</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Accuracy per Problem Size (Smoothed)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Accuracy Per Problem Size (Smoothed)&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">ax3</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;No of Variables in the Model&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 <span class="n">ax3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Correct Attribution Frequency&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
 
@@ -5139,7 +5140,7 @@ success rate tensor(nan)
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="responsibility_archetypes.html" class="btn btn-neutral float-left" title="Causal Archetypes — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="desert_traveler.html" class="btn btn-neutral float-left" title="PCI on Pearl’s Desert Traveller" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="sir_benchmark.html" class="btn btn-neutral float-right" title="PCI on a dynamical SIR model with policies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

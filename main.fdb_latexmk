@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1779822270.33825 "main.aux" "main.bbl" "main" 1779822286.27884 0
+["bibtex main"] 1779975845.30906 "main.aux" "main.bbl" "main" 1779975854.54502 0
   "./references.bib" 1779801794.03008 18941 b8f96e7d09e8aadd264017aa5adc3227 ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "main.aux" 1779822285.98894 46189 c9a39e0aad50f5fe42548fb9d70c037e "pdflatex"
+  "main.aux" 1779975854.37823 49794 c03d33f144f535babb67bf94693c6a8a "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1779822270.40285 "main.tex" "main.pdf" "main" 1779822286.2791 0
+["pdflatex"] 1779975845.35929 "main.tex" "main.pdf" "main" 1779975854.5452 0
   "/etc/texmf/web2c/texmf.cnf" 1774532046.6442 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/rafal/.texlive2023/texmf-var/fonts/pk/ljfour/public/bbm/bbm10.600pk" 1778245382.49876 6964 c822782c23a6d202015af54cab36b19a ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
@@ -302,7 +302,7 @@
   "docs/source/sir_benchmark/sir_contexts.png" 1778259299.99948 76858 8f184d44398df3591bf1f7301adc6582 ""
   "docs/source/sir_benchmark/sir_heatmap.png" 1778259299.1025 227013 40c3a4454f7313d9c6bbb61d636d965b ""
   "figures/anonymized_upstream_structure.png" 1777291385.4657 722803 ae4b4b27360c4329802e9151bfef1322 ""
-  "figures/archetypes_dag.pdf" 1779818531.79078 15648 e59821df069a9010003bca11328b203c ""
+  "figures/archetypes_dag.pdf" 1779975168.595 15649 a27efeb5bd91ed2812d78931ab975c11 ""
   "figures/archetypes_threshold_forest.png" 1778423700.50395 223569 59b5f87322b59e4e4bc85d40fcdd8fc9 ""
   "figures/contour_diff_hours_age_1.png" 1778182303.34427 619227 d42230968f2072d9a6b708d77c5a22ed ""
   "figures/contour_diff_hours_age_2.png" 1778182303.3445 281073 6cb5a083cb206526c866fc98a7e5f678 ""
@@ -313,11 +313,11 @@
   "figures/search_samples_age_norm.png" 1778182303.34526 1177776 17d30d525a78102bcdbc75fdaba9e756 ""
   "figures/search_samples_hour_norm.png" 1778182303.34564 2894510 ca39c679ba7163dc37ab4897bd03e96e ""
   "figures/shap_figure.png" 1777291385.4937 121452 1091f6a438c0702bbd13d36cca30a47a ""
-  "main.aux" 1779822285.98894 46189 c9a39e0aad50f5fe42548fb9d70c037e "pdflatex"
-  "main.bbl" 1779822270.39675 9120 57ad2b55d3c9ccbd6229b819b584fd6a "bibtex main"
-  "main.out" 1779822285.99194 6009 2961d8c553dd14e6f0fdc16809ac260a "pdflatex"
-  "main.tex" 1779819368.85515 8380 8f47bd3db1f9aa13f019c4b797d3d488 ""
-  "main.toc" 1779822285.99289 3788 30f896b98e924d7a08889a180f316a3d "pdflatex"
+  "main.aux" 1779975854.37823 49794 c03d33f144f535babb67bf94693c6a8a "pdflatex"
+  "main.bbl" 1779975845.35579 9120 57ad2b55d3c9ccbd6229b819b584fd6a "bibtex main"
+  "main.out" 1779975854.38023 6090 ce139efd182f4da3d6575fe53bc9b3c5 "pdflatex"
+  "main.tex" 1779975819.92495 8406 fcd643b64647eaab2e4c1ccc36c62af4 ""
+  "main.toc" 1779975854.3812 3985 9f6bd58111c086ee89d3afe371d2ce71 "pdflatex"
   "neurips_2024.sty" 1714668730 11625 b5f853b54a7a098e9e5b837f826d5daa ""
   "sections/sec10_avm.tex" 1778417348.5795 7465 f90f97e3f1aa5c22a6725ec856680706 ""
   "sections/sec11_discussion.tex" 1778416558.2631 10032 d582030266de604f78cbe9c9f64a408d ""
@@ -328,7 +328,7 @@
   "sections/sec5_synthetic.tex" 1779800270.36276 12777 f0d29cb0911056564feddf7f0aa63414 ""
   "sections/sec6_dce.tex" 1778415858.90436 8730 173950ab138aba89a7b76e5b6be69abb ""
   "sections/sec7_actual_causality.tex" 1779816644.36551 30347 595c99f668f5178a39634c379eaae635 ""
-  "sections/sec7b_paac.tex" 1779822249.7792 17955 2b795c34c3d7094649d6f08e8e79860f ""
+  "sections/sec7b_paac.tex" 1779975819.92495 21851 5167002c452b3867932f5ecedfa2027f ""
   "sections/sec8_ac_benchmark.tex" 1778259781.20245 13433 ae3ef49b0174e432ec0346b421074b91 ""
   "sections/sec9_sir_benchmark.tex" 1778416793.59789 10356 33d8080e08d220a07d0b2b34673fde1b ""
   (generated)

@@ -61,14 +61,17 @@ irrelevance control.*
     structural information.
 
 :doc:`desert_traveler` — *Pearl's desert traveler: PCI vs Definition 10.3.5.*
-    Reproduces analytically the PCI necessity expectations on Pearl's original
-    desert-traveler example (under HP-style mediator witnesses), then
-    introduces a weak-poison variant in which Pearl's ``PS`` reading separates
-    the two enemies' degrees of responsibility while his
-    probability-of-actual-causation posterior cannot. Includes a cross-check
-    against the framework's ``ThinSearchSampler`` and a flag on the
-    witness-mechanism gap between the paper's specification and the current
-    implementation.
+    Walks through PCI's three responsibility factors (necessity, sufficiency,
+    joint PNS) on Pearl's basic deterministic desert traveler, then on a
+    weak-poison variant where the cyanide step is stochastic. Throughout we
+    run PCI under forensic-conditioned noise (one pyro model per scenario
+    with the noise pinned at the scenario's forensic realisation), with
+    ``ThinSearchSampler`` and a hand-rolled enumeration agreeing within
+    Monte Carlo noise. The weak-poison case exhibits three intuitions PCI
+    captures and Pearl's binary actual-cause indicator structurally cannot:
+    adding noise to a path lowers its own cause's responsibility; within
+    a scenario the operative cause still wins; reliable causes beat
+    unreliable causes across scenarios.
 
 **Empirical benchmarks.** Larger experiments that compare PCI to existing
 machinery on synthetic SCMs and a dynamical SIR model.

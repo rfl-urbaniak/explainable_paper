@@ -47,7 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="obcb_computations.html">Old Boys’ Club Bank — PN, PS, PNS, PCI and SHAP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="signal_mediation_computations.html">Signal with Mediation — SHAP, Causal SHAP and PCI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="responsibility_archetypes.html">Causal Archetypes — PCI vs SHAP on Overdetermination, Preemption, and Irrelevance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="desert_traveler.html">PCI on Pearl’s Desert Traveler — Verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="desert_traveler.html">PCI on Pearl’s Desert Traveller</a></li>
 <li class="toctree-l1"><a class="reference internal" href="actual_causality_benchmark.html">Actual Causality Benchmark</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sir_benchmark.html">PCI on a dynamical SIR model with policies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gradient_based_attribution.html">Gradient-Based Attribution vs PCI</a></li>
@@ -135,14 +135,17 @@ number per feature; PCI returns two, and the two numbers carry distinct
 structural information.</p>
 </div></blockquote>
 <dl class="simple">
-<dt><a class="reference internal" href="desert_traveler.html"><span class="doc">PCI on Pearl’s Desert Traveler — Verification</span></a> — <em>Pearl’s desert traveler: PCI vs Definition 10.3.5.</em></dt><dd><p>Reproduces analytically the PCI necessity expectations on Pearl’s original
-desert-traveler example (under HP-style mediator witnesses), then
-introduces a weak-poison variant in which Pearl’s <code class="docutils literal notranslate"><span class="pre">PS</span></code> reading separates
-the two enemies’ degrees of responsibility while his
-probability-of-actual-causation posterior cannot. Includes a cross-check
-against the framework’s <code class="docutils literal notranslate"><span class="pre">ThinSearchSampler</span></code> and a flag on the
-witness-mechanism gap between the paper’s specification and the current
-implementation.</p>
+<dt><a class="reference internal" href="desert_traveler.html"><span class="doc">PCI on Pearl’s Desert Traveller</span></a> — <em>Pearl’s desert traveler: PCI vs Definition 10.3.5.</em></dt><dd><p>Walks through PCI’s three responsibility factors (necessity, sufficiency,
+joint PNS) on Pearl’s basic deterministic desert traveler, then on a
+weak-poison variant where the cyanide step is stochastic. Throughout we
+run PCI under forensic-conditioned noise (one pyro model per scenario
+with the noise pinned at the scenario’s forensic realisation), with
+<code class="docutils literal notranslate"><span class="pre">ThinSearchSampler</span></code> and a hand-rolled enumeration agreeing within
+Monte Carlo noise. The weak-poison case exhibits three intuitions PCI
+captures and Pearl’s binary actual-cause indicator structurally cannot:
+adding noise to a path lowers its own cause’s responsibility; within
+a scenario the operative cause still wins; reliable causes beat
+unreliable causes across scenarios.</p>
 </dd>
 </dl>
 <p><strong>Empirical benchmarks.</strong> Larger experiments that compare PCI to existing

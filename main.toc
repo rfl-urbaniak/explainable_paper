@@ -30,15 +30,17 @@
 \contentsline {section}{\numberline {7}Relation with Actual Causality}{36}{section.7}%
 \contentsline {section}{\numberline {8}Relation with the Probability of Actual Causality}{42}{section.8}%
 \contentsline {subsection}{\numberline {8.1}Pearl's worked example: the desert traveller}{42}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}PCI on the same example}{42}{subsection.8.2}%
-\contentsline {subsection}{\numberline {8.3}PCI expectation vs the AC machinery}{43}{subsection.8.3}%
-\contentsline {subsection}{\numberline {8.4}Desert traveller with stochastic mechanisms}{44}{subsection.8.4}%
-\contentsline {subsection}{\numberline {8.5}Further differences between Pearl's probability of causation and PCI}{45}{subsection.8.5}%
-\contentsline {section}{\numberline {9}Scaling actual-cause computation: an empirical comparison}{45}{section.9}%
-\contentsline {section}{\numberline {10}Dynamical SIR benchmark: PCI on continuous outcomes}{49}{section.10}%
-\contentsline {section}{\numberline {11}Scaling PCI\xspace to a real-world automated valuation model}{51}{section.11}%
-\contentsline {paragraph}{Setting.}{52}{section*.42}%
-\contentsline {paragraph}{Causal model.}{52}{section*.43}%
-\contentsline {paragraph}{Feasibility at production scale.}{52}{section*.45}%
-\contentsline {paragraph}{Qualitative comparison to SHAP.}{52}{section*.46}%
-\contentsline {section}{\numberline {12}Discussion and Conclusions}{54}{section.12}%
+\contentsline {subsection}{\numberline {8.2}PCI on the basic desert traveller}{42}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}PCI expectation vs the AC machinery}{44}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Weak-poison variant: two intuitions Pearl misses}{44}{subsection.8.4}%
+\contentsline {paragraph}{Three responsibility intuitions for an attribution method.}{44}{section*.38}%
+\contentsline {paragraph}{What PCI does on the same model.}{45}{section*.40}%
+\contentsline {subsection}{\numberline {8.5}Further differences between Pearl's probability of causation and PCI}{46}{subsection.8.5}%
+\contentsline {section}{\numberline {9}Scaling actual-cause computation: an empirical comparison}{46}{section.9}%
+\contentsline {section}{\numberline {10}Dynamical SIR benchmark: PCI on continuous outcomes}{50}{section.10}%
+\contentsline {section}{\numberline {11}Scaling PCI\xspace to a real-world automated valuation model}{52}{section.11}%
+\contentsline {paragraph}{Setting.}{53}{section*.48}%
+\contentsline {paragraph}{Causal model.}{53}{section*.49}%
+\contentsline {paragraph}{Feasibility at production scale.}{53}{section*.51}%
+\contentsline {paragraph}{Qualitative comparison to SHAP.}{53}{section*.52}%
+\contentsline {section}{\numberline {12}Discussion and Conclusions}{55}{section.12}%

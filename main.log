@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.4.27)  26 MAY 2026 15:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.4.27)  28 MAY 2026 09:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1044,9 +1044,9 @@ Package cleveref Info: always capitalise cross-reference names on input line 78
 )
 Package hyperref Info: Option `colorlinks' set `true' on input line 147.
 Package translations Info: No language package found. I am going to use `englis
-h' as default language. on input line 169.
+h' as default language. on input line 172.
 LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 1
-69.
+72.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
@@ -1059,24 +1059,24 @@ File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
 (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 169.
-LaTeX Font Info:    ... okay on input line 169.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 169.
-LaTeX Font Info:    ... okay on input line 169.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 169.
-LaTeX Font Info:    ... okay on input line 169.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 169.
-LaTeX Font Info:    ... okay on input line 169.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 169.
-LaTeX Font Info:    ... okay on input line 169.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 169.
-LaTeX Font Info:    ... okay on input line 169.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 169.
-LaTeX Font Info:    ... okay on input line 169.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 169.
-LaTeX Font Info:    ... okay on input line 169.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 169.
-LaTeX Font Info:    ... okay on input line 169.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 172.
+LaTeX Font Info:    ... okay on input line 172.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 172.
+LaTeX Font Info:    ... okay on input line 172.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 172.
+LaTeX Font Info:    ... okay on input line 172.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 172.
+LaTeX Font Info:    ... okay on input line 172.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 172.
+LaTeX Font Info:    ... okay on input line 172.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 172.
+LaTeX Font Info:    ... okay on input line 172.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 172.
+LaTeX Font Info:    ... okay on input line 172.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 172.
+LaTeX Font Info:    ... okay on input line 172.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 172.
+LaTeX Font Info:    ... okay on input line 172.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -1185,26 +1185,26 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 169.
+or `english'. on input line 172.
 \c@lstlisting=\count374
  (/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
 Package: inputenc 2021/02/14 v1.3d Input encoding file
 \inpenc@prehook=\toks56
 \inpenc@posthook=\toks57
 )
-Package hyperref Info: Link coloring ON on input line 169.
+Package hyperref Info: Link coloring ON on input line 172.
 
 (./main.out) (./main.out)
 \@outlinefile=\write4
 \openout4 = `main.out'.
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 172
+LaTeX Font Info:    Trying to load font information for U+msa on input line 175
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 172
+LaTeX Font Info:    Trying to load font information for U+msb on input line 175
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -1322,33 +1322,45 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
  [35 <./figures/search_samples_hour_norm.png> <./figures/contour_diff_hours_age
 _1.png>]
 [36 <./figures/contour_diff_hours_age_2.png> <./figures/dce_age_time_hours_minu
-tes.png>] [37] [38] [39] [40]) (./sections/sec7b_paac.tex [41] [42] [43]
-[44]) (./sections/sec8_ac_benchmark.tex [45]
+tes.png>] [37] [38] [39] [40]) (./sections/sec7b_paac.tex [41]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[42] [43] [44]
+Overfull \hbox (11.91084pt too wide) in paragraph at lines 314--329
+ [][] 
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [45])
+(./sections/sec8_ac_benchmark.tex [46]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
 put line 57.
- [46]
+ [47]
 
 pdfTeX warning: pdflatex: arithmetic: number too big
-<docs/source/ac_benchmark/plot1_runtime.png, id=938, 1808.1954pt x 0.0pt>
+<docs/source/ac_benchmark/plot1_runtime.png, id=956, 1808.1954pt x 0.0pt>
 File: docs/source/ac_benchmark/plot1_runtime.png Graphic file (type png)
 <use docs/source/ac_benchmark/plot1_runtime.png>
 Package pdftex.def Info: docs/source/ac_benchmark/plot1_runtime.png  used on in
 put line 177.
 (pdftex.def)             Requested size: 365.68546pt x 0.0pt.
-<docs/source/ac_benchmark/plot2_search_space.png, id=939, 1084.05pt x 722.7pt>
+<docs/source/ac_benchmark/plot2_search_space.png, id=957, 1084.05pt x 722.7pt>
 File: docs/source/ac_benchmark/plot2_search_space.png Graphic file (type png)
 <use docs/source/ac_benchmark/plot2_search_space.png>
 Package pdftex.def Info: docs/source/ac_benchmark/plot2_search_space.png  used 
 on input line 188.
 (pdftex.def)             Requested size: 365.68546pt x 243.78493pt.
-<docs/source/ac_benchmark/plot3_accuracy.png, id=940, 1084.05pt x 722.7pt>
+<docs/source/ac_benchmark/plot3_accuracy.png, id=958, 1084.05pt x 722.7pt>
 File: docs/source/ac_benchmark/plot3_accuracy.png Graphic file (type png)
 <use docs/source/ac_benchmark/plot3_accuracy.png>
 Package pdftex.def Info: docs/source/ac_benchmark/plot3_accuracy.png  used on i
 nput line 198.
 (pdftex.def)             Requested size: 365.68546pt x 243.78493pt.
-) (./sections/sec9_sir_benchmark.tex [47 <./docs/source/ac_benchmark/plot1_runt
-ime.png>] [48 <./docs/source/ac_benchmark/plot2_search_space.png> <./docs/sourc
+) (./sections/sec9_sir_benchmark.tex [48 <./docs/source/ac_benchmark/plot1_runt
+ime.png>] [49 <./docs/source/ac_benchmark/plot2_search_space.png> <./docs/sourc
 e/ac_benchmark/plot3_accuracy.png>]
 LaTeX Font Info:    Trying to load font information for U+bbm on input line 29.
 
@@ -1356,64 +1368,71 @@ LaTeX Font Info:    Trying to load font information for U+bbm on input line 29.
 (/usr/share/texlive/texmf-dist/tex/latex/bbm-macros/ubbm.fd
 File: ubbm.fd 1999/03/15 V 1.2 Font definition for bbm font - TH
 )
-<docs/source/sir_benchmark/sir_butfor.png, id=960, 785.48456pt x 669.85257pt>
+<docs/source/sir_benchmark/sir_butfor.png, id=979, 785.48456pt x 669.85257pt>
 File: docs/source/sir_benchmark/sir_butfor.png Graphic file (type png)
 <use docs/source/sir_benchmark/sir_butfor.png>
 Package pdftex.def Info: docs/source/sir_benchmark/sir_butfor.png  used on inpu
 t line 50.
 (pdftex.def)             Requested size: 365.68546pt x 311.8564pt.
- [49]
-<docs/source/sir_benchmark/sir_heatmap.png, id=972, 784.58119pt x 369.02869pt>
+ [50]
+<docs/source/sir_benchmark/sir_heatmap.png, id=990, 784.58119pt x 369.02869pt>
 File: docs/source/sir_benchmark/sir_heatmap.png Graphic file (type png)
 <use docs/source/sir_benchmark/sir_heatmap.png>
 Package pdftex.def Info: docs/source/sir_benchmark/sir_heatmap.png  used on inp
 ut line 123.
 (pdftex.def)             Requested size: 365.68546pt x 172.00198pt.
- [50 <./docs/source/sir_benchmark/sir_butfor.png>]
-<docs/source/sir_benchmark/sir_contexts.png, id=980, 821.61957pt x 296.307pt>
+<docs/source/sir_benchmark/sir_contexts.png, id=992, 821.61957pt x 296.307pt>
 File: docs/source/sir_benchmark/sir_contexts.png Graphic file (type png)
 <use docs/source/sir_benchmark/sir_contexts.png>
 Package pdftex.def Info: docs/source/sir_benchmark/sir_contexts.png  used on in
 put line 163.
 (pdftex.def)             Requested size: 365.68546pt x 131.88106pt.
-) (./sections/sec10_avm.tex [51 <./docs/source/sir_benchmark/sir_heatmap.png> <
-./docs/source/sir_benchmark/sir_contexts.png>]
-<figures/anonymized_upstream_structure.png, id=997, 1433.355pt x 2058.69125pt>
+)
+(./sections/sec10_avm.tex [51 <./docs/source/sir_benchmark/sir_butfor.png>]
+[52 <./docs/source/sir_benchmark/sir_heatmap.png> <./docs/source/sir_benchmark/
+sir_contexts.png>]
+<figures/anonymized_upstream_structure.png, id=1015, 1433.355pt x 2058.69125pt>
+
 File: figures/anonymized_upstream_structure.png Graphic file (type png)
 <use figures/anonymized_upstream_structure.png>
 Package pdftex.def Info: figures/anonymized_upstream_structure.png  used on inp
 ut line 58.
 (pdftex.def)             Requested size: 337.86465pt x 485.26894pt.
-<figures/search_query_figure.png, id=1008, 722.7pt x 722.7pt>
+<figures/search_query_figure.png, id=1026, 722.7pt x 722.7pt>
 File: figures/search_query_figure.png Graphic file (type png)
 <use figures/search_query_figure.png>
 Package pdftex.def Info: figures/search_query_figure.png  used on input line 10
 3.
 (pdftex.def)             Requested size: 190.79109pt x 190.78677pt.
-<figures/shap_figure.png, id=1009, 3914.625pt x 3864.4375pt>
+<figures/shap_figure.png, id=1027, 3914.625pt x 3864.4375pt>
 File: figures/shap_figure.png Graphic file (type png)
 <use figures/shap_figure.png>
 Package pdftex.def Info: figures/shap_figure.png  used on input line 108.
 (pdftex.def)             Requested size: 190.79109pt x 188.33897pt.
- [52] [53 <./figures/anonymized_upstream_structure.png>])
-(./sections/sec11_discussion.tex [54 <./figures/search_query_figure.png> <./fig
-ures/shap_figure.png>]
-Underfull \vbox (badness 1281) has occurred while \output is active []
+) (./sections/sec11_discussion.tex
+Underfull \vbox (badness 1270) has occurred while \output is active []
 
- [55])
-(./main.bbl [56]) [57] (./main.aux)
+ [53]
+[54 <./figures/anonymized_upstream_structure.png>]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [55 <./figures/search_query_figure.png> <./figures/shap_figure.png>]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [56])
+(./main.bbl [57]) [58] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 2961D8C553DD14E6F0FDC16809AC260A;6009.
+(rerunfilecheck)             Checksum: CE139EFD182F4DA3D6575FE53BC9B3C5;6090.
  ) 
 Here is how much of TeX's memory you used:
- 40780 strings out of 476106
- 886108 string characters out of 5793933
+ 40806 strings out of 476106
+ 886554 string characters out of 5793933
  1951975 words of memory out of 5000000
- 61833 multiletter control sequences out of 15000+600000
+ 61849 multiletter control sequences out of 15000+600000
  592867 words of font info for 111 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
  102i,16n,107p,2527b,1635s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1449,10 +1468,10 @@ fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/f
 onts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/
 times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.p
 fb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (57 pages, 8123763 bytes).
+Output written on main.pdf (58 pages, 8127663 bytes).
 PDF statistics:
- 1297 PDF objects out of 1440 (max. 8388607)
- 1084 compressed objects within 11 object streams
- 286 named destinations out of 1000 (max. 500000)
+ 1319 PDF objects out of 1440 (max. 8388607)
+ 1103 compressed objects within 12 object streams
+ 296 named destinations out of 1000 (max. 500000)
  447 words of extra memory for PDF output out of 10000 (max. 10000000)
 
