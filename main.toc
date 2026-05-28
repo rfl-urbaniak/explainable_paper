@@ -7,54 +7,54 @@
 \contentsline {section}{\numberline {3}Causal Impact: definitions}{10}{section.3}%
 \contentsline {paragraph}{Roadmap of this section.}{10}{section*.5}%
 \contentsline {paragraph}{Why $\epsilon $-excision?}{15}{section*.6}%
-\contentsline {paragraph}{Where we are.}{15}{section*.7}%
-\contentsline {section}{\numberline {4}Examples and comparison to SHAP and Causal SHAP}{20}{section.4}%
-\contentsline {paragraph}{Where we are.}{20}{section*.10}%
-\contentsline {subsection}{\numberline {4.1}SHAP and Causal SHAP}{21}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}OBCB: SHAP and Causal SHAP}{22}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Signal with mediation}{25}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Computations and desiderata analysis}{26}{subsection.4.4}%
-\contentsline {paragraph}{Plain SHAP.}{26}{section*.14}%
+\contentsline {paragraph}{Where we are.}{16}{section*.7}%
+\contentsline {section}{\numberline {4}Examples and comparison to SHAP and Causal SHAP}{21}{section.4}%
+\contentsline {paragraph}{Where we are.}{21}{section*.10}%
+\contentsline {subsection}{\numberline {4.1}SHAP and Causal SHAP}{22}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}OBCB: SHAP and Causal SHAP}{23}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Signal with mediation}{26}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Computations and desiderata analysis}{27}{subsection.4.4}%
+\contentsline {paragraph}{Plain SHAP.}{27}{section*.14}%
 \contentsline {paragraph}{Causal SHAP.}{27}{section*.15}%
-\contentsline {paragraph}{PCI computation.}{27}{section*.16}%
+\contentsline {paragraph}{PCI computation.}{28}{section*.16}%
 \contentsline {paragraph}{Desiderata analysis.}{28}{section*.17}%
-\contentsline {paragraph}{Instance 2 (baseline).}{29}{section*.19}%
+\contentsline {paragraph}{Instance 2 (baseline).}{30}{section*.19}%
 \contentsline {subsection}{\numberline {4.5}Summary across both examples}{30}{subsection.4.5}%
-\contentsline {paragraph}{Where we go next.}{30}{section*.21}%
-\contentsline {section}{\numberline {5}Synthetic evaluation with overdetermination and undercutting}{30}{section.5}%
-\contentsline {paragraph}{Where we are.}{30}{section*.22}%
+\contentsline {paragraph}{Where we go next.}{31}{section*.21}%
+\contentsline {section}{\numberline {5}Synthetic evaluation with overdetermination and undercutting}{31}{section.5}%
+\contentsline {paragraph}{Where we are.}{31}{section*.22}%
 \contentsline {paragraph}{Causal impact, decomposed.}{31}{section*.24}%
-\contentsline {paragraph}{Two factual cases.}{31}{section*.25}%
+\contentsline {paragraph}{Two factual cases.}{32}{section*.25}%
 \contentsline {paragraph}{Desiderata and measurements.}{32}{section*.26}%
 \contentsline {paragraph}{The threshold from the data, not from a guess.}{32}{section*.27}%
 \contentsline {paragraph}{Diagnostics that do not survive the bootstrap-derived threshold.}{33}{section*.30}%
 \contentsline {paragraph}{Where we go next.}{33}{section*.31}%
-\contentsline {section}{\numberline {6}Comparison to Differential Causal Effect}{33}{section.6}%
-\contentsline {paragraph}{PCI\xspace scores.}{34}{section*.34}%
-\contentsline {paragraph}{Score difference across the input grid.}{35}{section*.37}%
-\contentsline {paragraph}{DCE on the same grid.}{35}{section*.40}%
+\contentsline {section}{\numberline {6}Comparison to Differential Causal Effect}{34}{section.6}%
+\contentsline {paragraph}{PCI\xspace scores.}{35}{section*.34}%
+\contentsline {paragraph}{Score difference across the input grid.}{36}{section*.37}%
+\contentsline {paragraph}{DCE on the same grid.}{36}{section*.40}%
 \contentsline {paragraph}{Where we go next.}{36}{section*.42}%
-\contentsline {section}{\numberline {7}Relation with Actual Causality}{37}{section.7}%
-\contentsline {paragraph}{Where we are.}{37}{section*.43}%
+\contentsline {section}{\numberline {7}Relation with Actual Causality}{36}{section.7}%
+\contentsline {paragraph}{Where we are.}{36}{section*.43}%
 \contentsline {paragraph}{Where we go next.}{43}{section*.44}%
 \contentsline {section}{\numberline {8}Relation with the Probability of Actual Causality}{43}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Pearl's worked example: the desert traveller}{43}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.1}Pearl's worked example: the desert traveller}{44}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}PCI on the basic desert traveller}{44}{subsection.8.2}%
 \contentsline {subsection}{\numberline {8.3}PCI expectation vs the AC machinery}{45}{subsection.8.3}%
-\contentsline {subsection}{\numberline {8.4}Weak-poison variant: two intuitions Pearl misses}{45}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.4}Weak-poison variant: two intuitions Pearl misses}{46}{subsection.8.4}%
 \contentsline {paragraph}{Three responsibility intuitions for an attribution method.}{46}{section*.47}%
-\contentsline {paragraph}{What PCI does on the same model.}{46}{section*.49}%
+\contentsline {paragraph}{What PCI does on the same model.}{47}{section*.49}%
 \contentsline {subsection}{\numberline {8.5}Further differences between Pearl's probability of causation and PCI}{47}{subsection.8.5}%
-\contentsline {paragraph}{Where we go next.}{47}{section*.51}%
+\contentsline {paragraph}{Where we go next.}{48}{section*.51}%
 \contentsline {section}{\numberline {9}Scaling actual-cause computation: an empirical comparison}{48}{section.9}%
-\contentsline {paragraph}{Where we go next.}{51}{section*.55}%
-\contentsline {section}{\numberline {10}Dynamical SIR benchmark: PCI on continuous outcomes}{51}{section.10}%
-\contentsline {paragraph}{Where we go next.}{53}{section*.59}%
-\contentsline {section}{\numberline {11}Scaling PCI\xspace to a real-world automated valuation model}{54}{section.11}%
-\contentsline {paragraph}{Where we are.}{54}{section*.60}%
-\contentsline {paragraph}{Setting.}{54}{section*.61}%
-\contentsline {paragraph}{Causal model.}{54}{section*.62}%
+\contentsline {paragraph}{Where we go next.}{50}{section*.55}%
+\contentsline {section}{\numberline {10}Dynamical SIR benchmark: PCI on continuous outcomes}{52}{section.10}%
+\contentsline {paragraph}{Where we go next.}{54}{section*.59}%
+\contentsline {section}{\numberline {11}Scaling PCI\xspace to a real-world automated valuation model}{55}{section.11}%
+\contentsline {paragraph}{Where we are.}{55}{section*.60}%
+\contentsline {paragraph}{Setting.}{55}{section*.61}%
+\contentsline {paragraph}{Causal model.}{55}{section*.62}%
 \contentsline {paragraph}{Feasibility at production scale.}{55}{section*.64}%
-\contentsline {paragraph}{Qualitative comparison to SHAP.}{55}{section*.65}%
-\contentsline {paragraph}{Where we go next.}{55}{section*.67}%
-\contentsline {section}{\numberline {12}Discussion and Conclusions}{55}{section.12}%
+\contentsline {paragraph}{Qualitative comparison to SHAP.}{57}{section*.65}%
+\contentsline {paragraph}{Where we go next.}{57}{section*.67}%
+\contentsline {section}{\numberline {12}Discussion and Conclusions}{57}{section.12}%

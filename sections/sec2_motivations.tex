@@ -302,23 +302,40 @@ $\varname{credit}$ & Individual & 0.18  & 1.00 & 0.18  & 0.90  & 0.955 & 0.86 \\
 
 \subsection{Path forward}
 
-What should we conclude from this investigation of actual causality and the probability of necessity and sufficiency?
-First, we need a way to treat probabilistic models, and the probability of necessity and sufficiency gives us a tool for doing that.
-However, PNS is not as specific as we would like because it does not capture relevant features of individual units that are not part of the cause.
-Actual causality offers more specificity, but requires modification to deal with probability and continuous variables, and is computationally expensive to compute.
+The two predecessors examined in this section have complementary strengths and blind spots.
+Halpern's actual causality is context-sensitive: by holding witnesses fixed at their factual values, it correctly diagnoses Alice's case, attributing her denial to gender rather than credit.
+But in its standard form it is restricted to deterministic models, it requires a brute-force search over witness sets, and it has no native treatment of continuous variables.
+Pearl's PN/PS/PNS make the converse trade-off.
+They scale naturally to probabilistic models, because every counterfactual reduces to an expectation under the noise distribution.
+But they have no analogue of the witness mechanism: every intervention propagates through the structural equations and overrides whatever mediator value the factual context fixed.
+Table~\ref{tab:pn_ps_pns} shows the symptom: for Alice, $\pns(\varname{credit}) > \pns(\varname{gender})$, even though the credit check was never performed.
 
-\ourapproach addresses both limitations by combining the two approaches.
-To see the intuition, consider Alice's case once more.
-When \ourapproach evaluates gender's causal impact on her denial, it considers counterfactual worlds in which her gender is changed, while drawing witness sets from a distribution that includes $\varname{check-failed}$ at its factual value of $F$ --- the credit check was never performed.
-In those worlds, changing gender to male, with $\varname{check-failed}$ held fixed at $F$ (by intervention, so unlike in the case of 
-patched-up PNS, the mediator value does not get overridden), leads to loan approval: a large counterfactual shift, and so high attribution.
-When \ourapproach evaluates credit's causal impact, it searches for witness sets that, held fixed, would make a change to good credit matter for Alice --- but no such context exists, because the credit check was never run.
-The distribution over witness sets therefore assigns low weight to any world in which credit is relevant for Alice, and her credit receives low attribution.
-Unlike actual causality, \ourapproach does not ask whether \emph{some} witness set validates a counterfactual dependency; it integrates over the distribution of all witness sets, weighting each by its probability.
-Unlike PNS, it inherits the context-sensitivity of actual causality through this integration.
-The formal definitions in Section~\ref{sec:causal_impact} make this expectation precise --- but
- the intuition is the one we have just seen: \ourapproach inherits the witness mechanism of actual causality
- and the probabilistic language of PN/PNS, and generalizes and combines them into a tractable estimation problem even when variables are continuous.
+Conditioning is not a workaround.
+We saw with $\pns_c$ that even when we condition on Alice's other factual variables, the credit intervention propagates downstream and changes $\varname{check-failed}$, overriding the mediator value that conditioning had fixed.
+Context fixed by observation does not survive the subsequent intervention.
+Any replacement therefore needs intervention-based context-sensitivity: the relevant mediators have to be held fixed by intervention.
+A satisfactory replacement must combine three ingredients.
+First, from actual causality, the witness mechanism: a way to hold relevant context fixed by intervention so that the structural information about which causal paths were active survives the counterfactual evaluation.
+Second, from PN/PS/PNS, the probabilistic vocabulary: counterfactuals expressed as expectations under the noise distribution, so that the attribution lives on the same probability space as the model and naturally extends to continuous variables.
+Third, in place of brute-force enumeration over witness sets, an integral that can be estimated from samples even when the witness pool is large or the variables are continuous.
+
+\ourapproach{} provides this synthesis.
+To get some general intuition (we will revisit the example in more detail later), consider Alice's case once more, beginning with gender.
+\ourapproach{} considers counterfactual worlds in which gender is flipped to male while a sampled witness set is held at its factual values by intervention.
+For Alice, the witness sets that drive the attribution are those containing $\varname{check-failed}$: when this variable is held fixed at $F$ --- the value recording that the check was never performed --- flipping gender to male leads to loan approval.
+Unlike under $\pns_c$, the gender intervention does not override the mediator, because the witness intervention keeps it pinned.
+The counterfactual shift is large, and gender receives high attribution.
+
+For credit, the same mechanism yields the opposite verdict.
+The witness sets that contain $\varname{check-failed}{=}F$ now work against credit: holding that mediator fixed at $F$ disconnects credit from the loan decision, because the bank's policy is to reject unchecked applicants regardless of credit.
+The counterfactual shift in those worlds is zero, and credit receives low attribution.
+The intuition that Alice's denial was a function of gender, not credit, is recovered.
+
+Two features distinguish \ourapproach{} from both predecessors.
+Unlike actual causality, it does not ask whether \emph{some} witness set validates a counterfactual dependency; it integrates over a distribution of witness sets, weighting each by its probability.
+This replaces combinatorial enumeration with statistical estimation.
+Unlike PN/PS/PNS, it inherits the context-sensitivity of actual causality through this integration: causally inert variables are downweighted automatically, because almost every witness set leaves them disconnected from the outcome, while variables that drive the outcome are upweighted, because almost every witness set leaves them connected.
+The formal definitions in Section~\ref{sec:causal_impact} make this expectation precise.
 
 Before moving to the formal development, we flag the closest neighbour of
 \ourapproach{} in the existing literature, so that the comparison does not come out
