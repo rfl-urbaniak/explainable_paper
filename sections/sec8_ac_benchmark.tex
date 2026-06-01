@@ -1,4 +1,4 @@
-\section{Scaling actual-cause computation: an empirical comparison}\label{sec:ac_benchmark}
+\section{Scaling Actual-Cause Computation: An Empirical Comparison}\label{sec:ac_benchmark}
 
 The correspondence in Theorems~\ref{th:ac-exp}--\ref{th:exp-ac} and
 Proposition~\ref{prop:filter} is a statement about verdicts: under the stated
@@ -42,8 +42,8 @@ $\mathbf{T}\subseteq\{W^a_i,W^b_i\}_i$, we intervene
 $[\mathbf{C}\!\leftarrow\!\mathbf{1}-\mathbf{c}^\star,\mathbf{T}\!\leftarrow\!\mathbf{w}^\star]$,
 record whether the outcome flips, and accept $\mathbf{C}$ as actual cause if some
 witness $\mathbf{T}$ achieves a flip and no proper subset of $\mathbf{C}$ does.
-The search space has $\bigl(2^{2n}-1\bigr)^2$ cause-witness pairs --- $9, 225, 3969,
-65025$ for $n=1,2,3,4$ --- which already determines the ceiling reached by the exact
+The search space has $\bigl(2^{2n}-1\bigr)^2$ cause-witness pairs ($9, 225, 3969,
+65025$ for $n=1,2,3,4$), which already determines the ceiling reached by the exact
 method.
 
 \medskip\noindent\textit{Approximate PCI estimator.}
@@ -106,7 +106,7 @@ The algorithm draws $N$ intervention configurations under shared noise.
 The active suspect set $\mathbf{C}_j$ (line~6) is drawn at uniformly chosen
 cardinality $k_s \in \{1,\dots,n_s\}$; the dropped witness set $D_j$
 (line~7) is drawn the same way at $k_w \in \{0,\dots,n_w\}$, and the active
-witnesses on line~8 are the complement $\mathbf{W}\setminus D_j$ --- so
+witnesses on line~8 are the complement $\mathbf{W}\setminus D_j$, so
 $n_w$ bounds the number of witnesses \emph{dropped}, not the number kept,
 and the active witness set has size $|\mathbf{W}|-n_w$ or larger. The
 witness ablation flag $\mathrm{wit}=\text{off}$ is handled once on line~1
@@ -119,8 +119,8 @@ $\epsilon$-excised alternative-value distribution has a single support
 point and $\epsilon$ plays no role; the explicit sampling form is preserved
 so that the same routine runs on continuous benchmarks. The two
 interventional worlds on lines~11--12 share the noise realisation
-$\mathbf{u}_j$ drawn on line~4 --- the standard counterfactual coupling
---- which lets the per-suspect score on lines~14--16 be read off as the
+$\mathbf{u}_j$ drawn on line~4, the standard counterfactual coupling,
+which lets the per-suspect score on lines~14--16 be read off as the
 nan-mean of $|y^n_j - c^\star|$ over the draws in which
 $X\in\mathbf{C}_j$. The sufficiency outcome $y^s_j$ is computed but not
 consumed: the AC verdict against which we benchmark has no sufficiency
@@ -128,7 +128,7 @@ clause, so we read only the necessity world. The joint estimator with
 sufficiency active is exercised in Sections~\ref{sub:synthetic},
 \ref{sec:DCE}, and~\ref{sec:sir_benchmark}, where AC has no comparable
 verdict to benchmark against. At each site
-$i = 1,\dots,n$, line~17 returns the suspect --- $A_i$ or $B_i$ --- with
+$i = 1,\dots,n$, line~17 returns the suspect, $A_i$ or $B_i$, with
 the higher mean.
 
 \medskip\noindent\textit{Benchmark protocol.}
@@ -149,9 +149,9 @@ subset search at the cost of higher variance). The cardinality bound is a tunabl
 approximation knob, not a hidden assumption: the dynamic-set-size run measures the
 empirical cost of bounding $n_s,n_w$ at $4$ on this problem, and the gap between
 the two configurations is what the ablation surfaces. The conceptual case for
-constraining cardinality at all --- that uniform sampling over the full powerset
+constraining cardinality at all, that uniform sampling over the full powerset
 biases attributions toward large-coalition interventions and is analogous to
-declining to enumerate all $n$-way regression interaction terms --- is given in
+declining to enumerate all $n$-way regression interaction terms, is given in
 Section~\ref{sec:causal_impact}.
 
 \medskip\noindent\textit{Results.}
@@ -162,7 +162,7 @@ the approximate methods continue to roughly $73$--$145$ variables depending on
 sample budget, with the frugal $\alpha{=}0.5$ run reaching the largest sizes.
 Second, search-space size (Figure~\ref{fig:ac_search_space}, log scale): the exact
 method visits the full powerset, while the approximate methods visit at most a few
-hundred unique configurations per problem size --- the gap is several orders of
+hundred unique configurations per problem size: the gap is several orders of
 magnitude and widens with $n$. Third, accuracy (Figure~\ref{fig:ac_accuracy}): the
 exact method is correct by construction up to its early demise; the witness-using
 approximate methods stay above $0.85$ correct-attribution rate up to roughly $60$
@@ -188,7 +188,7 @@ bounds; see Benchmark protocol.}
 \includegraphics[width=0.92\linewidth]{docs/source/ac_benchmark/plot2_search_space.png}
 \caption{Number of cause-witness configurations explored per problem size, log
 scale. The exact method visits the full powerset; the approximate methods visit a
-few hundred unique configurations per problem size regardless of $n$ --- a gap of
+few hundred unique configurations per problem size regardless of $n$, a gap of
 several orders of magnitude that grows with $n$.}
 \label{fig:ac_search_space}
 \end{figure}
@@ -212,7 +212,7 @@ fewer evaluated configurations. The problem itself, however, is structured:
 responsibility attribution is independent across sites, exactly one of $A_i,B_i$ is responsible at
 each site given $C{=}1$, supersets of any witness set witness the same attribution
 (so a small witness-cardinality bound costs little), and all variables are binary.
-These regularities account for some of the favourable scaling --- in particular,
+These regularities account for some of the favourable scaling: in particular,
 the cardinality-bounded sampling losing little to dynamic-set-sizes sampling on
 this problem. Two extensions are natural follow-ups. First, a comparison against
 SHAP and causal SHAP on the same scaled-throwing problem is deferred to a
@@ -220,9 +220,9 @@ companion benchmark (cf.\ Section~\ref{sub:synthetic} for the corresponding
 comparison on the continuous overdetermination example); the sufficiency component
 of PCI is what distinguishes it from those baselines, and a clean head-to-head
 requires the joint kernel rather than the necessity-only restriction used here.
-Second, benchmarks that break each of the structural regularities above ---
+Second, benchmarks that break each of the structural regularities above,
 particularly continuous-variable extensions where AC's mechanical enumeration is
-no longer even well-defined --- would test the estimator outside its current
+no longer even well-defined, would test the estimator outside its current
 favourable regime. As a sanity check that the correspondence in
 Theorems~\ref{th:ac-exp}--\ref{th:exp-ac} is empirically operational at scale, the
 present comparison is sufficient.

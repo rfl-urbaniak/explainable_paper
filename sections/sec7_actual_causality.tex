@@ -19,7 +19,7 @@ machinery of Section~\ref{sec:causal_impact}. The goal is to show that there is 
 natural choice of variable selection distribution $\Gamma$ and alternative-value
 distribution $\Delta$ under which \ourapproach{} verdicts agree with actual-causality
 verdicts. With one caveat: probability-of-causation maximisation will not identify
-subset-minimal causes that are not cardinality-minimal --- a misalignment we
+subset-minimal causes that are not cardinality-minimal, a misalignment we
 characterise and remedy below.
 
 \medskip\noindent\textit{Scope: a necessity-only correspondence.} Halpern's definition
@@ -28,9 +28,9 @@ clause analogous to Pearl's $\mathrm{PS}$ or $\mathrm{PNS}$. The correspondence 
 establish in this section is therefore \emph{necessity-only}: the sufficiency component
 of the kernel $\Phi$ defined below acts as a factivity check (restoring factual values
 must preserve $\varphi$ under fixed noise), not as a substantive sufficiency-attribution
-component. The substantive sufficiency component of \ourapproach{} --- the $Y^s$ factor
+component. The substantive sufficiency component of \ourapproach{}, the $Y^s$ factor
 in Definition~\ref{def:jointnecsuf} and the $ci_S$ term in
-Section~\ref{sub:synthetic} --- is exercised in the synthetic overdetermination and
+Section~\ref{sub:synthetic}, is exercised in the synthetic overdetermination and
 undercutting evaluation (Section~\ref{sub:synthetic}), the differential causal effect
 comparison (Section~\ref{sec:DCE}), and the SIR benchmark
 (Section~\ref{sec:sir_benchmark}), all of which are settings where AC cannot adjudicate.
@@ -114,7 +114,7 @@ $\mathbf{T}'\subseteq\mathbf{W}$, $\mathbf{C}'\cap\mathbf{T}'=\emptyset$.
 We can now record the forward direction.
 
 \begin{theorem}\label{th:ac-exp}
-    Suppose that $\mathbf{C}$ is an actual cause of $\varphi$ with witness set $\mathbf{T}$ in $(M,\mathbf{u})$. Take any $\{\mathbf{S}=\mathbf{s}\}\supseteq\mathbf{C}$ as the potential cause set, subject to the constraint that no element of $\mathbf{S}$ is a deterministic function (under $M$) of any subset of the remaining elements of $\mathbf{S}$,\footnote{Equivalently, $\mathbf{S}$ is closed under no nontrivial structural equation of $M$. The constraint excludes admitting both $S$ and a deterministic descendant $H=f(S,\ldots)$ as candidates in the same suspect set, but covers all candidate sets standardly considered in the AC literature, where structural descendants of one candidate are not admitted as separate candidates --- their contribution is mediated by the equation, and AC's minimality clause already prefers the ancestor alone. The same closure condition discharges a joint-support concern: the next assumption requires $\Delta(\mathbf{s})$ to place positive density on every \emph{joint} alternative configuration $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$, not merely positive marginal density on each component. In a chain $S\to H$ with $H=f(S)$, joint assignments such as $(S{=}0, H{=}1)$ are impossible under the structural equations, so any $\Delta$ that placed mass on them would be incompatible with $M$. Closure rules out exactly this case: when no element of $\mathbf{S}$ is a deterministic function of the remaining elements, the joint domain $\dom(\mathbf{S})$ contains no rectangles forced to zero measure by $M$, and a $\Delta$ with positive PMF or Lebesgue density on every $\mathbf{s}'\neq\mathbf{s}$ is consistent with $M$ on the suspect set. In the stone-throwing benchmark of Section~\ref{sec:ac_benchmark}, the suspect set is $\{A_i,B_i\}_i$ and the deterministic mediators $\{W^a_i,W^b_i\}_i$ live in the witness set, not the suspect set --- exactly to keep the suspect set closure-respecting. Witnesses are pinned at their factual values and are not subject to a joint-support requirement on alternatives, so they need no analogous condition.} and any $\mathbf{W}\supseteq\mathbf{T}$ as the potential witness set. Assume $\Gamma$ is regular and that $\Delta(\mathbf{s})$ assigns positive density to every $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$ (positive PMF in the discrete case, positive Lebesgue density in the continuous case). In the continuous case, assume additionally:
+    Suppose that $\mathbf{C}$ is an actual cause of $\varphi$ with witness set $\mathbf{T}$ in $(M,\mathbf{u})$. Take any $\{\mathbf{S}=\mathbf{s}\}\supseteq\mathbf{C}$ as the potential cause set, subject to the constraint that no element of $\mathbf{S}$ is a deterministic function (under $M$) of any subset of the remaining elements of $\mathbf{S}$,\footnote{Equivalently, $\mathbf{S}$ is closed under no nontrivial structural equation of $M$. The constraint excludes admitting both $S$ and a deterministic descendant $H=f(S,\ldots)$ as candidates in the same suspect set, but covers all candidate sets standardly considered in the AC literature, where structural descendants of one candidate are not admitted as separate candidates: their contribution is mediated by the equation, and AC's minimality clause already prefers the ancestor alone. The same closure condition discharges a joint-support concern: the next assumption requires $\Delta(\mathbf{s})$ to place positive density on every \emph{joint} alternative configuration $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$, not merely positive marginal density on each component. In a chain $S\to H$ with $H=f(S)$, joint assignments such as $(S{=}0, H{=}1)$ are impossible under the structural equations, so any $\Delta$ that placed mass on them would be incompatible with $M$. Closure rules out exactly this case: when no element of $\mathbf{S}$ is a deterministic function of the remaining elements, the joint domain $\dom(\mathbf{S})$ contains no rectangles forced to zero measure by $M$, and a $\Delta$ with positive PMF or Lebesgue density on every $\mathbf{s}'\neq\mathbf{s}$ is consistent with $M$ on the suspect set. In the stone-throwing benchmark of Section~\ref{sec:ac_benchmark}, the suspect set is $\{A_i,B_i\}_i$ and the deterministic mediators $\{W^a_i,W^b_i\}_i$ live in the witness set, not the suspect set, exactly to keep the suspect set closure-respecting. Witnesses are pinned at their factual values and are not subject to a joint-support requirement on alternatives, so they need no analogous condition.} and any $\mathbf{W}\supseteq\mathbf{T}$ as the potential witness set. Assume $\Gamma$ is regular and that $\Delta(\mathbf{s})$ assigns positive density to every $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$ (positive PMF in the discrete case, positive Lebesgue density in the continuous case). In the continuous case, assume additionally:
     \begin{itemize}
     \item[(i)] the structural equations of $M$ downstream of $\mathbf{C}$ are continuous in
     $\mathbf{c}'$ under fixed $\mathbf{u}$;
@@ -172,8 +172,8 @@ a fact we will use in Proposition~\ref{prop:filter}.
 \end{proof}
 
 \medskip\noindent\textit{Remark (when (i)--(ii) bite).} In settings with continuous
-outcomes and an open event such as a threshold $\{Y>y_0\}$ --- for instance the SIR
-overshoot benchmark of Section~\ref{sec:sir_benchmark} --- both hypotheses are
+outcomes and an open event such as a threshold $\{Y>y_0\}$ (for instance the SIR
+overshoot benchmark of Section~\ref{sec:sir_benchmark}), both hypotheses are
 satisfied trivially. Binary-output models, where $Y$ takes values in $\{0,1\}$, satisfy
 (ii) automatically (every subset of a discrete codomain is open) but may not satisfy
 (i) when the binary output comes from thresholding a continuous score. In such cases
@@ -210,7 +210,7 @@ context-sensitive-necessity clause of Definition~\ref{def:ac}.
 
 \medskip\noindent\textit{Remark (deterministic intermediates and joint support).}
 The hypothesis on $\{\mathbf{S}=\mathbf{s}\}$ is what rules out the following obstruction.
-Suppose the suspect set were closed under the structural equations of $M$ --- e.g., both
+Suppose the suspect set were closed under the structural equations of $M$, e.g., both
 Sally's throw $S$ and the bottle's hit $H = f(S,\ldots)$ admitted as candidates. Then the
 joint assignment $(S{=}0, H{=}1)$ is structurally impossible, and any alternative-value
 distribution consistent with $M$ assigns it density zero, so the joint full-support
@@ -306,8 +306,8 @@ dilution gives $N(\mathbf{C}^\sharp,\mathbf{T}^\sharp)\geq
 N(\mathbf{C}^\dagger,\mathbf{T}^\dagger)$. Multiplying these (and noting
 $N(\mathbf{C}^\sharp,\mathbf{T}^\sharp)>0$ to convert weak into strict in the
 composite) gives
-$\Phi(\mathbf{C}^\sharp,\mathbf{T}^\sharp)>\Phi(\mathbf{C}^\dagger,\mathbf{T}^\dagger)$
---- contradicting $(\mathbf{C}^\dagger,\mathbf{T}^\dagger)\in\Gamma^\star$.
+$\Phi(\mathbf{C}^\sharp,\mathbf{T}^\sharp)>\Phi(\mathbf{C}^\dagger,\mathbf{T}^\dagger)$,
+contradicting $(\mathbf{C}^\dagger,\mathbf{T}^\dagger)\in\Gamma^\star$.
 \end{proof}
 
 \begin{corollary}\label{cor:marginalize}
@@ -347,7 +347,7 @@ $\mathbf{R}\subseteq\mathbf{S}$, the flip region's $\Delta_{\mathbf{C}}$-mass de
 as $\mathbf{C}$ grows beyond $\mathbf{R}$. The hypothesis fails in disjunctive
 overdetermination (e.g.\ $\varphi:\,A\vee B=1$ with both $A,B$ factual): no proper
 subset of $\mathbf{S}$ flips $\varphi$, so $N$ is zero on subsets and positive on the
-full set --- the opposite of dilution. In such cases no proper subset of $\mathbf{S}$
+full set: the opposite of dilution. In such cases no proper subset of $\mathbf{S}$
 is an actual cause anyway, so Theorem~\ref{th:local_max_to_ac} is not the appropriate
 tool; Proposition~\ref{prop:filter} is.
 
@@ -422,8 +422,8 @@ subsets of $\mathbf{S}$.
 Theorem~\ref{th:exp-ac} applied to $\sum_{\mathbf{T}}\Phi(\mathbf{C}^\dagger,\mathbf{T})>0$
 gives both factivity and context-sensitive necessity. For minimality, suppose
 $\mathbf{C}_{\text{sub}}\subsetneq\mathbf{C}^\dagger$ satisfied factivity and
-context-sensitive necessity. By the proof of Theorem~\ref{th:ac-exp} --- which uses
-only factivity and necessity, not minimality --- we would have
+context-sensitive necessity. By the proof of Theorem~\ref{th:ac-exp} (which uses
+only factivity and necessity, not minimality), we would have
 $\sum_{\mathbf{T}}\Phi(\mathbf{C}_{\text{sub}},\mathbf{T})>0$, contradicting the
 no-positive-proper-subset clause of $\Xi$.
 
@@ -441,8 +441,8 @@ contradicting the assumption that $\mathbf{C}^\dagger$ is an actual cause.
 into a procedure: enumerate $\{\mathbf{C}\subseteq\mathbf{S}:\sum_{\mathbf{T}}\Phi(\mathbf{C},\mathbf{T})>0\}$
 (which by Theorem~\ref{th:exp-ac} are exactly the cause sets satisfying
 context-sensitive necessity), filter for factivity and subset-minimality, and read off
-the actual causes. Some idiosyncratic features of the AC notion --- in particular, the
-subset-minimality clause, which interacts poorly with $\Gamma$-weighted scoring --- are
+the actual causes. Some idiosyncratic features of the AC notion (in particular, the
+subset-minimality clause, which interacts poorly with $\Gamma$-weighted scoring) are
 part of what motivated the more scalable \ourapproach{} formulation of
 Section~\ref{sec:causal_impact} in the first place; the filter procedure here is the
 right tool when AC verdicts specifically are wanted, but expectation-based
@@ -459,15 +459,15 @@ hypotheses on $\mathbf{S}$, $\Gamma$, and $\Delta$:
 (iv) a counterexample (Observation~\ref{obs:misalignment}) showing that integration
 over noise misaligns with subset-minimality; and
 (v) a corrective filter procedure (Proposition~\ref{prop:filter}) that recovers AC
-verdicts exactly. The empirical counterpart of the correspondence --- a benchmark of
+verdicts exactly. The empirical counterpart of the correspondence, a benchmark of
 the necessity-only PCI estimator against exact subset enumeration on a scaled
-stone-throwing problem --- is reported in Section~\ref{sec:ac_benchmark}.
+stone-throwing problem, is reported in Section~\ref{sec:ac_benchmark}.
 
 \paragraph{Where we go next.} Before turning to the empirical benchmark, the next
 section locates \ourapproach against the construction in the literature closest to
 its expectation form: Pearl's \emph{probability of actual causation}. The two share
-the same surface idea --- ``how often, under the noise, does the actual-cause
-verdict fire?'' --- and they coincide on standard examples, but they disagree on
+the same surface idea, ``how often, under the noise, does the actual-cause
+verdict fire?'', and they coincide on standard examples, but they disagree on
 graded responsibility patterns that PCI registers and Pearl's binary AC verdict
 discards. Section~\ref{sub:pearl_actual_cause_prob} walks through Pearl's
 canonical desert-traveller illustration and a weak-poison variant to make the

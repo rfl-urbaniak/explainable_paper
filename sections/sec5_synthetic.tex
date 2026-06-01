@@ -1,9 +1,9 @@
-\section{Synthetic evaluation with overdetermination and undercutting}
+\section{Synthetic Evaluation with Overdetermination and Undercutting}
 \label{sub:synthetic}
 
 \paragraph{Where we are.} Section~\ref{sec:shap_examples} has compared \ourapproach
 with SHAP and Causal SHAP on two small examples and shown where the SHAP
-framework's desiderata fail. Those examples cover only two causal patterns ---
+framework's desiderata fail. Those examples cover only two causal patterns:
 overdetermination through a gating mediator (OBCB) and correlated mediation
 (signal). This section stress-tests \ourapproach across a wider catalogue of
 patterns, with an analytic ground truth available throughout: the question is
@@ -35,7 +35,7 @@ E &= \mathrm{lin} + \mathrm{od} + \mathrm{p\_branch}.
 We pick $\tau = 0.674$ so the gate is on / off about half the time
 ($\Pr(\lvert L_2 \rvert \le 0.674) \approx 0.5$ for $L_2 \sim \mathcal{N}(0,1)$).
 The DAG is shown in Figure~\ref{fig:archetypes_dag}. The variable $D$ is sampled but never
-enters $E$ --- it serves as an irrelevance control, so any non-zero score for $D$ is the
+enters $E$, serving as an irrelevance control, so any non-zero score for $D$ is the
 noise floor of the procedure.
 
 \begin{figure}[htbp]
@@ -86,7 +86,7 @@ observations to read all archetypes off.
 \textit{Case 1 (preempted, contestable $O$ pair).} Filter:
 $\lvert L_2 \rvert > \tau$ (gate off, so $\mathrm{p\_branch} = 0$ regardless of $P$) and
 $\lvert O_1 - O_2 \rvert < \delta$ with $\delta = 1$ (the two overdetermined contributors
-are close --- the winner is barely the winner; we call such a pair \emph{contestable},
+are close: the winner is barely the winner; we call such a pair \emph{contestable},
 since a small perturbation to either contributor could flip which one wins
 $\max(5O_1, 5O_2)$). Linear N+S on the $L$s, between-variable
 sufficiency asymmetry on a contestable $O$ pair, and noise floor for both $P$ and $D$
@@ -98,7 +98,7 @@ $\lvert O_1 - O_2 \rvert > \delta$. The dominant winner is what makes the
 within-variable $S$-not-$N$ gap visible: the winner is large enough that alternatives
 rarely beat it (high $\Delta_S$), and the loser provides a partial floor when the winner
 is intervened (reduced $\Delta_N$). A contestable pair cannot show this within-variable
-gap --- pin either one and the partner can still flip the max.
+gap, since pinning either one still lets the partner flip the max.
 
 The two cases together test the structural-role-not-identity claim: the same variable $P$
 should sit at the noise floor in Case~1 and mirror $L_1$ in Case~2.
@@ -112,7 +112,7 @@ per-sample correlations are preserved). The noise-floor variable $D$ itself drif
 across the two cases: co-intervention variance is structurally larger in the gate-on
 regime than in the gate-off regime, so $\mathrm{ci}_N(D)$ shifts between regimes by a
 non-negligible amount. This is exactly why every archetype claim is stated on the
-excess scores $\Delta_N, \Delta_S$ rather than raw ci values --- subtracting $D$ within
+excess scores $\Delta_N, \Delta_S$ rather than raw ci values: subtracting $D$ within
 each case normalises out the regime-dependent floor, so the archetype patterns can be
 read off stably regardless of $D$'s absolute drift.
 
@@ -201,7 +201,7 @@ lower edge at $+0.079$ still inside the band on the right side of zero.
 plain-language statement of the structural expectation (the case label C1 / C2 marks
 the factual observation it applies to); the dot is the bootstrap point estimate of the
 relevant $\Delta$ score, the horizontal bar is its $95\%$ CI, and the green band is
-the row's \emph{pass region} --- the set of $\Delta$ values that would confirm that
+the row's \emph{pass region}, the set of $\Delta$ values that would confirm that
 row's claim given the bootstrap-derived threshold $\epsilon \approx 0.151$. The
 right-hand column annotates the formula and its point estimate. All ten dots fall
 inside their pass bands. Underlying numerical computations are in the companion
@@ -214,7 +214,7 @@ Two claims from earlier drafts of this section, both about the preempted variabl
 fail at the honest threshold and are reported as diagnostics rather than numbered
 desiderata. (D1) The cross-regime flip
 $\Delta_N(P,\text{Case~2}) - \Delta_N(P,\text{Case~1})$ measures $+0.139$ with CI
-$[-0.081, +0.365]$ --- the CI straddles zero, so $P$'s rise across regimes is not, on
+$[-0.081, +0.365]$: the CI straddles zero, so $P$'s rise across regimes is not, on
 its own, statistically resolved at the production budget. The qualitative content of
 this claim is already carried by desiderata \#8 (P at the noise floor in Case~1) and
 \#10 (P above $\epsilon$ in Case~2): if both pass, the regime flip is a corollary, not

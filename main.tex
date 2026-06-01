@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage[preprint]{neurips_2024}
 
-% --- PACKAGES ---
+% PACKAGES
 \usepackage{amsmath,amsthm}
 \newtheorem{theorem}{Theorem}
 \newtheorem{definition}[theorem]{Definition}
@@ -9,7 +9,7 @@
 \newtheorem{observation}[theorem]{Observation}
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{attempt}{Attempt}
+\newtheorem{attempt}[theorem]{Attempt}
 
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -174,48 +174,44 @@
 \maketitle
 
 \begin{abstract}%
-  Explaining why a specific outcome occurred---and which inputs deserve the
-  blame or credit---is central to philosophical, scientific, and policy analysis.
-  The available tools fall into two camps that do not meet. On one side, the
-  Halpern--Pearl theory of \emph{actual causality} gives principled answers to the
-  question ``did variable $X$ cause outcome $Y$ in this case?'', but its verdicts
-  are computed by enumerating counterfactual scenarios and so only work on small,
-  toy-sized models. On the other side, attribution methods that do scale to
-  modern machine-learning models---SHAP, LIME, and the like---assign importance
-  scores without reference to the causal structure that generated the data, and
-  so can give answers that conflict with what a careful causal analysis would
-  conclude. We close this gap with Probabilistic Causal Impact (\Ourapproach).
+  Explaining why a specific outcome occurred, and which inputs deserve the
+  blame or credit, is central to philosophical, scientific, and policy analysis.
+  Existing tools split into two camps. The Halpern--Pearl theory of
+  \emph{actual causality} gives principled verdicts, but only for toy-sized
+  models, because computing them requires enumerating counterfactual scenarios.
+  Scalable attribution methods like SHAP and LIME ignore the causal structure
+  that generated the data, and can give answers that conflict with a careful
+  causal analysis. We close this gap with Probabilistic Causal Impact
+  (\Ourapproach).
 
   \ourapproach builds on actual causality and on Pearl's notions of probability
   of necessity and sufficiency, but recasts the question ``which variables
   explain this outcome?'' as an estimation problem on a probabilistic causal
-  model that one can solve by Monte Carlo sampling. To compute a \ourapproach
+  model that one can solve by approximate methods, such as MC. To compute a \ourapproach
   score, the analyst specifies three ingredients: a distribution $\Gamma$ over
   which subsets of variables to consider as candidate explanations, a
   distribution $\Delta$ over the counterfactual values to which those variables
   might be changed, and a function $ci$ that measures how much such a change
   shifts the outcome. The result is a tractable, causally grounded explanation
-  procedure that applies to large models. A correspondence theorem shows that,
-  on the small models where actual causality is well-defined, \ourapproach's
-  verdicts agree with it.
+  procedure that applies to large models. A correspondence theorem shows that
+  \ourapproach agrees with actual causality on the small models where AC is
+  well-defined; against Pearl's probability of actual causation, \ourapproach
+  recovers Pearl's within-scenario ranking and additionally captures
+  path-reliability and cross-scenario reliability, intuitions Pearl's binary
+  indicator cannot capture.
 
-  We evaluate \ourapproach in a sequence of increasingly demanding settings.
-  On a synthetic structural causal model featuring redundant and
-  preempting causes---the textbook stress tests for theories of causation---%
-  \ourapproach recovers the verdicts that the actual-causality literature
-  treats as correct, for both binary and continuous variables. A scaled-up
-  benchmark with many binary candidate causes shows that \ourapproach
-  remains tractable in regimes where exhaustively enumerating actual causes
-  becomes computationally infeasible. A dynamical SIR (epidemiological)
-  benchmark with continuous outcomes and asymmetrically interacting causes
-  extends the comparison to settings where actual causality offers no verdict
-  at all. Finally, we demonstrate feasibility on a production causal
-  spatio-temporal model with deep machine-learned components trained on
-  millions of data points, where \ourapproach and SHAP attributions diverge
-  in the same qualitative ways as in the synthetic setting.
+  We evaluate \ourapproach in four increasingly demanding settings: a synthetic
+  structural model with redundant and preempting causes, where \ourapproach
+  recovers the AC literature's verdicts and generalises them to continuous
+  variables; a scaling benchmark where \ourapproach remains tractable as AC
+  enumeration becomes infeasible; a dynamical (Bayesian, ODE) epidemiological model
+   with continuous outcomes and asymmetric causes, where AC offers no verdict; and a deployed
+  spatio-temporal model with deep ML components trained on millions of points,
+  where \ourapproach and SHAP attributions diverge in the same qualitative
+  ways as in the synthetic setting.
  
   
-  % %
+  
 
   \medskip\noindent\textbf{Keywords:} Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency.
 \end{abstract}

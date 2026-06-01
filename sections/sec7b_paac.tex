@@ -12,11 +12,11 @@ P(\text{caused}(x,y\mid e)) \;=\; \frac{P(U_{xy}\cap U_e)}{P(U_e)},
 \end{equation}
 is the posterior probability, given the evidence, that we are in a noise state
 for which the actual-cause verdict holds, with $\mathrm{AC}(x,y;M,\mathbf{u})$
-a chosen actual-causation predicate --- the causal-beam definition of
+a chosen actual-causation predicate: the causal-beam definition of
 \citep[Ch.~10]{causalityPearl} or the Halpern--Pearl AC1--AC3
 \citep{actualCausalityHalpern}.\footnote{\label{fn:desert_notebook}All
-computations behind the comparison in this section --- Pearl's original
-desert-traveller and the weak-poison variant --- are collected in the companion
+computations behind the comparison in this section, Pearl's original
+desert-traveller and the weak-poison variant, are collected in the companion
 notebook \texttt{docs/source/desert\_traveler.ipynb}, which runs the framework's
 \texttt{ThinSearchSampler} on a scenario-specific pyro model for each forensic
 posterior and a parallel hand-rolled enumeration; the two agree within Monte
@@ -32,13 +32,13 @@ We proceed in three steps. We replay Pearl's canonical desert-traveller
 illustration and Pearl's binary actual-cause verdicts; compute PCI on the same
 example and show it recovers Pearl's ranking with graded magnitudes; and
 introduce a weak-poison variant that exhibits three intuitive responsibility
-patterns --- two of which Pearl's binary verdict cannot capture but PCI's
+patterns, two of which Pearl's binary verdict cannot capture but PCI's
 graded reading does, and one (within-scenario ranking) Pearl preserves.
 Then we move to discuss other differences between PCI and \ourapproach, which make the
 former more general and more scalable.
 
 
-\subsection{Pearl's worked example: the desert traveller}
+\subsection{Pearl's Worked Example: The Desert Traveller}
 
 We start with the canonical illustration used by Pearl
 \citep[\S 10.3.3]{causalityPearl}.
@@ -53,9 +53,9 @@ death?
 The example involves one source of uncertainty packed into a binary noise
 $u$:
 \begin{itemize}
-    \item $u=0$ --- traveller drank the poisoned water before the canteen was
+    \item $u=0$: traveller drank the poisoned water before the canteen was
     emptied; cyanide killed him.
-    \item $u=1$ --- canteen was empty before he could drink; dehydration
+    \item $u=1$: canteen was empty before he could drink; dehydration
     killed him.
 \end{itemize}
 
@@ -93,7 +93,7 @@ scenario, and at $0$ for the dormant one.}
 \label{tab:pearl-pac-basic}
 \end{table}
 
-\subsection{PCI on the basic desert traveller}
+\subsection{PCI on the Basic Desert Traveller}
 \label{sub:pci-basic-dt}
 
 To compare directly with Pearl, we run PCI under the same forensic
@@ -116,12 +116,12 @@ all specified in advance:
         each cardinality class).
     \item Non-cause suspect (the one not in $\mathbf{C}$) is \emph{not}
         intervened on or hard-coded; it follows the SCM under the noise
-        prior on its own coin --- consistent with the formal definition's
+        prior on its own coin, consistent with the formal definition's
         requirement that only $\mathbf{C}$ and $\mathbf{T}$ are intervened
         (Definition~\ref{def:jointnecsuf}).
     \item Alternative-value distribution $\Delta$ deterministically flips
         $1 \to 0$.
-    \item Noise distribution $P_{\mathbf{U}}$ is the forensic posterior --- a
+    \item Noise distribution $P_{\mathbf{U}}$ is the forensic posterior, a
         point mass at the scenario's $u$. We do \emph{not} condition on the
         outcome $Y$ itself; the forensic evidence sits above $Y$ in the SCM,
         so conditioning on it is not the ``fully conditional'' anti-pattern of
@@ -188,13 +188,13 @@ marginalised and the model is not artificially pinned to ``this scenario''
 beyond the noise realisation itself. Pearl's binary indicator throws this
 graded information away.
 
-\subsection{PCI expectation vs the AC machinery}
+\subsection{PCI Expectation vs the AC Machinery}
 
 The agreement above is reassuring, but the more interesting observation is
 what changes underneath. AC's necessity clause is an \emph{existential}:
 \emph{there exists} a witness set $\mathbf{T}$ and an alternative value $c'$
 such that the intervention flips $Y$. To verify the existential one in
-principle enumerates the candidate $(\mathbf{T}, c')$ pairs --- this is the
+principle enumerates the candidate $(\mathbf{T}, c')$ pairs: this is the
 main source of AC's combinatorial hardness. Pearl's definition then averages
 the indicator of that already-enumerated predicate over noise states,
 inheriting the enumeration unchanged.
@@ -202,7 +202,7 @@ inheriting the enumeration unchanged.
 \ourapproach{} collapses both moves into one expectation: $\Phi$ is averaged
 over the joint $(\mathbf{C}, \mathbf{T}, \mathbf{u})$ under $\Gamma \otimes
 P_{\mathbf{U}}$. The existential ``does \emph{some} witness work?'' becomes
-the quantitative ``\emph{what fraction} of witnesses work?'' --- the
+the quantitative ``\emph{what fraction} of witnesses work?'', the
 information AC uses only one piece of, exposed as a graded score with
 sampling-based estimation.
 
@@ -224,7 +224,7 @@ where a small change to the model makes Pearl's binary indicator structurally un
 to track the responsibility patterns we think a responsibility 
 attribution method should capture.
 
-\subsection{Weak-poison variant: two intuitions Pearl misses}
+\subsection{Weak-Poison Variant: Two Intuitions Pearl Misses}
 \label{sub:weak-poison}
 
 We modify the desert traveller so the cyanide path is unreliable while the
@@ -255,7 +255,7 @@ Before any computation, the three intuitions that we expect  an attribution meth
     \item\textbf{Adding noise to a path should lower its own cause's
         responsibility.} The cyanide path is now unreliable. In the
         scenario where cyanide killed (Scenario~A, $u=0, \xi=1$), the
-        poisoner is still the actual cause --- but \emph{less} responsible
+        poisoner is still the actual cause, but \emph{less} responsible
         than in the basic deterministic version, because the killing
         depended on a coin landing favourably.
     \item\textbf{Within a scenario, the operative cause should still win.}
@@ -269,7 +269,7 @@ Before any computation, the three intuitions that we expect  an attribution meth
         the other is not.
 \end{enumerate}
 
-Pearl's $P(\text{caused})$ captures (2) --- the within-scenario ranking ---
+Pearl's $P(\text{caused})$ captures (2) (the within-scenario ranking),
 but misses (1) and (3). The AC predicate
 fires deterministically once we condition on the forensic posterior: in
 Scenario~A, $u=0$ and $\xi=1$ jointly imply the cyanide path was the operative
@@ -357,7 +357,7 @@ responsibility}, which Pearl's $P(\text{caused})$ does not produce because
 each posterior independently saturates at $0$ or $1$; 
 
 
-\subsection{Further differences between Pearl's probability of causation and PCI}
+\subsection{Further Differences Between Pearl's Probability of Causation and PCI}
 
 
 \medskip\noindent\textbf{Breadth of aggregation.}
@@ -365,7 +365,7 @@ Def.~10.3.5 aggregates over one dimension: the noise $\mathbf{u}$, conditional o
 evidence $e$, for a claim $(X=x, Y=y)$ already fixed. PCI aggregates over four: the
 suspect set $\mathbf{C}$ and witness set $\mathbf{T}$ via $\Gamma$, the alternative
 value $\mathbf{c}'$ via $\Delta$, and the noise via $P_{\mathbf{U}}$. This is what
-supports per-feature comparison --- the same PCI expectation, evaluated over varying
+supports per-feature comparison: the same PCI expectation, evaluated over varying
 $\mathbf{C}$ inside a fixed $\mathbf{S}$, returns the relative responsibility of each
 candidate cause. Def.~10.3.5 cannot perform that comparison without a separate
 evaluation per claim, each inheriting the AC-predicate cost discussed above.
@@ -394,8 +394,8 @@ a context-sensitive, multi-variable extension of the $\mathrm{PN}/\mathrm{PS}$
 machinery rather than a probabilistic wrapper around AC.
 
 \medskip
-Pearl's Def.~10.3.5 and \ourapproach{} share the same explanatory target ---
-probabilistic responsibility built on top of structural information --- but
+Pearl's Def.~10.3.5 and \ourapproach{} share the same explanatory target,
+probabilistic responsibility built on top of structural information, but
 instantiate it through different mechanisms. Pearl's definition averages a binary AC
 indicator against a posterior over noise; PCI integrates a continuous
 necessity--sufficiency kernel against a joint distribution over suspect sets,

@@ -1,4 +1,4 @@
-\section{Scaling \ourapproach to a real-world automated valuation model}\label{sec:avm}
+\section{Scaling \ourapproach to a Real-World Automated Valuation Model}\label{sec:avm}
 
 \paragraph{Where we are.} The synthetic archetypes of
 Section~\ref{sub:synthetic}, the AC benchmark of
@@ -84,7 +84,7 @@ corresponding to that feature, which we use to estimate the expected value there
 estimation converges at around \num{25000} samples; for a batch of 50 data points this
 takes around 60 minutes on commodity hardware. Sampling needs to be performed only once;
 the samples can then be reused to compute the attribution score of any suspect. This
-establishes that the method is computationally tractable at production scale --- not a
+establishes that the method is computationally tractable at production scale, not a
 foregone conclusion, since the expanded-model construction in
 Section~\ref{sec:causal_impact} introduces additional latent dimensions per suspect and
 per witness.
@@ -101,7 +101,7 @@ scores, and on a deep DAG this difference manifests as concentration on
 summary-statistic-like nodes. Figure~\ref{fig:avm_attribution} shows the two attribution
 distributions with anonymised feature labels; what is reportable here is the shape of
 the two distributions, not which features they assign to. We therefore do not make a
-quantitative claim in this section --- the quantitative claim is the synthetic benchmark
+quantitative claim in this section: the quantitative claim is the synthetic benchmark
 of Section~\ref{sub:synthetic}, and the role of this section is to show that the same
 qualitative shape persists when the model is a real trained one operating on millions of
 data points.
@@ -128,7 +128,7 @@ the controlled-setting comparison of Section~\ref{sub:synthetic}.}
 
 \paragraph{Where we go next.} Section~\ref{sec:discussion} closes the paper by
 articulating the relationship between \ourapproach and the two traditions it
-inherits from --- Halpern's actual causality and Pearl's PN/PS/PNS --- against
+inherits from, Halpern's actual causality and Pearl's PN/PS/PNS, against
 the background of what every preceding section has shown, and points out the
 limitations of the present construction along with the natural follow-up
 directions.

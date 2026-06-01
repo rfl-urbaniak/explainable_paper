@@ -10,7 +10,7 @@ adverse outcome occurred so as to prevent recurrence, or how a predicted positiv
 outcome could be brought about.
 
 In the absence of scalable, formal causal attribution tools, analysts often resort to
-ad-hoc methods --- strong correlation, historical comparison, domain expertise, or
+ad-hoc methods: strong correlation, historical comparison, domain expertise, or
 non-causal attribution like Granger causality \citep{Granger1969} and SHAP
 \citep{lundberg2017unified}. Even researchers with an advanced command of
 statistical and experimental methods may not possess a thorough understanding of how
@@ -18,20 +18,33 @@ to ascribe cause \citep{Shepherd2024}, and would benefit from scalable automatio
 Here we present a tool for accurate and tractable causal attribution applicable to a
 wide array of causal, probabilistic, machine-learned models.
 
-Current methods for attributing causes to specific outcomes, such as actual causality
-\citep{actualCausalityHalpern}, are intractable in general, with no clear
-approximation \citep{eiterComplexityResultsStructurebased2002}. Explanation
-methods that \textit{do} scale are either non-causal \citep{lundberg2017unified} or
-amount to local, gradient-based sensitivity analyses \citep{butler2022differential}.
-SHAP \citep{lundberg2017unified} grounds attribution in observational correlations,
-so a feature can receive high attribution merely for being correlated with a true
-cause. Causal SHAP \citep{heskes2020causal} addresses this to some extent, but some
-failure modes persist
-(Section~\ref{sec:shap_examples}). \citet{butler2022differential}'s Differential
-Causal Effect (DCE) relies on gradients, which requires model differentiability and
-does not capture effects from non-infinitesimal changes in potential causes.\footnote{DCE is,
-fairly, not designed for responsibility attribution:
+What would a satisfactory causal attribution method look like? At minimum, it
+should be (i) \textit{causally grounded}, tracking counterfactual dependence
+rather than correlation; (ii) \textit{context-sensitive}, distinguishing
+causes whose path was active in the factual world from those whose path was
+blocked; (iii) \textit{broadly applicable}, handling stochastic models,
+discrete and continuous variables, and finite (not just infinitesimal)
+counterfactual changes; and (iv) \textit{tractable}, estimable from samples
+without combinatorial enumeration over witness sets and alternatives. Existing
+methods each forfeit one or more of these. Actual causality
+\citep{actualCausalityHalpern} is grounded and context-sensitive, but neither
+broadly applicable nor tractable in general, with no clear approximation
+\citep{eiterComplexityResultsStructurebased2002}. Methods that \textit{do}
+scale either give up causal grounding or are restricted in scope. SHAP
+\citep{lundberg2017unified} grounds attribution in observational correlations,
+so a feature can receive high attribution merely for being correlated with a
+true cause; Causal SHAP \citep{heskes2020causal} addresses this to some extent,
+but failure modes persist (Section~\ref{sec:shap_examples}).
+\citet{butler2022differential}'s Differential Causal Effect (DCE) is causally
+grounded but local: it relies on gradients, so requires differentiability and
+does not capture effects from non-infinitesimal changes in potential causes.%
+\footnote{DCE is, fairly, not designed for responsibility attribution:
 \citeauthor{butler2022differential} target rates of change of treatment.}
+Standard treatment-effect quantities, ATE and CATE, are causally grounded and
+tractable but lack context-sensitivity: every intervention propagates downstream
+through the structural equations, overriding the mediator values that mark which
+causal paths were active in the factual world
+(Section~\ref{sec:motivations}).
 
 We introduce \emph{probabilistic causal impacts} (\Ourapproach), an attribution
 framework that combines the context-sensitivity of actual causality with the
@@ -55,12 +68,12 @@ probabilities \citep{Beckers2015CombiningPC}, aggregation over witness sets
 combines them into a single tractable estimator handling arbitrary variable domains.
 
 \ourapproach presumes access to a trained probabilistic causal model from which
-counterfactual outcomes can be sampled --- a stronger requirement than methods that
+counterfactual outcomes can be sampled, a stronger requirement than methods that
 work from observational data and a causal graph alone (e.g., PN/PS/PNS bounds, Causal
 SHAP). Within that requirement, however, we place no strong restrictions on the form
 of the model, distributions, or types of variables.
-Such models can comprise standard machine learning components such as neural networks
-or Gaussian processes.
+Such models can comprise standard machine learning components such as neural 
+network parametrized distributions or Gaussian processes.
 
 With this breadth of application, and a measure that surfaces its design choices ---
 the variable selection distribution, alternative value distribution, and causal impact
@@ -69,78 +82,69 @@ function --- as explicit user-facing components rather than hidden defaults,
 wide array of users and applications.
 
 \paragraph{Paper structure.}
-The paper proceeds in four phases: motivation and formalism
-(Sections~\ref{sec:motivations}--\ref{sec:causal_impact}); positioning against
-existing attribution methods --- SHAP, Causal SHAP, and gradient-based DCE ---
-on small and continuous examples (Sections~\ref{sec:shap_examples}--\ref{sec:DCE});
-formal and empirical relation to actual causality, including a side-by-side
-comparison with Pearl's probability of actual causation and a scaling benchmark
-where AC enumeration breaks
-(Sections~\ref{sec:relation_with_ac}--\ref{sec:ac_benchmark}); and continuous-outcome
-and production-scale demonstrations on a dynamical SIR model and a deployed
-automated valuation model (Sections~\ref{sec:sir_benchmark}--\ref{sec:avm}).
-Section~\ref{sec:discussion} closes with discussion. The section-by-section
-breakdown is as follows.
-\begin{itemize}[itemsep=2pt, topsep=2pt, parsep=0pt]
-    \item \textbf{Section~\ref{sec:motivations}} works through a running example that
-    surfaces what actual causality and the probability of necessity/sufficiency each
-    get right and miss, and motivates the design choices behind \ourapproach.
+The paper proceeds in four phases.
+The first establishes motivation and formalism.
+Section~\ref{sec:motivations} works through a running example
+to surface what actual causality, the probability of necessity/sufficiency,
+and average/conditional treatment effects each get right and miss, motivating
+the design choices behind \ourapproach.
+Section~\ref{sec:causal_impact} then defines the method: a kernel built from a
+sufficiency check at the factual configuration and a necessity check against
+alternatives, integrated against a distribution over suspect/witness sets, with
+three components exposed as user choices: the variable selection distribution
+$\Gamma$, the alternative-value distribution $\Delta$, and the causal impact
+function.
 
-    \item \textbf{Section~\ref{sec:causal_impact}} defines \ourapproach: a kernel
-    built from a sufficiency check at the factual configuration and a necessity
-    check against alternatives, integrated against a distribution over
-    suspect/witness sets. Three components are exposed as user choices: the variable
-    selection distribution $\Gamma$, the alternative-value distribution $\Delta$,
-    and the causal impact function.
+The second phase positions \ourapproach against existing attribution methods.
+Section~\ref{sec:shap_examples} compares \ourapproach with SHAP, Causal SHAP,
+ATE, and CATE on two small examples (OBCB, with two binary features, and a
+signal-with-mediation model), tabulating which desiderata each satisfies or fails,
+including cases where SHAP and Causal SHAP attributions track correlation rather
+than counterfactual dependence.
+Section~\ref{sub:synthetic} reports a synthetic evaluation built around
+overdetermination and undercutting, the patterns on which pre-AC accounts most
+often diverge from intuition, and shows that \ourapproach recovers the literature's
+verdicts.
+Section~\ref{sec:DCE} contrasts \ourapproach with gradient-based attribution,
+instantiated by Differential Causal Effect \citep{butler2022differential}, on a
+continuous credit-limit example, showing where the two diverge and why
+\ourapproach better tracks responsibility under unit rescaling and outside the
+steep region of the response surface.
 
-    \item \textbf{Section~\ref{sec:shap_examples}} compares \ourapproach with SHAP
-    and Causal SHAP on two small examples --- OBCB (two binary features) and Signal
-    (with mediation) --- and tabulates which desiderata each method satisfies or
-    fails, including cases where SHAP and Causal SHAP attributions track correlation rather than
-    counterfactual dependence.
+The third phase establishes the formal and empirical relationship between
+\ourapproach and actual causality. Section~\ref{sec:relation_with_ac} shows that
+under specific choices of $\Gamma$ and $\Delta$ the \ourapproach kernel is
+positive on a configuration exactly when that configuration is an actual cause in
+Halpern's sense, so AC verdicts can be read off the kernel without enumerating
+witnesses.
+Section~\ref{sub:pearl_actual_cause_prob} positions \ourapproach against Pearl's
+probability of actual causation: on the canonical desert-traveller example,
+\ourapproach recovers Pearl's within-scenario ranking with graded magnitudes,
+and a weak-poison variant surfaces two additional responsibility intuitions
+(path-reliability and cross-scenario reliability) that Pearl's binary indicator
+structurally cannot express but \ourapproach's expectation does.
+Section~\ref{sec:ac_benchmark} then benchmarks \ourapproach against explicit
+actual-cause computation: exact subset enumeration times out at $17$ variables,
+while the necessity-only \ourapproach estimator continues to roughly $73$--$145$
+variables (depending on sample budget) and sustains above a $0.85$
+correct-attribution rate up to about $60$ variables, visiting several orders of
+magnitude fewer cause--witness configurations.
 
-    \item \textbf{Section~\ref{sub:synthetic}} reports a synthetic evaluation built
-    around overdetermination and undercutting, the patterns on which pre-AC
-    accounts most often diverge from intuition; \ourapproach recovers the
-    literature's verdicts on these cases.
-
-    \item \textbf{Section~\ref{sec:DCE}} contrasts \ourapproach with gradient-based
-    attribution, instantiated by Differential Causal Effect
-    \citep{butler2022differential}, on a continuous credit-limit example,
-    showing where the two diverge and why \ourapproach better tracks
-    responsibility under unit rescaling and outside the steep region of the
-    response surface.
-
-    \item \textbf{Section~\ref{sec:relation_with_ac}} shows that under specific
-    choices of $\Gamma$ and $\Delta$ the \ourapproach kernel is positive on a
-    configuration exactly when that configuration is an actual cause in Halpern's
-    sense, so AC verdicts can be read off the kernel without enumerating witnesses.
-
-    \item \textbf{Section~\ref{sec:ac_benchmark}} compares \ourapproach against
-    explicit actual-cause computation on benchmark models, reporting runtime,
-    search-space size, and verdict recovery as model size grows. Exact subset
-    enumeration times out at $17$ variables, while the necessity-only PCI estimator
-    continues to roughly $73$--$145$ variables (depending on sample budget) and
-    sustains above $0.85$ correct-attribution rate up to about $60$ variables,
-    visiting several orders of magnitude fewer cause--witness configurations. 
-
-    \item \textbf{Section~\ref{sec:sir_benchmark}} extends the benchmarking to a
-    continuous-outcome dynamical-SIR (Susceptible-Infected-Recovered) setting,
-     exercising the joint
-    necessity-sufficiency machinery on threshold events (peak overshoot) where
-    AC has no comparable verdict. Where but-for analysis cannot separate the
-    two policies, lockdown and masking, in their responsibility for a high overshoot
-    level,  \ourapproach correctly assigns lockdown roughly twice the
-    responsibility of masking, with the gap driven entirely by the necessity
-    term under witness pinning.
-
-    \item \textbf{Section~\ref{sec:avm}} applies \ourapproach to a deployed
-    automated valuation model with machine-learned components trained on millions
-    of points, a regime where actual causality is intractable; SHAP returns
-    qualitatively different attributions, assigning virtually all responsibility 
-    to downstream variables, effectively ignoring the other features.
-
-\end{itemize}
+The fourth phase pushes \ourapproach into settings where actual causality no
+longer applies.
+Section~\ref{sec:sir_benchmark} extends the benchmarking to a continuous-outcome
+dynamical-SIR (Susceptible--Infected--Recovered) setting, exercising the joint
+necessity-sufficiency machinery on threshold events (peak overshoot) where AC
+has no comparable verdict. Where but-for analysis cannot separate the two
+policies, lockdown and masking, \ourapproach correctly assigns lockdown roughly
+twice the responsibility of masking, with the gap driven entirely by the
+necessity term under witness pinning.
+Section~\ref{sec:avm} applies \ourapproach to a deployed automated valuation
+model with machine-learned components trained on millions of points, a regime
+where actual causality is intractable; SHAP returns qualitatively different
+attributions, assigning virtually all responsibility to downstream variables
+and effectively ignoring the rest.
+Section~\ref{sec:discussion} closes with discussion.
 
 
 

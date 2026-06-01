@@ -4,8 +4,8 @@
 We are now in a position to articulate the main differences between \ourapproach and the
 two approaches that inspired it, against the background of what the rest of the paper has
 shown. The main lesson from the literature on actual causality is that intuitive causal
-attribution often requires holding some endogenous variables --- members of a ``witness
-set'' --- fixed at their factual values. This ensures context sensitivity by controlling
+attribution often requires holding some endogenous variables, members of a ``witness
+set'', fixed at their factual values. This ensures context sensitivity by controlling
 complicating causal paths. We treat witnesses somewhat differently: instead of looking for
 a single witness set that reveals a causal relationship, we use a distribution over
 witness sets and integrate the causal impact score across them. As in many probabilistic
@@ -48,8 +48,8 @@ and Causal SHAP fail in characteristic ways that \ourapproach does not. The synt
 benchmark of Section~\ref{sub:synthetic} confirms this on a model with known ground
 truth, and the case study of Section~\ref{sec:avm} reports the same qualitative pattern
 on a production-grade trained model with millions of data points. A separate comparison
-to gradient-based attribution --- where the contrast is differentiability and locality
-rather than the causal/non-causal axis --- is reported in Section~\ref{sec:DCE}. The
+to gradient-based attribution, where the contrast is differentiability and locality
+rather than the causal/non-causal axis, is reported in Section~\ref{sec:DCE}. The
 thread connecting these results is structural: the witness mechanism that satisfies
 D-A-rank for Alice in the binary OBCB walkthrough of
 Section~\ref{sec:shap_examples} is the same machinery driving the upstream-versus-downstream
@@ -57,23 +57,23 @@ attribution split on the AVM in Section~\ref{sec:avm}.
 
 A broader test is how \ourapproach fares against the desiderata that the XAI
 literature typically asks counterfactual-explanation methods to meet, of which
-\cite{verma2022recourses} list five. \emph{Sparsity} --- the requirement that
-explanations change as few features as possible --- follows directly from the
+\cite{verma2022recourses} list five. \emph{Sparsity}, the requirement that
+explanations change as few features as possible, follows directly from the
 cardinality cap on suspect sets in $\Gamma$, which biases the search toward small
-$\mathbf{C}$. \emph{Multiple counterfactuals} --- the ability to return several
-alternative explanations rather than commit to one --- falls out of the Monte Carlo
+$\mathbf{C}$. \emph{Multiple counterfactuals} (the ability to return several
+alternative explanations rather than commit to one) falls out of the Monte Carlo
 construction, since a single sweep over $\Gamma$ and $\Delta$ produces a population of
 $(\mathbf{C}, \mathbf{c}', \mathbf{T})$ triples rather than a single optimum.
-\emph{Causal-constraint satisfaction} --- the demand that explanations respect
-downstream propagation rather than treat features as independently editable --- is
+\emph{Causal-constraint satisfaction}, the demand that explanations respect
+downstream propagation rather than treat features as independently editable, is
 automatic once suspect interventions are routed through the causal model: changing
-$\mathbf{C}$ propagates to descendants by construction. \emph{Model-agnosticism} ---
-applicability to arbitrary predictors --- \ourapproach satisfies only partially: it
+$\mathbf{C}$ propagates to descendants by construction. \emph{Model-agnosticism}
+(applicability to arbitrary predictors) \ourapproach satisfies only partially: it
 can wrap a black-box predictor, but at the cost of the causal sensitivity that
 motivates the framework in the first place.
 
-\emph{Actionability} --- the requirement that explanations not recommend changes to
-features users cannot in practice change --- is where we part company with the
+\emph{Actionability}, the requirement that explanations not recommend changes to
+features users cannot in practice change, is where we part company with the
 literature. The standard recommendation is to fold ease-of-change into the
 cause-identification procedure itself, weighting features by mutability so that
 immutable ones are never returned as causes (\cite{verma2022recourses}; cf.\
@@ -87,7 +87,7 @@ recommendations, but they should compose with responsibility attribution rather 
 replace it.
 
 Several limitations are worth flagging. \Ourapproach presumes access to a trained
-probabilistic causal model from which counterfactual outcomes can be sampled --- a
+probabilistic causal model from which counterfactual outcomes can be sampled, a
 stronger requirement than methods that work from observational data and a causal graph
 alone. The Monte Carlo variance of the estimator grows with model size and with the
 cardinalities of suspect and witness sets; Section~\ref{sec:ac_benchmark} reports
@@ -103,7 +103,7 @@ evidence.
 \emph{(i) AC mismatch under noise integration.}
 Observation~\ref{obs:misalignment} shows that integrating the kernel against
 $P_{\mathbf{U}}$ before maximisation can drop AC causes that are subset-minimal but
-not cardinality-minimal --- the $\Gamma$-weighted ranking is governed by cardinality,
+not cardinality-minimal: the $\Gamma$-weighted ranking is governed by cardinality,
 while AC's minimality is governed by the subset relation.
 Proposition~\ref{prop:filter} provides the operational route to AC verdicts in such
 cases; Theorem~\ref{th:local_max_to_ac} closes the gap only under \emph{necessity
@@ -119,8 +119,8 @@ than the canonical AC benchmark uses, and the cap is therefore worth reporting
 alongside results.
 \emph{(iii) Cost of the PSCM-availability assumption.}
 Pointwise verdicts at the configuration level require a sampleable structural model.
-Methods that bound PN/PS/PNS from observational data and a causal graph alone --- e.g.\
-Tian and Pearl's bounds --- apply in settings where \ourapproach cannot, and the
+Methods that bound PN/PS/PNS from observational data and a causal graph alone, e.g.\
+Tian and Pearl's bounds, apply in settings where \ourapproach cannot, and the
 stronger PSCM commitment should be weighed against this when only a graph and a dataset
 are available.
 

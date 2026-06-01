@@ -1,11 +1,11 @@
-\section{Causal Impact: definitions}\label{sec:causal_impact}
+\section{Causal Impact: Definitions}\label{sec:causal_impact}
 
 Explanation and causal attribution seek to connect a potentially causal \textit{event} $X=x$ to an outcome event $Y=y$.\footnote{This is quite different from type-level causal queries, where one is interested in some group-level attribution, as when one estimates average treatment effect or conditional average treatment effect.}
 % To measure the strength of causation, we (i) intervene to change $X$ and measure the extent to which this changes $Y$ (call this a \emph{necessity intervention}), and (ii) intervene on $X$ to have the actual value and measure the extent to which this ensures $Y=y$ (call this a \emph{sufficiency intervention}), while (iii) preserving context-sensitivity, and (iv) allowing for some variation in which parts of the contexts are fixed and in what combinations the cause candidates are intervened on, to account for interactions.
 % Moreover, (v) to search for causes, we also need to perform a search through potential sets of causes.
 In this section, we present a formal development. To ground it, we return to Example~\ref{ex:obcb_stochastic} and
  use Alice and Bob as running illustrations throughout this section. Both are rejected for a loan; the question is
- which of their attributes---\varname{gender} and \varname{credit}---was causally responsible for each rejection,
+ which of their attributes (\varname{gender} and \varname{credit}) was causally responsible for each rejection,
  and to what degree. While the example is discrete, the machinery applies to continuous and mixed-type variables;
   a continuous illustration is given in Sections~\ref{sec:signal} and~\ref{sub:synthetic}.
 
@@ -15,7 +15,7 @@ The development proceeds in five steps: (1) write down a list of seven
 satisfy, so that the formal construction can be judged against an explicit
 target; (2) introduce the probabilistic structural causal model (PSCM) and
 interventions, the substrate on which everything else rests; (3) introduce the
-two distributions \ourapproach exposes to the user --- the variable selection
+two distributions \ourapproach exposes to the user: the variable selection
 distribution $\Gamma$ over suspect/witness pairs and the alternative-value
 distribution $\Delta$ over counterfactual cause settings; (4) combine them into
 the joint necessity-sufficiency measure $P_k^{s,n}$ and the user-chosen causal
@@ -80,7 +80,7 @@ V_i := f_i(\mathbf{Pa}_i, U_i), \qquad i = 1,\dots,n,
 \]
 with \(\mathbf{Pa}_i \subseteq \mathbf{V}\setminus\{V_i\}\) denoting the parents of \(V_i\).
 The distribution \(P_{\mathbf{U}}\) is a probability measure on $\dom(\mathbf{U})$,
-and the assignments in \(\mathbf{F}\) are assumed to be acyclic and to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).\footnote{Working within the PSCM framework commits the practitioner to fully specified structural assignments $\mathbf{F}$ and an exogenous distribution $P_{\mathbf{U}}$ --- analogous to how Bayesian inference requires a likelihood and a prior. This is precisely what enables \ourapproach to yield individual-level counterfactual attributions rather than population-level bounds, and once $\mathbf{F}$ and $P_{\mathbf{U}}$ are specified, sampling from $P_{\mathbf{U}}$ is a routine probabilistic inference operation.}
+and the assignments in \(\mathbf{F}\) are assumed to be acyclic and to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).\footnote{Working within the PSCM framework commits the practitioner to fully specified structural assignments $\mathbf{F}$ and an exogenous distribution $P_{\mathbf{U}}$, analogous to how Bayesian inference requires a likelihood and a prior. This is precisely what enables \ourapproach to yield individual-level counterfactual attributions rather than population-level bounds, and once $\mathbf{F}$ and $P_{\mathbf{U}}$ are specified, sampling from $P_{\mathbf{U}}$ is a routine probabilistic inference operation.}
 \end{definition}
 
 \medskip\noindent A PSCM encodes which variables influence which others, 
@@ -101,14 +101,21 @@ and exogenous variables
 \]
 which induce independent Bernoulli noise.
 
-The structural assignments in the case at hand can be written as:
+The structural assignments in the case at hand take the form $V_i = f_i(\mathbf{Pa}_i, U_i)$
+promised by the PSCM definition above, with indicator-threshold mechanisms against
+uniform exogenous noise:
 \begin{align*}
-\varname{gender} &\sim \mathrm{Bernoulli}(0.5), \qquad
-\varname{credit} \sim \mathrm{Bernoulli}(0.5), \\
-\varname{check} &\sim \mathrm{Bernoulli}\bigl(0.2(1-\varname{gender}) + 0.9\varname{gender}\bigr), \\
-\varname{check\text{-}failed} &:= \varname{check}(1-\varname{credit}), \\
-\varname{loan} &\sim \mathrm{Bernoulli}\bigl(\mathrm{loan\text{-}prob}[\varname{gender},\varname{check\text{-}failed}]\bigr)\cdot \varname{check}.
+\varname{gender}        &= \mathbb{1}[U_g \le \alpha_g], \\
+\varname{credit}        &= \mathbb{1}[U_c \le \alpha_c], \\
+\varname{check}         &= \mathbb{1}\bigl[U_{ck} \le \gamma_F(1-\varname{gender}) + \gamma_M\varname{gender}\bigr], \\
+\varname{check\text{-}failed}  &= \varname{check}(1-\varname{credit}), \\
+\varname{loan\text{-}if\text{-}checked} &= \mathbb{1}\bigl[U_\ell \le \mathrm{loan\text{-}prob}(\varname{gender}, \varname{check\text{-}failed})\bigr], \\
+\varname{loan}          &= \varname{loan\text{-}if\text{-}checked} \cdot \varname{check},
 \end{align*}
+with $U_g, U_c, U_{ck}, U_\ell \overset{\text{iid}}{\sim} \mathrm{Unif}[0,1]$ as the
+exogenous noise. For the running example we take $\alpha_g = \alpha_c = 0.5$,
+$\gamma_F = 0.2$, $\gamma_M = 0.9$, and the values of $\mathrm{loan\text{-}prob}$
+given in Example~\ref{ex:obcb_stochastic}.
 
 \begin{definition}[Interventions]
 Given a model \(M = \langle \mathbf{U}, \mathbf{V}, \mathbf{F}, P_{\mathbf{U}} \rangle\),
@@ -125,13 +132,13 @@ In the OBCB model, $\mathrm{do}(\varname{gender}=1)$ replaces Alice's gender ass
 
 Because \ourapproach supports arbitrary variable types, it will be helpful to define a measure theoretic object corresponding to interventional outcomes. Because outcomes are a deterministic function of exogenous noise, this will be a Dirac measure.
 
-\begin{definition}[Interventional Law] \label{def:interlaw}
+\begin{definition}[Pointwise Interventional Law] \label{def:interlaw}
 Let $M=\langle \mathbf{U},\mathbf{V},\mathbf{F},P_{\mathbf{U}}\rangle$ be a probabilistic
 structural causal model and let $Y\in\mathbf{V}$.
 For an intervention $\mathrm{do}(\mathbf{X}=\mathbf{x})$, let
 $Y':\dom(\mathbf{U})\to\dom(Y)$ denote the measurable map induced by the
 modified structural assignments.
-The interventional law of $Y$ given fixed $\mathbf{u}\in\dom(\mathbf{U})$ is the probability measure on
+The \emph{pointwise interventional law} of $Y$ at fixed $\mathbf{u}\in\dom(\mathbf{U})$ is the probability measure on
 $\dom(Y)$ defined by
 \[
 P\!\left(Y\in A \mid \mathbf{u},\mathrm{do}(\mathbf{X}=\mathbf{x})\right)
@@ -143,7 +150,7 @@ A\subseteq\dom(Y).
 \]
 \end{definition}
 
-\medskip\noindent The interventional law records the deterministic
+\medskip\noindent The pointwise interventional law records the deterministic
 outcome of $Y$ under $\mathrm{do}(\mathbf{X}=\mathbf{x})$ for a fixed noise realization
 $\mathbf{u}$: since the modified structural equations make $Y$ a function of $\mathbf{u}$
 alone, its distribution collapses to a point mass. Integrating over $P_{\mathbf{U}}$
@@ -156,18 +163,18 @@ Given a model \(\langle \mathbf{U}, \mathbf{V}, \mathbf{F}, P_{\mathbf{U}}\rangl
 \end{definition}
 
 \medskip\noindent Informally, a causal set is a list of specific variable-value
-assignments --- a precise statement of which variables are set to which values. It is the
+assignments, a precise statement of which variables are set to which values. It is the
 basic unit of intervention: from a causal set one can read off exactly what is being
 manipulated or held fixed.
 
-In \ourapproach, causal sets play four distinct roles --- two on the cause side and two
+In \ourapproach, causal sets play four distinct roles, two on the cause side and two
 on the context side:
 
 \begin{description}
 \item[Suspects $\mathbf{S}$.] The full set of variables suspected to bear on the
 outcome. Subsets of $\mathbf{S}$ will be sampled and intervened on.
 \item[Active suspects $\mathbf{C} \subseteq \mathbf{S}$.] The specific subset
-intervened on in a given search step --- either to alternative values (necessity
+intervened on in a given search step, either to alternative values (necessity
 regime) or to factual values (sufficiency regime).
 \item[Witnesses $\mathbf{W}$.] The full set of context variables that may be held fixed
 at their factual values. Subsets of $\mathbf{W}$ will be sampled and held fixed.
@@ -175,6 +182,31 @@ at their factual values. Subsets of $\mathbf{W}$ will be sampled and held fixed.
 fixed in a given search step. To avoid contradicting the active intervention,
 $\mathbf{T}$ is pruned so that $\mathbf{T} \cap \mathbf{C} = \emptyset$.
 \end{description}
+
+\medskip\noindent
+\textbf{Why prune $\mathbf{T}$ and not $\mathbf{C}$?}
+The conflict on $\mathbf{T} \cap \mathbf{C}$ has to be resolved in one
+direction or the other, and pruning the witnesses is the right choice for
+three reasons.
+First, $\mathbf{C}$ is the object of the test: it encodes the causal claim
+being evaluated, while $\mathbf{T}$ is the auxiliary device that holds
+context fixed.
+Pruning $\mathbf{C}$ would silently change the claim under test; pruning
+$\mathbf{T}$ leaves the claim intact and merely weakens the context held
+fixed --- a weaker probe of the same hypothesis, not a different one.
+Second, the convention extends cleanly to the limit $\mathbf{C} = \mathbf{V}$,
+where every variable is a suspect: the pruned $\mathbf{T}$ collapses to
+$\emptyset$ and we recover the unconditional but-for test, the right
+baseline behaviour.
+Pruning $\mathbf{C}$ instead would leave this limit undefined whenever any
+witness is sampled.
+Third, the convention inherits directly from Halpern's actual-cause
+definition (Definition~\ref{def:ac_intuitive}), which makes
+$\mathbf{T} \cap \mathbf{C} = \emptyset$ part of the definition;
+pruning post-sampling is the operational implementation of that constraint
+and lets us specify $\Gamma$ on the unconstrained product
+$2^{\mathbf{S}} \times 2^{\mathbf{W}}$ rather than baking disjointness into
+the prior.
 
 To evaluate the causal impact of a variable on an outcome, we consider two interventional regimes: the \emph{necessity regime}, 
 in which we intervene on the variables $\mathbf{C} \subseteq \mathbf{S}$ to have an alternative value, and the sufficiency regime,
@@ -201,8 +233,8 @@ $\mathbf{W} = \{\varname{check\text{-}failed}\}$. The witness \varname{check\tex
 records whether the applicant was checked and had bad credit; holding it at its factual
 value isolates the causal path from \varname{gender} or \varname{credit} to \varname{loan}
 independently of the credit-check bottleneck. Without this witness, intervening on
-\varname{credit} for Alice would leave 80\% of noise realizations unaffected --- those
-in which she is never checked --- making credit's causal role invisible. The witness makes
+\varname{credit} for Alice would leave 80\% of noise realizations unaffected (those
+in which she is never checked), making credit's causal role invisible. The witness makes
 the bottleneck explicit and manipulable.
 
 Moving on with the general framework, we will be searching for causes by intervening on subsets of suspects
@@ -216,30 +248,8 @@ Let $\mathbf{X}$ be a finite set of random variables. A \emph{variable selection
 prior beliefs about which subsets of suspects are worth examining. A uniform distribution
 treats all suspect subsets as equally plausible; a cardinality-constrained choice focuses
 the search on interactions of a particular order, analogous to choosing which interaction
-terms to include in a regression. More complex distributions could encode domain knowledge 
+terms to include in a regression. More complex distributions could encode domain knowledge
 about which variables are more likely to interact, or could be learned from data.
- The choice of $\Gamma$ is a design decision that shapes the search process and the resulting attributions.
-As a default, a uniform $\Gamma$ over the full powerset is the least-informative
-starting point, assigning equal weight to all subset sizes, analogous to including all
-interaction orders in a regression. There is no universally principled criterion for
-restricting the cardinality range; the honest advice is to treat $J$ and $K$ as explicit
-design choices. Two practical considerations bear on this choice, however: with $K=1$, attribution
-scores are based on singleton interventions and straightforward to communicate to
-stakeholders; higher $K$ averages over joint interventions on $X_k$ with other suspects
-simultaneously, which is harder to explain and, in large or structurally complex models,
-may amplify estimation noise rather than capturing genuine higher-order causal structure.
-For applications where attribution has serious consequences, we recommend a
-cardinality sensitivity analysis: if rankings are stable as $K$ increases from $1$ to
-$|\mathbf{S}|$, the simpler choice is supported; if they diverge, higher-order
-interactions are materially relevant and the full powerset should be used. The key
-advantage of \ourapproach is that this commitment is made transparently rather than
-absorbed into an implicit default.\footnote{SHAP faces an analogous decision without
-flagging it as one: by averaging over all $2^{|N|}$ feature coalitions, plain SHAP and
-Causal SHAP commit to the maximum interaction order $K=|N|$ as an unstated default,
-with no diagnostic offered for whether that level of joint conditioning is right for a
-given model. Restricting Shapley to $K<|N|$ would break the efficiency axiom, so the
-choice is hardcoded into the framework rather than treated as a tunable. \ourapproach{}
-surfaces the same decision as an explicit knob.}
 
 \noindent In particular, we will be using variable selection distributions for the powerset of causal suspects $\mathbf{S}$ and for the powerset of witnesses $\mathbf{W}$. One simple pattern of suspect and witness selection can be derived by setting size limits on the number of activated suspects or witnesses, and sampling uniformly otherwise.
 
@@ -259,7 +269,7 @@ integrand, and it matters for what is being evaluated and what results follow. S
 averages marginal contributions using the observational conditional
 $\mathbb{E}[f(\mathbf{X}_{\mathcal{S}} = \mathbf{x}_{\mathcal{S}}, \mathbf{X}_{\bar{\mathcal{S}}})]$, marginalising over
 the empirical distribution of non-suspect features; this means a variable that is merely
-correlated with a cause --- but not itself causally active --- can receive positive
+correlated with a cause, but not itself causally active, can receive positive
 attribution. PCI instead evaluates counterfactual outcomes
 $P(Y \in A \mid \mathbf{u},\, \mathrm{do}(\mathbf{C}=\mathbf{c}',
 \mathbf{T}=\mathbf{t}^\star))$ computed via the structural model, so attribution flows
@@ -283,11 +293,8 @@ $\mathbf{C}\sim\Gamma_s$ and $\mathbf{T}\sim\Gamma_w$ independently, and
 \emph{reject} any draw with $\mathbf{T}\cap\mathbf{C}\neq\emptyset$,
 resampling until the constraint holds. Equivalently,
 \[
-p^\Gamma(\mathbf{C}, \mathbf{T}) \;=\;
-\frac{p_s^\Gamma(\mathbf{C})\,p_w^\Gamma(\mathbf{T})\,
-\mathbb{I}[\mathbf{T}\cap\mathbf{C}=\emptyset]}{Z},
-\qquad
-Z \;=\; \sum_{(\mathbf{C}, \mathbf{T})} p_s^\Gamma(\mathbf{C})\,p_w^\Gamma(\mathbf{T})\,
+p^\Gamma(\mathbf{C}, \mathbf{T}) \;\propto\;
+p_s^\Gamma(\mathbf{C})\,p_w^\Gamma(\mathbf{T})\,
 \mathbb{I}[\mathbf{T}\cap\mathbf{C}=\emptyset].
 \]
  Throughout, $\Gamma_s$ and $\Gamma_w$ are
@@ -300,14 +307,37 @@ $\Gamma_s$ uniform over the three non-empty subsets of $\mathbf{S}$
 $\{\varname{gender}, \varname{credit}\}$, each with probability $1/3$) and
 $\Gamma_w$ uniform over $\{\emptyset, \{\varname{check\text{-}failed}\}\}$,
 each with probability $1/2$. Since no element appears in both $\mathbf{S}$
-and $\mathbf{W}$, the rejection step is vacuous, $Z = 1$, and $\Gamma$ reduces
-to the product of marginals. In larger suspect sets the choice of cardinality
+and $\mathbf{W}$, the rejection step is vacuous and $\Gamma$ is exactly the product of marginals $p_s^\Gamma\cdot p_w^\Gamma$. In larger suspect sets the choice of cardinality
 range becomes substantive: sampling uniformly from the full powerset yields an
 expected intervention size of $|\mathbf{S}|/2$, which spreads attribution
 across large coalitions and may make individual feature contributions harder
 to isolate; we return to this issue in Section~\ref{sec:ac_benchmark}, where
 the cardinality cap is treated as a tunable hyperparameter and a
 dynamic-set-sizes ablation measures the empirical cost of bounding it.
+
+The choice of $\Gamma$ is a design decision that shapes the search process and the
+resulting attributions.
+As a default, a uniform $\Gamma$ over the full powerset is the least-informative
+starting point, assigning equal weight to all subset sizes, analogous to including all
+interaction orders in a regression. There is no universally principled criterion for
+restricting the cardinality range; the honest advice is to treat $J$ and $K$ as explicit
+design choices. Two practical considerations bear on this choice, however: with $K=1$, attribution
+scores are based on singleton interventions and straightforward to communicate to
+stakeholders; higher $K$ averages over joint interventions on $X_k$ with other suspects
+simultaneously, which is harder to explain and, in large or structurally complex models,
+may amplify estimation noise rather than capturing genuine higher-order causal structure.
+For applications where attribution has serious consequences, we recommend a
+cardinality sensitivity analysis: if rankings are stable as $K$ increases from $1$ to
+$|\mathbf{S}|$, the simpler choice is supported; if they diverge, higher-order
+interactions are materially relevant and the full powerset should be used. The key
+advantage of \ourapproach is that this commitment is made transparently rather than
+absorbed into an implicit default.\footnote{SHAP faces an analogous decision without
+flagging it as one: by averaging over all $2^{|N|}$ feature coalitions, plain SHAP and
+Causal SHAP commit to the maximum interaction order $K=|N|$ as an unstated default,
+with no diagnostic offered for whether that level of joint conditioning is right for a
+given model. Restricting SHAP to $K<|N|$ would break the efficiency axiom, so the
+choice is hardcoded into the framework rather than treated as a tunable. \ourapproach{}
+surfaces the same decision as an explicit knob.}
 
 Causal attribution hinges on questions such as ``if $X$ had, contrary to fact, been fixed to $x'\ne x$ instead of $x$, what would the outcome have been?'' For non-binary causes, this is ambiguous. To resolve this in a way that does not require committing to a single, contrastive causal event \citep{kawakammi_2024_poc_for_cont_and_vec}, we rely on a \textit{distribution} over alternative values.
 
@@ -325,39 +355,42 @@ measure on $\dom(\mathbf{X})$ such that $\mathbf{x} \notin \operatorname{supp}(\
 \medskip\noindent Informally, $\Delta(\mathbf{x})$ specifies what counts as a
 genuinely different value for a suspect variable. The support condition ensures no mass
 falls on the factual value $\mathbf{x}$ itself, so every sampled alternative is a real
-counterfactual departure rather than a noisy copy of what actually happened. 
+counterfactual departure rather than a noisy copy of what actually happened.
 
-\medskip\noindent When $\Delta(\mathbf{x})$ is a posterior conditioned on upstream
-factual values (possibly with some excised regions around the factual values, read on for details)--- the construction we use throughout --- alternatives are weighted by
-their plausibility under the structural model with upstream context held fixed.
-The upstream-only conditioning is itself a normality-respecting choice: factual upstream
-values play the role of the \emph{default} against which counterfactual alternatives are
-graded, while downstream evidence (which would leak the consequence back into the
-counterfactual) is deliberately excluded.
-This is the operational link to the descriptive-normality literature
-\citep{Halpern2015-HALGCA, icardNormalityActualCausal2017} mentioned in the introduction;
-PCI does not aim to resolve the counterexamples motivating that line of work, only to
-share its core intuition that causal attribution depends on what counts as a plausible
-counterfactual.
+\medskip\noindent Three properties guide the choice of $\Delta$.
+\emph{Plausibility under $M$:} the alternative should be a value the structural model
+could plausibly produce given the context, so the necessity test interrogates a
+counterfactual the model has anything to say about.
+\emph{Outcome-independence:} the distribution over $\mathbf{x}'$ should not be informed
+by the outcome whose causes we are explaining, on pain of circularity.
+\emph{Context-sensitivity:} $\mathbf{x}'$ should reflect the rest of the factual
+scenario, so the necessity test is individual-level rather than population-level.
+The construction we use throughout is the structural-model posterior of $\mathbf{X}$
+conditioned on upstream factual values, optionally excised near the factual value
+(Example~\ref{ex:eps_excised} below); this is the natural choice satisfying all three.
 
-\medskip\noindent Three alternatives to upstream-only conditioning were considered and
-not adopted as the default. \emph{Uniform} alternatives over $\dom(\mathbf{X})$ assign
-equal density to every non-factual value regardless of context, including values the
-structural model itself rules near-zero --- unrealistic and potentially incompatible
-with $M$. \emph{Fully-conditional} alternatives, conditioned on every observed value
-including downstream evidence, leak the consequence back into the counterfactual:
-$\Delta(\mathbf{x})$ would be tightened by knowledge of the very outcome whose causes
-we are interrogating. \emph{Marginal} (empirical) alternatives drop covariate
-dependence entirely, producing alternatives that need not be plausible given the rest
-of the factual instance. The framework permits any of these --- $\Delta$ is
-user-pluggable --- but we recommend upstream-only as the principled default.
+\medskip\noindent Upstream-only conditioning operationalises the intuition shared with
+the descriptive-normality literature \citep{Halpern2015-HALGCA,
+icardNormalityActualCausal2017}: factual upstream values play the role of the
+\emph{default} against which counterfactual alternatives are graded.
+\ourapproach does not aim to resolve the specific counterexamples motivating that
+literature; the link is at the level of \emph{why} a non-uniform $\Delta$ matters at
+all.
+Since $\Delta$ is user-pluggable, other constructions are available when domain
+knowledge motivates them: a uniform distribution over $\dom(\mathbf{X})$ trades
+plausibility for breadth; the empirical marginal $p(\mathbf{x}')$ trades
+context-sensitivity for simplicity; a fully conditional posterior on every observable
+(including downstream evidence) trades outcome-independence for sharper conditioning.
+Each reads as an informed relaxation of one of the three properties above, not an
+unconsidered default --- exactly the user-facing knob the framework is designed to
+expose.
 
 
 \noindent One natural alternative value distribution results from taking the one currently embodied in the model and excising it around the factual setting. Then, the semantics for  ``alternative value'' means ``a sufficiently different value, following the original distribution otherwise''. In the discrete case, of course, the analogue is simply the probability mass function conditioned on the factual value not holding.
 
 
 
-\begin{example}[$\epsilon$-Excised Distribution]
+\begin{example}[$\epsilon$-Excised Distribution]\label{ex:eps_excised}
 Assume $\mathbf{X}$ is $\mathbb{R}^d$-valued with density $p$.
 Given a factual event $\mathbf{X}=\mathbf{x}$, define the
 $\epsilon$-excised alternative value distribution $\Delta_\epsilon(\mathbf{x})$
@@ -370,7 +403,10 @@ p(\mathbf{x}'), & \text{otherwise},
 \end{cases}
 \]
 where $B_\epsilon(\mathbf{x})$ denotes the $\epsilon$-ball centered at $\mathbf{x}$.
-In particular, $\mathbf{x}\notin\operatorname{supp}(\Delta_\epsilon(\mathbf{x}))$.
+The support is therefore
+$\operatorname{supp}(\Delta_\epsilon(\mathbf{x})) = \operatorname{supp}(p) \setminus B_\epsilon(\mathbf{x})$
+--- not just the factual point $\mathbf{x}$ but its entire
+$\epsilon$-neighbourhood is excluded.
 \end{example}
 
 \medskip\noindent Informally, the alternative value distribution $\Delta$
@@ -384,7 +420,7 @@ $\varname{gender}=1$ (male), and the only alternative to $\varname{credit}=0$ (b
 $\varname{credit}=1$ (good); for Bob, the only alternative to $\varname{gender}=1$ is
 $\varname{gender}=0$. Accordingly, $\Delta(\varname{gender}=0)$ is a point mass on
 $\varname{gender}=1$ and $\Delta(\varname{credit}=0)$ a point mass on
-$\varname{credit}=1$ --- no distributional choice is required. The binary case is exactly
+$\varname{credit}=1$: no distributional choice is required. The binary case is exactly
 where $\Delta$ is unambiguous; it is for continuous suspects such as income or loan amount
 that the $\epsilon$-excised distribution becomes essential, forcing an explicit commitment
 to what counts as a meaningfully different value.
@@ -396,8 +432,8 @@ available. The observational marginal $p(\mathbf{x}')$ --- as in kernel SHAP
 \citep{lundberg2017unified} --- places mass near the factual value $\mathbf{x}$,
 conflating the necessity question (``what if $\mathbf{x}$ had genuinely differed?'')
 with evaluating essentially the same setting. The fully conditional posterior
-$p(x_k' \mid \mathbf{x}_{-k})$ conditions on all other observed features --- potentially
-including descendants of $X_k$ --- which imposes structural constraints that may rule
+$p(x_k' \mid \mathbf{x}_{-k})$ conditions on all other observed features, potentially
+including descendants of $X_k$, which imposes structural constraints that may rule
 out otherwise plausible counterfactuals, and still concentrates mass near $x_k$ when
 features are correlated. The $\epsilon$-excised distribution occupies the middle
 ground: it draws from the marginal informed by upstream variables only, excising the
@@ -441,15 +477,15 @@ counterfactual outcome for any fixed noise realisation $\mathbf{u}$; $\Gamma$ te
 us which suspect/witness configurations to ask about; $\Delta$ tells us which
 non-factual values to substitute when evaluating necessity. What remains is to plug
 those distributions into the counterfactual mechanics and read out a number. The
-next two definitions do exactly that --- first the joint necessity-sufficiency
+next two definitions do exactly that: first the joint necessity-sufficiency
 measure $P_k^{s,n}$, then its expectation against a user-chosen impact function
 $ci$, with the OBCB scores and the desiderata verification immediately after.
 
 We are now ready to state the main definitions of \Ourapproach. The core idea is to
 measure two complementary things for a variable of interest $X_k$: (a) how much $X_k$'s
-factual value contributes to producing $y^\star$ --- the \emph{sufficiency} question ---
+factual value contributes to producing $y^\star$, the \emph{sufficiency} question,
 and (b) how much replacing $X_k$'s value with alternatives would shift the outcome away
-from $y^\star$ --- the \emph{necessity} question. We capture both by constructing two
+from $y^\star$, the \emph{necessity} question. We capture both by constructing two
 counterfactual outcome distributions conditioned on the same noise realization $\mathbf{u}$,
 then marginalising their product over $P_{\mathbf{U}}$. Because \ourapproach is not
 constrained to particular variable types, we work in general measure-theoretic terms
@@ -520,13 +556,13 @@ $\Pr_\Gamma[X_k\in\mathbf{C}]^2 \leq 1$.
 
 \medskip\noindent
 Informally: $P_k^s(\cdot\mid\mathbf{u})$ is the distribution of $Y$ in the
-\emph{sufficiency world} --- restore the factual value of a candidate cause set
+\emph{sufficiency world}: restore the factual value of a candidate cause set
 $\mathbf{C}$ containing $X_k$, hold the witness set $\mathbf{T}$ at its factual values,
 and observe where the outcome lands. $P_k^n(\cdot\mid\mathbf{u})$ is the distribution of
-$Y$ in the \emph{necessity world} --- replace $\mathbf{C}$'s values with alternatives
+$Y$ in the \emph{necessity world}: replace $\mathbf{C}$'s values with alternatives
 drawn from $\Delta$, hold $\mathbf{T}$ fixed, and ask how the outcome shifts.
 The sum over suspect-containing pairs $\{(\mathbf{C},\mathbf{T}):X_k\in\mathbf{C}\}$
-weights each configuration by its $\Gamma$-mass --- more focused interventions
+weights each configuration by its $\Gamma$-mass: more focused interventions
 receive whatever weight the practitioner assigns them; configurations with
 $X_k\notin\mathbf{C}$ would contribute $0$ to the attribution and are absent
 from the sum, so $P_k^s$ and $P_k^n$ are sub-probability measures with total
@@ -567,11 +603,15 @@ attribution.
 
 \medskip\noindent Informally, $ci$ is a user-defined scoring rule that translates
 the joint sufficiency--necessity measure into a single scalar. The choice is not arbitrary:
-the Absolute Difference example below is an instance of L1 distance between outcomes, the
-same metric underlying Average Treatment Effect, Conditional Treatment Effect, and SHAP.
-The binary indicator score recovers this as a special case when outcomes are binary ---
-indicators are L1 on $\{0,1\}$. Practitioners with reasons to prefer L2 or another
-distance measure may substitute it freely; the framework places no restriction on $ci$
+the Absolute Difference example below is an instance of L$_1$ distance between outcomes, the
+same metric underlying Average Treatment Effect,
+ Conditional Treatment Effect, and SHAP.
+The binary indicator score recovers this as a special
+ case when outcomes are binary:
+indicators are L$_1$ on $\{0,1\}$. Practitioners
+ with reasons to prefer L$_2$ or another
+distance measure may substitute it freely; the framework places 
+no restriction on $ci$
 beyond measurability.
 
 For the OBCB analysis we instantiate $ci$ as the PNS binary score defined in the
@@ -676,7 +716,7 @@ and $y^\star=\varname{loan}=0$:
 Table~\ref{tab:pci_decomp} gives the full results for Alice and Bob under these
 parameter choices: Pearl's PN/PS/PNS, PCI without witnesses
 ($\mathbf{W}=\emptyset$), and PCI with the $\varname{check\text{-}failed}$ witness
-active --- with the latter further decomposed into its necessity and sufficiency
+active, with the latter further decomposed into its necessity and sufficiency
 marginals.
 
 \begin{table}[h]
@@ -736,7 +776,7 @@ $|\mathbf{S}|=2$ PCI averages over $\{\varname{gender}\}$, $\{\varname{credit}\}
 and $\{\varname{gender},\varname{credit}\}$ (each weighted $\tfrac{1}{3}$),
 whereas PNS evaluates a single counterfactual on one variable at a time.
 Property~(i) below establishes that the two agree exactly when $|\mathbf{S}|=1$
-(single suspect, no witnesses, binary outcome) --- the OBCB setup uses
+(single suspect, no witnesses, binary outcome), whereas the OBCB setup uses
 $|\mathbf{S}|=2$ deliberately, to demonstrate joint-subset attribution.
 
 % \begin{definition}[Causal impact and its push-forward]
@@ -755,7 +795,7 @@ $|\mathbf{S}|=2$ deliberately, to demonstrate joint-subset attribution.
 
 % With this in place, we can characterize a number of causal impact measures by first defining a \emph{causal impact function} as the expectation of a causal impact function taken with respect to the joint measure on factual and counterfactual outcomes.
 
-\noindent The causal impact function $ci$ is a user-defined component of \ourapproach, and different choices encode different causal questions. In the benchmarking experiments of Section~\ref{sec:ac_benchmark}, we instantiate $ci$ using only the necessity component, since Halpern’s actual causality has no sufficiency counterpart --- necessity-only attribution allows a direct parallel comparison. The full framework incorporating both $Y^s$ and $Y^n$ is instantiated in the PNS binary
+\noindent The causal impact function $ci$ is a user-defined component of \ourapproach, and different choices encode different causal questions. In the benchmarking experiments of Section~\ref{sec:ac_benchmark}, we instantiate $ci$ using only the necessity component, since Halpern’s actual causality has no sufficiency counterpart: necessity-only attribution allows a direct parallel comparison. The full framework incorporating both $Y^s$ and $Y^n$ is instantiated in the PNS binary
 example above and in the Absolute Difference example below; the OBCB analysis of this
 section (Tables~\ref{tab:pci_decomp}--\ref{tab:desiderata}) provides a concrete
 validation, since the PNS binary $ci$ jointly conditions on $Y^s=y^\star$ and
@@ -766,7 +806,7 @@ evaluation (Section~\ref{sub:synthetic}), and the SIR benchmark
 (Section~\ref{sec:sir_benchmark}).
 
 When the outcome variable $Y$ is continuous rather than binary, indicators are replaced by a distance-based score that measures how far the necessity and sufficiency worlds land from the factual value $y^\star$.
-The natural choice, paralleling L1-based scores such as ATE and SHAP, is the absolute difference.
+The natural choice, paralleling L$_1$-based scores such as ATE and SHAP, is the absolute difference.
 
 \begin{example}[Absolute Difference Impact Score] \label{ex:absolute_score}
 We can develop an analogous measure for continuous outcomes where we increase attribution with distance from the factual value $y^\star$ in the necessity world and decrease impact with distance to the factual value in the sufficiency world.
@@ -887,14 +927,14 @@ For Alice's gender, $\mathrm{PN} = 0.045$ is the bare probability that a male wi
 credit would have been approved; PCI's necessity marginal is $0.394$, nearly an order of
 magnitude higher, because the \varname{check\text{-}failed} witness keeps the
 credit-check bottleneck active when the male counterfactual would otherwise have been
-checked and might still have failed --- structural information that the unconditional
+checked and might still have failed, structural information that the unconditional
 $\mathrm{PN}$ cannot register. For Bob's gender, $\mathrm{PN}$ is exactly $0$ (a female
 with bad credit cannot be approved in this model) and $\mathrm{PS}$ is undefined; PCI's
 marginals remain well-defined at $0.030$ and $0.637$, recovering the indirect role of
 gender in opening the evaluation.
 
 The next section turns from comparing PCI with Pearl's family of counterfactual scores
-to comparing it with the SHAP family --- methods grounded in cooperative game theory
+to comparing it with the SHAP family, methods grounded in cooperative game theory
 rather than in structural counterfactual reasoning.
 Section~\ref{sec:shap_examples} re-runs the OBCB analysis under plain and Causal
 SHAP, then introduces a continuous mediation example where the two SHAP variants

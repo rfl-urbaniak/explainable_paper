@@ -1,4 +1,4 @@
-\section{Dynamical SIR benchmark: PCI on continuous outcomes}\label{sec:sir_benchmark}
+\section{Dynamical SIR Benchmark: PCI on Continuous Outcomes}\label{sec:sir_benchmark}
 
 The actual-causality benchmark of Section~\ref{sec:ac_benchmark} exercises the
 necessity-only specialisation of \ourapproach on a discrete outcome with a
@@ -24,8 +24,8 @@ intervention strength $l\in[0,1]$ that scales $\beta_0$ to $(1-l)\beta_0$.
 Lockdown alone has efficiency $0.6$; masking efficiency depends on lockdown
 ($0.1$ under lockdown, $0.45$ on its own); the joint efficiency is the
 clamped sum, capped at $0.95$. Lockdown is enacted at $t=1$, masking at
-$t=1.5$. The outcome is the \emph{overshoot} --- the peak-to-final $S$ gap
-of the simulated trajectory --- and the undesirable event is
+$t=1.5$. The outcome is the \emph{overshoot}, the peak-to-final $S$ gap
+of the simulated trajectory, and the undesirable event is
 $\mathrm{os\_too\_high}=\mathbbm{1}[\mathrm{overshoot}>24]$ on a $100$-person
 population.
 
@@ -56,7 +56,7 @@ mandate at $t=1.5$. Right: per-regime histograms of the overshoot, with the
 $24$-overshoot threshold marked. Either policy on its own leaves the
 infectious peak essentially intact; only the joint regime suppresses it
 appreciably, yet the lockdown-only and mask-only overshoot probabilities are
-near-indistinguishable --- the asymmetric joint efficiency that
+near-indistinguishable: the asymmetric joint efficiency that
 \ourapproach disentangles.}
 \label{fig:sir_trajectories}
 \end{figure}
@@ -149,13 +149,13 @@ sampled into the witness set
 (Figure~\ref{fig:sir_contexts}). For lockdown, with
 $\mathrm{mask\_efficiency}$ \emph{fixed} as a witness the score is $0.81$;
 \emph{free}, it rises to $2.67$. For mask, with $\mathrm{lockdown\_efficiency}$
-\emph{fixed} the score is $-0.48$ --- mask fails to register as a cause at
-all under that context regime --- and \emph{free} it rises to $2.72$.
+\emph{fixed} the score is $-0.48$ (mask fails to register as a cause at
+all under that context regime) and \emph{free} it rises to $2.72$.
 Lockdown therefore registers as a cause in both context regimes, while
 mask's status as a cause is contingent on its partner being allowed to
 adapt. \ourapproach thus expresses not just \emph{which} policy is the
 dominant cause but \emph{how robustly} that causal claim holds across
-counterfactual contexts --- a finer-grained verdict than the binary
+counterfactual contexts: a finer-grained verdict than the binary
 ``actual cause / not'' that classical AC produces.
 
 \begin{figure}[htbp]
@@ -188,7 +188,7 @@ captures patterns that AC cannot adjudicate. Section~\ref{sec:avm} pushes the
 demonstration one step further: a deployed automated valuation model trained on
 millions of points, with deep neural-network components and a sparse variational
 GP outcome head. The question there is no longer whether \ourapproach agrees with
-a known ground truth --- on a proprietary production model none is available ---
+a known ground truth (on a proprietary production model none is available),
 but whether the computation is feasible at all, and whether the qualitative
 SHAP-vs-PCI divergences observed on the synthetic side persist on a real trained
 system.
