@@ -1,0 +1,52 @@
+name: docs
+
+# Build the Sphinx HTML site from the notebooks' stored outputs
+# (nbsphinx_execute = "never", so no heavy re-execution) and publish it to
+# GitHub Pages. Enable once under Settings -> Pages -> Source: "GitHub Actions".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment; let an in-progress run finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false # HTML renders stored notebook outputs; the .pkl caches aren't needed
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Install docs dependencies
+        run: uv sync --group docs
+      - name: Build HTML
+        run: make -C docs html
+      - name: Disable Jekyll processing
+        run: touch docs/build/html/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/build/html
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
