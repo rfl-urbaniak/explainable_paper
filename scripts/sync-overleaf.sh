@@ -47,9 +47,28 @@ case "${1:-}" in
     ;;
 
   push)
+    # Guard A: main is the source of truth — refuse to push uncommitted paper
+    # edits, which would live on Overleaf but not in git history.
+    mapfile -t _wl < <(paper_files | sort -u)
+    if ! git diff --quiet HEAD -- "${_wl[@]}" 2>/dev/null; then
+      echo "!! Uncommitted changes to paper files; commit them on main first:" >&2
+      git --no-pager diff --name-only HEAD -- "${_wl[@]}" | sed 's/^/     /' >&2
+      exit 1
+    fi
+
     echo ">> Fetching Overleaf head (to layer on top of it) ..."
     git fetch --quiet "$OL" "$OL_BRANCH"
     parent="$(git rev-parse "$OL/$OL_BRANCH")"
+
+    # Guard B: refuse to push if Overleaf advanced since our last sync (someone
+    # edited on Overleaf); those edits must be pulled before we overwrite them.
+    last="$(git rev-parse -q --verify "refs/heads/$GH_BRANCH" || true)"
+    if [ -n "$last" ] && \
+       [ "$(git rev-parse "$parent^{tree}")" != "$(git rev-parse "$last^{tree}")" ]; then
+      echo "!! Overleaf has changes not yet in the repo (edited on Overleaf)." >&2
+      echo "!! Run 'make pull-from-overleaf', review + commit on main, then push again." >&2
+      exit 1
+    fi
 
     echo ">> Building paper tree from main's sources ..."
     # Build the commit with a throwaway index so the working tree is untouched.
@@ -80,11 +99,17 @@ case "${1:-}" in
     ;;
 
   pull)
+    cur="$(git rev-parse --abbrev-ref HEAD)"
+    # Guard: don't clobber uncommitted local edits to the files we overwrite.
+    if ! git diff --quiet HEAD -- main.tex sections 2>/dev/null; then
+      echo "!! Uncommitted changes to main.tex/sections would be overwritten." >&2
+      echo "!! Commit or stash them on '$cur' first." >&2
+      exit 1
+    fi
     echo ">> Fetching Overleaf edits ($OL/$OL_BRANCH) ..."
     git fetch "$OL" "$OL_BRANCH"
     git update-ref "refs/heads/$GH_BRANCH" "$OL/$OL_BRANCH"
     git push --force "$GH" "$GH_BRANCH"   # keep the GitHub mirror in step
-    cur="$(git rev-parse --abbrev-ref HEAD)"
     echo ">> Staging prose (main.tex + sections/) from Overleaf onto '$cur' ..."
     git checkout "$GH_BRANCH" -- main.tex sections
     echo ">> Done. Review with: git diff --cached ; then commit on '$cur'."
