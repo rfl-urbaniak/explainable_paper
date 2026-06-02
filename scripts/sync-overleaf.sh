@@ -1,29 +1,33 @@
 #!/bin/bash
-# Bidirectional sync between `main` and the lean `overleaf` branch that mirrors
-# the Overleaf project (https://www.overleaf.com/project/<id>).
+# Bidirectional sync between `main` and the Overleaf project.
 #
-#   scripts/sync-overleaf.sh push   # main paper sources -> overleaf branch -> push to origin
-#   scripts/sync-overleaf.sh pull   # pull Overleaf edits from origin -> stage onto main
+#   scripts/sync-overleaf.sh push   # main's paper sources -> Overleaf (and mirror to GitHub)
+#   scripts/sync-overleaf.sh pull   # Overleaf edits        -> stage main.tex + sections/ onto main
 #   scripts/sync-overleaf.sh files  # print the paper-file whitelist and exit
 #
-# The `overleaf` branch is an ORPHAN branch (no shared history with main, so the
-# Overleaf clone stays tiny) holding ONLY the files needed to compile the paper,
-# at IDENTICAL paths to main. That keeps main.tex byte-identical across branches
-# and makes prose merges conflict-free.
+# Topology:
+#   - Overleaf is reached through its Git bridge, remote `overleaf-bridge`
+#     (branch `master`). Authenticate with an Overleaf Git token (username `git`).
+#   - GitHub keeps a mirror on the lean `overleaf` branch of remote `origin`,
+#     so collaborators see the paper sources there too.
+#   - The synced tree holds ONLY the files needed to compile the paper, at paths
+#     IDENTICAL to main, so main.tex is byte-identical across branches and prose
+#     merges back into main's sections/ are conflict-free.
 #
-# Workflow discipline: always `pull` (and commit the staged prose on main)
-# BEFORE you `push`, otherwise a push overwrites unmerged Overleaf edits with
-# main's versions.
+# Overleaf forbids force-push, so every `push` is layered as a child of
+# Overleaf's current head. That means: ALWAYS `pull` (and commit the staged
+# prose on main) BEFORE you `push`, or a push overwrites unmerged Overleaf edits.
 set -euo pipefail
 
-BRANCH=overleaf
-REMOTE=origin
+OL=overleaf-bridge       # Overleaf git-bridge remote
+OL_BRANCH=master         # Overleaf's branch
+GH=origin                # GitHub remote
+GH_BRANCH=overleaf       # lean mirror branch on GitHub
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 
 # --- paper-file whitelist, derived so it stays correct as the paper evolves ---
 paper_files() {
-  # fixed sources
   printf '%s\n' main.tex references.bib neurips_2024.sty
   # main.bbl is shipped as a fallback so refs render even before bibtex runs
   [ -f main.bbl ] && printf '%s\n' main.bbl
@@ -41,11 +45,11 @@ case "${1:-}" in
     ;;
 
   push)
-    echo ">> Building '$BRANCH' tree from main's paper files..."
-    git fetch --quiet "$REMOTE" "$BRANCH" 2>/dev/null || true
-    parent="$(git rev-parse -q --verify "$REMOTE/$BRANCH" \
-              || git rev-parse -q --verify "refs/heads/$BRANCH" || true)"
+    echo ">> Fetching Overleaf head (to layer on top of it) ..."
+    git fetch --quiet "$OL" "$OL_BRANCH"
+    parent="$(git rev-parse "$OL/$OL_BRANCH")"
 
+    echo ">> Building paper tree from main's sources ..."
     # Build the commit with a throwaway index so the working tree is untouched.
     tmpidx="$(mktemp)"; export GIT_INDEX_FILE="$tmpidx"
     git read-tree --empty
@@ -57,28 +61,33 @@ case "${1:-}" in
     tree="$(git write-tree)"
     unset GIT_INDEX_FILE; rm -f "$tmpidx"
 
-    msg="Overleaf sync: paper sources from main @ $(git rev-parse --short HEAD)"
-    if [ -n "$parent" ]; then
-      commit="$(git commit-tree "$tree" -p "$parent" -m "$msg")"
-    else
-      commit="$(git commit-tree "$tree" -m "$msg")"  # first time: orphan
+    if [ "$(git rev-parse "$parent^{tree}")" = "$tree" ]; then
+      echo ">> Overleaf already matches main's paper sources. Nothing to push."
+      exit 0
     fi
-    git update-ref "refs/heads/$BRANCH" "$commit"
-    echo ">> Updated local '$BRANCH' -> $commit"
-    echo ">> Pushing to $REMOTE/$BRANCH ..."
-    git push "$REMOTE" "$BRANCH"
+
+    msg="Sync paper sources from main @ $(git rev-parse --short HEAD)"
+    commit="$(git commit-tree "$tree" -p "$parent" -m "$msg")"
+    git update-ref "refs/heads/$GH_BRANCH" "$commit"
+
+    echo ">> Pushing to Overleaf ($OL/$OL_BRANCH) ..."
+    git push "$OL" "$commit:$OL_BRANCH"
+    echo ">> Mirroring to GitHub ($GH/$GH_BRANCH) ..."
+    git push --force "$GH" "$GH_BRANCH"
+    echo ">> Done."
     ;;
 
   pull)
-    echo ">> Fetching Overleaf edits from $REMOTE/$BRANCH ..."
-    git fetch "$REMOTE" "$BRANCH"
-    git update-ref "refs/heads/$BRANCH" "$REMOTE/$BRANCH"
+    echo ">> Fetching Overleaf edits ($OL/$OL_BRANCH) ..."
+    git fetch "$OL" "$OL_BRANCH"
+    git update-ref "refs/heads/$GH_BRANCH" "$OL/$OL_BRANCH"
+    git push --force "$GH" "$GH_BRANCH"   # keep the GitHub mirror in step
     cur="$(git rev-parse --abbrev-ref HEAD)"
-    echo ">> Staging prose (main.tex + sections/) from '$BRANCH' onto '$cur' ..."
-    git checkout "$BRANCH" -- main.tex sections
+    echo ">> Staging prose (main.tex + sections/) from Overleaf onto '$cur' ..."
+    git checkout "$GH_BRANCH" -- main.tex sections
     echo ">> Done. Review with: git diff --cached ; then commit on '$cur'."
     ;;
 
   *)
-    sed -n '2,17p' "$0"; exit 1 ;;
+    sed -n '2,8p' "$0"; exit 1 ;;
 esac
