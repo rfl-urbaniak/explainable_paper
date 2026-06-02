@@ -73,9 +73,6 @@ directory = "tests/coverage"
 
 [tool.ruff.lint]
 extend-ignore = ["E203"]
-# `make format` will not strip unused imports; `make remove-imports` does that
-# explicitly (notebooks often import purely for display side effects).
-unfixable = ["F401"]
 select = [
   "F",       # pyflakes
   "I",       # isort

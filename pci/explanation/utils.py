@@ -232,19 +232,14 @@ def sample_k_indices(
     if weighting == "cardinality":
         probs = torch.ones(k_max - k_min + 1)
     elif weighting == "subsets":
-        probs = torch.tensor(
-            [float(math.comb(n, k)) for k in range(k_min, k_max + 1)]
-        )
+        probs = torch.tensor([float(math.comb(n, k)) for k in range(k_min, k_max + 1)])
     else:
         raise ValueError(
             f"Unknown weighting={weighting!r}; expected 'cardinality' or 'subsets'."
         )
 
     with pyro.plate("batch", sample_size):
-        k = (
-            pyro.sample("k", dist.Categorical(probs=probs))
-            + k_min
-        )
+        k = pyro.sample("k", dist.Categorical(probs=probs)) + k_min
 
     indices = []
 

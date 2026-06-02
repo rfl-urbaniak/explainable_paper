@@ -140,7 +140,8 @@ class ThinSearchSampler(pyro.nn.PyroModule):
             self.witnesses = [
                 s
                 for s in structured_model.sites_of_interest
-                if s not in structured_model.deterministic_sites + [self.outcome_variable]
+                if s
+                not in structured_model.deterministic_sites + [self.outcome_variable]
             ]
         else:
             # When witness_sites is explicitly provided, respect that choice:
@@ -148,9 +149,7 @@ class ThinSearchSampler(pyro.nn.PyroModule):
             # well-defined via do-interventions). Only the outcome variable is
             # always excluded.
             self.witnesses = [
-                s
-                for s in structured_model.witness_sites
-                if s != self.outcome_variable
+                s for s in structured_model.witness_sites if s != self.outcome_variable
             ]
 
         for suspect in structured_model.suspects:
