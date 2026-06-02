@@ -64,7 +64,7 @@ effect, and in the signal example as Instance~2's budget collapse when the predi
 equals its baseline.
 
 We trace these failures through two examples, comparing plain SHAP, Causal SHAP, and
-PCI against the desiderata of Section~\ref{sec:motivations} and some further desiderata related to the example we 
+PCI against the desiderata of Section~\ref{sec:causal_impact} and some further desiderata related to the example we
 will employ. We first return to the
 OBCB model: it permits exact analytic computation and the desiderata are already
 known. In OBCB the feature set contains only exogenous roots, so plain and Causal
@@ -86,7 +86,8 @@ A cooperative game is a pair $(N, v)$,
 where $N = \{1, \ldots, n\}$ is the set of players and $v: 2^N \to \mathbb{R}$
 is the \emph{characteristic function} mapping each subset
 (coalition) $\mathcal{S} \subseteq N$ to the value that coalition can produce. The Shapley value
-\citep{shapley1953} is the unique attribution satisfying four axioms:
+\citep{shapley1953} assigns each player $i$ a payoff $\phi_i$, its share of the total
+value $v(N) - v(\emptyset)$, and is the unique attribution satisfying four axioms:
 \begin{enumerate}
 \item \textbf{Efficiency}: $\sum_i \phi_i = v(N) - v(\emptyset)$
 \item \textbf{Symmetry}: If $v(\mathcal{S} \cup \{i\}) = v(\mathcal{S} \cup \{j\})$ for all $\mathcal{S}$, then
@@ -115,10 +116,9 @@ v(\mathcal{S}) = \mathbb{E}_{X_{\bar{\mathcal{S}}}}\bigl[f(X_{\mathcal{S}} = x_{
 their marginal distribution.
 \end{definition}
 
-\medskip\noindent Causal SHAP replaces the characteristic function with an
-interventional expectation \citep{heskes2020causal}:
-
 \begin{definition}[Causal SHAP]\label{def:causalshap}
+Causal SHAP replaces the characteristic function with an interventional
+expectation \citep{heskes2020causal}:
 \begin{equation}
 v_{\text{causal}}(\mathcal{S}) = \mathbb{E}\bigl[f(X) \mid do(X_{\mathcal{S}} = x_{\mathcal{S}})\bigr]
 = \int P(X_{\bar{\mathcal{S}}} \mid do(X_{\mathcal{S}} = x_{\mathcal{S}}))\, f(X_{\bar{\mathcal{S}}}, x_{\mathcal{S}})\, dX_{\bar{\mathcal{S}}}
@@ -196,27 +196,12 @@ equation~\eqref{eq:shapley} reduces to
 $\phi_i = \tfrac{1}{2}[v(\{i\})-v(\emptyset)] + \tfrac{1}{2}[v(N)-v(N\!\setminus\!\{i\})]$.}
 By the SHAP definition (and equivalently by Definition~\ref{def:causalshap}
 once we note that no dropped feature is a descendant of any coalition member),
-the value function on the 2-feature game is
-\[
-v(\mathcal{S}) \;=\; \mathbb{E}\!\left[f(X)\,\big|\,X_{\mathcal{S}} = x_{\mathcal{S}}^\star\right]
-\;=\; \sum_{x_{N\setminus S}\in\{0,1\}^{|N\setminus S|}} P(X_{N\setminus S}=x_{N\setminus S})\,f(x_{\mathcal{S}}^\star,\,x_{N\setminus S}).
-\]
-Under independent uniform marginals
-$P(\varname{gender})=P(\varname{credit})=\tfrac{1}{2}$ this specialises to
-\begin{align*}
-v(\emptyset)                              &= \tfrac{1}{4}\sum_{g,c\in\{0,1\}} f(g,c),
-&&[\text{both dropped: weight } \tfrac{1}{2}\cdot\tfrac{1}{2}] \\
-v(\{\varname{gender}\})                   &= \tfrac{1}{2}\!\left[f(g^\star,0)+f(g^\star,1)\right],
-&&[\text{only credit dropped: weight } P(c) = \tfrac{1}{2}] \\
-v(\{\varname{credit}\})                   &= \tfrac{1}{2}\!\left[f(0,c^\star)+f(1,c^\star)\right],
-&&[\text{only gender dropped: weight } P(g) = \tfrac{1}{2}] \\
-v(\{\varname{gender},\varname{credit}\})  &= f(g^\star,c^\star).
-&&[\text{nothing dropped: no average}]
-\end{align*}
-Plugging in the four values of $f$ listed at the start of Option~A yields
-Table~\ref{tab:vS_optionA}; pushing those through the closed-form Shapley above
-gives the magnitudes in Table~\ref{tab:shap_obcb}, which compares against PNS
-and PCI.
+the value function on the 2-feature game and its closed-form specialisation
+under independent uniform marginals are derived in
+Appendix~\ref{app:obcb} (\S\ref{app:obcb_vS}). Plugging in the four values of
+$f$ listed at the start of Option~A yields Table~\ref{tab:vS_optionA}; pushing
+those through the closed-form Shapley gives the magnitudes in
+Table~\ref{tab:shap_obcb}, which compares against PNS and PCI.
 
 \begin{table}[h]
 \centering
@@ -494,12 +479,20 @@ The \textbf{qualitative causal responsibility desiderata} for this example are:
 \textbf{D-MX} \quad & |R(M \rightsquigarrow X)| = 0
 \end{align*}
 
-A somewhat more subtle desideratum is:
+A more subtle desideratum concerns telling apart the \emph{roles} of the two
+genuine causes. $X$ reaches $Y$ only through the mediator $M$, whereas $M$ acts
+on $Y$ directly; a good attribution method should be able to distinguish these
+two roles rather than collapse them into the same number. One systematic way to
+register the distinction is to require that the two causes receive different,
+rankable scores, and we adopt the convention of assigning the larger score to
+the cause closer to the outcome:
 \begin{align*}
 \textbf{D-MXY} \quad & |R(M \rightsquigarrow Y)| > |R(X \rightsquigarrow Y)|
 \end{align*}
-\noindent This captures the intuition that responsibility should be higher for variables
-that are closer to the outcome in the causal graph.
+\noindent The direction of the inequality is a convention rather than a law of
+responsibility; what matters is that the method separates the direct from the
+indirect path at all, and scoring the closer cause higher is one principled,
+consistent way to register that separation. We apply this convention throughout.
 
 \noindent The key \textbf{distributional facts} we will use are:
 \begin{align}
@@ -507,16 +500,6 @@ that are closer to the outcome in the causal graph.
 \bigl(\text{Var}(X),\, \text{Var}(M),\, \text{Var}(Y)\bigr) &= (0.25,\, 0.35,\, 0.45), \\
 \bigl(\text{Cov}(X,M),\, \text{Cov}(X,Y),\, \text{Cov}(M,Y)\bigr) &= (0.25,\, 0.25,\, 0.35).
 \end{align}
-
-\noindent \textbf{Derivation of the distributional facts.}
-From the structural equations,
-$\mathrm{Var}(M)=\mathrm{Var}(X)+\mathrm{Var}(\varepsilon_M)=0.25+0.1=0.35$ and
-$\mathrm{Var}(Y)=\mathrm{Var}(M)+\mathrm{Var}(\varepsilon_Y)=0.35+0.1=0.45$.
-For the covariances,
-$\mathrm{Cov}(X,M)=\mathrm{Cov}(X,X+\varepsilon_M)=\mathrm{Var}(X)=0.25$;
-$\mathrm{Cov}(X,Y)=\mathrm{Cov}(X,M+\varepsilon_Y)=\mathrm{Cov}(X,M)=0.25$;
-and
-$\mathrm{Cov}(M,Y)=\mathrm{Cov}(M,M+\varepsilon_Y)=\mathrm{Var}(M)=0.35$.
 
 \noindent For each target variable, the optimal predictor under squared loss is the
 conditional expectation, computable exactly in this Gaussian model:
@@ -526,21 +509,9 @@ f_M(X, Y) &= \mathbb{E}[M \mid X, Y] = 0.5X + 0.5Y \quad (\{X, Y\} \Rightarrow M
 f_X(M, Y) &= \mathbb{E}[X \mid M, Y] = 0.5 + \frac{5}{7}(M - 0.5) \quad (\{M, Y\} \Rightarrow X)
 \end{align}
 
-\noindent \textbf{Derivation of the conditional expectations.}
-$\mathbb{E}[Y\mid X,M]=M$ since $Y=M+\varepsilon_Y$ with $\varepsilon_Y\perp(X,M)$.
-For $\mathbb{E}[M\mid X,Y]$, the covariance matrix of $(X,Y)$ is
-$\Sigma_{XY}=\bigl(\begin{smallmatrix}0.25&0.25\\0.25&0.45\end{smallmatrix}\bigr)$
-with $\det(\Sigma_{XY})=0.05$, so
-$\Sigma_{XY}^{-1}=20\bigl(\begin{smallmatrix}0.45&-0.25\\-0.25&0.25\end{smallmatrix}\bigr)$;
-the regression coefficients are
-$[\mathrm{Cov}(M,X),\,\mathrm{Cov}(M,Y)]\,\Sigma_{XY}^{-1}
-=[0.25,\,0.35]\cdot 20\bigl(\begin{smallmatrix}0.45&-0.25\\-0.25&0.25\end{smallmatrix}\bigr)
-=[0.5,\,0.5]$,
-giving $\mathbb{E}[M\mid X,Y]=0.5+0.5(X-0.5)+0.5(Y-0.5)=0.5X+0.5Y$.
-For $\mathbb{E}[X\mid M,Y]$, by $d$-separation, $X\perp Y\mid M$ in the chain
-$X\!\to\!M\!\to\!Y$, so $\mathbb{E}[X\mid M,Y]=\mathbb{E}[X\mid M]
-=0.5+\tfrac{\mathrm{Cov}(X,M)}{\mathrm{Var}(M)}(M-0.5)
-=0.5+\tfrac{0.25}{0.35}(M-0.5)=0.5+\tfrac{5}{7}(M-0.5)$.
+\noindent The distributional facts and the three conditional expectations above
+are derived in Appendix~\ref{app:signal}
+(\S\ref{app:signal_distfacts}--\S\ref{app:signal_condexp}).
 
 \end{example}
 
@@ -555,46 +526,17 @@ its baseline, and SHAP's attribution budget $f(x^\star)-\mathbb{E}[f(X)]$ collap
 to zero. We work through Instance~1 first, then return to Instance~2 to isolate what
 each method is really tracking.
 
-\paragraph{Plain SHAP.}
-\textit{Target $Y$, features $\{X, M\}$.} First, compute the coalition values:
-\begin{align}
-v(\emptyset) &= \mathbb{E}[M] = 0.5 \\
-v(\{X\}) &= \mathbb{E}[M \mid X=1] = 1 \\
-v(\{M\}) &= \mathbb{E}[M \mid M=1] = 1 \\
-v(\{X,M\}) &= f_Y(1,1) = 1
-\end{align}
-
-Next, apply equation~\eqref{eq:shapley} with $|N|=2$:
-\begin{equation}
-\phi_X = \tfrac{1}{2}(1 - 0.5) + \tfrac{1}{2}(1 - 1) = 0.25
-\qquad
-\phi_M = \tfrac{1}{2}(1 - 0.5) + \tfrac{1}{2}(1 - 1) = 0.25
-\end{equation}
+\paragraph{Computing the three methods.}
+At Instance~1 ($X^\star=M^\star=Y^\star=1$) all three methods admit closed-form
+evaluation in this Gaussian model. We defer the full per-target coalition-value
+and Shapley computations for plain and Causal SHAP, and the
+per-$(\mathbf{C},\mathbf{T})$ PCI derivation, to Appendix~\ref{app:signal}
+(\S\ref{app:signal_plain}--\S\ref{app:signal_pci}); the resulting attributions
+populate Table~\ref{tab:signal_desid}. One computed fact drives the D-YX
+discussion below and is worth stating here.
 
 
-
-
-
-\textit{Target $M$, features $\{X,Y\}$.}
-$v(\emptyset)=0.5$;\enspace $v(\{X\})=1$;\enspace
-$v(\{Y\})=0.5\,\mathbb{E}[X\mid Y{=}1]+0.5=0.889$
-(using $\mathbb{E}[X\mid Y{=}1]=0.5+\tfrac{0.25}{0.45}(0.5)=0.778$);\enspace
-$v(\{X,Y\})=1$.
-\begin{align}
-\phi_X &= \tfrac{1}{2}(1-0.5)+\tfrac{1}{2}(1-0.889)=0.306, \\
-\phi_Y &= \tfrac{1}{2}(0.889-0.5)+\tfrac{1}{2}(1-1)=0.194.
-\end{align}
-
-\textit{Target $X$, features $\{M,Y\}$.}
-$v(\emptyset)=0.5$;\enspace $v(\{M\})=0.5+\tfrac{5}{7}(0.5)=0.857$;\enspace
-$v(\{Y\})=\mathbb{E}[X\mid Y{=}1]=0.778$ (as above);\enspace
-$v(\{M,Y\})=\mathbb{E}[X\mid M{=}1]=0.857$ (since $X\perp Y\mid M$).
-\begin{align}
-\phi_M &= \tfrac{1}{2}(0.857-0.5)+\tfrac{1}{2}(0.857-0.778)=0.219, \\
-\phi_Y &= \tfrac{1}{2}(0.778-0.5)+\tfrac{1}{2}(0.857-0.857)=0.139.
-\end{align}
-
-\noindent Plain SHAP assigns $\phi_Y = 0.139 > 0$ here, even though $Y$ does not
+\noindent Plain SHAP assigns $\phi_Y = 0.139 > 0$ for target $X$, even though $Y$ does not
 cause $X$. This arises because $v(\{Y\}) = 0.778 > 0.5$: observing $Y{=}1$ is
 statistically informative about $X{=}1$ through the chain $X \to M \to Y$. SHAP
 cannot distinguish ``$Y$ is informative about $X$'' from ``$Y$ causes $X$''
@@ -603,103 +545,15 @@ symmetric under reversal of causal direction.
 
 
 
-\paragraph{Causal SHAP.}\label{sec:causal_shap_signal}
-We now apply Causal SHAP (Definition~\ref{def:causalshap}) and compare against
-plain SHAP.
-
-\textit{Target $Y$, features $\{X,M\}$.}
-$v_{\mathrm{causal}}(\emptyset)=0.5$;\enspace
-$v_{\mathrm{causal}}(\{X\})=\mathbb{E}[M\mid do(X{=}1)]=1$
-(M is downstream of X: $P(M\mid do(X{=}1))=\mathcal{N}(1,0.1)$);\enspace
-$v_{\mathrm{causal}}(\{M\})=1$ ($do(M{=}1)$ sets $f_Y=M=1$ directly,
-$P(X\mid do(M{=}1))=P(X)$ since X has no causal parents);\enspace
-$v_{\mathrm{causal}}(\{X,M\})=1$.
-All values match plain SHAP, so $\phi_X=\phi_M=0.25$.
-
-\textit{Target $M$, features $\{X,Y\}$.}
-$v_{\mathrm{causal}}(\emptyset)=0.5$;\enspace
-$v_{\mathrm{causal}}(\{X\})=1$ ($Y$ is downstream of $X$, same as plain SHAP);\enspace
-$v_{\mathrm{causal}}(\{Y\})=\mathbb{E}_{X\sim P(X)}[0.5X+0.5{\cdot}1]=0.75$
-($Y$ does not cause $X$, so $P(X\mid do(Y{=}1))=P(X)$;
-differs from plain SHAP's $0.889$);\enspace
-$v_{\mathrm{causal}}(\{X,Y\})=1$.
-\begin{align}
-\phi_X &= \tfrac{1}{2}(1-0.5)+\tfrac{1}{2}(1-0.75)=0.375, \\
-\phi_Y &= \tfrac{1}{2}(0.75-0.5)+\tfrac{1}{2}(1-1)=0.125.
-\end{align}
-
-\textit{Target $X$, features $\{M,Y\}$.}
-$v_{\mathrm{causal}}(\emptyset)=0.5$;\enspace
-$v_{\mathrm{causal}}(\{M\})=0.857$ ($Y$ is downstream of $M$ but $f_X$
-does not depend on $Y$ since $X\perp Y\mid M$, so
-$\mathbb{E}_{Y\sim P(Y\mid do(M{=}1))}[f_X(1,Y)]=f_X(1,\cdot)=0.857$;
-same as plain SHAP);\enspace
-$v_{\mathrm{causal}}(\{Y\})=\mathbb{E}_{M\sim P(M)}[f_X(M,1)]=0.5$
-($M$ is not a descendant of $Y$, so $P(M\mid do(Y{=}1))=P(M)$
-and $\mathbb{E}[f_X(M,1)]=0.5+\tfrac{5}{7}(\mathbb{E}[M]-0.5)=0.5$;
-differs from plain SHAP's $0.778$);\enspace
-$v_{\mathrm{causal}}(\{M,Y\})=0.857$.
-\begin{align}
-\phi_M &= \tfrac{1}{2}(0.857-0.5)+\tfrac{1}{2}(0.857-0.5)=0.357, \\
-\phi_Y &= \tfrac{1}{2}(0.5-0.5)+\tfrac{1}{2}(0.857-0.857)=0.
-\end{align}
-
-
-
-\paragraph{PCI computation.}\label{sec:pci_signal_computation}
-We work at the factual instance $X^\star = M^\star = Y^\star = 1$ with the
-absolute-difference score (Example~\ref{ex:absolute_score})
-$ci(y^s, y^n, y^\star) = |y^n - y^\star| - |y^s - y^\star|$. Both worlds run
-the PSCM with fresh exogenous noise drawn from $P_{\mathbf{U}}$: the necessity
-world replaces the suspect $A$ with $A' \sim P(A)$ and propagates; the
-sufficiency world restores it to $a^\star$ and propagates. For target $B$,
-$\mathbf{S}$ is the two input features of $B$ and $\mathbf{W}$ the remaining
-input; $\Gamma_s$ is uniform over the three non-empty subsets of $\mathbf{S}$
-and $\Gamma_w$ uniform over $2^{\mathbf{W}}$.
-
-\textit{$R(X \rightsquigarrow Y)$.}
-$\mathbf{S} = \{X, M\}$, $\mathbf{W} = \{M\}$, $w^\star = m^\star = 1$, and
-$X' \sim \mathcal{N}(0.5,\, 0.25)$. Three of the four accepted
-$(\mathbf{C}, \mathbf{T})$ pairs intervene on $X$, each with weight
-$\tfrac{1}{4}$; the fourth, $(\mathbf{C}{=}\{M\}, \mathbf{T}{=}\emptyset)$,
-does not touch $X$ and contributes nothing. The key observation is that the
-witness pair $(\mathbf{C}{=}\{X\}, \mathbf{T}{=}\{M\})$ pins $M$ at $m^\star$
-in both worlds, which equalizes their distributions and zeros out $\bar c$;
-the other two pairs let $M$ propagate freely. Computing
-$\mathbb{E}[|Y^n - 1|]$ and $\mathbb{E}[|Y^s - 1|]$ in closed form via the
-folded-normal formula gives:
-\begin{center}
-\begin{tabular}{lccc}
-\toprule
-$(\mathbf{C}, \mathbf{T})$ & $\mathbb{E}[|Y^n - 1|]$ & $\mathbb{E}[|Y^s - 1|]$ & $\bar c$ \\
-\midrule
-$(\{X\}, \emptyset)$              & $0.677$ & $0.357$ & $0.320$ \\
-$(\{X\}, \{M\})$ \emph{[witness]} & $0.252$ & $0.252$ & $0.000$ \\
-$(\{X, M\}, \emptyset)$           & $0.677$ & $0.252$ & $0.425$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-Combining at weight $\tfrac{1}{4}$ each,
-\[
-R(X \rightsquigarrow Y \mid \mathbf{W}{=}\{M\})
-= \tfrac{1}{4}(0.320 + 0 + 0.425) \approx 0.186.
-\]
-
-\textit{$R(Y \rightsquigarrow X)$.}
-$X$ is exogenous: no $do$-intervention on $\{M, Y\}$ alters its structural
-equation, so necessity and sufficiency distributions coincide and
-$R(Y \rightsquigarrow X \mid \mathbf{W}{=}\{M\}) = 0$.
-
-\textit{Other cells.}
-The remaining entries of Table~\ref{tab:signal_desid} (D-MY, D-XM, D-YM, D-MX,
-D-MXY, and the $\mathbf{W} = \emptyset$ column) follow the same closed-form
-machinery; full per-pair computations are in the companion notebook
-\texttt{signal\_mediation\_computations.ipynb}.
-
 \paragraph{Desiderata analysis.}\label{sec:signal_desiderata}
 Following the convention of Section~\ref{sec:causal_impact}, we use $R(A \rightsquigarrow B)$
 for the method-agnostic responsibility and $\phi_A^B$ exclusively for SHAP/Causal SHAP values;
 prose statements about desiderata refer to magnitudes $|R(A \rightsquigarrow B)|$.
+Here $A$ denotes the candidate cause and $B$ the target outcome (the generic $Y$ of
+Section~\ref{sec:causal_impact}); for the PCI columns $B^n, B^s$ are its
+necessity/sufficiency worlds, $B^\star$ its factual value, and
+$\bar c = |B^n - B^\star| - |B^s - B^\star|$ the absolute-difference impact of
+Example~\ref{ex:absolute_score}.
 Table~\ref{tab:signal_desid} maps the desiderata from Section~\ref{sec:signal}
 to the values computed above.
 
@@ -809,7 +663,7 @@ across paths ($\mathrm{Var}(X)+\mathrm{Var}(\varepsilon_M)+\mathrm{Var}(\varepsi
 entirely by the sufficiency variance asymmetry $\mathrm{Var}(\varepsilon_M)$.
 A small structural margin like this is fragile: under any perturbation of
 the noise variances or the contrast function the $\mathbf{W}=\emptyset$
-verdict could flip.
+ordering could flip.
 
 Admitting the third variable as a witness amplifies the gap by roughly
 fourfold.
@@ -822,8 +676,8 @@ in which $M$ takes an alternative value; since $X$ does not appear in $Y$'s
 structural equation, pinning $X$ has no effect on $Y^n$ or $Y^s$, and all
 three cases contribute the same $0.425$.
 The gap widens from $0.034$ at $\mathbf{W}=\emptyset$ to
-$0.319-0.186=0.133$ at $\mathbf{W}=\{$third$\}$: D-MXY is now a
-\emph{robust} attribution rather than a marginal one.
+$0.319-0.186=0.133$ at $\mathbf{W}=\{$third$\}$: the ordering is now
+\emph{robust} rather than marginal.
 The comparison relies on different witness sets for the two cells, so it
 remains illustrative rather than a single-game ranking.
 
@@ -911,7 +765,7 @@ form: plain SHAP fails \textbf{D-A-rank} on the 2-feature game, and Causal
 SHAP either inherits that failure (Alice) or becomes undefined outright
 (Bob) once the mediator is admitted as a feature. Across both examples,
 neither SHAP variant reliably satisfies the desiderata that motivated
-\Ourapproach in Section~\ref{sec:motivations}. PCI addresses these gaps
+\Ourapproach in Section~\ref{sec:causal_impact}. PCI addresses these gaps
 through three ingredients the SHAP framework systematically lacks: the
 witness mechanism, the suspect-set distribution $\Gamma_s$, and the use of
 the realized outcome rather than the prediction baseline; the path-noise

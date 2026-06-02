@@ -1,0 +1,54 @@
+\section{Setup for the Desert-Traveller PCI Computation}\label{app:desert}
+
+This appendix records the structural model and the full PCI specification behind
+the desert-traveller comparison of
+Section~\ref{sub:pearl_actual_cause_prob}. The basic-variant results
+(Table~\ref{tab:pci-basic-dt}) and the weak-poison results
+(Table~\ref{tab:pci-weak-dt}) are produced by running the PCI Monte Carlo
+search of Section~\ref{sec:causal_impact} on the scenario-specific model below,
+with the component choices listed here; a parallel hand-rolled enumeration matches every
+value within Monte Carlo noise (companion notebook
+\texttt{docs/source/desert\_traveler.ipynb}).
+
+\subsection{Structural model (basic variant)}\label{app:desert_model}
+
+To compare directly with Pearl, we run PCI under the same forensic
+conditioning: one structural model per scenario, with $u$ pinned at the
+scenario's forensic realisation. The endogenous variables are $X, P, c, d,
+Y \in \{0,1\}$ with
+\[
+c = P\,(u' \vee X'), \qquad d = X\,(u \vee P'), \qquad y = c \vee d,
+\]
+where primes denote Boolean complement ($u'=1-u$, etc.), $c$ indicates the cyanide
+path operating (poisoned water drunk) and $d$
+the dehydration path operating (drank from empty canteen).
+
+\subsection{PCI components}\label{app:desert_components}
+
+The PCI components, all specified in advance:
+\begin{itemize}\setlength\itemsep{0.1em}
+    \item Suspects $\mathbf{S} = \{X, P\}$; candidate causes are the
+        singletons $\{X\}$ and $\{P\}$.
+    \item Witness pool $\mathbf{W} = \{c, d\}$ (the mediators); four subsets
+        $\mathbf{T} \subseteq \mathbf{W}$, weighted by $\Gamma$
+        cardinality-uniform (uniform on $|\mathbf{T}|$, then uniform within
+        each cardinality class).
+    \item Non-cause suspect (the one not in $\mathbf{C}$) is \emph{not}
+        intervened on or hard-coded; it follows the SCM under the noise
+        prior on its own coin, consistent with the formal definition's
+        requirement that only $\mathbf{C}$ and $\mathbf{T}$ are intervened
+        (Definition~\ref{def:jointnecsuf}).
+    \item Alternative-value distribution $\Delta$ deterministically flips
+        $1 \to 0$.
+    \item Noise distribution $P_{\mathbf{U}}$ is the forensic posterior, a
+        point mass at the scenario's $u$. We do \emph{not} condition on the
+        outcome $Y$ itself; the forensic evidence sits above $Y$ in the SCM,
+        so conditioning on it is not the ``fully conditional'' anti-pattern of
+        Section~\ref{sec:causal_impact}.
+\end{itemize}
+
+For the weak-poison variant (Section~\ref{sub:weak-poison}) the only mechanical
+changes are that the witness pool becomes $\mathbf{W} = \{c, d, v_C\}$ (the new
+``cyanide-was-fatal'' mediator $v_C$ is included) and that the Scenario~A
+forensic posterior pins both $u = 0$ and $\xi = 1$; Scenario~B's posterior pins
+$u = 1$, with $\xi$ structurally irrelevant since the cyanide path is dormant.

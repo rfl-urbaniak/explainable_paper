@@ -3,7 +3,7 @@
 
 
 
-Now we are in the position to disscuss the relation between PCI and 
+Now we are in the position to discuss the relation between PCI and
 Pearl's probability of actual causation. On 
 Pearl's Definition~10.3.5 \citep[Ch.~10]{causalityPearl},
 \begin{equation}\label{eq:pearl-paac}
@@ -17,10 +17,11 @@ a chosen actual-causation predicate: the causal-beam definition of
 \citep{actualCausalityHalpern}.\footnote{\label{fn:desert_notebook}All
 computations behind the comparison in this section, Pearl's original
 desert-traveller and the weak-poison variant, are collected in the companion
-notebook \texttt{docs/source/desert\_traveler.ipynb}, which runs the framework's
-\texttt{ThinSearchSampler} on a scenario-specific pyro model for each forensic
-posterior and a parallel hand-rolled enumeration; the two agree within Monte
-Carlo noise on every value reported below.}
+notebook \texttt{docs/source/desert\_traveler.ipynb}, which runs the PCI
+Monte Carlo search of Section~\ref{sec:causal_impact} on a scenario-specific
+structural model for each forensic posterior alongside a parallel hand-rolled
+enumeration; the two agree within Monte Carlo noise on every value reported
+below.}
 The same construction underwrites Chockler and Halpern's degree of blame
 \citep{chocklerResponsibilityBlameStructuralModel2004}, which substitutes a
 graded responsibility share inside the expectation. Because
@@ -34,8 +35,8 @@ example and show it recovers Pearl's ranking with graded magnitudes; and
 introduce a weak-poison variant that exhibits three intuitive responsibility
 patterns, two of which Pearl's binary verdict cannot capture but PCI's
 graded reading does, and one (within-scenario ranking) Pearl preserves.
-Then we move to discuss other differences between PCI and \ourapproach, which make the
-former more general and more scalable.
+Then we move to discuss other differences between PCI and Pearl's probability of
+causation, which make the former more general and more scalable.
 
 
 \subsection{Pearl's Worked Example: The Desert Traveller}
@@ -97,38 +98,22 @@ scenario, and at $0$ for the dormant one.}
 \label{sub:pci-basic-dt}
 
 To compare directly with Pearl, we run PCI under the same forensic
-conditioning: one structural model per scenario, with $u$ pinned at the
-scenario's forensic realisation. The endogenous variables are $X, P, c, d,
-Y \in \{0,1\}$ with
-\[
-c = P\,(u' \vee X'), \qquad d = X\,(u \vee P'), \qquad y = c \vee d,
-\]
-where $c$ indicates the cyanide path operating (poisoned water drunk) and $d$
-the dehydration path operating (drank from empty canteen). The PCI components,
-all specified in advance:
+conditioning: one structural model per scenario (endogenous variables
+$X, P, c, d, Y \in \{0,1\}$, with $c$ the cyanide path operating and $d$ the
+dehydration path), with $u$ pinned at the scenario's forensic realisation.
+Suspects are $\mathbf{S} = \{X, P\}$ with singleton candidate causes; the
+witness pool is the mediators $\{c, d\}$ under a cardinality-uniform $\Gamma$;
+$\Delta$ deterministically flips $1 \to 0$; the non-cause suspect is left to
+the SCM rather than intervened on; and the noise distribution $P_{\mathbf{U}}$
+is the forensic posterior, a point mass at the scenario's $u$ (we do
+\emph{not} condition on the outcome $Y$ itself). The full structural model and
+component specification are given in Appendix~\ref{app:desert}.
 
-\begin{itemize}\setlength\itemsep{0.1em}
-    \item Suspects $\mathbf{S} = \{X, P\}$; candidate causes are the
-        singletons $\{X\}$ and $\{P\}$.
-    \item Witness pool $\mathbf{W} = \{c, d\}$ (the mediators); four subsets
-        $\mathbf{T} \subseteq \mathbf{W}$, weighted by $\Gamma$
-        cardinality-uniform (uniform on $|\mathbf{T}|$, then uniform within
-        each cardinality class).
-    \item Non-cause suspect (the one not in $\mathbf{C}$) is \emph{not}
-        intervened on or hard-coded; it follows the SCM under the noise
-        prior on its own coin, consistent with the formal definition's
-        requirement that only $\mathbf{C}$ and $\mathbf{T}$ are intervened
-        (Definition~\ref{def:jointnecsuf}).
-    \item Alternative-value distribution $\Delta$ deterministically flips
-        $1 \to 0$.
-    \item Noise distribution $P_{\mathbf{U}}$ is the forensic posterior, a
-        point mass at the scenario's $u$. We do \emph{not} condition on the
-        outcome $Y$ itself; the forensic evidence sits above $Y$ in the SCM,
-        so conditioning on it is not the ``fully conditional'' anti-pattern of
-        Section~\ref{sec:causal_impact} (sec3:330--336).
-\end{itemize}
-
-For each candidate cause $C$ we report three quantities, all in $[0,1]$,
+For each candidate cause $C$ we report three quantities, all in $[0,1]$,\footnote{These
+are evaluated for a fixed candidate cause $C$, hence normalised to $[0,1]$; this differs
+from the sub-probability $\mathbb{E}[ci]$ of Definition~\ref{def:causalimpact}, whose
+total mass is $\Pr_\Gamma[X_k\in\mathbf{C}]\le 1$ because it sums only over suspect sets
+that contain $X_k$.}
 higher meaning more responsibility, jointly averaged over the four sources
 of randomness ($\Gamma$, $\Delta$, $P_{\mathbf{U}}$, and the SCM-driven
 non-cause suspect):
@@ -177,9 +162,9 @@ saturates at $0$ or $1$. PCI's $J$ never reaches $1$ here because the
 $\Gamma$-averaging over witness subsets dilutes each cause's score: the
 ``best'' witness subset for the operative cause does flip the outcome
 deterministically and gives $J = 1$ at that single configuration, but the
-average over the four subsets gives $1/3$. The cap $1/3$ is exactly $1/4
-\times 1$ contribution from the one decisive configuration plus partial
-contributions from the others.
+cardinality-uniform average over the witness subsets (weights
+$\tfrac13,\tfrac16,\tfrac16,\tfrac13$ over $\emptyset,\{c\},\{d\},\{c,d\}$)
+dilutes this to $1/3$; the per-subset breakdown is in the companion notebook.
 
 \textbf{(3) The dormant cause is not at zero.} PCI assigns $5/24 \approx
 0.21$ to the dormant cause. This is not noise: in some witness configurations
@@ -216,8 +201,8 @@ combinatorial size. The desert-traveller agreement is the small-$n$ end of a
 curve whose large-$n$ end is the computational gap that motivates
 \ourapproach{} in the first place.
 
-Sso far we have two conceptual differences: PCI's graded reading and its Monte Carlo scaling. 
-We have already seen that this helps to recover the intuiton that the shooter of a poisoned victim,
+So far we have two conceptual differences: PCI's graded reading and its Monte Carlo scaling.
+We have already seen that this helps to recover the intuition that the shooter of a poisoned victim,
 while less blameworthy is nevertheless not completely blameless. Now we turn to another example,
 riding on the fact that actual causality is devoid  of a sufficiency component, 
 where a small change to the model makes Pearl's binary indicator structurally unable 
@@ -241,7 +226,9 @@ equations are
 c = p\,(u' \vee x'), \quad v_C = c\cdot \xi, \quad d = x\,(u \vee p'),
 \quad y = v_C \vee d,
 \]
-where $v_C$ is the new ``cyanide-was-fatal'' mediator: drinking the poison
+where primes here denote Boolean complement ($x'=1-x$, and likewise $u',p'$), not
+the alternative-value $\mathbf{c}'$ of the necessity intervention, and $v_C$ is the
+new ``cyanide-was-fatal'' mediator: drinking the poison
 ($c=1$) only kills when the fatality coin also operates ($\xi=1$).
 $\alpha = 1$ recovers Pearl's original.
 \end{example}
@@ -354,7 +341,7 @@ hit the same ceiling. Pearl's PAC misses the desiderata for the following reason
  to mechanism noise, which the AC indicator does not have once the forensic posterior is
 applied; (3) requires cross-scenario comparison of \emph{strength of
 responsibility}, which Pearl's $P(\text{caused})$ does not produce because
-each posterior independently saturates at $0$ or $1$; 
+each posterior independently saturates at $0$ or $1$.
 
 
 \subsection{Further Differences Between Pearl's Probability of Causation and PCI}

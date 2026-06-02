@@ -21,8 +21,8 @@ Bob applied for a home mortgage loan with the local branch of Old Boys’ Club B
 The OBCB policy requires applicants to pass a credit score check, but it only performs this check if the applicant is male; all non-male applicants are rejected outright. \label{ex:obcb} Thus, the procedure is:
 \begin{align*}
 \varname{check} &= (\varname{gender} = \text{male}) \\[4pt]
-\varname{check-failed} &= \varname{check} \land (\varname{credit} = \text{bad}) \\[4pt]
-\varname{loan} &= \lnot \varname{check-failed} \land (\varname{gender} = \text{male})
+\varname{check\text{-}failed} &= \varname{check} \land (\varname{credit} = \text{bad}) \\[4pt]
+\varname{loan} &= \lnot \varname{check\text{-}failed} \land (\varname{gender} = \text{male})
 \end{align*}
 \end{example}
 
@@ -99,7 +99,7 @@ leaves Jim dead by poison, and removing the poison leaves him dead by stab.
 
 Prior work suggests a way out of this difficulty: hold some of the context in which counterfactuals are evaluated fixed, 
 calling such fixed variables \emph{witnesses}.
-Let us focus on the mediator $\varname{check-failed}$ between $\varname{gender}$ and $\varname{loan}$.
+Let us focus on the mediator $\varname{check\text{-}failed}$ between $\varname{gender}$ and $\varname{loan}$.
 If we fix this variable at the factual value by intervening, then counterfactually, Alice would have been granted the loan if she were male.
 However, there is no context fixed at the actual value such that, had her credit score been higher, she would have been granted the loan.
 This motivates the following formalization:
@@ -165,7 +165,7 @@ We assume that the population is evenly divided into male and female and good an
 Formally, the model, using 1 for male and 1 for good credit, is:
 
 \begin{align*}
-\varname{loan-prob}(\varname{gender}, \varname{check-failed}) &=
+\varname{loan-prob}(\varname{gender}, \varname{check\text{-}failed}) &=
 \begin{array}{r|cc}
  & \varname{check\text{-}failed}{=}0 & \varname{check\text{-}failed}{=}1 \\ \hline
 \varname{gender}{=}0 & 0.9 & 0 \\[2pt]
@@ -177,23 +177,23 @@ Formally, the model, using 1 for male and 1 for good credit, is:
 \varname{check} \mid \varname{gender}
    &\sim \mathrm{Bern}\bigl((1-\varname{gender}) \cdot 0.2
                             + \varname{gender} \cdot 0.9\bigr) \\
-\varname{check-failed} &= \varname{check} \cdot (1-\varname{credit}) \\
-\varname{loan-if-checked}
-   \mid \varname{gender}, \varname{check-failed}
+\varname{check\text{-}failed} &= \varname{check} \cdot (1-\varname{credit}) \\
+\varname{loan\text{-}if\text{-}checked}
+   \mid \varname{gender}, \varname{check\text{-}failed}
    &\sim \mathrm{Bern}\bigl(\varname{loan-prob}(\varname{gender},
-                                                \varname{check-failed})\bigr) \\
-\varname{loan} &= \varname{loan-if-checked} \cdot \varname{check}
+                                                \varname{check\text{-}failed})\bigr) \\
+\varname{loan} &= \varname{loan\text{-}if\text{-}checked} \cdot \varname{check}
 \end{align*}
 \end{example}
 
-\noindent The witness mechanism works well for deterministic models, but actual causality in its standard form offers no
- straightforward way to handle probabilistic ones. Let's shelve that problem for now and instead ask: what would a probabilistic approach to causal attribution look like, and what would it miss without witnesses?
-
-Before extending the witness idea to the stochastic setting, it is instructive to examine a probabilistic approach
- that scales more naturally: 
-Pearl's probabilities of necessity and sufficiency \citep{pearl2022probabilities}.
-This will let us identify what probabilistic machinery is needed, and what context-sensitivity is
- lost when witnesses are absent, motivating the synthesis that \ourapproach provides.
+\noindent The witness mechanism works well for deterministic models, but actual causality
+in its standard form offers no straightforward way to handle probabilistic ones. Before
+extending the witness idea to the stochastic setting, it is instructive to examine a
+probabilistic approach that scales more naturally --- Pearl's probabilities of necessity
+and sufficiency \citep{pearl2022probabilities} --- and to ask what it would miss without
+witnesses. This will let us identify what probabilistic machinery is needed, and what
+context-sensitivity is lost when witnesses are absent, motivating the synthesis that
+\ourapproach provides.
 The following definitions allow for probabilistic models, but assume that all variables are Boolean (PCI will relax this assumption,
  allowing for continuous variables).
 Pearl considers two ways that a cause may relate to an effect: it may be necessary or sufficient for the effect.
@@ -212,27 +212,14 @@ For example, we can consider the probability that being male causes someone
 We might try to patch this up by conditioning, for the time being (while also reporting population-level values that follow the definitions more closely). 
 
 
-We illustrate the computation for Alice's gender.
-Alice is factually $\varname{gender}=\text{female}$, $\varname{credit}=\text{bad}$,
+We illustrate the computation for Alice's gender. Alice is factually
+$\varname{gender}=\text{female}$, $\varname{credit}=\text{bad}$,
 $\varname{loan}=F$; the counterfactual intervenes to set
 $\varname{gender}=\text{male}$ while leaving $\varname{credit}=\text{bad}$.
-Tracing through the model:
-\begin{itemize}
-\item Under the intervention, $\varname{check}\sim\mathrm{Bern}(0.9)$: men are
-checked $90\%$ of the time.
-\item If checked, $\varname{check-failed}=1$ (Alice's credit is bad), and from
-the loan-probability table
-$P(\varname{loan-if-checked}=1\mid\varname{gender}=\text{male},\varname{check-failed}=1)=0.05$.
-\item If not checked, $\varname{loan}=0$ deterministically since
-$\varname{loan}=\varname{loan-if-checked}\cdot\varname{check}$.
-\end{itemize}
-Combining the two branches:
-\begin{multline*}
-\pn(\varname{gender}=\text{female}, \varname{loan}=F \mid \text{Alice}) \\
-= P(\varname{loan}_{\varname{gender}=\text{male}}=T
-\mid \varname{gender}=\text{female}, \varname{credit}=\text{bad}) \\
-= 0.9 \cdot 0.05 = 0.045.
-\end{multline*}
+Tracing the male-intervention branches through the model
+(Appendix~\ref{app:obcb}, \S\ref{app:obcb_pn}) gives
+$\pn(\varname{gender}=\text{female}, \varname{loan}=F \mid \text{Alice})
+= 0.9 \cdot 0.05 = 0.045$.
 Computing the analogous quantities for the remaining (variable, person) pairs gives
 the individual-level values shown in Table~\ref{tab:pn_ps_pns}; the table also lists
 population-level values for comparison.
@@ -258,26 +245,14 @@ To query whether the factual cause was sufficient, we condition on the counterfa
 Intuitively, this asks: if the cause had been absent and things had gone differently, would reinstating the cause have brought the outcome about?
 Let's look at the resulting values. 
 
-We illustrate $\ps$ for Alice's gender.
-Following the same convention as for $\pn$, the individual-level computation
-additionally conditions on Alice's credit ($\varname{credit}=\text{bad}$).
-The PS conditional then has Alice's credit fixed but the cause and outcome flipped
-to their non-factual values ($\varname{gender}=\text{male}$, $\varname{loan}=T$); we
-intervene to restore $\varname{gender}=\text{female}$ and ask whether the loan is
-again denied:
-\begin{itemize}
-\item With $\varname{gender}=\text{female}$ and $\varname{credit}=\text{bad}$,
-$\varname{check}\sim\mathrm{Bern}(0.2)$.
-\item If checked, $\varname{check-failed}=1$, and from the loan-probability table
-$P(\varname{loan-if-checked}=1\mid\varname{gender}=\text{female},\varname{check-failed}=1)=0$.
-\item If not checked, $\varname{loan}=0$ deterministically.
-\end{itemize}
-Either branch gives $\varname{loan}=F$, so
-\begin{multline*}
-\ps(\varname{gender}=\text{female}, \varname{loan}=F \mid \text{Alice}) \\
-= P(\varname{loan}_{\varname{gender}=\text{female}}=F \mid \varname{gender}=\text{male},
-\varname{loan}=T, \varname{credit}=\text{bad}) = 1.
-\end{multline*}
+We illustrate $\ps$ for Alice's gender. Following the same convention as for
+$\pn$, the individual-level computation additionally conditions on Alice's
+credit ($\varname{credit}=\text{bad}$): we fix her credit but flip the cause and
+outcome to their non-factual values ($\varname{gender}=\text{male}$,
+$\varname{loan}=T$), then intervene to restore $\varname{gender}=\text{female}$
+and ask whether the loan is again denied. Both check branches yield
+$\varname{loan}=F$ (Appendix~\ref{app:obcb}, \S\ref{app:obcb_ps}), so
+$\ps(\varname{gender}=\text{female}, \varname{loan}=F \mid \text{Alice}) = 1$.
 The remaining individual values, along with population-level values for comparison,
 appear in Table~\ref{tab:pn_ps_pns}.
 Two cases warrant comment: Bob's gender PS is undefined because the required
@@ -337,7 +312,7 @@ Yet the bank never evaluated Alice's credit: the $\varname{check}$ variable was 
 PNS has no mechanism to register this: it asks counterfactually what would happen if credit were different, without fixing $\varname{check\text{-}failed}$, the mediating variable that blocked credit's causal path.
 
 As an attempt to help Alice better understand her particular situation, we might consider a modification of PNS with additional conditioning:
-\[\pns_{c}(C = c^\star, Y = y^\star ~|~ F=f^\star) = P(Y_{c^\star} = y^\star, Y_{c'} \neq y^\star ~|~ F = f^\star)\]
+\[\pns_{c}(C = c^\star, Y = y^\star ~|~ Z=z^\star) = P(Y_{c^\star} = y^\star, Y_{c'} \neq y^\star ~|~ Z = z^\star)\]
 Using this definition, we can compute $\pns_c(\varname{gender} = \text{female}, \varname{loan} = F ~|~ \varname{credit} = \text{bad}) = 0.045$ and $\pns_c(\varname{credit} = \text{bad}, \varname{loan} = F ~|~ \varname{gender} = \text{female}) = 0.18$.
 Conditioning does not solve the problem described above (Alice's credit was in reality never evaluated) because the interventions override the mediating variable that tracks whether her credit has been checked.
 When we compute $\pns_c(\varname{credit}=\text{bad}, \varname{loan}=F \mid \varname{gender}=\text{female})$, conditioning on gender being female is consistent with the factual, but when we then intervene to set credit to good, this intervention propagates downstream and changes $\varname{check\text{-}failed}$, overriding what we learned from conditioning on Alice's factual outcome.
@@ -378,10 +353,8 @@ They scale naturally to probabilistic models, because every counterfactual reduc
 But they have no analogue of the witness mechanism: every intervention propagates through the structural equations and overrides whatever mediator value the factual context fixed.
 Table~\ref{tab:pn_ps_pns} shows the symptom: for Alice, $\pns(\varname{credit}) > \pns(\varname{gender})$, even though the credit check was never performed.
 
-Conditioning is not a workaround.
-We saw with $\pns_c$ that even when we condition on Alice's other factual variables, the credit intervention propagates downstream and changes $\varname{check-failed}$, overriding the mediator value that conditioning had fixed.
-Context fixed by observation does not survive the subsequent intervention.
-Any replacement therefore needs intervention-based context-sensitivity: the relevant mediators have to be held fixed by intervention.
+Conditioning is not a workaround: we saw with $\pns_c$ that context fixed by observation does not survive the subsequent intervention, since the credit intervention propagates downstream and overrides the $\varname{check\text{-}failed}$ value that conditioning had fixed.
+Any replacement therefore needs intervention-based context-sensitivity, holding the relevant mediators fixed by intervention.
 A satisfactory replacement must combine three ingredients.
 First, from actual causality, the witness mechanism: a way to hold relevant context fixed by intervention so that the structural information about which causal paths were active survives the counterfactual evaluation.
 Second, from PN/PS/PNS, the probabilistic vocabulary: counterfactuals expressed as expectations under the noise distribution, so that the attribution lives on the same probability space as the model and naturally extends to continuous variables.
@@ -390,12 +363,12 @@ Third, in place of brute-force enumeration over witness sets, an integral that c
 \ourapproach{} provides this synthesis.
 To get some general intuition (we will revisit the example in more detail later), consider Alice's case once more, beginning with gender.
 \ourapproach{} considers counterfactual worlds in which gender is flipped to male while a sampled witness set is held at its factual values by intervention.
-For Alice, the witness sets that drive the attribution are those containing $\varname{check-failed}$: when this variable is held fixed at $F$ --- the value recording that the check was never performed --- flipping gender to male leads to loan approval.
+For Alice, the witness sets that drive the attribution are those containing $\varname{check\text{-}failed}$: when this variable is held fixed at $F$ --- the value recording that the check was never performed --- flipping gender to male leads to loan approval.
 Unlike under $\pns_c$, the gender intervention does not override the mediator, because the witness intervention keeps it pinned.
 The counterfactual shift is large, and gender receives high attribution.
 
 For credit, the same mechanism yields the opposite verdict.
-The witness sets that contain $\varname{check-failed}{=}F$ now work against credit: holding that mediator fixed at $F$ disconnects credit from the loan decision, because the bank's policy is to reject unchecked applicants regardless of credit.
+The witness sets that contain $\varname{check\text{-}failed}{=}F$ now work against credit: holding that mediator fixed at $F$ disconnects credit from the loan decision, because the bank's policy is to reject unchecked applicants regardless of credit.
 The counterfactual shift in those worlds is zero, and credit receives low attribution.
 The intuition that Alice's denial was a function of gender, not credit, is recovered.
 
@@ -406,30 +379,15 @@ Unlike PN/PS/PNS, it inherits the context-sensitivity of actual causality throug
 The formal definitions in Section~\ref{sec:causal_impact} make this expectation precise.
 
 Before moving to the formal development, we flag the closest neighbour of
-\ourapproach{} in the existing literature, so that the comparison does not come out
-of nowhere later.
-Pearl \citep[Ch.~10]{causalityPearl} defines the \emph{probability of actual
-causation} as
-\begin{equation*}
-P(\text{caused}(x,y\mid e)) \;=\; \frac{P(U_{xy}\cap U_e)}{P(U_e)}
-\qquad \text{(Def.\ 10.3.5)},
-\end{equation*}
-where $U_{xy}$ is the set of noise states $\mathbf{u}$ in which the chosen
-actual-causation predicate ``$X{=}x$ is an actual cause of $Y{=}y$'' holds, and
-$U_e$ is the set of states compatible with the observed evidence $e$. The
-actual-causality predicate plugged in is Pearl's causal-beam definition
-\citep[Ch.~10]{causalityPearl} or the Halpern--Pearl AC1--AC3
-\citep{actualCausalityHalpern}. The formula is Bayes' rule applied to actual
-causation: each $\mathbf{u}$ determines a deterministic world through the structural
-equations, so ``is $X{=}x$ an actual cause of $Y{=}y$?'' has a yes/no answer once
-$\mathbf{u}$ is fixed; $U_{xy}$ collects the yes-states. The ratio rewrites cleanly
-to $P(\mathbf{u}\in U_{xy}\mid \mathbf{u}\in U_e)$, i.e.\ the posterior probability,
-given the evidence, that we are in a noise state for which the actual-cause verdict
-holds. This is Pearl's bridge from actual causality to \emph{probability of} actual
-causality. As \ourapproach{} proposes a seemingly similar bridge, and as Pearl's
-notion gives the same rankings in typical simple cases, we devote
-Section~\ref{sub:pearl_actual_cause_prob} to a side-by-side comparison once enough
-technical machinery is on the page to make the discussion precise.
+\ourapproach{} in the existing literature, so the later comparison does not come out
+of nowhere: Pearl's \emph{probability of actual causation}
+\citep[Def.~10.3.5]{causalityPearl}, the posterior probability --- given the observed
+evidence --- that the noise lands in a state for which the actual-cause verdict holds.
+Because \ourapproach{} proposes a seemingly similar bridge from structural information
+to a probabilistic score, and the two give the same rankings in typical simple cases,
+we defer a precise side-by-side comparison to
+Section~\ref{sub:pearl_actual_cause_prob}, once enough machinery is on the page. (The
+formula and its Bayes-rule reading are stated there, in Eq.~\eqref{eq:pearl-paac}.)
 
 \medskip\noindent With the limitations of both predecessors in mind, we turn
 in Section~\ref{sec:causal_impact} to the formal development. The next section

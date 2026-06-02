@@ -19,7 +19,8 @@ two distributions \ourapproach exposes to the user: the variable selection
 distribution $\Gamma$ over suspect/witness pairs and the alternative-value
 distribution $\Delta$ over counterfactual cause settings; (4) combine them into
 the joint necessity-sufficiency measure $P_k^{s,n}$ and the user-chosen causal
-impact function $ci$ whose expectation is the \ourapproach score; (5) compute
+impact function $ci$ whose expectation is the \ourapproach score, and show how the
+choice of $ci$ generalises the framework from binary to continuous outcomes; (5) compute
 the score on the OBCB example, verify that all seven desiderata hold, and
 contrast \ourapproach's necessity/sufficiency decomposition with Pearl's
 PN/PS/PNS. The closing paragraph then points forward to
@@ -506,7 +507,7 @@ $2^{\mathbf{S}}_{k}:=\{\mathbf{C}\subseteq\mathbf{S}:X_k\in\mathbf{C}\}$,
 and for each $\mathbf{C}\subseteq\mathbf{S}$ let
 $\Delta_{\mathbf{C}}(\mathbf{s}^\star)$ denote the pushforward of
 $\Delta(\mathbf{s}^\star)$ under the restriction map
-$\mathbf{s}'\mapsto \mathbf{s}'\!\mid_{\mathbf{C}}$.\footnote{For an assignment $\mathbf{x}$ to a collection of variables $\mathbf{X}$ and any subset $\mathbf{Y}\subseteq\mathbf{X}$, the restriction $\mathbf{x}\!\mid_{\mathbf{Y}}$ denotes the sub-assignment of $\mathbf{x}$ to the variables in $\mathbf{Y}$.}
+$\mathbf{s}'\mapsto \mathbf{s}'\!\mid_{\mathbf{C}}$.\footnote{For an assignment $\mathbf{x}$ to a collection of variables $\mathbf{X}$ and any subset $\mathbf{Y}\subseteq\mathbf{X}$, the restriction $\mathbf{x}\!\mid_{\mathbf{Y}}$ denotes the sub-assignment of $\mathbf{x}$ to the variables in $\mathbf{Y}$. Note that the restricted marginal $\Delta_{\mathbf{C}}(\mathbf{s}^\star)$ may place positive mass on $\mathbf{s}^\star\!\mid_{\mathbf{C}}$ even though $\Delta(\mathbf{s}^\star)$ excludes the joint factual $\mathbf{s}^\star$; the genuine-departure guarantee is on the joint alternative, not on each restricted coordinate.}
 For any measurable $A\subseteq\dom(Y)$ and exogenous realization $\mathbf{u}$, define three
 sub-probability measures on $\dom(Y)$ (the first two) and $\dom(Y)\times\dom(Y)$ (the third).
 
@@ -744,7 +745,10 @@ on $\varname{loan}=0$ in the stochastic OBCB model. Pearl's PN/PS/PNS, PCI witho
 witnesses ($\mathbf{W}=\emptyset$), and PCI with the \varname{check\text{-}failed}
 witness shown side by side; the rightmost three columns decompose PCI($\mathbf{W}=\{\varname{check\text{-}failed}\}$)
 into its necessity and sufficiency marginals (their joint expectation is the bold
-total). Bob's PS for gender is undefined because the conditioning event
+total). Here the total happens to equal the product of the two marginals because the
+sufficiency measure $P_k^s(\cdot\mid\mathbf{u})$ is constant in $\mathbf{u}$ for both
+individuals; in general the joint $P_k^{s,n}$ does not factor into the product of its
+marginals. Bob's PS for gender is undefined because the conditioning event
 $(\text{female}, \text{bad}, \varname{loan}=1)$ has probability zero in the OBCB model;
 the PCI marginals are well-defined throughout, since they integrate over $P_{\mathbf{U}}$
 rather than conditioning on the factual outcome.}
@@ -795,6 +799,9 @@ $|\mathbf{S}|=2$ deliberately, to demonstrate joint-subset attribution.
 
 % With this in place, we can characterize a number of causal impact measures by first defining a \emph{causal impact function} as the expectation of a causal impact function taken with respect to the joint measure on factual and counterfactual outcomes.
 
+\subsection{Continuous Outcomes and the General Causal Impact Function}
+\label{sub:continuous_ci}
+
 \noindent The causal impact function $ci$ is a user-defined component of \ourapproach, and different choices encode different causal questions. In the benchmarking experiments of Section~\ref{sec:ac_benchmark}, we instantiate $ci$ using only the necessity component, since Halpern’s actual causality has no sufficiency counterpart: necessity-only attribution allows a direct parallel comparison. The full framework incorporating both $Y^s$ and $Y^n$ is instantiated in the PNS binary
 example above and in the Absolute Difference example below; the OBCB analysis of this
 section (Tables~\ref{tab:pci_decomp}--\ref{tab:desiderata}) provides a concrete
@@ -842,6 +849,9 @@ value distribution, joint necessity-sufficiency measure, and causal impact funct
   accept posteriors as inputs, and admit Monte Carlo estimation without modification to
   the core formalism.
 \end{enumerate}
+
+\subsection{Back to the Running Example: Verifying the Desiderata}
+\label{sub:verify_desiderata}
 
 Table~\ref{tab:desiderata} verifies the seven desiderata introduced at the start of this
 section (p.~\pageref{desid}) against the values in Table~\ref{tab:pci_decomp}.

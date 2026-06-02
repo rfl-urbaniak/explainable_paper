@@ -7,7 +7,8 @@
 
 \bibitem[Beckers and Vennekens(2015)]{Beckers2015CombiningPC}
 Sander Beckers and Joost Vennekens.
-\newblock Combining probabilistic, causal, and normative reasoning in {{CP-logic}}.
+\newblock Combining probabilistic, causal, and normative reasoning in
+  {{CP-logic}}.
 \newblock \emph{ArXiv}, abs/1503.01051, 2015.
 
 \bibitem[Butler et~al.(2022)Butler, Feng, and Djurić]{butler2022differential}
@@ -17,15 +18,21 @@ K.~Butler, G.~Feng, and P.~M. Djurić.
 
 \bibitem[Cheshire and Magrini(2009)]{CheshireMagrini2009}
 Paul Cheshire and Stefano Magrini.
-\newblock Growing urban gdp or attracting people? different causes, different consequences.
-\newblock In Charlie Karlsson, A{\r{a}}ke~E. Andersson, Paul~C. Cheshire, and Roger~R. Stough, editors, \emph{New Directions in Regional Economic Development}, Advances in Spatial Science, pages 291--315. Springer, Berlin, Heidelberg, 2009.
+\newblock Growing urban gdp or attracting people? different causes, different
+  consequences.
+\newblock In Charlie Karlsson, A{\r{a}}ke~E. Andersson, Paul~C. Cheshire, and
+  Roger~R. Stough, editors, \emph{New Directions in Regional Economic
+  Development}, Advances in Spatial Science, pages 291--315. Springer, Berlin,
+  Heidelberg, 2009.
 \newblock ISBN 978-3-642-01016-3, 978-3-642-01017-0.
 \newblock \doi{10.1007/978-3-642-01017-0_16}.
 
-\bibitem[Chockler and Halpern(2004)]{chocklerResponsibilityBlameStructuralModel2004}
+\bibitem[Chockler and
+  Halpern(2004)]{chocklerResponsibilityBlameStructuralModel2004}
 H.~Chockler and J.~Y. Halpern.
 \newblock Responsibility and {{Blame}}: {{A Structural-Model Approach}}.
-\newblock \emph{Journal of Artificial Intelligence Research}, 22:\penalty0 93--115, October 2004.
+\newblock \emph{Journal of Artificial Intelligence Research}, 22:\penalty0
+  93--115, October 2004.
 \newblock ISSN 1076-9757.
 \newblock \doi{10.1613/jair.1391}.
 
@@ -37,13 +44,15 @@ Jacob Cohen.
 \bibitem[Eiter and Lukasiewicz(2002)]{eiterComplexityResultsStructurebased2002}
 Thomas Eiter and Thomas Lukasiewicz.
 \newblock Complexity results for structure-based causality.
-\newblock \emph{Artificial Intelligence}, 142\penalty0 (1):\penalty0 53--89, November 2002.
+\newblock \emph{Artificial Intelligence}, 142\penalty0 (1):\penalty0 53--89,
+  November 2002.
 \newblock ISSN 00043702.
 \newblock \doi{10.1016/S0004-3702(02)00271-0}.
 
 \bibitem[Granger(1969)]{Granger1969}
 C.~W.~J. Granger.
-\newblock Investigating causal relations by econometric models and cross-spectral methods.
+\newblock Investigating causal relations by econometric models and
+  cross-spectral methods.
 \newblock \emph{Econometrica}, 37\penalty0 (3):\penalty0 424--438, 1969.
 \newblock \doi{10.2307/1912791}.
 \newblock URL \url{https://www.jstor.org/stable/1912791}.
@@ -58,73 +67,97 @@ Joseph~Y. Halpern.
 \bibitem[Halpern and Hitchcock(2015)]{Halpern2015-HALGCA}
 Joseph~Y. Halpern and Christopher Hitchcock.
 \newblock Graded causation and defaults.
-\newblock \emph{British Journal for the Philosophy of Science}, 66\penalty0 (2):\penalty0 413--457, 2015.
+\newblock \emph{British Journal for the Philosophy of Science}, 66\penalty0
+  (2):\penalty0 413--457, 2015.
 \newblock \doi{10.1093/bjps/axt050}.
 
 \bibitem[Heckman and Pinto(2022)]{HeckmanPinto2022CausalPolicyAnalysis}
 James~J. Heckman and Rodrigo Pinto.
 \newblock The econometric model for causal policy analysis.
-\newblock \emph{Annual Review of Economics}, 14\penalty0 (1):\penalty0 893--923, 2022.
+\newblock \emph{Annual Review of Economics}, 14\penalty0 (1):\penalty0
+  893--923, 2022.
 \newblock \doi{10.1146/annurev-economics-051520-015456}.
 \newblock URL \url{https://doi.org/10.1146/annurev-economics-051520-015456}.
 
 \bibitem[Hensman et~al.(2013)Hensman, Fusi, and Lawrence]{hensman2013gaussian}
 James Hensman, Nicol{\`o} Fusi, and Neil~D Lawrence.
 \newblock Gaussian processes for big data.
-\newblock In \emph{Proceedings of the Twenty-Ninth Conference on Uncertainty in Artificial Intelligence}, pages 282--290, 2013.
+\newblock In \emph{Proceedings of the Twenty-Ninth Conference on Uncertainty in
+  Artificial Intelligence}, pages 282--290, 2013.
 
-\bibitem[Heskes et~al.(2020)Heskes, Sijben, Bucur, and Claassen]{heskes2020causal}
+\bibitem[Heskes et~al.(2020)Heskes, Sijben, Bucur, and
+  Claassen]{heskes2020causal}
 Tom Heskes, Evi Sijben, Ioan~Gabriel Bucur, and Tom Claassen.
-\newblock Causal {Shapley} values: Exploiting causal knowledge to explain individual predictions of complex models.
-\newblock In \emph{Advances in Neural Information Processing Systems}, volume~33, pages 4778--4789, 2020.
+\newblock Causal {Shapley} values: Exploiting causal knowledge to explain
+  individual predictions of complex models.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~33, pages 4778--4789, 2020.
 
-\bibitem[Icard et~al.(2017)Icard, Kominsky, and Knobe]{icardNormalityActualCausal2017}
+\bibitem[Icard et~al.(2017)Icard, Kominsky, and
+  Knobe]{icardNormalityActualCausal2017}
 Thomas~F. Icard, Jonathan~F. Kominsky, and Joshua Knobe.
 \newblock Normality and actual causal strength.
 \newblock \emph{Cognition}, 161:\penalty0 80--93, April 2017.
 \newblock ISSN 00100277.
 \newblock \doi{10.1016/j.cognition.2017.01.010}.
 
-\bibitem[Janzing et~al.(2020)Janzing, Minorics, and Bl{\"o}baum]{janzing2020feature}
+\bibitem[Janzing et~al.(2020)Janzing, Minorics, and
+  Bl{\"o}baum]{janzing2020feature}
 Dominik Janzing, Lenon Minorics, and Patrick Bl{\"o}baum.
-\newblock Feature relevance quantification in explainable {AI}: A causal problem.
-\newblock In \emph{International Conference on Artificial Intelligence and Statistics ({AISTATS})}, 2020.
+\newblock Feature relevance quantification in explainable {AI}: A causal
+  problem.
+\newblock In \emph{International Conference on Artificial Intelligence and
+  Statistics ({AISTATS})}, 2020.
 
 \bibitem[Karimi et~al.(2021)Karimi, Sch\"{o}lkopf, and Valera]{Karimi2021}
 Amir-Hossein Karimi, Bernhard Sch\"{o}lkopf, and Isabel Valera.
-\newblock Algorithmic recourse: from counterfactual explanations to interventions.
-\newblock In \emph{Proceedings of the 2021 ACM Conference on Fairness, Accountability, and Transparency}, FAccT ’21, page 353–362. ACM, March 2021.
+\newblock Algorithmic recourse: from counterfactual explanations to
+  interventions.
+\newblock In \emph{Proceedings of the 2021 ACM Conference on Fairness,
+  Accountability, and Transparency}, FAccT ’21, page 353–362. ACM, March
+  2021.
 \newblock \doi{10.1145/3442188.3445899}.
 \newblock URL \url{http://dx.doi.org/10.1145/3442188.3445899}.
 
-\bibitem[Kawakami et~al.(2024)Kawakami, Kuroki, and Tian]{kawakammi_2024_poc_for_cont_and_vec}
+\bibitem[Kawakami et~al.(2024)Kawakami, Kuroki, and
+  Tian]{kawakammi_2024_poc_for_cont_and_vec}
 Yuta Kawakami, Manabu Kuroki, and Jin Tian.
-\newblock Probabilities of {{Causation}} for {{Continuous}} and {{Vector Variables}}.
-\newblock In Negar Kiyavash and Joris~M. Mooij, editors, \emph{Proceedings of the Fortieth Conference on Uncertainty in Artificial Intelligence}, volume 244 of \emph{Proceedings of Machine Learning Research}, pages 1901--1921. PMLR, July 2024.
+\newblock Probabilities of {{Causation}} for {{Continuous}} and {{Vector
+  Variables}}.
+\newblock In Negar Kiyavash and Joris~M. Mooij, editors, \emph{Proceedings of
+  the Fortieth Conference on Uncertainty in Artificial Intelligence}, volume
+  244 of \emph{Proceedings of Machine Learning Research}, pages 1901--1921.
+  PMLR, July 2024.
 
 \bibitem[Kruschke(2018)]{kruschke2018}
 John~K. Kruschke.
 \newblock Rejecting or accepting parameter values in {Bayesian} estimation.
-\newblock \emph{Advances in Methods and Practices in Psychological Science}, 1\penalty0 (2):\penalty0 270--280, 2018.
+\newblock \emph{Advances in Methods and Practices in Psychological Science},
+  1\penalty0 (2):\penalty0 270--280, 2018.
 \newblock \doi{10.1177/2515245918771304}.
 
 \bibitem[Lundberg and Lee(2017)]{lundberg2017unified}
 Scott~M Lundberg and Su-In Lee.
 \newblock A unified approach to interpreting model predictions.
-\newblock In \emph{Advances in Neural Information Processing Systems}, volume~30, pages 4766--4777, 2017.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~30, pages 4766--4777, 2017.
 
 \bibitem[Ness(2025)]{ness2025causal}
 Robert~Osazuwa Ness.
 \newblock \emph{Causal AI}.
 \newblock Simon and Schuster, 2025.
 
-\bibitem[Papageorgiou et~al.(2022)Papageorgiou, Theodosiou, Rapti, Papageorgiou, Dimitriou, Tzovaras, and Margetis]{Papageorgiou2022}
-Konstantinos Papageorgiou, Theodosios Theodosiou, Aikaterini Rapti, Elpiniki~I. Papageorgiou, Nikolaos Dimitriou, Dimitrios Tzovaras, and George Margetis.
-\newblock A systematic review on machine learning methods for root cause analysis towards zero-defect manufacturing.
+\bibitem[Papageorgiou et~al.(2022)Papageorgiou, Theodosiou, Rapti,
+  Papageorgiou, Dimitriou, Tzovaras, and Margetis]{Papageorgiou2022}
+Konstantinos Papageorgiou, Theodosios Theodosiou, Aikaterini Rapti, Elpiniki~I.
+  Papageorgiou, Nikolaos Dimitriou, Dimitrios Tzovaras, and George Margetis.
+\newblock A systematic review on machine learning methods for root cause
+  analysis towards zero-defect manufacturing.
 \newblock \emph{Frontiers in Manufacturing Technology}, Volume 2 - 2022, 2022.
 \newblock ISSN 2813-0359.
 \newblock \doi{10.3389/fmtec.2022.972712}.
-\newblock URL \url{https://www.frontiersin.org/journals/manufacturing-technology/articles/10.3389/fmtec.2022.972712}.
+\newblock URL
+  \url{https://www.frontiersin.org/journals/manufacturing-technology/articles/10.3389/fmtec.2022.972712}.
 
 \bibitem[Pearl(2009)]{causalityPearl}
 Judea Pearl.
@@ -134,33 +167,46 @@ Judea Pearl.
 
 \bibitem[Pearl(2022)]{pearl2022probabilities}
 Judea Pearl.
-\newblock Probabilities of causation: three counterfactual interpretations and their identification.
-\newblock In \emph{Probabilistic and Causal Inference: The Works of Judea Pearl}, pages 317--372. 2022.
+\newblock Probabilities of causation: three counterfactual interpretations and
+  their identification.
+\newblock In \emph{Probabilistic and Causal Inference: The Works of Judea
+  Pearl}, pages 317--372. 2022.
 
 \bibitem[Shapley(1953)]{shapley1953}
 Lloyd~S. Shapley.
 \newblock A value for $n$-person games.
-\newblock In Harold~W. Kuhn and Albert~W. Tucker, editors, \emph{Contributions to the Theory of Games, Volume {II}}, volume~28 of \emph{Annals of Mathematics Studies}, pages 307--317. Princeton University Press, Princeton, 1953.
+\newblock In Harold~W. Kuhn and Albert~W. Tucker, editors, \emph{Contributions
+  to the Theory of Games, Volume {II}}, volume~28 of \emph{Annals of
+  Mathematics Studies}, pages 307--317. Princeton University Press, Princeton,
+  1953.
 
 \bibitem[Sharma et~al.(2022)Sharma, Li, and Jiao]{sharma2022cfshapley}
 Amit Sharma, Hua Li, and Jian Jiao.
-\newblock The counterfactual-{S}hapley value: Attributing change in system metrics.
+\newblock The counterfactual-{S}hapley value: Attributing change in system
+  metrics.
 \newblock \emph{arXiv preprint arXiv:2208.08399}, 2022.
 
-\bibitem[Shepherd et~al.(2024)Shepherd, Amor, and Moreno‐Betancur]{Shepherd2024}
+\bibitem[Shepherd et~al.(2024)Shepherd, Amor, and
+  Moreno‐Betancur]{Shepherd2024}
 Daisy~A. Shepherd, David~J. Amor, and Margarita Moreno‐Betancur.
 \newblock Statistical analysis of observational studies in disability research.
-\newblock \emph{Developmental Medicine \& Child Neurology}, 66\penalty0 (11):\penalty0 1408--1418, 2024.
+\newblock \emph{Developmental Medicine \& Child Neurology}, 66\penalty0
+  (11):\penalty0 1408--1418, 2024.
 \newblock \doi{10.1111/dmcn.15948}.
 
 \bibitem[Titsias(2009)]{titsias2009variational}
 Michalis Titsias.
-\newblock Variational learning of inducing variables in sparse {G}aussian processes.
-\newblock In \emph{Artificial Intelligence and Statistics}, pages 567--574. PMLR, 2009.
+\newblock Variational learning of inducing variables in sparse {G}aussian
+  processes.
+\newblock In \emph{Artificial Intelligence and Statistics}, pages 567--574.
+  PMLR, 2009.
 
-\bibitem[Verma et~al.(2024)Verma, Boonsanong, Hoang, Hines, Dickerson, and Shah]{verma2022recourses}
-Sahil Verma, Varich Boonsanong, Minh Hoang, Keegan Hines, John Dickerson, and Chirag Shah.
-\newblock Counterfactual explanations and algorithmic recourses for machine learning: A review.
+\bibitem[Verma et~al.(2024)Verma, Boonsanong, Hoang, Hines, Dickerson, and
+  Shah]{verma2022recourses}
+Sahil Verma, Varich Boonsanong, Minh Hoang, Keegan Hines, John Dickerson, and
+  Chirag Shah.
+\newblock Counterfactual explanations and algorithmic recourses for machine
+  learning: A review.
 \newblock \emph{ACM Computing Surveys}, 56\penalty0 (12):\penalty0 1--42, 2024.
 
 \end{thebibliography}

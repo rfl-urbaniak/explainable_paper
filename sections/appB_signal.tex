@@ -1,0 +1,169 @@
+\section{Computations for the Signal-with-Mediation Example}\label{app:signal}
+
+This appendix collects the closed-form derivations for the
+signal-with-mediation example of Section~\ref{sec:signal}: the Gaussian chain
+$X\to M\to Y$ of Eqs.~\eqref{eq:X}--\eqref{eq:Y}, with
+$X\sim\mathcal{N}(0.5,0.25)$, $M=X+\varepsilon_M$, $Y=M+\varepsilon_Y$, and
+independent noise $\varepsilon_M,\varepsilon_Y\sim\mathcal{N}(0,0.1)$. The
+distributional facts and conditional expectations stated in
+Example~\ref{ex:signal_mediation}, and the per-target SHAP and per-pair PCI
+computations summarised in Table~\ref{tab:signal_desid}, are derived here.
+Unless noted otherwise the factual instance is Instance~1,
+$X^\star=M^\star=Y^\star=1$.
+
+\subsection{Distributional facts}\label{app:signal_distfacts}
+
+From the structural equations,
+$\mathrm{Var}(M)=\mathrm{Var}(X)+\mathrm{Var}(\varepsilon_M)=0.25+0.1=0.35$ and
+$\mathrm{Var}(Y)=\mathrm{Var}(M)+\mathrm{Var}(\varepsilon_Y)=0.35+0.1=0.45$.
+For the covariances,
+$\mathrm{Cov}(X,M)=\mathrm{Cov}(X,X+\varepsilon_M)=\mathrm{Var}(X)=0.25$;
+$\mathrm{Cov}(X,Y)=\mathrm{Cov}(X,M+\varepsilon_Y)=\mathrm{Cov}(X,M)=0.25$;
+and
+$\mathrm{Cov}(M,Y)=\mathrm{Cov}(M,M+\varepsilon_Y)=\mathrm{Var}(M)=0.35$.
+
+\subsection{Conditional expectations}\label{app:signal_condexp}
+
+$\mathbb{E}[Y\mid X,M]=M$ since $Y=M+\varepsilon_Y$ with $\varepsilon_Y\perp(X,M)$.
+For $\mathbb{E}[M\mid X,Y]$, the covariance matrix of $(X,Y)$ is
+$\Sigma_{XY}=\bigl(\begin{smallmatrix}0.25&0.25\\0.25&0.45\end{smallmatrix}\bigr)$
+with $\det(\Sigma_{XY})=0.05$, so
+$\Sigma_{XY}^{-1}=20\bigl(\begin{smallmatrix}0.45&-0.25\\-0.25&0.25\end{smallmatrix}\bigr)$;
+the regression coefficients are
+$[\mathrm{Cov}(M,X),\,\mathrm{Cov}(M,Y)]\,\Sigma_{XY}^{-1}
+=[0.25,\,0.35]\cdot 20\bigl(\begin{smallmatrix}0.45&-0.25\\-0.25&0.25\end{smallmatrix}\bigr)
+=[0.5,\,0.5]$,
+giving $\mathbb{E}[M\mid X,Y]=0.5+0.5(X-0.5)+0.5(Y-0.5)=0.5X+0.5Y$.
+For $\mathbb{E}[X\mid M,Y]$, by $d$-separation, $X\perp Y\mid M$ in the chain
+$X\!\to\!M\!\to\!Y$, so $\mathbb{E}[X\mid M,Y]=\mathbb{E}[X\mid M]
+=0.5+\tfrac{\mathrm{Cov}(X,M)}{\mathrm{Var}(M)}(M-0.5)
+=0.5+\tfrac{0.25}{0.35}(M-0.5)=0.5+\tfrac{5}{7}(M-0.5)$.
+
+\subsection{Plain SHAP at Instance 1}\label{app:signal_plain}
+
+\textit{Target $Y$, features $\{X, M\}$.} First, compute the coalition values:
+\begin{align}
+v(\emptyset) &= \mathbb{E}[M] = 0.5 \\
+v(\{X\}) &= \mathbb{E}[M \mid X=1] = 1 \\
+v(\{M\}) &= \mathbb{E}[M \mid M=1] = 1 \\
+v(\{X,M\}) &= f_Y(1,1) = 1
+\end{align}
+
+Next, apply equation~\eqref{eq:shapley} with $|N|=2$:
+\begin{equation}
+\phi_X = \tfrac{1}{2}(1 - 0.5) + \tfrac{1}{2}(1 - 1) = 0.25
+\qquad
+\phi_M = \tfrac{1}{2}(1 - 0.5) + \tfrac{1}{2}(1 - 1) = 0.25
+\end{equation}
+
+\textit{Target $M$, features $\{X,Y\}$.}
+$v(\emptyset)=0.5$;\enspace $v(\{X\})=1$;\enspace
+$v(\{Y\})=0.5\,\mathbb{E}[X\mid Y{=}1]+0.5=0.889$
+(using $\mathbb{E}[X\mid Y{=}1]=0.5+\tfrac{0.25}{0.45}(0.5)=0.778$);\enspace
+$v(\{X,Y\})=1$.
+\begin{align}
+\phi_X &= \tfrac{1}{2}(1-0.5)+\tfrac{1}{2}(1-0.889)=0.306, \\
+\phi_Y &= \tfrac{1}{2}(0.889-0.5)+\tfrac{1}{2}(1-1)=0.194.
+\end{align}
+
+\textit{Target $X$, features $\{M,Y\}$.}
+$v(\emptyset)=0.5$;\enspace $v(\{M\})=0.5+\tfrac{5}{7}(0.5)=0.857$;\enspace
+$v(\{Y\})=\mathbb{E}[X\mid Y{=}1]=0.778$ (as above);\enspace
+$v(\{M,Y\})=\mathbb{E}[X\mid M{=}1]=0.857$ (since $X\perp Y\mid M$).
+\begin{align}
+\phi_M &= \tfrac{1}{2}(0.857-0.5)+\tfrac{1}{2}(0.857-0.778)=0.219, \\
+\phi_Y &= \tfrac{1}{2}(0.778-0.5)+\tfrac{1}{2}(0.857-0.857)=0.139.
+\end{align}
+
+\subsection{Causal SHAP at Instance 1}\label{app:signal_causal}
+
+We apply Causal SHAP (Definition~\ref{def:causalshap}) and compare against
+plain SHAP.
+
+\textit{Target $Y$, features $\{X,M\}$.}
+$v_{\mathrm{causal}}(\emptyset)=0.5$;\enspace
+$v_{\mathrm{causal}}(\{X\})=\mathbb{E}[M\mid do(X{=}1)]=1$
+(M is downstream of X: $P(M\mid do(X{=}1))=\mathcal{N}(1,0.1)$);\enspace
+$v_{\mathrm{causal}}(\{M\})=1$ ($do(M{=}1)$ sets $f_Y=M=1$ directly,
+$P(X\mid do(M{=}1))=P(X)$ since X has no causal parents);\enspace
+$v_{\mathrm{causal}}(\{X,M\})=1$.
+All values match plain SHAP, so $\phi_X=\phi_M=0.25$.
+
+\textit{Target $M$, features $\{X,Y\}$.}
+$v_{\mathrm{causal}}(\emptyset)=0.5$;\enspace
+$v_{\mathrm{causal}}(\{X\})=1$ ($Y$ is downstream of $X$, same as plain SHAP);\enspace
+$v_{\mathrm{causal}}(\{Y\})=\mathbb{E}_{X\sim P(X)}[0.5X+0.5{\cdot}1]=0.75$
+($Y$ does not cause $X$, so $P(X\mid do(Y{=}1))=P(X)$;
+differs from plain SHAP's $0.889$);\enspace
+$v_{\mathrm{causal}}(\{X,Y\})=1$.
+\begin{align}
+\phi_X &= \tfrac{1}{2}(1-0.5)+\tfrac{1}{2}(1-0.75)=0.375, \\
+\phi_Y &= \tfrac{1}{2}(0.75-0.5)+\tfrac{1}{2}(1-1)=0.125.
+\end{align}
+
+\textit{Target $X$, features $\{M,Y\}$.}
+$v_{\mathrm{causal}}(\emptyset)=0.5$;\enspace
+$v_{\mathrm{causal}}(\{M\})=0.857$ ($Y$ is downstream of $M$ but $f_X$
+does not depend on $Y$ since $X\perp Y\mid M$, so
+$\mathbb{E}_{Y\sim P(Y\mid do(M{=}1))}[f_X(1,Y)]=f_X(1,\cdot)=0.857$;
+same as plain SHAP);\enspace
+$v_{\mathrm{causal}}(\{Y\})=\mathbb{E}_{M\sim P(M)}[f_X(M,1)]=0.5$
+($M$ is not a descendant of $Y$, so $P(M\mid do(Y{=}1))=P(M)$
+and $\mathbb{E}[f_X(M,1)]=0.5+\tfrac{5}{7}(\mathbb{E}[M]-0.5)=0.5$;
+differs from plain SHAP's $0.778$);\enspace
+$v_{\mathrm{causal}}(\{M,Y\})=0.857$.
+\begin{align}
+\phi_M &= \tfrac{1}{2}(0.857-0.5)+\tfrac{1}{2}(0.857-0.5)=0.357, \\
+\phi_Y &= \tfrac{1}{2}(0.5-0.5)+\tfrac{1}{2}(0.857-0.857)=0.
+\end{align}
+
+\subsection{PCI at Instance 1}\label{app:signal_pci}
+
+We work at the factual instance $X^\star = M^\star = Y^\star = 1$ with the
+absolute-difference score (Example~\ref{ex:absolute_score}):
+$ci(y^s, y^n, y^\star) = |y^n - y^\star| - |y^s - y^\star|$. Both worlds run
+the PSCM with fresh exogenous noise drawn from $P_{\mathbf{U}}$: the necessity
+world replaces the suspect $A$ with $A' \sim P(A)$ and propagates; the
+sufficiency world restores it to $a^\star$ and propagates. For target $B$,
+$\mathbf{S}$ is the two input features of $B$ and $\mathbf{W}$ the remaining
+input; $\Gamma_s$ is uniform over the three non-empty subsets of $\mathbf{S}$
+and $\Gamma_w$ uniform over $2^{\mathbf{W}}$.
+
+\textit{$R(X \rightsquigarrow Y)$.}
+$\mathbf{S} = \{X, M\}$, $\mathbf{W} = \{M\}$, $w^\star = m^\star = 1$, and
+$X' \sim \mathcal{N}(0.5,\, 0.25)$. Three of the four accepted
+$(\mathbf{C}, \mathbf{T})$ pairs intervene on $X$, each with weight
+$\tfrac{1}{4}$; the fourth, $(\mathbf{C}{=}\{M\}, \mathbf{T}{=}\emptyset)$,
+does not touch $X$ and contributes nothing. The key observation is that the
+witness pair $(\mathbf{C}{=}\{X\}, \mathbf{T}{=}\{M\})$ pins $M$ at $m^\star$
+in both worlds, which equalizes their distributions and zeros out $\bar c$;
+the other two pairs let $M$ propagate freely. Computing
+$\mathbb{E}[|Y^n - 1|]$ and $\mathbb{E}[|Y^s - 1|]$ in closed form via the
+folded-normal formula gives:
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+$(\mathbf{C}, \mathbf{T})$ & $\mathbb{E}[|Y^n - 1|]$ & $\mathbb{E}[|Y^s - 1|]$ & $\bar c$ \\
+\midrule
+$(\{X\}, \emptyset)$              & $0.677$ & $0.357$ & $0.320$ \\
+$(\{X\}, \{M\})$ \emph{[witness]} & $0.252$ & $0.252$ & $0.000$ \\
+$(\{X, M\}, \emptyset)$           & $0.677$ & $0.252$ & $0.425$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Combining at weight $\tfrac{1}{4}$ each,
+\[
+R(X \rightsquigarrow Y \mid \mathbf{W}{=}\{M\})
+= \tfrac{1}{4}(0.320 + 0 + 0.425) \approx 0.186.
+\]
+
+\textit{$R(Y \rightsquigarrow X)$.}
+$X$ is exogenous: no $do$-intervention on $\{M, Y\}$ alters its structural
+equation, so necessity and sufficiency distributions coincide and
+$R(Y \rightsquigarrow X \mid \mathbf{W}{=}\{M\}) = 0$.
+
+\textit{Other cells.}
+The remaining entries of Table~\ref{tab:signal_desid} (D-MY, D-XM, D-YM, D-MX,
+D-MXY, and the $\mathbf{W} = \emptyset$ column) follow the same closed-form
+machinery; full per-pair computations are in the companion notebook
+\texttt{signal\_mediation\_computations.ipynb}.

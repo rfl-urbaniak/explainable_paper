@@ -25,7 +25,7 @@ expected mean expressible as $\sum_n k(x,x^{(n)})\alpha_n$, the DCE has the
 closed form $\partial_{x_i}\hat{F}=\sum_n \partial_{x_i}k(x,x^{(n)})\alpha_n$.
 
 \ourapproach and DCE are not direct competitors (DCE estimates a rate of
-change, \ourapproach estimates token-level responsibility), but
+change, \ourapproach estimates individual-level responsibility), but
 \ourapproach inherits the territory of continuous attribution, so a contrast
 on a single example is informative. We highlight three differences:
 \begin{enumerate}
@@ -36,7 +36,15 @@ on a single example is informative. We highlight three differences:
 \item DCE inherits the units of both $\mathbf{X}$ and $Y$, so cross-feature
   comparison is unit-sensitive. The \ourapproach score integrates over the
   necessity- and sufficiency-world densities, so changes to input scale leave
-  the score essentially unchanged.
+  the score essentially unchanged.\footnote{This unit-invariance is contingent
+  on how the alternative-value distribution $\Delta$ is specified. The
+  $\epsilon$-excised $\Delta$ of Section~\ref{sec:causal_impact} is invariant to
+  a reparameterisation of the input scale precisely when $\epsilon$ is fixed by
+  the \emph{probability mass} excised around the factual value (equivalently, in
+  standardised units), as in the ROPE/effect-size reading given there, rather
+  than as an absolute distance in the raw units of $\mathbf{X}$: an
+  absolute-distance $\epsilon$ held fixed across a rescaling would itself become
+  unit-dependent and reintroduce the very sensitivity PCI otherwise avoids.}
 \item DCE varies abruptly with the local geometry of $F$. The \ourapproach
   score depends on where the factual value sits relative to the
   necessity/sufficiency densities and is therefore non-zero in flat regions
@@ -51,8 +59,7 @@ age should dominate. We consider four settings on two axes: time measured in
 hours vs.\ minutes (a units rescaling that should not affect attribution), and
 an age prior centred at $30$ vs.\ $40$ (a genuine change in what counts as
 unusual). The deterministic component is shown in
-Figure~\ref{fig:internal}; marginals after the Bayesian wrap are in
-Figure~\ref{fig:marginals_age}. Computational details and code are in
+Figure~\ref{fig:internal}. Computational details and code are in
 \texttt{docs/source/gradient\_based\_attribution.ipynb}.
 \end{example}
 
@@ -60,103 +67,95 @@ Figure~\ref{fig:marginals_age}. Computational details and code are in
     \centering
     \includegraphics[width=\linewidth]{figures/internal_model_predictions.png}
     \caption{Deterministic component of the credit-limit model
-    (Example~\ref{ex:age}). Top: time in hours; bottom: time in minutes.
-    The two scales describe the same dependence modulo a linear transform;
-    age dominates the limit, with a small sinusoidal modulation from time of
-    day.}\label{fig:internal}
-\end{figure}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.9\linewidth]{figures/marginal_distributions_age_hours.png}
-    \caption{Marginals of age and approved limit for the two age priors in the
-    Bayesian wrap. The shift in the age prior pushes the limit distribution to
-    the upper plateau in the second model.}\label{fig:marginals_age}
+    (Example~\ref{ex:age}), on the hours scale: limit vs.\ age at several times
+    of day (left) and limit vs.\ time of day at several ages (right). Age
+    dominates the limit, with a small sinusoidal modulation from time of day;
+    the minute scale is identical modulo a linear reparameterisation (verified
+    in the notebook).}\label{fig:internal}
 \end{figure}
 
 \paragraph{\ourapproach scores.} We instantiate $ci$ as the absolute-difference
 score from Example~\ref{ex:absolute_score}, $ci(y^s,y^n,y^\star)=|y^n-y^\star|-|y^s-y^\star|$,
 and run the search of Section~\ref{sec:causal_impact} on each setting,
 conditioning on age and on time of application as singleton suspects.
-Figure~\ref{fig:search_age} shows that, when age is the active suspect,
-the necessity-world outcome tracks the deterministic curve while the
-sufficiency-world outcome stays near factual, yielding mean total scores of
-$100.45$ and $97.95$ for the age-$30$ prior (hours and minutes) and $177.87$
-and $176.56$ for the age-$40$ prior. The dependence on prior is expected
-(more unusual factual age $\Rightarrow$ larger search-space displacement);
-the near-equality across hours and minutes reflects the unit-invariance
-above. Figure~\ref{fig:search_hour} shows the same picture for time of
-application, with means $68.61$, $66.51$, $117.97$, $118.42$,
-systematically about two-thirds of the corresponding age scores in each row,
-reflecting that time is responsible but less so.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.95\linewidth]{figures/search_samples_age_norm.png}
-    \caption{Necessity-world (green), sufficiency-world (orange) and total-score
-    (purple) samples conditional on age being an active suspect, factual
-    marked by the dashed line. Rows: hours vs.\ minutes; columns: age-$30$ vs.\
-    age-$40$ priors. Means in title.}\label{fig:search_age}
-\end{figure}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.85\linewidth]{figures/search_samples_hour_norm.png}
-    \caption{Same as Figure~\ref{fig:search_age} for time of application. The
-    sufficiency outcome is bimodal because the search occasionally explores age
-    even with time as the named suspect; total-score variance reflects the
-    smaller necessity-world displacement.}\label{fig:search_hour}
-\end{figure}
-
-\paragraph{Score difference across the input grid.}
-Plotting the difference (age score minus time-of-application score) on the
-input grid for the age-$30$ prior in hours, Figure~\ref{fig:search_contour}
-shows that age is consistently more responsible than time of application,
-with the gap modulated by how unusual the applicant is and how close the age
-falls to the steep region of the sigmoid. The other three settings give
-qualitatively the same picture; the second prior is in
-Figure~\ref{fig:search_contour_age2}.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.7\linewidth]{figures/contour_diff_hours_age_1.png}
-    \caption{Difference between the \ourapproach scores assigned to age and
-    to time of application, on the hour scale and age-$30$ prior. Positive
-    everywhere; the difference is largest near the steep region of the
-    age-limit sigmoid and grows for ages further from the prior mean.}
-    \label{fig:search_contour}
-\end{figure}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.7\linewidth]{figures/contour_diff_hours_age_2.png}
-    \caption{Same as Figure~\ref{fig:search_contour} on the age-$40$
-    prior.}\label{fig:search_contour_age2}
-\end{figure}
-
-\paragraph{DCE on the same grid.} Figure~\ref{fig:dce_grid} shows the DCE for
-both inputs across the same grid of factual values. Two observations make the
-contrast with \ourapproach explicit. First, on the hour scale the DCE for
-time of application takes absolute values larger than the DCE for age over
-most of the grid, and exhibits a visible sine wave; \ourapproach instead
-reports age as the more responsible variable everywhere, in line with the
+Figure~\ref{fig:mechanism} shows the mechanism for the canonical setting
+(age-$30$ prior, hours): when age is the active suspect the necessity-world
+outcome tracks the deterministic curve while the sufficiency-world outcome
+stays near factual, and the same picture, with a smaller displacement, holds
+for time of application. Table~\ref{tab:dce_means} reports the mean total
+scores across all four settings. Two patterns stand out. First, age outscores
+time of application in every setting, by roughly a factor of $3/2$, matching the
 intuition that the age sigmoid moves the outcome by a much larger absolute
-amount than the daily modulation does. Second, switching the time unit from
-hours to minutes flattens the time DCE by roughly a factor of $60$,
-illustrating the unit sensitivity discussed above. Both are direct
-consequences of DCE's role as a rate-of-change estimator rather than a
-responsibility score, but they make the score harder to compare across
-features and across reparameterisations.
+amount than the daily modulation does. Second, the scores are essentially
+unchanged between the hours and minutes columns, confirming the unit-invariance
+discussed above, whereas the shift from the age-$30$ to the age-$40$ prior
+raises every score, since a more unusual factual age means a larger search-space
+displacement.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=1\linewidth]{figures/dce_age_time_hours_minutes.png}
-    \caption{DCE for age (left) and time of application (right) over the input
-    grid, on both unit scales. The age DCE is large only inside the narrow
-    steep region of the sigmoid; outside it, time of application has the
-    larger absolute DCE on the hour scale, and a comparatively flat DCE on the
-    minute scale, illustrating both shape sensitivity and unit sensitivity.}
-    \label{fig:dce_grid}
+    \includegraphics[width=\linewidth]{figures/search_samples_combined.png}
+    \caption{PCI search for the canonical setting (age-$30$ prior, hours), with
+    age (left) and time of application (right) as the active suspect.
+    Necessity-world (green) and sufficiency-world (orange) limit samples and the
+    total score (purple) are plotted against the necessity-world value of the
+    suspect; the dashed line marks the factual. The necessity world departs from
+    factual along the deterministic response while the sufficiency world stays
+    near it; each panel title gives the mean total score.}\label{fig:mechanism}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Mean \ourapproach total scores for age and time of application across
+the four settings (time unit $\times$ age prior), at the factual instance. Age
+outscores time in every setting; the hours and minutes columns agree
+(unit-invariance), while the age-$40$ prior raises all scores relative to
+age-$30$ (a more unusual factual age).}
+\label{tab:dce_means}
+\vspace{4pt}
+\begin{tabular}{l cc cc}
+\toprule
+& \multicolumn{2}{c}{age-$30$ prior} & \multicolumn{2}{c}{age-$40$ prior} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Suspect & hours & minutes & hours & minutes \\
+\midrule
+Age                  & $100.45$ & $97.95$  & $177.87$ & $176.56$ \\
+Time of application  & $68.61$  & $66.51$  & $117.97$ & $118.42$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{PCI vs.\ DCE across the input grid.}
+Figure~\ref{fig:contrast} contrasts the two methods on the same grid of factual
+values (age-$30$ prior, hours); the other three settings give qualitatively the
+same picture. The top panel plots the difference between the \ourapproach scores
+for age and for time of application: it is positive everywhere, so age is
+consistently the more responsible variable, with the gap largest near the steep
+region of the age-limit sigmoid and growing for ages further from the prior
+mean. The bottom panels show the DCE for the two inputs, and two differences
+with \ourapproach stand out. First, on the hour scale the DCE for time of
+application exceeds the DCE for age over most of the grid and traces a visible
+sine wave, whereas \ourapproach reports age as the more responsible variable
+everywhere. Second, switching the time unit from hours to minutes flattens the
+time DCE by roughly a factor of $60$, making the unit sensitivity explicit. Both
+are direct consequences of DCE's role as a rate-of-change estimator rather than
+a responsibility score, and both make it harder to compare across features and
+across reparameterisations.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.62\linewidth]{figures/contour_diff_hours_age_1.png}\\[6pt]
+    \includegraphics[width=\linewidth]{figures/dce_age_time_hours_minutes.png}
+    \caption{\textbf{PCI vs.\ DCE on the credit-limit grid} (age-$30$ prior,
+    hours). \emph{Top:} difference between the \ourapproach scores for age and
+    for time of application; positive everywhere, largest near the steep region
+    of the age-limit sigmoid and for ages far from the prior mean, so age is
+    always the more responsible variable. \emph{Bottom:} DCE for age (left) and
+    time of application (right) on both unit scales. Age has the larger absolute
+    DCE only inside the narrow steep region of the sigmoid; elsewhere time of
+    application dominates on the hour scale and goes comparatively flat on the
+    minute scale, illustrating DCE's shape and unit sensitivity.}
+    \label{fig:contrast}
 \end{figure}
 
 \paragraph{Where we go next.} Sections~\ref{sec:shap_examples}--\ref{sec:DCE}

@@ -16,7 +16,7 @@ in parallel. Binary suspects $A_1,\dots,A_n,B_1,\dots,B_n\in\{0,1\}$ feed
 deterministic mediators
 \(W^a_i = A_i,\quad W^b_i = B_i \land \lnot A_i\)
 that capture overdetermination via preemption: $B_i$ contributes only if $A_i$ does
-not. The outcome is the conjunction $C = \bigwedge_{i=1}^{n} (W^a_i \lor W^b_i)$, and
+not. The outcome is the conjunction $Y = \bigwedge_{i=1}^{n} (W^a_i \lor W^b_i)$, and
 the model size grows as $4n+1$ variables. Ground-truth responsibility at site $i$ is
 read off during the forward pass: $A_i$ is responsible if $W^a_i=1$, $B_i$ is
 responsible if $W^b_i=1$. The structure scales the canonical example without softening it ---
@@ -48,8 +48,7 @@ method.
 
 \medskip\noindent\textit{Approximate PCI estimator.}
 The PCI estimator instantiates the kernel of Definition~\ref{def:ackernel}
-via Monte Carlo using the \texttt{ThinSearchSampler} of
-Section~\ref{sec:causal_impact}. Algorithm~\ref{alg:pci_thin_search} is the
+via the Monte Carlo search procedure of Section~\ref{sec:causal_impact}. Algorithm~\ref{alg:pci_thin_search} is the
 explicit procedure used to produce the curves in
 Figures~\ref{fig:ac_runtime}--\ref{fig:ac_accuracy}.
 
@@ -58,7 +57,7 @@ Figures~\ref{fig:ac_runtime}--\ref{fig:ac_accuracy}.
 \label{alg:pci_thin_search}
 \begin{algorithmic}[1]
 \Require PSCM $M$; factual world
-$(\mathbf{s}^\star,\mathbf{w}^\star,c^\star)$; cardinality bounds
+$(\mathbf{s}^\star,\mathbf{w}^\star,y^\star)$; cardinality bounds
 $n_s, n_w$; sample budget $N$; witness flag
 $\mathrm{wit}\in\{\text{on},\text{off}\}$
 \Ensure per-site verdicts $v_i\in\{A_i,B_i\}$ for $i=1,\dots,n$
@@ -89,7 +88,7 @@ $\mathrm{wit}\in\{\text{on},\text{off}\}$
          \mathbf{T}_j = \mathbf{w}^\star\!\mid_{\mathbf{T}_j})\bigr)$
          \Comment{necessity, shared $\mathbf{u}_j$}
   \For{each $X \in \mathbf{C}_j$}
-    \State append $|y^n_j - c^\star|$ to $L[X]$
+    \State append $|y^n_j - y^\star|$ to $L[X]$
   \EndFor
 \EndFor
 \For{each $X\in\mathbf{S}$}
@@ -103,37 +102,37 @@ $\mathrm{wit}\in\{\text{on},\text{off}\}$
 \end{algorithm}
 
 The algorithm draws $N$ intervention configurations under shared noise.
-The active suspect set $\mathbf{C}_j$ (line~6) is drawn at uniformly chosen
+The active suspect set $\mathbf{C}_j$ (line~10) is drawn at uniformly chosen
 cardinality $k_s \in \{1,\dots,n_s\}$; the dropped witness set $D_j$
-(line~7) is drawn the same way at $k_w \in \{0,\dots,n_w\}$, and the active
-witnesses on line~8 are the complement $\mathbf{W}\setminus D_j$, so
+(line~11) is drawn the same way at $k_w \in \{0,\dots,n_w\}$, and the active
+witnesses on line~12 are the complement $\mathbf{W}\setminus D_j$, so
 $n_w$ bounds the number of witnesses \emph{dropped}, not the number kept,
 and the active witness set has size $|\mathbf{W}|-n_w$ or larger. The
-witness ablation flag $\mathrm{wit}=\text{off}$ is handled once on line~1
+witness ablation flag $\mathrm{wit}=\text{off}$ is handled once on line~2
 by emptying $\mathbf{W}$; this collapses the witness machinery on
-lines~7--8 and 11--12 to no-ops, producing the dotted accuracy curves of
+lines~11--12 and 14--15 to no-ops, producing the dotted accuracy curves of
 Figure~\ref{fig:ac_accuracy}.
 
-Alternative values on line~9 are bit flips: on $\{0,1\}$ the
+Alternative values on line~13 are bit flips: on $\{0,1\}$ the
 $\epsilon$-excised alternative-value distribution has a single support
 point and $\epsilon$ plays no role; the explicit sampling form is preserved
 so that the same routine runs on continuous benchmarks. The two
-interventional worlds on lines~11--12 share the noise realisation
-$\mathbf{u}_j$ drawn on line~4, the standard counterfactual coupling,
-which lets the per-suspect score on lines~14--16 be read off as the
-nan-mean of $|y^n_j - c^\star|$ over the draws in which
+interventional worlds on lines~14--15 share the noise realisation
+$\mathbf{u}_j$ drawn on line~8, the standard counterfactual coupling,
+which lets the per-suspect score on lines~16--18 be read off as the
+nan-mean of $|y^n_j - y^\star|$ over the draws in which
 $X\in\mathbf{C}_j$. The sufficiency outcome $y^s_j$ is computed but not
 consumed: the AC verdict against which we benchmark has no sufficiency
 clause, so we read only the necessity world. The joint estimator with
 sufficiency active is exercised in Sections~\ref{sub:synthetic},
 \ref{sec:DCE}, and~\ref{sec:sir_benchmark}, where AC has no comparable
 verdict to benchmark against. At each site
-$i = 1,\dots,n$, line~17 returns the suspect, $A_i$ or $B_i$, with
+$i = 1,\dots,n$, line~24 returns the suspect, $A_i$ or $B_i$, with
 the higher mean.
 
 \medskip\noindent\textit{Benchmark protocol.}
 For each problem size $n$ we sample up to ten distinct factive worlds (with
-\(C=1\)), instantiate the model, run both methods to verdicts, and compare to the
+\(Y=1\)), instantiate the model, run both methods to verdicts, and compare to the
 analytic ground truth. Each method is granted a 60-minute global budget per run; if
 the budget is exhausted mid-loop, the largest completed $n$ caps the curve. The
 approximate estimator is exercised in five configurations that vary along three axes
@@ -196,12 +195,14 @@ several orders of magnitude that grows with $n$.}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.92\linewidth]{docs/source/ac_benchmark/plot3_accuracy.png}
-\caption{Correct-attribution rate against problem size, smoothed with a Gaussian
-filter. The exact method is correct up to 17 variables. Witness-using approximate
-runs stay above $0.85$ up to roughly 60 variables and degrade gracefully
-thereafter; witness-free runs (dotted) underperform throughout, starting near
-$0.67$. Dynamic-set-size sampling (dashed red) is among the highest at moderate
-problem sizes.}
+\caption{Correct-attribution rate against problem size. Each approximate
+configuration is lightly smoothed (Gaussian filter, $\sigma=1$) with its raw
+per-size points overlaid, and is shape-coded in the legend (marker, colour, and
+line style). The exact method is correct up to 17 variables. Configurations
+using witnesses stay above $0.85$ up to roughly 60 variables and degrade
+gracefully thereafter; the witness-free configurations ($\mathrm{wit\ off}$)
+underperform throughout, starting near $0.67$. Dynamic-set-size sampling
+($\mathrm{dyn\ on}$) is among the highest at moderate problem sizes.}
 \label{fig:ac_accuracy}
 \end{figure}
 

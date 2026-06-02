@@ -203,7 +203,7 @@ since pinning variables to their factual values under fixed $\mathbf{u}$ leaves 
 variable unchanged, this is equivalent to $(M,\mathbf{u})\vDash\varphi$, giving
 factivity. The necessity integral being positive provides a
 $\Delta_{\mathbf{C}}$-positive-density set of values $\mathbf{c}'$ for which
-$(M,\mathbf{u})\vDash[\mathbf{C}\!\leftarrow\!\mathbf{c}',\,\mathbf{T}'\!\leftarrow\!\mathbf{t}^{\star\prime}]\neg\varphi$;
+$(M,\mathbf{u})\vDash[\mathbf{C}\!\leftarrow\!\mathbf{c}',\,\mathbf{T}'\!\leftarrow\!\mathbf{w}^\star\!\mid_{\mathbf{T}'}]\neg\varphi$;
 any such $\mathbf{c}'$, together with $\mathbf{T}'$, witnesses the existential in the
 context-sensitive-necessity clause of Definition~\ref{def:ac}.
 \end{proof}
@@ -265,8 +265,8 @@ as well.
 
 \begin{theorem}\label{th:local_max_to_ac}
 Consider the set of optimisers
-$\Gamma^\star = \arg\max_{\mathbf{C}\subseteq\{\mathbf{S}=\mathbf{s}\},\,\mathbf{T}\subseteq\mathbf{W}}
-\Phi(\mathbf{C},\mathbf{T})$. Assume $(\mathbf{C}^\dagger,\mathbf{T}^\dagger)\in\Gamma^\star$
+$\mathcal{O}^\star = \arg\max_{\mathbf{C}\subseteq\{\mathbf{S}=\mathbf{s}\},\,\mathbf{T}\subseteq\mathbf{W}}
+\Phi(\mathbf{C},\mathbf{T})$. Assume $(\mathbf{C}^\dagger,\mathbf{T}^\dagger)\in\mathcal{O}^\star$
 with $\Phi(\mathbf{C}^\dagger,\mathbf{T}^\dagger)>0$, that factivity is satisfied for
 $\mathbf{C}^\dagger$ (as in Definition~\ref{def:ac}), and that no element of
 $\{\mathbf{S}=\mathbf{s}\}$ is a deterministic function under $M$ of the others. Let
@@ -307,15 +307,15 @@ N(\mathbf{C}^\dagger,\mathbf{T}^\dagger)$. Multiplying these (and noting
 $N(\mathbf{C}^\sharp,\mathbf{T}^\sharp)>0$ to convert weak into strict in the
 composite) gives
 $\Phi(\mathbf{C}^\sharp,\mathbf{T}^\sharp)>\Phi(\mathbf{C}^\dagger,\mathbf{T}^\dagger)$,
-contradicting $(\mathbf{C}^\dagger,\mathbf{T}^\dagger)\in\Gamma^\star$.
+contradicting $(\mathbf{C}^\dagger,\mathbf{T}^\dagger)\in\mathcal{O}^\star$.
 \end{proof}
 
 \begin{corollary}\label{cor:marginalize}
 Keep the notation and hypotheses of Theorem~\ref{th:local_max_to_ac}. Consider the set
 of optimisers
-$\Delta^\star = \arg\max_{\mathbf{C}\subseteq\{\mathbf{S}=\mathbf{s}\}}
+$\mathcal{O}^\Sigma = \arg\max_{\mathbf{C}\subseteq\{\mathbf{S}=\mathbf{s}\}}
 \sum_{\mathbf{T}\subseteq\mathbf{W}} \Phi(\mathbf{C},\mathbf{T})$. Assume
-$\mathbf{C}^\dagger\in\Delta^\star$ with
+$\mathbf{C}^\dagger\in\mathcal{O}^\Sigma$ with
 $\sum_{\mathbf{T}\subseteq\mathbf{W}} \Phi(\mathbf{C}^\dagger,\mathbf{T})>0$ and that
 factivity is satisfied for $\mathbf{C}^\dagger$. Then $\mathbf{C}^\dagger$ is an actual
 cause of $\varphi$ according to Definition~\ref{def:ac}.
@@ -327,7 +327,7 @@ $\mathbf{T}^\dagger\subseteq\mathbf{W}$ with
 $\Phi(\mathbf{C}^\dagger,\mathbf{T}^\dagger)>0$. Because the slice
 $\{(\mathbf{C}^\dagger,\mathbf{T})\,:\,\mathbf{T}\subseteq\mathbf{W}\}$ is contained in
 the joint search space $2^{\mathbf{S}}\times 2^{\mathbf{W}}$, we have
-$(\mathbf{C}^\dagger,\mathbf{T}^\dagger)\in\Gamma^\star$ as well. The conditions of
+$(\mathbf{C}^\dagger,\mathbf{T}^\dagger)\in\mathcal{O}^\star$ as well. The conditions of
 Theorem~\ref{th:local_max_to_ac} are satisfied, so $\mathbf{C}^\dagger$ is an actual
 cause of $\varphi$.
 \end{proof}

@@ -1,0 +1,86 @@
+\section{Computations for the OBCB Running Example}\label{app:obcb}
+
+This appendix collects the worked computations for the stochastic OBCB model of
+Example~\ref{ex:obcb_stochastic} that are summarised in the main text: the
+per-branch traces behind Alice's individual $\pn$ and $\ps$ values in
+Table~\ref{tab:pn_ps_pns} (Section~\ref{sec:motivations}), and the closed-form
+SHAP value function behind Tables~\ref{tab:vS_optionA}--\ref{tab:shap_obcb}
+(Section~\ref{sec:obcb_shap}). The remaining individual and population entries of
+Table~\ref{tab:pn_ps_pns} are obtained analogously; all values are reproduced in
+\texttt{docs/source/obcb\_computations.ipynb}.
+
+\subsection{Alice's probability of necessity}\label{app:obcb_pn}
+
+Alice is factually $\varname{gender}=\text{female}$, $\varname{credit}=\text{bad}$,
+$\varname{loan}=F$; the counterfactual intervenes to set
+$\varname{gender}=\text{male}$ while leaving $\varname{credit}=\text{bad}$.
+Tracing through the model:
+\begin{itemize}
+\item Under the intervention, $\varname{check}\sim\mathrm{Bern}(0.9)$: men are
+checked $90\%$ of the time.
+\item If checked, $\varname{check\text{-}failed}=1$ (Alice's credit is bad), and from
+the loan-probability table
+$P(\varname{loan\text{-}if\text{-}checked}=1\mid\varname{gender}=\text{male},\varname{check\text{-}failed}=1)=0.05$.
+\item If not checked, $\varname{loan}=0$ deterministically since
+$\varname{loan}=\varname{loan\text{-}if\text{-}checked}\cdot\varname{check}$.
+\end{itemize}
+Combining the two branches:
+\begin{multline*}
+\pn(\varname{gender}=\text{female}, \varname{loan}=F \mid \text{Alice}) \\
+= P(\varname{loan}_{\varname{gender}=\text{male}}=T
+\mid \varname{gender}=\text{female}, \varname{credit}=\text{bad}) \\
+= 0.9 \cdot 0.05 = 0.045.
+\end{multline*}
+
+\subsection{Alice's probability of sufficiency}\label{app:obcb_ps}
+
+Following the same convention as for $\pn$, the individual-level computation
+additionally conditions on Alice's credit ($\varname{credit}=\text{bad}$).
+The PS conditional then has Alice's credit fixed but the cause and outcome flipped
+to their non-factual values ($\varname{gender}=\text{male}$, $\varname{loan}=T$); we
+intervene to restore $\varname{gender}=\text{female}$ and ask whether the loan is
+again denied:
+\begin{itemize}
+\item With $\varname{gender}=\text{female}$ and $\varname{credit}=\text{bad}$,
+$\varname{check}\sim\mathrm{Bern}(0.2)$.
+\item If checked, $\varname{check\text{-}failed}=1$, and from the loan-probability table
+$P(\varname{loan\text{-}if\text{-}checked}=1\mid\varname{gender}=\text{female},\varname{check\text{-}failed}=1)=0$.
+\item If not checked, $\varname{loan}=0$ deterministically.
+\end{itemize}
+Either branch gives $\varname{loan}=F$, so
+\begin{multline*}
+\ps(\varname{gender}=\text{female}, \varname{loan}=F \mid \text{Alice}) \\
+= P(\varname{loan}_{\varname{gender}=\text{female}}=F \mid \varname{gender}=\text{male},
+\varname{loan}=T, \varname{credit}=\text{bad}) = 1.
+\end{multline*}
+
+\subsection{SHAP value function for Option~A}\label{app:obcb_vS}
+
+For the 2-feature game $N=\{\varname{gender},\varname{credit}\}$ with
+$f(g,c)=P(\varname{loan}=1\mid g,c)$, by the SHAP definition (and equivalently by
+Definition~\ref{def:causalshap} once we note that no dropped feature is a
+descendant of any coalition member), the value function is
+\[
+v(\mathcal{S}) \;=\; \mathbb{E}\!\left[f(X)\,\big|\,X_{\mathcal{S}} = x_{\mathcal{S}}^\star\right]
+\;=\; \sum_{x_{N\setminus\mathcal{S}}\in\{0,1\}^{|N\setminus\mathcal{S}|}} P(X_{N\setminus\mathcal{S}}=x_{N\setminus\mathcal{S}})\,f(x_{\mathcal{S}}^\star,\,x_{N\setminus\mathcal{S}}).
+\]
+Under independent uniform marginals
+$P(\varname{gender})=P(\varname{credit})=\tfrac{1}{2}$ this specialises to
+\begin{align*}
+v(\emptyset)                              &= \tfrac{1}{4}\sum_{g,c\in\{0,1\}} f(g,c),
+&&[\text{both dropped: weight } \tfrac{1}{2}\cdot\tfrac{1}{2}] \\
+v(\{\varname{gender}\})                   &= \tfrac{1}{2}\!\left[f(g^\star,0)+f(g^\star,1)\right],
+&&[\text{only credit dropped: weight } P(c) = \tfrac{1}{2}] \\
+v(\{\varname{credit}\})                   &= \tfrac{1}{2}\!\left[f(0,c^\star)+f(1,c^\star)\right],
+&&[\text{only gender dropped: weight } P(g) = \tfrac{1}{2}] \\
+v(\{\varname{gender},\varname{credit}\})  &= f(g^\star,c^\star).
+&&[\text{nothing dropped: no average}]
+\end{align*}
+Plugging in the four values
+$f(\text{F},\text{bad})=0.000$, $f(\text{F},\text{good})=0.180$,
+$f(\text{M},\text{bad})=0.045$, $f(\text{M},\text{good})=0.900$ yields the
+coalition values of Table~\ref{tab:vS_optionA}; pushing those through the
+closed-form Shapley
+$\phi_i = \tfrac{1}{2}[v(\{i\})-v(\emptyset)] + \tfrac{1}{2}[v(N)-v(N\!\setminus\!\{i\})]$
+(and flipping signs, since we attribute rejection $g=1-f$) gives the magnitudes
+in Table~\ref{tab:shap_obcb}.

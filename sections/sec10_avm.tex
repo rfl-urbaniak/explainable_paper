@@ -18,7 +18,7 @@ synthetic benchmark of Section~\ref{sub:synthetic}, against an analytic ground t
 that the production model does not admit. The role of this section is correspondingly
 narrow: to report (i) that \ourapproach{} is computationally feasible at production
 scale on a model with millions of training points, and (ii) that the qualitative
-SHAP-vs-PCI divergence observed in Section~\ref{sub:synthetic} persists when the
+SHAP-vs-PCI divergence observed in Section~\ref{sec:shap_examples} persists when the
 model is a real trained one. What is reportable here is the shape of the two
 attribution distributions and the structural pattern of where attribution mass lands,
 not the substantive content of the features they assign to.
@@ -39,7 +39,7 @@ described by a set of categorical variables $x_{cat} = x_{1}, \dots, x_k$ and co
 standardized-truncated, or standardized.} $x_{con} = x_{k+1}, \dots, x_n$.
 
 \paragraph{Causal model.}
-A causal DAG $\Gamma$ expresses our causal assumptions about the relationships between
+A causal DAG $\mathcal{G}$ expresses our causal assumptions about the relationships between
 variables. It was written manually in collaboration with domain experts and refined by
 adding edges to break implied conditional independencies that are not upheld by the
 data. The NY-prototype DAG has 25 nodes and 99 edges; topology with anonymised node
@@ -95,16 +95,12 @@ same trained model. SHAP heavily weights variables that are downstream of many o
 variables in the causal graph, effectively assigning attribution to what amount to
 summary statistics of the outcome. \ourapproach distributes attribution more evenly
 across the upstream causal structure. The pattern is consistent with what
-Section~\ref{sub:synthetic} establishes against ground truth: SHAP's observational
+Section~\ref{sec:shap_examples} establishes on controlled examples: SHAP's observational
 marginalisation allocates weight differently from intervention-and-witness-based PCI
 scores, and on a deep DAG this difference manifests as concentration on
 summary-statistic-like nodes. Figure~\ref{fig:avm_attribution} shows the two attribution
 distributions with anonymised feature labels; what is reportable here is the shape of
-the two distributions, not which features they assign to. We therefore do not make a
-quantitative claim in this section: the quantitative claim is the synthetic benchmark
-of Section~\ref{sub:synthetic}, and the role of this section is to show that the same
-qualitative shape persists when the model is a real trained one operating on millions of
-data points.
+the two distributions, not which features they assign to.
 
 \begin{figure}[htbp]
 \centering
@@ -122,7 +118,7 @@ data points.
 \textbf{Left:} \ourapproach attribution mass spread across upstream causal variables
 (suspects~1--15, ranked by mean total score). \textbf{Right:} SHAP attribution mass
 concentrated on a small number of downstream variables. The qualitative pattern matches
-the controlled-setting comparison of Section~\ref{sub:synthetic}.}
+the controlled-setting comparison of Section~\ref{sec:shap_examples}.}
 \label{fig:avm_attribution}
 \end{figure}
 

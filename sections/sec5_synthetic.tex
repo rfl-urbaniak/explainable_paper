@@ -22,7 +22,9 @@ archetype below; we use generic letters rather than personal names to keep varia
 labelling tight.}
 
 The model has six independent root variables and three deterministic branches feeding the
-outcome $E$:
+outcome $E$ (the generic outcome $Y$ of Section~\ref{sec:causal_impact}, written $E$
+here to match the model diagram; its factual value is $y^\star$ and its
+necessity/sufficiency worlds $Y^n, Y^s$):
 \begin{align*}
 L_1, L_2 &\sim \mathcal{N}(0, 1), \quad O_1, O_2 \sim \mathcal{N}(1, 1), \quad
   P, D \sim \mathcal{N}(0, 1), \\
@@ -75,9 +77,7 @@ that does not vanish for $D$, so we report \emph{excess} over $D$ within each ca
 \qquad
 \Delta_S(V) = ci_S(V) - ci_S(D).
 \]
-$D$ is the noise floor; any other variable's $\Delta$ is its causal signal above it. SHAP
-attributions \citep{lundberg2017unified}, defined for a comparable prediction function,
-are introduced in Section~\ref{sec:shap_defs} and recalled in the comparison block below.
+$D$ is the noise floor; any other variable's $\Delta$ is its causal signal above it.
 
 \paragraph{Two factual cases.}
 We instantiate the model with one batch of $500$ events and select two factual
@@ -219,8 +219,9 @@ its own, statistically resolved at the production budget. The qualitative conten
 this claim is already carried by desiderata \#8 (P at the noise floor in Case~1) and
 \#10 (P above $\epsilon$ in Case~2): if both pass, the regime flip is a corollary, not
 an independent claim. (D2) The quantitative match
-$\lvert \Delta_N(P) - \Delta_N(L_1) \rvert < \epsilon$ in Case~2 measures $-0.267$ with
-CI $[-0.441, -0.106]$, whose magnitude is well above $\epsilon$. At this sample budget,
+$\lvert \Delta_N(P) - \Delta_N(L_1) \rvert < \epsilon$ in Case~2: the signed gap
+$\Delta_N(P) - \Delta_N(L_1)$ measures $-0.267$ with
+CI $[-0.441, -0.106]$, whose magnitude $0.267$ is well above $\epsilon$. At this sample budget,
 gated $P$ does not quantitatively mirror ungated $L_1$; what we can claim is the
 weaker, qualitative statement that both clear the noise floor in Case~2, which is
 exactly desideratum \#10 for $P$ and built into Case~2 by construction for $L_1$.
