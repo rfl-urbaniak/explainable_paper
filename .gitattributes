@@ -1,1 +1,6 @@
-docs/source/search_results.pkl filter=lfs diff=lfs merge=lfs -text
+# Experiment caches and model artifacts are stored via Git LFS.
+# Collaborators must run `git lfs install` once after cloning, otherwise
+# these files arrive as small text pointers and the notebooks will fail.
+*.pkl filter=lfs diff=lfs merge=lfs -text
+*.pt  filter=lfs diff=lfs merge=lfs -text
+*.npz filter=lfs diff=lfs merge=lfs -text
