@@ -30,6 +30,7 @@ dev = [
     "mypy>=1.20.2",
     "nbqa>=1.9.1",
     "pytest>=9.0.3",
+    "pytest-cov",
     "ruff>=0.15.12",
 ]
 docs = [
@@ -59,8 +60,22 @@ quote-style = "double"
 [tool.flake8]
 max-line-length = 120
 
+[tool.coverage.run]
+source = ["pci", "tests"]
+
+[tool.coverage.report]
+show_missing = true
+precision = 1
+skip_covered = false
+
+[tool.coverage.html]
+directory = "tests/coverage"
+
 [tool.ruff.lint]
 extend-ignore = ["E203"]
+# `make format` will not strip unused imports; `make remove-imports` does that
+# explicitly (notebooks often import purely for display side effects).
+unfixable = ["F401"]
 select = [
   "F",       # pyflakes
   "I",       # isort

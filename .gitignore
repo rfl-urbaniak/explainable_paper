@@ -26,5 +26,9 @@ docs/source/dynamical_benchmark/*_time0.0*.pkl
 *.synctex.gz
 *.toc
 
+# Coverage
+.coverage
+tests/coverage/
+
 # OS
 .DS_Store

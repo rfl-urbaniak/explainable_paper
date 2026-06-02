@@ -1,20 +1,33 @@
-SRC = pci tests
-DOCS = docs/source
+# Thin entry points; the real work lives in scripts/ and docs/Makefile.
+# Everything runs through `uv run`, so no manual `.venv` activation is needed.
 
+# ---- Python: lint / format / test (see scripts/) ----------------------------
 lint: FORCE
-	mypy $(SRC)
-	ruff check $(SRC)
-	ruff format --diff $(SRC)
-	nbqa mypy $(DOCS)
-	nbqa 'ruff check' $(DOCS)
-	nbqa 'ruff format --diff' $(DOCS)
+	./scripts/lint.sh
 
 format: FORCE
-	ruff check --fix-only $(SRC)
-	ruff format $(SRC)
-	nbqa 'ruff check --fix-only' $(DOCS)
-	nbqa 'ruff format' $(DOCS)
+	./scripts/format.sh
 
+remove-imports: FORCE
+	./scripts/remove_imports.sh
+
+test: FORCE
+	./scripts/test.sh
+
+coverage: FORCE
+	xdg-open tests/coverage/index.html
+
+# ---- Notebooks & docs website (delegate to docs/Makefile) -------------------
+html: FORCE
+	$(MAKE) -C docs html
+
+notebooks-smoke: FORCE
+	$(MAKE) -C docs notebooks-smoke
+
+serve-docs: FORCE
+	$(MAKE) -C docs serve
+
+# ---- Paper (LaTeX) ----------------------------------------------------------
 main: FORCE
 	latexmk -pdf -synctex=1 -interaction=nonstopmode -halt-on-error main.tex
 
