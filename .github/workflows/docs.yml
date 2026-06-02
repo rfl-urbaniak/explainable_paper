@@ -33,6 +33,8 @@ jobs:
         run: uv python install 3.12
       - name: Install docs dependencies
         run: uv sync --group docs
+      - name: Install pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc # required by nbsphinx
       - name: Build HTML
         run: make -C docs html
       - name: Disable Jekyll processing
