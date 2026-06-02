@@ -27,8 +27,9 @@ paper_files() {
   printf '%s\n' main.tex references.bib neurips_2024.sty
   # main.bbl is shipped as a fallback so refs render even before bibtex runs
   [ -f main.bbl ] && printf '%s\n' main.bbl
-  # all section / appendix sources
-  git ls-files 'sections/*.tex'
+  # all section / appendix sources (plain glob: independent of the git index,
+  # which matters because `push` builds the tree under a throwaway GIT_INDEX_FILE)
+  printf '%s\n' sections/*.tex
   # every figure referenced by \includegraphics, at its real path
   grep -rhoE 'includegraphics(\[[^]]*\])?\{[^}]*\}' main.tex sections/*.tex \
     | sed -E 's/.*\{([^}]*)\}/\1/' | sort -u
