@@ -29,6 +29,8 @@ cd "$ROOT"
 # --- paper-file whitelist, derived so it stays correct as the paper evolves ---
 paper_files() {
   printf '%s\n' main.tex references.bib neurips_2024.sty
+  # project README, so the setup/workflow docs are visible inside Overleaf too
+  [ -f README.md ] && printf '%s\n' README.md
   # main.bbl is shipped as a fallback so refs render even before bibtex runs
   [ -f main.bbl ] && printf '%s\n' main.bbl
   # all section / appendix sources (plain glob: independent of the git index,
