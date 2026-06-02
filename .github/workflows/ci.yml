@@ -49,6 +49,8 @@ jobs:
           enable-cache: true
       - name: Set up Python
         run: uv python install 3.12
+      - name: Install system deps (graphviz `dot` for DAG rendering)
+        run: sudo apt-get update && sudo apt-get install -y graphviz
       - name: Install project (with docs group)
         run: uv sync --group docs
       - name: Execute every notebook in docs/source under CI=1
