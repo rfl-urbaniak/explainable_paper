@@ -15,6 +15,9 @@ docs/source/ac_benchmark/*_time0.0*.pkl
 docs/source/ac_benchmark/*_time0.0*_*.pkl
 docs/source/dynamical_benchmark/*_time0.0*.pkl
 
+# Sphinx HTML output (built by CI and deployed to GitHub Pages, not tracked)
+docs/build/
+
 # LaTeX build artefacts
 *.aux
 *.bbl
