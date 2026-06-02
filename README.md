@@ -71,11 +71,11 @@ All targets run through `uv run`, so no manual `.venv` activation is needed:
 ## Workflow
 
 ```
-                 scripts/sync-overleaf.sh pull
+                  make pull-from-overleaf
    Overleaf  ───────────────────────────────────►  main (sections/, main.tex)
   (prose edits)                                        │
        ▲                                               │ VS Code edits
-       │  scripts/sync-overleaf.sh push                │ (code, notebooks, paper)
+       │  make push-to-overleaf                        │ (code, notebooks, paper)
        └───────────────────────────────────────────── ┤
                                                         │
                                             git push origin main
