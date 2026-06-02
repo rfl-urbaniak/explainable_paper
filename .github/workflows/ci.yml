@@ -7,6 +7,23 @@ on:
     branches: [main]
 
 jobs:
+  lint:
+    name: lint (ruff + mypy, code + notebooks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false # lint reads code cells only, not the LFS caches
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Install dev dependencies
+        run: uv sync --group dev
+      - name: make lint
+        run: make lint
+
   pytest:
     name: pytest
     runs-on: ubuntu-latest
@@ -38,3 +55,37 @@ jobs:
         env:
           CI: "1"
         run: make -C docs notebooks-smoke
+
+  notebook-outputs:
+    name: notebooks have stored outputs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - name: Check notebooks are not stripped of outputs
+        run: python3 scripts/check_notebook_outputs.py
+
+  latex:
+    name: paper compiles (latexmk)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false # figures are regular git objects, not LFS
+      - name: Compile main.tex
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+
+  lfs:
+    name: Git LFS integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Verify LFS objects resolve
+        run: |
+          git lfs fsck
+          ./scripts/check_lfs.sh
