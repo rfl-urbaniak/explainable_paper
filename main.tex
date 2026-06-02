@@ -1,0 +1,243 @@
+\documentclass{article}
+\usepackage[preprint]{neurips_2024}
+
+% PACKAGES
+\usepackage{amsmath,amsthm}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{attempt}[theorem]{Attempt}
+
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\usepackage[font=small]{caption}
+\captionsetup[table]{skip=14pt}
+
+\usepackage{tikz}
+\usetikzlibrary{bayesnet}
+
+\usetikzlibrary{shapes,decorations,arrows,calc,arrows.meta,fit,positioning}
+\tikzset{
+    -Latex,auto,node distance =0.5 cm and 0.5 cm,semithick,
+    state/.style ={ellipse, draw, minimum width = 0.7 cm},
+    point/.style = {circle, draw, inner sep=0.04cm,fill,node contents={}},
+    bidirected/.style={Latex-Latex,dashed},
+    el/.style = {inner sep=2pt, align=left, sloped}
+}
+
+
+\let\todo\relax
+\usepackage[colorinlistoftodos]{todonotes}
+\presetkeys{todonotes}{inline}{}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{rotating}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage{xspace}
+\sisetup{group-separator = {,}}
+
+
+\tikzset{%
+  zeroarrow/.style = {-stealth,dashed},
+  onearrow/.style = {-stealth,solid},
+  c/.style = {circle,draw,solid,minimum width=2em,
+        minimum height=2em},
+  r/.style = {rectangle,draw,solid,minimum width=2em,
+        minimum height=2em}
+}
+
+\makeatletter
+\DeclareRobustCommand{\varname}[1]{\ensuremath{\begingroup\newmcodes@\mathit{#1}\endgroup}}
+\makeatother
+
+\newcommand{\midlinewidth}{1.0pt}
+\newcommand{\incmidlinewidth}{1.7pt}
+\newcommand{\middist}{20pt}
+\newcommand{\halfdist}{13pt}
+\newcommand{\pn}{\ensuremath{\mathit{PN}}}
+\newcommand{\ps}{\ensuremath{\mathit{PS}}}
+\newcommand{\pns}{\ensuremath{\mathit{PNS}}}
+
+\definecolor{petroil2} {RGB} {36, 165, 175}
+\definecolor{gold2} {RGB} {255, 130, 0}
+
+% # CODE SNIPPET STYLE (settings borrowed from Edward ICLR paper)
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+
+\definecolor{strings}{rgb}{.624,.251,.259}
+\definecolor{keywords}{rgb}{.224,.451,.686}
+\definecolor{comment}{rgb}{.322,.451,.322}
+
+\lstdefinelanguage{python}{
+  morekeywords={from, import, as, for, in, while, def, return, 
+  =, +, -, /, *, lambda},
+  % keywords=[2]{build_toy_dataset, neural_network, __init__},
+  keywords=[3]{sample, param, module, Marginal, Posterior, Trace, Poutine, Distribution},
+  morecomment=[l]{\#},
+  morecomment=[s]{"""}{"""},
+  morestring=[b]',
+  morestring=[b]",
+  alsoletter={<>=-+/*},
+  sensitive=true
+}
+
+\usepackage[most]{tcolorbox}
+\newtcolorbox{docode}[1][]{
+    colback=gray!20,        % background color
+    colframe=black,         % border color
+    width=0.9\textwidth,    % box width
+    arc=4mm,                % rounded corners
+    boxrule=0.5pt,          % border thickness
+    left=2em,               % left padding
+    enhanced,
+    fontupper=\ttfamily,    % font inside the box
+    #1                      % allow optional overrides
+}
+
+
+
+\lstset{
+  language=python,
+  keywordstyle=\color{BrickRed}\bfseries\ttfamily,
+  keywordstyle=[2]\color{Violet}\ttfamily,
+  keywordstyle=[3]\color{keywords}\ttfamily,
+  commentstyle=\color{comment}\ttfamily,
+  stringstyle=\color{strings}\ttfamily,
+  basicstyle=\fontsize{8pt}{8.25pt}\selectfont\ttfamily,
+  basewidth=0.5em,
+  % numbers=left,
+  % numberstyle=\tiny,
+  % stepnumber=1,
+  columns=fixed,
+  xleftmargin=2ex,%0.25in,
+  % firstnumber=1,
+  showstringspaces=false,
+  mathescape=true,
+  keepspaces=True,
+  tabsize=2
+}
+\renewcommand{\texttt}[1]{\lstinline[basicstyle=\fontsize{8pt}{8.25pt}\selectfont\ttfamily]{#1}}
+
+
+\usepackage{xcolor}   % for colors
+\newcommand{\CITE}{\colorbox{green!30}{\textbf{CITE}}}
+\newcommand{\TODO}{\colorbox{orange!30}{\textbf{TODO}}}
+\newcommand{\ourapproach}{PCI\xspace}
+\newcommand{\Ourapproach}{PCI\xspace}
+\newcommand{\dom}{\operatorname{dom}\,}
+\usepackage{hyperref}
+\usepackage[capitalise]{cleveref}
+
+% Configure hyperlinks
+\hypersetup{
+    colorlinks=true,      % use colored text for links
+    linkcolor=blue,       % color of internal links (sections, TOC)
+    urlcolor=blue,        % color of URLs
+    citecolor=blue,       % color of citations
+    filecolor=blue        % color of file links
+}
+
+\title{A Computationally Feasible Framework for Causal Probabilistic Explanation}
+
+\author{%
+  Rafal Urbaniak\thanks{\texttt{rafal@basis.ai}} \\
+  Basis Research Institute
+  \And
+  Eli Bingham\thanks{\texttt{eli@basis.ai}} \\
+  Basis Research Institute
+  \And
+  Sam Witty \\
+  ~
+  \And
+  Poorva Garg\thanks{\texttt{poorvagarg@cs.ucla.edu}} \\
+  University of California, Los Angeles
+  \And
+  Jack Feser\thanks{\texttt{jack@basis.ai}} \\
+  Basis Research Institute
+  \And
+  Daniel Waxman\thanks{\texttt{dan@basis.ai}} \\
+  Basis Research Institute
+}
+% TODO: add Andy, Sam, Drew (full names, emails, affiliations).
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}%
+  Explaining why a specific outcome occurred, and which inputs deserve the
+  blame or credit, is central to philosophical, scientific, and policy analysis.
+  Existing tools split into two camps. The Halpern--Pearl theory of
+  \emph{actual causality} gives principled verdicts, but only for toy-sized
+  models, because computing them requires enumerating counterfactual scenarios.
+  Scalable attribution methods like SHAP and LIME ignore the causal structure
+  that generated the data, and can give answers that conflict with a careful
+  causal analysis. We close this gap with Probabilistic Causal Impact
+  (\Ourapproach).
+
+  \ourapproach builds on actual causality and on Pearl's notions of probability
+  of necessity and sufficiency, but recasts the question ``which variables
+  explain this outcome?'' as an estimation problem on a probabilistic causal
+  model that one can solve by approximate methods, such as MC. To compute a \ourapproach
+  score, the analyst specifies three ingredients: a distribution $\Gamma$ over
+  which subsets of variables to consider as candidate explanations, a
+  distribution $\Delta$ over the counterfactual values to which those variables
+  might be changed, and a function $ci$ that measures how much such a change
+  shifts the outcome. The result is a tractable, causally grounded explanation
+  procedure that applies to large models. A correspondence theorem shows that
+  \ourapproach agrees with actual causality on the small models where AC is
+  well-defined; against Pearl's probability of actual causation, \ourapproach
+  recovers Pearl's within-scenario ranking and additionally captures
+  path-reliability and cross-scenario reliability, intuitions Pearl's binary
+  indicator cannot capture.
+
+  We evaluate \ourapproach in four increasingly demanding settings: a synthetic
+  structural model with redundant and preempting causes, where \ourapproach
+  recovers the AC literature's verdicts and generalises them to continuous
+  variables; a scaling benchmark where \ourapproach remains tractable as AC
+  enumeration becomes infeasible; a dynamical (Bayesian, ODE) epidemiological model
+   with continuous outcomes and asymmetric causes, where AC offers no verdict; and a deployed
+  spatio-temporal model with deep ML components trained on millions of points,
+  where \ourapproach and SHAP attributions diverge in the same qualitative
+  ways as in the synthetic setting.
+ 
+  
+  
+
+  \medskip\noindent\textbf{Keywords:} Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\input{sections/sec1_intro}
+\input{sections/sec2_motivations}
+\input{sections/sec3_definitions}
+\input{sections/sec4_examples}
+\input{sections/sec5_synthetic}
+\input{sections/sec6_dce}
+\input{sections/sec7_actual_causality}
+\input{sections/sec7b_paac}
+\input{sections/sec8_ac_benchmark}
+\input{sections/sec9_sir_benchmark}
+\input{sections/sec10_avm}
+\input{sections/sec11_discussion}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\input{sections/appA_obcb}
+\input{sections/appB_signal}
+\input{sections/appC_desert}
+
+\end{document}

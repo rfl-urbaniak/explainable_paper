@@ -1,0 +1,786 @@
+\section{Examples and Comparison to SHAP and Causal SHAP}\label{sec:shap_examples}
+
+\paragraph{Where we are.} Section~\ref{sec:causal_impact} defined \ourapproach
+and verified, on Alice and Bob, that the resulting attribution satisfies all seven
+desiderata of that section, where PN/PS/PNS fail at least two. The natural next
+question is how \ourapproach compares to the dominant practical alternative for
+feature attribution in the ML literature, SHAP and Causal SHAP, since these
+are the tools practitioners typically reach for. This section runs that comparison
+on two examples, recording where each method passes or fails an explicit
+desideratum. We first define SHAP and Causal SHAP formally
+(Section~\ref{sec:shap_defs}), then re-run OBCB
+(Section~\ref{sec:obcb_shap}), where the two SHAP variants coincide because the
+feature set is exogenous, so the divergence between PCI and SHAP is the only
+contrast to draw. We then introduce a continuous mediation example
+(Section~\ref{sec:signal}) where plain and Causal SHAP do diverge (one
+desideratum, D-YX, is fixed by the interventional correction; others, D-YM,
+D-MX, D-MXY, are not), and tabulate the desiderata in
+Section~\ref{sec:shap_signal}. Section~\ref{sec:shap_summary} traces every
+failure to one of three structural gaps in the SHAP framework that PCI's witness
+mechanism, suspect-set distribution $\Gamma_s$, and realised-outcome reference
+jointly close.
+
+Shapley values have become one of the most widely used tools for explaining the
+predictions of complex machine learning models. Grounded in cooperative game theory,
+they provide a principled decomposition of a model's prediction into additive
+contributions from individual features.
+\citet{janzing2020feature} argued that the conditional expectation in plain SHAP is the
+conceptually wrong way to model feature removal: a dropped feature should be
+marginalised under a $do$-intervention, not under conditioning.
+\citet{heskes2020causal} propose Causal SHAP, which implements this prescription by
+replacing the observational marginal used for features outside the active coalition
+with an interventional distribution: when a dropped feature is causally downstream of
+a coalition member, its distribution under the intervention differs from its marginal,
+and Causal SHAP corrects for this using Pearl's do-calculus.\footnote{%
+A different counterfactual line is taken by \citet{sharma2022cfshapley}, whose
+CF-Shapley values use a structural causal model to attribute the change in a metric
+from a single fixed reference $x^{\text{ref}}$ to the observed $x$:
+$\phi_j \propto \sum_{\mathcal{S}\subseteq N\setminus\{j\}}
+[f(x_\mathcal{S}, x_j^{\text{ref}}) - f(x_\mathcal{S}, x_j)]$.
+This is the closest neighbour to \ourapproach{} in spirit (single contrastive
+scenario, $do$-style intervention) and differs in three ways.
+\emph{(i)} CF-Shapley commits to one reference $x^{\text{ref}}$, while \ourapproach{}
+integrates over an alternative-value distribution $\Delta(\mathbf{x})$ and need not pick
+a single contrast.
+\emph{(ii)} CF-Shapley returns a one-axis contrast
+$f(\cdot, x_j^{\text{ref}}) - f(\cdot, x_j)$, while \ourapproach{} reports a joint
+$(Y^s, Y^n)$ measure and applies a user-chosen $ci$, decomposing necessity and
+sufficiency separately.
+\emph{(iii)} CF-Shapley has no witness mechanism, so it cannot break the
+overdetermination and undercutting symmetries that \ourapproach{}'s witness set
+$\mathbf{W}$ resolves on the OBCB and signal walkthroughs of this section.}
+Formal definitions of both are given in Section~\ref{sec:shap_defs}.
+
+Despite this repair, both methods share deeper limitations. First, both plain and
+Causal SHAP can assign non-zero responsibility to variables that play no causal role
+with respect to the target: attribution can run against the direction of the causal
+graph, a failure the interventional correction does not address. Second, both methods
+explain a model's predicted output averaged over the population, not the individual
+factual outcome of a specific person: when the goal is \emph{causal responsibility
+attribution}, this produces further failures that are not always made explicit in the
+literature. The first limitation will surface in our signal example as violations of
+D-YX, D-YM, and D-MX; the second will surface in OBCB as the D-A-rank overdetermination
+effect, and in the signal example as Instance~2's budget collapse when the prediction
+equals its baseline.
+
+We trace these failures through two examples, comparing plain SHAP, Causal SHAP, and
+PCI against the desiderata of Section~\ref{sec:causal_impact} and some further desiderata related to the example we
+will employ. We first return to the
+OBCB model: it permits exact analytic computation and the desiderata are already
+known. In OBCB the feature set contains only exogenous roots, so plain and Causal
+SHAP coincide: the comparison is short. We then turn to a continuous mediation
+example where downstream variables are observable model inputs; there the two methods
+diverge, and we examine what Causal SHAP fixes and what it does not.
+
+\subsection{SHAP and Causal SHAP}\label{sec:shap_defs}
+
+In this section $\mathcal{S} \subseteq N$ denotes a SHAP coalition (a subset of features held
+to their factual values during evaluation), playing the same role here that
+$\mathbf{C} \subseteq \mathbf{S}$ played in Section~\ref{sec:causal_impact}. We use the
+calligraphic $\mathcal{S}$ to keep the SHAP coalition typographically distinct from PCI's
+suspect set $\mathbf{S}$ on the printed page; the SHAP literature's plain $S$ is the same
+object.
+
+\begin{definition}[SHAP]
+A cooperative game is a pair $(N, v)$,
+where $N = \{1, \ldots, n\}$ is the set of players and $v: 2^N \to \mathbb{R}$
+is the \emph{characteristic function} mapping each subset
+(coalition) $\mathcal{S} \subseteq N$ to the value that coalition can produce. The Shapley value
+\citep{shapley1953} assigns each player $i$ a payoff $\phi_i$, its share of the total
+value $v(N) - v(\emptyset)$, and is the unique attribution satisfying four axioms:
+\begin{enumerate}
+\item \textbf{Efficiency}: $\sum_i \phi_i = v(N) - v(\emptyset)$
+\item \textbf{Symmetry}: If $v(\mathcal{S} \cup \{i\}) = v(\mathcal{S} \cup \{j\})$ for all $\mathcal{S}$, then
+      $\phi_i = \phi_j$
+\item \textbf{Dummy}: If $v(\mathcal{S} \cup \{i\}) = v(\mathcal{S})$ for all $\mathcal{S}$, then $\phi_i = 0$
+\item \textbf{Linearity}: For two games $v_1, v_2$: $\phi_i(\alpha_1 v_1 + \alpha_2 v_2)
+      = \alpha_1 \phi_i(v_1) + \alpha_2 \phi_i(v_2)$
+\end{enumerate}
+The unique solution is:
+\begin{equation}
+\phi_i = \sum_{\mathcal{S} \subseteq N \setminus \{i\}}
+\frac{|\mathcal{S}|!\,(|N|-|\mathcal{S}|-1)!}{|N|!}
+\bigl[v(\mathcal{S} \cup \{i\}) - v(\mathcal{S})\bigr]
+\label{eq:shapley}
+\end{equation}
+The weight $\frac{|\mathcal{S}|!(|N|-|\mathcal{S}|-1)!}{|N|!}$ equals the probability that, in a uniformly
+random ordering of all players, exactly the members of $\mathcal{S}$ precede $i$. Equivalently,
+$\phi_i$ is the average marginal contribution of $i$ across all orderings.
+\citet{lundberg2017unified} apply Shapley values to explain model predictions by taking
+players to be input features, and the characteristic function to be the expected model
+output given a subset of features:
+\begin{equation}
+v(\mathcal{S}) = \mathbb{E}_{X_{\bar{\mathcal{S}}}}\bigl[f(X_{\mathcal{S}} = x_{\mathcal{S}},\, X_{\bar{\mathcal{S}}})\bigr]
+\end{equation}
+\noindent where $\bar{\mathcal{S}} = N \setminus \mathcal{S}$ and missing features are marginalized over
+their marginal distribution.
+\end{definition}
+
+\begin{definition}[Causal SHAP]\label{def:causalshap}
+Causal SHAP replaces the characteristic function with an interventional
+expectation \citep{heskes2020causal}:
+\begin{equation}
+v_{\text{causal}}(\mathcal{S}) = \mathbb{E}\bigl[f(X) \mid do(X_{\mathcal{S}} = x_{\mathcal{S}})\bigr]
+= \int P(X_{\bar{\mathcal{S}}} \mid do(X_{\mathcal{S}} = x_{\mathcal{S}}))\, f(X_{\bar{\mathcal{S}}}, x_{\mathcal{S}})\, dX_{\bar{\mathcal{S}}}
+\label{eq:causal_v}
+\end{equation}
+By the rules of do-calculus, intervening on $X_{\mathcal{S}}$ only affects the distribution of
+descendants of $X_{\mathcal{S}}$. For non-descendants, $P(X_j \mid do(X_{\mathcal{S}} = x_{\mathcal{S}})) = P(X_j)$.
+Writing $X_{\bar{\mathcal{S}},\,\mathrm{nd}}$ for the features in $\bar{\mathcal{S}}$ that are not
+descendants of any member of $\mathcal{S}$, and $X_{\bar{\mathcal{S}},\,\mathrm{d}}$ for those that are,
+equation~\eqref{eq:causal_v} is equivalent to:
+\begin{equation}
+v_{\text{causal}}(\mathcal{S}) = \mathbb{E}_{X_{\bar{\mathcal{S}},\,\mathrm{nd}} \sim P(\cdot),\;
+X_{\bar{\mathcal{S}},\,\mathrm{d}} \sim P(\cdot \mid do(X_{\mathcal{S}}=x_{\mathcal{S}}))}\bigl[f(X_{\bar{\mathcal{S}}}, x_{\mathcal{S}})\bigr]
+\end{equation}
+The Shapley formula~\eqref{eq:shapley} is otherwise unchanged. The method retains all
+four Shapley axioms.
+\end{definition}
+
+\medskip\noindent
+At the level of subset weighting alone, \ourapproach{} (with $J=1$, $K=|\mathbf{S}|$) and
+SHAP are not distinguishable: $\Gamma$'s subset weights match the Shapley kernel. The
+distinction lies in the integrand. SHAP averages marginal contributions using the
+observational conditional
+$\mathbb{E}[f(\mathbf{X}_{\mathcal{S}} = \mathbf{x}_{\mathcal{S}}, \mathbf{X}_{\bar{\mathcal{S}}})]$, marginalising over the
+empirical distribution of non-coalition features; a feature merely correlated with a true
+cause can therefore receive positive attribution. \ourapproach{} evaluates counterfactual
+outcomes
+$P(Y \in A \mid \mathbf{u},\, \mathrm{do}(\mathbf{C}=\mathbf{c}',\,\mathbf{T}=\mathbf{t}^\star))$
+computed via the structural model, so attribution flows only along genuine causal paths.
+The witness mechanism adds a further distinction: by holding intermediate variables fixed,
+\ourapproach{} can resolve overdetermination and undercutting scenarios where SHAP assigns
+equal or incorrect attribution. The remainder of this section makes both points concrete on
+two examples.
+
+\subsection{OBCB: SHAP and Causal SHAP}\label{sec:obcb_shap}
+
+To apply the SHAP and Causal SHAP definitions of Section~\ref{sec:shap_defs}
+to OBCB we must specify both a feature set $N$ and a function $f$ on the joint
+feature space; the value functions and Shapley sums are derived from these.
+The natural choice for $f$ is the conditional expectation of the outcome,
+$f(x_N)=\mathbb{E}[\varname{loan}\mid X_N=x_N]$. But the OBCB PSCM has five
+variables --- $\varname{gender}$, $\varname{credit}$, $\varname{check}$,
+$\varname{check\text{-}failed}$, $\varname{loan\_if\_checked}$ --- so the
+choice of $N$ is non-trivial. Two options are natural:
+\begin{itemize}
+\item \textbf{Option A: two upstream roots.}
+$N=\{\varname{gender},\varname{credit}\}$. Both features are exogenous; the
+three internal variables ($\varname{check}$, $\varname{check\text{-}failed}$,
+$\varname{loan\_if\_checked}$) are integrated out inside $f$. This is the
+smallest sufficient feature set and matches the way the model is normally
+described: predict approval from gender and credit.
+\item \textbf{Option B: two roots plus the mediator.}
+$N'=\{\varname{gender},\varname{credit},\varname{check\text{-}failed}\}$.
+The mediator becomes an observable model input, the same status it has in the
+signal-with-mediation example (\S\ref{sec:signal}). This is the comparison
+PCI's witness mechanism naturally invites: PCI accesses
+$\varname{check\text{-}failed}$ as a witness, so allowing SHAP to access it as
+a feature is the fair foil.
+\end{itemize}
+We work through both. Option~A is simpler and exposes the qualitative failures
+of plain SHAP. Option~B then asks whether admitting the mediator rescues Causal
+SHAP.
+
+\medskip\noindent\textbf{Option~A: two upstream roots.}
+Here $f(g,c)=P(\varname{loan}=1\mid g,c)$ takes values
+$f(\text{F},\text{bad})=0.000$, $f(\text{F},\text{good})=0.180$,
+$f(\text{M},\text{bad})=0.045$, $f(\text{M},\text{good})=0.900$, with the three
+internal variables integrated out. We apply SHAP to the rejection probability
+$g(x)=1-f(x)$ for Alice and Bob from Example~\ref{ex:obcb_stochastic},
+attributing responsibility for the denial outcome.\footnote{Because $g=1-f$,
+the characteristic functions satisfy $v_g(\mathcal{S})=1-v_f(\mathcal{S})$ and
+$\phi^g_i=-\phi^f_i$; we compute $\phi^f$ and flip signs. With $|N|=2$ and
+uniform marginals $P(\varname{gender})=P(\varname{credit})=\tfrac{1}{2}$,
+equation~\eqref{eq:shapley} reduces to
+$\phi_i = \tfrac{1}{2}[v(\{i\})-v(\emptyset)] + \tfrac{1}{2}[v(N)-v(N\!\setminus\!\{i\})]$.}
+By the SHAP definition (and equivalently by Definition~\ref{def:causalshap}
+once we note that no dropped feature is a descendant of any coalition member),
+the value function on the 2-feature game and its closed-form specialisation
+under independent uniform marginals are derived in
+Appendix~\ref{app:obcb} (\S\ref{app:obcb_vS}). Plugging in the four values of
+$f$ listed at the start of Option~A yields Table~\ref{tab:vS_optionA}; pushing
+those through the closed-form Shapley gives the magnitudes in
+Table~\ref{tab:shap_obcb}, which compares against PNS and PCI.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\toprule
+$\mathcal{S}$ & $v(\mathcal{S})$ for Alice & $v(\mathcal{S})$ for Bob \\
+\midrule
+$\emptyset$                              & $0.281$ & $0.281$ \\
+$\{\varname{gender}\}$                   & $0.090$ & $0.473$ \\
+$\{\varname{credit}\}$                   & $0.023$ & $0.023$ \\
+$\{\varname{gender},\varname{credit}\}$  & $0.000$ & $0.045$ \\
+\bottomrule
+\end{tabular}
+\caption{Coalition values $v(\mathcal{S})=\mathbb{E}[f(X)\mid X_{\mathcal{S}}=x_{\mathcal{S}}^\star]$ for the
+2-feature game ($N=\{\varname{gender},\varname{credit}\}$).
+$v(\emptyset)=\mathbb{E}[f(X)]=0.281$ is the population baseline; $v(N)$ is
+the factual prediction $f(x^\star)$. Plain SHAP and Causal SHAP coincide on
+this game (neither feature is downstream of the other), so a single column
+suffices per individual.}
+\label{tab:vS_optionA}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccccc}
+\toprule
+Person & Feature & PNS & SHAP & ATE & CATE & PCI (no wit.) & PCI (with wit.) \\
+\midrule
+Alice & \varname{gender} & 0.045 & \phantom{$-$}0.107 & 0.383 & 0.045 & 0.210 & \textbf{0.263} \\
+Alice & \varname{credit} & 0.180 & \phantom{$-$}0.174 & 0.518 & 0.180 & 0.240 & \textbf{0.199} \\
+Bob   & \varname{gender} & 0.000 & $-$0.107           & 0.383 & 0.045 & 0.038 & \textbf{0.019} \\
+Bob   & \varname{credit} & 0.860 & \phantom{$-$}0.343 & 0.518 & 0.855 & 0.228 & \textbf{0.119} \\
+\bottomrule
+\end{tabular}
+\caption{Responsibility attributions for Alice and Bob.
+SHAP values are signed ($\phi^g_i$ for $P(\varname{loan}=0\mid x)$); desiderata compare magnitudes $|\cdot|$.
+ATE is a population quantity (identical across the two persons by feature); CATE conditions on
+the \emph{other} covariate (credit for the gender rows; the person's gender for the credit rows).
+PNS and PCI values from Table~\ref{tab:pci_decomp}; ATE/CATE computed by direct PSCM evaluation in
+\texttt{docs/source/obcb\_computations.ipynb}.}
+\label{tab:shap_obcb}
+\end{table}
+
+ATE and CATE fail the same two individual-level desiderata that PNS fails, and
+for related reasons.
+ATE attributes responsibility at the population level only, so its
+values are identical across Alice and Bob, immediately violating \textbf{D-comp}
+($|R(\varname{gender}\mid\text{Alice})| = |R(\varname{gender}\mid\text{Bob})| = 0.383$).
+CATE conditions on observable covariates but inherits PNS's blind spot via the
+$\varname{check\text{-}failed}$ propagation discussed in Section~\ref{sec:motivations}:
+for Alice it returns $0.045$ for gender and $0.180$ for credit, the same
+ranking as $\pns_c$ and the same \textbf{D-A-rank} failure.
+CATE also fails \textbf{D-comp}, since
+$\mathrm{CATE}(\varname{gender}\mid\varname{credit}{=}\text{bad}) = 0.045$ is the same number
+for Alice and Bob.
+
+SHAP fails two desiderata. The primary failure is \textbf{D-A-rank}: Alice's
+credit outranks her gender ($0.174 > 0.107$). This is an overdetermination
+effect: \varname{credit}=bad correlates with the \varname{check\text{-}failed}
+mechanism that blocked Alice's credit evaluation, so SHAP's observational
+marginalization inflates credit attribution above gender's. PCI includes the factual
+\varname{check\text{-}failed} value directly, isolating gender's upstream causal
+role and recovering the correct ranking. PNS fails \textbf{D-A-rank} for the same reason;
+it also fails \textbf{D-B1} by returning exactly zero for Bob's gender (see
+Table~\ref{tab:desiderata}).
+
+The second SHAP failure is \textbf{D-comp}: $|\phi^g_{\varname{gender}}|=0.107$
+for both Alice and Bob. But gender played a strictly larger causal role in Alice's
+rejection than in Bob's. For Alice, \varname{gender}=female was sufficient on its
+own to produce rejection: it blocked the credit evaluation entirely, so her
+credit was never a factor. For Bob, \varname{gender}=male was a facilitating
+condition: it triggered the credit check, but \varname{credit}=bad was the actual
+driver of the denial. SHAP cannot distinguish these because it measures how far
+each feature value deviates from the population prediction mean: female and
+male are equidistant deviations in opposite directions, so they receive equal
+magnitude regardless of their individual causal weight. This is an instance of a
+deeper limitation: SHAP explains predicted outputs, not individual factual
+outcomes, which we examine further in Section~\ref{sec:signal}.
+
+Causal SHAP coincides exactly with plain SHAP under Option~A: both features
+are exogenous roots, so
+$P(\varname{credit}\mid do(\varname{gender}=g))=P(\varname{credit})$ and vice
+versa, no dropped feature is a descendant of any coalition member, and
+$v_{\mathrm{causal}}(\mathcal{S})=v_{\mathrm{plain}}(\mathcal{S})$ for every coalition. Option~A
+therefore reduces to a single SHAP analysis, and the failures
+above belong to both methods.
+
+\medskip\noindent\textbf{Option~B: two roots plus the mediator.}
+Throughout this subsection we abbreviate $\varname{gender}$, $\varname{credit}$, and
+$\varname{check\text{-}failed}$ as $g$, $c$, and $cf$ in mathematical expressions and table
+cells; running prose retains the full names.
+Now we admit \varname{check\text{-}failed} as a third model input and apply
+both methods to the 3-feature game $N'=\{\varname{gender},\varname{credit},\varname{check\text{-}failed}\}$.
+This requires defining $f$ on $\{0,1\}^3$ rather than on $\{0,1\}^2$. The
+natural observational extension is again the conditional expectation
+$\tilde f(g,c,cf)=\mathbb{E}[\varname{loan}\mid \varname{gender}=g,\,\varname{credit}=c,\,\varname{check\text{-}failed}=cf]$.
+This is well defined for three of the four $(c,cf)$ combinations, but not the
+fourth: a failed check requires that a check happened \emph{and} the credit
+was bad, so $\varname{check\text{-}failed}=1$ together with
+$\varname{credit}=\text{good}$ is impossible under the PSCM and has no
+observational data to condition on. We leave $\tilde f$ undefined on this cell.
+
+Both methods need a value function $v(\mathcal{S})$: the expected value of $\tilde f$
+when the features in $\mathcal{S}$ are held at their factual values $x_{\mathcal{S}}^\star$ and the
+remaining features are averaged out. The methods differ in how that average
+is taken. Plain SHAP averages over each dropped feature using its own
+observational marginal $P(X_i)$, with the dropped features treated as
+independent of one another. Causal SHAP averages over the joint distribution
+the PSCM produces under the intervention $do(X_{\mathcal{S}} = x_{\mathcal{S}}^\star)$, so the dropped
+features keep whatever joint dependencies the PSCM imposes on them. Whether
+either average ever lands on the impossible cell $(c{=}1, cf{=}1)$ (and so
+whether $v(\mathcal{S})$ is finite) depends on both the method and on which features
+are held fixed at which factual values. Table~\ref{tab:vS_optionB} works out
+all eight coalition values for both individuals.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{l cc cc}
+\toprule
+& \multicolumn{2}{c}{Alice $(g,c,cf){=}(0,0,0)$} & \multicolumn{2}{c}{Bob $(g,c,cf){=}(1,0,1)$} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+$\mathcal{S}$ & $v_{\mathrm{plain}}$ & $v_{\mathrm{causal}}$ & $v_{\mathrm{plain}}$ & $v_{\mathrm{causal}}$ \\
+\midrule
+$\emptyset$    & \textbf{NaN} & $0.281$ & \textbf{NaN} & $0.281$ \\
+$\{g\}$        & \textbf{NaN} & $0.090$ & \textbf{NaN} & $0.473$ \\
+$\{c\}$        & $0.007$      & $0.023$ & $0.007$      & $0.023$ \\
+$\{cf\}$       & $0.270$      & $0.270$ & \textbf{NaN} & \textbf{NaN} \\
+$\{g,c\}$      & $0.000$      & $0.000$ & $0.014$      & $0.045$ \\
+$\{g,cf\}$     & $0.090$      & $0.090$ & \textbf{NaN} & \textbf{NaN} \\
+$\{c,cf\}$     & $0.000$      & $0.000$ & $0.025$      & $0.025$ \\
+$N'$           & $0.000$      & $0.000$ & $0.050$      & $0.050$ \\
+\bottomrule
+\end{tabular}
+\caption{Coalition values for the 3-feature game
+$N' = \{\varname{gender},\varname{credit},\varname{check\text{-}failed}\}$.
+Bold \textbf{NaN} entries flag coalitions whose value function evaluates
+$\tilde f$ at the impossible cell $(c{=}1,cf{=}1)$ with positive weight.
+Plain SHAP and Causal SHAP coincide whenever neither $\varname{credit}$ nor
+$\varname{check\text{-}failed}$ is dropped, since the only structural coupling
+in the model is between these two; they diverge whenever one is in $\mathcal{S}$ and the
+other is not.}
+\label{tab:vS_optionB}
+\end{table}
+
+\textbf{Plain SHAP.}
+Plain SHAP treats $\varname{credit}$ and $\varname{check\text{-}failed}$ as
+independent, so whenever both are dropped from the coalition the average runs
+over all four $(c, cf)$ combinations, with the impossible $(c{=}1, cf{=}1)$
+combination receiving weight
+$P(c{=}1)\cdot P(cf{=}1) = 0.5\cdot 0.275 \approx 0.140$,
+the same nonzero weight as any other corner. For Alice, both $\varname{credit}$ and
+$\varname{check\text{-}failed}$ are dropped at $\mathcal{S}\in\{\emptyset,\{\varname{gender}\}\}$,
+the first two NaN
+entries in Table~\ref{tab:vS_optionB}. For Bob the same two coalitions fail,
+and two more break for an additional reason: at
+$\mathcal{S}=\{\varname{check\text{-}failed}\}$ and
+$\mathcal{S}=\{\varname{gender},\varname{check\text{-}failed}\}$ the value $cf^\star=1$
+is held fixed while $\varname{credit}$ is sampled from its marginal, so the $c{=}1$ branch
+enters with weight $0.5$ and again hits the impossible cell. Plain SHAP gives
+undefined Shapley values for both individuals.\footnote{The underlying issue
+is that plain SHAP does not see that $\varname{credit}$ and
+$\varname{check\text{-}failed}$ are linked by the structural equation
+$cf = \varname{check}\cdot(1 - c)$, and so cheerfully samples a combination
+the PSCM rules out.}
+
+\textbf{Causal SHAP for Alice.}
+Causal SHAP samples $cf$ following its structural equation
+$cf = \varname{check}\cdot(1 - c)$, with $\varname{check}\sim\mathrm{Bern}(p_\text{check}[g])$,
+given whatever $(g, c)$ values appear in the integrand. When $c=1$ the
+equation forces $cf=0$ regardless of $\varname{check}$, so the
+$(c{=}1, cf{=}1)$ combination is never produced. Every Alice entry in the
+$v_\mathrm{causal}$ column of Table~\ref{tab:vS_optionB} is therefore finite.
+Plugging Alice's column into the Shapley formula gives magnitudes
+$|\phi_{\varname{gender}}|=0.097$, $|\phi_{\varname{credit}}|=0.176$,
+$|\phi_{\varname{check\text{-}failed}}|=0.007$, so
+$|\phi_{\varname{credit}}|>|\phi_{\varname{gender}}|$ and \textbf{D-A-rank}
+fails: credit outranks gender, exactly the same pathology plain SHAP exhibited
+on the 2-feature game.
+
+\textbf{Causal SHAP for Bob.}
+Two coalitions break for Bob: $\mathcal{S}=\{\varname{check\text{-}failed}\}$ and
+$\mathcal{S}=\{\varname{gender},\varname{check\text{-}failed}\}$. Both hold
+$\varname{check\text{-}failed}$ at Bob's factual value $cf^\star=1$ and average
+$\varname{credit}$ over its
+marginal. To see why this is fatal, apply
+Definition~\ref{def:causalshap} to the first:
+\[
+v_\mathrm{causal}(\{cf\})
+\;=\; \mathbb{E}\!\left[\tilde f(X)\,\big|\,do(cf = 1)\right]
+\;=\; \tfrac{1}{4}\sum_{g\in\{0,1\}}\sum_{c\in\{0,1\}}\tilde f(g,c,1).
+\]
+The uniform $\tfrac{1}{4}$ weights come from $\varname{gender}$ and
+$\varname{credit}$ sitting upstream of $\varname{check\text{-}failed}$ in the causal graph:
+intervening on $\varname{check\text{-}failed}$ overrides the structural equation that would
+normally determine it
+from credit and check, but does not alter the marginal distributions of the
+upstream features. Two of the four summands evaluate $\tilde f$ at
+$(g, c{=}1, cf{=}1)$ --- the impossible cell --- with weight $\tfrac{1}{4}$
+each. So $v_\mathrm{causal}(\{cf\})$ is undefined, and so is
+$v_\mathrm{causal}(\{g, cf\})$ for the same reason. These two coalitions
+appear in the Shapley sum for every feature, so all three of Bob's Causal
+SHAP values are NaN (Bob's columns in Table~\ref{tab:vS_optionB}).
+
+\textbf{Why Bob breaks and Alice does not.}
+The same two coalitions arise for Alice; the difference is the value of
+$cf^\star$ being held fixed. With Alice's $cf^\star = 0$, the $c{=}1$ summand
+in the formula above evaluates $\tilde f(g, 1, 0) =
+p_\text{check}[g]\cdot\text{loan\_prob}[g, 0]$, which is defined because the
+PSCM does allow $(c{=}1, cf{=}0)$: when credit is good, $cf$ is forced to $0$
+deterministically, so the conditional expectation has a value. With Bob's
+$cf^\star = 1$, the $c{=}1$ summand evaluates $\tilde f(g, 1, 1)$, the
+impossible cell, ``good credit and a failed check'', which the PSCM
+rules out, since failing the credit check requires bad credit by the
+structural equation $cf = \varname{check}\cdot(1 - c)$.
+
+The mechanism producing this asymmetry is the intervention itself. When the
+PSCM runs forward, $\varname{credit}$ and $\varname{check\text{-}failed}$ are
+linked by $cf = \varname{check}\cdot(1 - c)$, which keeps $c{=}1$ and
+$cf{=}1$ from co-occurring. When Causal SHAP intervenes via
+$do(cf = cf^\star)$, this link is overridden: $\varname{check\text{-}failed}$ is fixed
+externally and
+$\varname{credit}$ is sampled freely. The override always produces a
+$(c{=}1, cf^\star)$ combination with positive weight; whether $\tilde f$ has
+a value for that combination depends on which $cf^\star$ value Causal SHAP is
+intervening on.
+
+Promoting the mediator to a feature therefore does not rescue Causal SHAP:
+it fails the desideratum on Alice and breaks down outright on Bob.
+
+\medskip\noindent
+The OBCB analysis exposed two structural failure modes: SHAP's
+overdetermination effect on the 2-feature game, and Causal SHAP's breakdown
+once the mediator is admitted as a feature under Option~B. The second of
+these depends on a structural feature of the OBCB PSCM: the equation
+$cf = \varname{check}\cdot(1 - c)$ ties $\varname{credit}$ and
+$\varname{check\text{-}failed}$ together, so Option~B's natural feature set
+contains one combination of input values (``good credit and a failed
+check'') that the model is not defined on. To see whether the same families
+of failure appear without this complication, we now turn to the
+signal-with-mediation chain $X \to M \to Y$, where the mediator is naturally
+an observable input, $\tilde f$ is defined everywhere, and no impossible-cell
+issue arises. Causal SHAP's failures there are not artifacts of an undefined
+$\tilde f$ but properties of the method itself.
+
+
+\subsection{Signal with Mediation}\label{sec:signal}
+
+\begin{example}[Signal with mediation]\label{ex:signal_mediation}
+We work with the following \textbf{generative model}: $X$ sends a signal,
+$M$ mediates it with some noise, and $Y$ is the noisy final outcome:
+\begin{align}
+X &\sim \mathcal{N}(0.5,\ 0.25) \label{eq:X}\\
+M &= X + \varepsilon_M, \quad \varepsilon_M \sim \mathcal{N}(0,\ 0.1) \label{eq:M}\\
+Y &= M + \varepsilon_Y, \quad \varepsilon_Y \sim \mathcal{N}(0,\ 0.1) \label{eq:Y}
+\end{align}
+
+\noindent The causal graph is $X \to M \to Y$, a simple mediation chain. All noise terms
+are independent of each other and of $X$. Since everything is jointly Gaussian, all
+conditional expectations are linear functions of the conditioning variables,
+and no approximations are required.
+
+Let $R(X \rightsquigarrow Y)$ denote the causal responsibility of $X$ for $Y$.
+Following the convention of Section~\ref{sec:causal_impact}, the desiderata are
+stated in terms of absolute magnitudes $|R(\cdot)|$, allowing for directionality.
+The \textbf{qualitative causal responsibility desiderata} for this example are:
+\begin{align*}
+\textbf{D-XY} \quad & |R(X \rightsquigarrow Y)| > 0 \\[4pt]
+\textbf{D-MY} \quad & |R(M \rightsquigarrow Y)| > 0 \\[4pt]
+\textbf{D-XM} \quad & |R(X \rightsquigarrow M)| > 0 \\[8pt]
+\textbf{D-YX} \quad & |R(Y \rightsquigarrow X)| = 0 \\[4pt]
+\textbf{D-YM} \quad & |R(Y \rightsquigarrow M)| = 0 \\[4pt]
+\textbf{D-MX} \quad & |R(M \rightsquigarrow X)| = 0
+\end{align*}
+
+A more subtle desideratum concerns telling apart the \emph{roles} of the two
+genuine causes. $X$ reaches $Y$ only through the mediator $M$, whereas $M$ acts
+on $Y$ directly; a good attribution method should be able to distinguish these
+two roles rather than collapse them into the same number. One systematic way to
+register the distinction is to require that the two causes receive different,
+rankable scores, and we adopt the convention of assigning the larger score to
+the cause closer to the outcome:
+\begin{align*}
+\textbf{D-MXY} \quad & |R(M \rightsquigarrow Y)| > |R(X \rightsquigarrow Y)|
+\end{align*}
+\noindent The direction of the inequality is a convention rather than a law of
+responsibility; what matters is that the method separates the direct from the
+indirect path at all, and scoring the closer cause higher is one principled,
+consistent way to register that separation. We apply this convention throughout.
+
+\noindent The key \textbf{distributional facts} we will use are:
+\begin{align}
+\mathbb{E}[X] &= \mathbb{E}[M] = \mathbb{E}[Y] = 0.5, \\
+\bigl(\text{Var}(X),\, \text{Var}(M),\, \text{Var}(Y)\bigr) &= (0.25,\, 0.35,\, 0.45), \\
+\bigl(\text{Cov}(X,M),\, \text{Cov}(X,Y),\, \text{Cov}(M,Y)\bigr) &= (0.25,\, 0.25,\, 0.35).
+\end{align}
+
+\noindent For each target variable, the optimal predictor under squared loss is the
+conditional expectation, computable exactly in this Gaussian model:
+\begin{align}
+f_Y(X, M) &= \mathbb{E}[Y \mid X, M] = M \quad (\{X, M\} \Rightarrow Y) \\
+f_M(X, Y) &= \mathbb{E}[M \mid X, Y] = 0.5X + 0.5Y \quad (\{X, Y\} \Rightarrow M) \\
+f_X(M, Y) &= \mathbb{E}[X \mid M, Y] = 0.5 + \frac{5}{7}(M - 0.5) \quad (\{M, Y\} \Rightarrow X)
+\end{align}
+
+\noindent The distributional facts and the three conditional expectations above
+are derived in Appendix~\ref{app:signal}
+(\S\ref{app:signal_distfacts}--\S\ref{app:signal_condexp}).
+
+\end{example}
+
+
+\subsection{Computations and Desiderata Analysis}\label{sec:shap_signal}
+
+We analyze two instances. \textbf{Instance 1} sets $X^\star=M^\star=Y^\star=1$: every
+variable lies above its mean, the prediction is non-trivial at every target, and SHAP,
+Causal SHAP, and PCI all return non-zero values. \textbf{Instance 2} sets
+$X^\star=M^\star=Y^\star=0.5$: every variable sits at its mean, the prediction equals
+its baseline, and SHAP's attribution budget $f(x^\star)-\mathbb{E}[f(X)]$ collapses
+to zero. We work through Instance~1 first, then return to Instance~2 to isolate what
+each method is really tracking.
+
+\paragraph{Computing the three methods.}
+At Instance~1 ($X^\star=M^\star=Y^\star=1$) all three methods admit closed-form
+evaluation in this Gaussian model. We defer the full per-target coalition-value
+and Shapley computations for plain and Causal SHAP, and the
+per-$(\mathbf{C},\mathbf{T})$ PCI derivation, to Appendix~\ref{app:signal}
+(\S\ref{app:signal_plain}--\S\ref{app:signal_pci}); the resulting attributions
+populate Table~\ref{tab:signal_desid}. One computed fact drives the D-YX
+discussion below and is worth stating here.
+
+
+\noindent Plain SHAP assigns $\phi_Y = 0.139 > 0$ for target $X$, even though $Y$ does not
+cause $X$. This arises because $v(\{Y\}) = 0.778 > 0.5$: observing $Y{=}1$ is
+statistically informative about $X{=}1$ through the chain $X \to M \to Y$. SHAP
+cannot distinguish ``$Y$ is informative about $X$'' from ``$Y$ causes $X$''
+because the value function is grounded in observational conditionals, which are
+symmetric under reversal of causal direction.
+
+
+
+\paragraph{Desiderata analysis.}\label{sec:signal_desiderata}
+Following the convention of Section~\ref{sec:causal_impact}, we use $R(A \rightsquigarrow B)$
+for the method-agnostic responsibility and $\phi_A^B$ exclusively for SHAP/Causal SHAP values;
+prose statements about desiderata refer to magnitudes $|R(A \rightsquigarrow B)|$.
+Here $A$ denotes the candidate cause and $B$ the target outcome (the generic $Y$ of
+Section~\ref{sec:causal_impact}); for the PCI columns $B^n, B^s$ are its
+necessity/sufficiency worlds, $B^\star$ its factual value, and
+$\bar c = |B^n - B^\star| - |B^s - B^\star|$ the absolute-difference impact of
+Example~\ref{ex:absolute_score}.
+Table~\ref{tab:signal_desid} maps the desiderata from Section~\ref{sec:signal}
+to the values computed above.
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccc}
+\toprule
+Desideratum & Condition & Plain SHAP & Causal SHAP
+  & PCI ($\mathbf{W}{=}\emptyset$) & PCI ($\mathbf{W}{=}$3rd) \\
+\midrule
+\textbf{D-XY}  & $|R(X \rightsquigarrow Y)| > 0$
+  & $0.250$\;\checkmark & $0.250$\;\checkmark
+  & $0.249$\;\checkmark & $0.186$\;\checkmark$^\dagger$ \\
+\textbf{D-MY}  & $|R(M \rightsquigarrow Y)| > 0$
+  & $0.250$\;\checkmark & $0.250$\;\checkmark
+  & $0.283$\;\checkmark & $0.319$\;\checkmark \\
+\textbf{D-XM}  & $|R(X \rightsquigarrow M)| > 0$
+  & $0.306$\;\checkmark & $0.375$\;\checkmark
+  & $0.253$\;\checkmark & $0.284$\;\checkmark \\
+\textbf{D-YX}  & $|R(Y \rightsquigarrow X)| = 0$
+  & $0.139$\;\texttimes & $0.000$\;\checkmark
+  & $0.000$\;\checkmark & $0.000$\;\checkmark \\
+\textbf{D-YM}  & $|R(Y \rightsquigarrow M)| = 0$
+  & $0.194$\;\texttimes & $0.125$\;\texttimes
+  & $0.000$\;\checkmark & $0.000$\;\checkmark \\
+\textbf{D-MX}  & $|R(M \rightsquigarrow X)| = 0$
+  & $0.219$\;\texttimes & $0.357$\;\texttimes
+  & $0.000$\;\checkmark & $0.000$\;\checkmark \\
+\textbf{D-MXY} & $|R(M \rightsquigarrow Y)| > |R(X \rightsquigarrow Y)|$
+  & $0.25{=}0.25$\;\texttimes & $0.25{=}0.25$\;\texttimes
+  & $0.283{>}0.249$\;\checkmark & $0.319{>}0.186$\;\checkmark$^\ddagger$ \\
+\bottomrule
+\end{tabular}%
+}
+\caption{Desiderata satisfied (\checkmark) and violated (\texttimes) by plain SHAP,
+Causal SHAP, and PCI on the signal-with-mediation example
+($X\!\to\!M\!\to\!Y$), instance $X=M=Y=1$. PCI uses
+$\bar c = \mathbb{E}[|B^n-B^\star|] - \mathbb{E}[|B^s-B^\star|]$ with $\Gamma_s,\Gamma_w$
+uniform over non-empty subsets and rejection on
+$\mathbf{C}\cap\mathbf{T}\neq\emptyset$. \textbf{W=3rd} sets the third variable
+(neither $A$ nor $B$) as the witness when not in $\mathbf{C}$.
+$^\dagger$~0.186 weights three suspect-containing $(C,T)$ configurations at
+$1/4$ each (the rejection-sampling filter keeps $2/3$ of $\Gamma_s\times\Gamma_w$
+draws, including a fourth valid pair $(\{M\},\emptyset)$ that does not contain $X$):
+one pins $M$ as
+witness (contribution~0, necessity and sufficiency coincide) and two let
+$M$ propagate freely (contributions~0.320 and 0.425).
+$^\ddagger$~The two values use different witness sets ($\mathbf{W}{=}\{M\}$
+for D-XY, $\mathbf{W}{=}\{X\}$ for D-MY); this column reports the amplified
+verdict under an asymmetric witness rule. The $\mathbf{W}{=}\emptyset$ column
+above is the corresponding single-game ranking and already passes D-MXY.}
+\label{tab:signal_desid}
+\end{table}
+
+\noindent\textbf{Positive results (D-XY, D-MY, D-XM).}
+Both methods correctly assign positive attribution to every direct or upstream cause
+of the target. Causal prediction models are built from observational conditionals,
+which do preserve correlation from cause to effect, so these desiderata pose no
+challenge to either method.
+
+\noindent\textbf{Causal SHAP fixes D-YX, not D-YM.}
+For target $X$, the interventional value $v_{\mathrm{causal}}(\{Y\})=0.5$ equals
+the baseline because $M$ is not downstream of $Y$: $P(M\mid do(Y{=}1))=P(M)$,
+so fixing $Y=1$ provides no interventional leverage over $f_X$, and Causal SHAP
+correctly yields $\phi_Y^X=0$.
+For target $M$, however, $\phi_Y^M=0.125>0$ persists.
+The prediction model $f_M(X,Y)=0.5X+0.5Y$ contains $Y$ as an input because $Y$ is
+observationally predictive of $M$; setting $Y=1$ raises the model output even under
+the interventional regime.
+Causal SHAP replaces the conditioning distribution but cannot remove a feature that
+the prediction model itself uses.
+
+\noindent\textbf{D-MX worsens under Causal SHAP.}
+Plain SHAP assigns $\phi_M^X=0.219$; Causal SHAP assigns $0.357$.
+Fixing D-YX reduces $v_{\mathrm{causal}}(\{Y\})$ from $0.778$ to $0.5$, driving
+$\phi_Y^X$ to zero, but reallocates the freed attribution to~$M$.
+Since the structural noise that actually drives $X$ is unobserved, all attribution
+concentrates on the only visible predictor,~$M$, even though $M$ does not cause~$X$.
+
+\noindent\textbf{D-MXY fails for both.}
+Since $f_Y=M$, the singleton values $v(\{X\})=\mathbb{E}[M\mid X{=}1]=1$ and
+$v(\{M\})=1$ are identical, giving $\phi_M^Y=\phi_X^Y=0.25$ for both methods.
+The Shapley formula cannot distinguish that $X$ reaches $Y$ only through~$M$:
+when $X=1$, the expected prediction is already~$1$ regardless of whether $M$ is
+observed or not, so both features receive the same marginal contribution.
+
+\noindent\textbf{PCI: structural intervention separates the paths; witnesses
+sharpen the gap.}
+Table~\ref{tab:signal_desid} reports PCI in two configurations: without
+witnesses ($\mathbf{W}=\emptyset$) and with the third variable as witness.
+
+Without witnesses, PCI satisfies all six single-variable desiderata.
+D-YX, D-YM, and D-MX are zero exactly: intervening on a variable that does not
+structurally affect the target leaves both the necessity and sufficiency
+worlds with identical distributions, so $ci=0$ identically.
+D-XY, D-MY, and D-XM are positive.
+D-MXY also \textbf{passes} at $\mathrm{PCI}(M\to Y)\approx 0.283 > \mathrm{PCI}(X\to Y)\approx 0.249$,
+but only by a margin of $0.034$. The asymmetry comes from the sufficiency
+world: at $C{=}\{X\}$, $X$'s path to $Y$ accumulates
+$\varepsilon_M+\varepsilon_Y$ in $|Y^s-Y^\star|$, while at $C{=}\{M\}$, $M$'s
+path accumulates only $\varepsilon_Y$. The necessity expectations match
+across paths ($\mathrm{Var}(X)+\mathrm{Var}(\varepsilon_M)+\mathrm{Var}(\varepsilon_Y)
+=\mathrm{Var}(M)+\mathrm{Var}(\varepsilon_Y)=0.45$), so the gap is carried
+entirely by the sufficiency variance asymmetry $\mathrm{Var}(\varepsilon_M)$.
+A small structural margin like this is fragile: under any perturbation of
+the noise variances or the contrast function the $\mathbf{W}=\emptyset$
+ordering could flip.
+
+Admitting the third variable as a witness amplifies the gap by roughly
+fourfold.
+$\mathrm{PCI}(X\to Y\mid\mathbf{W}{=}\{M\})\approx 0.186$ weights three
+suspect-containing $(C,T)$ configurations at $1/4$ each: in two cases $M$
+propagates freely (contributing~$0.320$ and $0.425$) and in one case $M$ is
+pinned as witness in both worlds, equalizing them and contributing~$0$.
+$\mathrm{PCI}(M\to Y\mid\mathbf{W}{=}\{X\})\approx 0.319$ weights three cases
+in which $M$ takes an alternative value; since $X$ does not appear in $Y$'s
+structural equation, pinning $X$ has no effect on $Y^n$ or $Y^s$, and all
+three cases contribute the same $0.425$.
+The gap widens from $0.034$ at $\mathbf{W}=\emptyset$ to
+$0.319-0.186=0.133$ at $\mathbf{W}=\{$third$\}$: the ordering is now
+\emph{robust} rather than marginal.
+The comparison relies on different witness sets for the two cells, so it
+remains illustrative rather than a single-game ranking.
+
+\paragraph{Instance 2 (baseline).}\label{sec:signal_baseline}
+We now return to \textbf{Instance 2}: every variable sits at its mean,
+$X^\star = M^\star = Y^\star = 0.5$, and the model predicts the baseline at every
+target: $f_Y(0.5,0.5)=0.5$, $f_M(0.5,0.5)=0.5$, $f_X(0.5,0.5)=0.5$. At this
+instance, SHAP's attribution budget $f(x^\star)-\mathbb{E}[f(X)]$ vanishes, while
+PCI's machinery is unaffected.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{2}{c}{Plain / Causal SHAP} & \multicolumn{2}{c}{PCI ($\mathbf{W}=\emptyset$)} & \multicolumn{2}{c}{PCI ($\mathbf{W}=\{$third$\}$)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+desideratum & value & status & value & status & value & status \\
+\midrule
+D-XY & $0.000$ & $\times$ & $0.154$ & $\checkmark$ & $0.115$ & $\checkmark$ \\
+D-MY & $0.000$ & $\times$ & $0.189$ & $\checkmark$ & $0.212$ & $\checkmark$ \\
+D-XM & $0.000$ & $\times$ & $0.146$ & $\checkmark$ & $0.165$ & $\checkmark$ \\
+D-YX & $0.000$ & $\checkmark$ & $0.000$ & $\checkmark$ & $0.000$ & $\checkmark$ \\
+D-YM & $0.000$ & $\checkmark$ & $0.000$ & $\checkmark$ & $0.000$ & $\checkmark$ \\
+D-MX & $0.000$ & $\checkmark$ & $0.000$ & $\checkmark$ & $0.000$ & $\checkmark$ \\
+\midrule
+D-MXY & \multicolumn{2}{c}{$0.000=0.000$~$\times$} & \multicolumn{2}{c}{$0.189>0.154$~$\checkmark$} & \multicolumn{2}{c}{$0.212>0.115$~$\checkmark$} \\
+\bottomrule
+\end{tabular}
+\caption{Desiderata at the baseline instance $X^\star=M^\star=Y^\star=0.5$.
+SHAP collapses to zero on every cell, correctly assigning zero to the
+non-causal triples by accident, but with no signal to offer on the causal
+ones. PCI reports the same structural verdicts as at $X^\star=M^\star=Y^\star=1$.}
+\label{tab:signal_desid_baseline}
+\end{table}
+
+The pattern in Table~\ref{tab:signal_desid_baseline} reflects the object each
+method is decomposing. SHAP attributes the quantity
+$f(x^\star)-\mathbb{E}[f(X)]$ across features. At the baseline this gap is
+zero on every target, so the budget being distributed is zero, and every cell
+collapses to zero, uniformly, regardless of how the realized outcome was
+actually produced. The non-causal triples (D-YX, D-YM, D-MX) are satisfied only
+by this collapse: SHAP is not isolating the absence of a causal path; it is
+reporting that there is nothing to attribute. The same collapse turns D-XY,
+D-MY, and D-XM into violations.
+
+PCI never invokes a population expectation. With $\mathbf{S}$ and $\mathbf{W}$
+defined relative to a fixed factual instance, the question is whether varying
+the suspect would move the realized outcome $y^\star$ away from itself,
+not whether $f(x^\star)$ deviates from $\mathbb{E}[f(X)]$. The structural
+mechanism is unchanged at the baseline, so the three causal pairs continue
+to register positive values; the three non-causal pairs continue to register
+zero exactly, because intervening on a variable that does not structurally
+affect the target leaves both worlds with identical distributions. The D-MXY
+verdict is preserved in both witness configurations, with margin
+$0.035$ at $\mathbf{W}=\emptyset$ (vs.\ $0.034$ at the
+$X^\star=M^\star=Y^\star=1$ instance) and $0.097$ at
+$\mathbf{W}=\{$third$\}$ (vs.\ $0.133$). The gap is a property of the
+PSCM's noise variances, not of where the factual sits.
+
+The two instances together make the contrast sharp. At Instance~1, SHAP's
+attribution budget $f(x^\star)-\mathbb{E}[f(X)]$ is non-zero and SHAP returns
+non-trivial numbers; at Instance~2 the budget vanishes and every cell collapses.
+PCI returns the same structural verdicts on all seven desiderata across the two
+instances. The lesson is not that SHAP gives the wrong answer at the baseline:
+it correctly reports that the factual prediction does not deviate from its mean.
+The point is that this is a different question from causal responsibility for
+$y^\star$: when the prediction equals its baseline, SHAP has no budget to
+distribute even when the PSCM's causal mechanism is perfectly intact. PCI asks
+the responsibility question directly, and answers it whether or not the
+prediction happens to coincide with its population mean.
+
+\subsection{Summary Across Both Examples}\label{sec:shap_summary}
+
+The failures above are not artifacts of a particular feature set or
+parameter choice: each traces to a structural limitation of the SHAP/Causal
+SHAP framework. Causal SHAP strictly improves on plain SHAP for one
+desideratum~(D-YX), by replacing observational conditioning with
+interventional distributions; the remaining failures share two sources:
+prediction models include non-causal features that the conditioning
+distribution cannot exclude~(D-YM, D-MX), and Shapley averaging cannot
+distinguish direct from indirect causal paths~(D-MXY). The OBCB analysis of
+Section~\ref{sec:obcb_shap} exhibits the same family in different surface
+form: plain SHAP fails \textbf{D-A-rank} on the 2-feature game, and Causal
+SHAP either inherits that failure (Alice) or becomes undefined outright
+(Bob) once the mediator is admitted as a feature. Across both examples,
+neither SHAP variant reliably satisfies the desiderata that motivated
+\Ourapproach in Section~\ref{sec:causal_impact}. PCI addresses these gaps
+through three ingredients the SHAP framework systematically lacks: the
+witness mechanism, the suspect-set distribution $\Gamma_s$, and the use of
+the realized outcome rather than the prediction baseline; the path-noise
+asymmetry in the sufficiency world produces a structural gap on D-MXY,
+which appears already in the witness-free single game and is amplified into a
+robust margin under a witness rule.
+
+\paragraph{Where we go next.} The two examples in this section are small enough
+to inspect every desideratum individually, but they cover only two causal
+patterns. Section~\ref{sub:synthetic} stress-tests \ourapproach on a synthetic
+structural model carrying three textbook archetypes --- linear
+necessary-and-sufficient, overdetermined-not-necessary, and preempted (gated)
+--- plus an irrelevance control, and verifies that \ourapproach separates them
+at a Monte Carlo budget small enough to bootstrap honest error bars.
+Section~\ref{sec:DCE} then contrasts \ourapproach with gradient-based attribution
+on a continuous credit-limit example.
+
+
