@@ -41,7 +41,7 @@ does not capture effects from non-infinitesimal changes in potential causes.%
 \footnote{DCE is, fairly, not designed for responsibility attribution:
 \citeauthor{butler2022differential} target rates of change of treatment.}
 Standard treatment-effect quantities, ATE and CATE, are causally grounded and
-tractable but lack context-sensitivity: every intervention propagates downstream
+often tractable but lack context-sensitivity: every intervention propagates downstream
 through the structural equations, overriding the mediator values that mark which
 causal paths were active in the factual world
 (Section~\ref{sec:motivations}).
@@ -65,7 +65,8 @@ in handling explicit normality orderings. Several components have precedents ---
 exogenous noise \citep{actualCausalityHalpern}, weighting by alternative-value
 probabilities \citep{Beckers2015CombiningPC}, aggregation over witness sets
 \citep{Beckers2015CombiningPC, actualCausalityHalpern} --- but no prior construction
-combines them into a single tractable estimator handling arbitrary variable domains.
+combines such intuitively compelling components into a single tractable estimator 
+handling arbitrary variable domains.
 
 \ourapproach presumes access to a trained probabilistic causal model from which
 counterfactual outcomes can be sampled, a stronger requirement than methods that
@@ -115,7 +116,7 @@ The third phase establishes the formal and empirical relationship between
 \ourapproach and actual causality. Section~\ref{sec:relation_with_ac} shows that
 under specific choices of $\Gamma$ and $\Delta$ the \ourapproach kernel is
 positive on a configuration exactly when that configuration is an actual cause in
-Halpern's sense, so AC verdicts can be read off the kernel without enumerating
+Halpern's sense, so aproximate AC verdicts can be read off the kernel without enumerating
 witnesses.
 Section~\ref{sub:pearl_actual_cause_prob} positions \ourapproach against Pearl's
 probability of actual causation: on the canonical desert-traveller example,
@@ -126,7 +127,7 @@ structurally cannot express but \ourapproach's expectation does.
 Section~\ref{sec:ac_benchmark} then benchmarks \ourapproach against explicit
 actual-cause computation: exact subset enumeration times out at $17$ variables,
 while the necessity-only \ourapproach estimator continues to roughly $73$--$145$
-variables (depending on sample budget) and sustains above a $0.85$
+variables (still with relatively undemanding sample budget and  per-problem-size computation duration <=60 minutes) and sustains above a $0.85$
 correct-attribution rate up to about $60$ variables, visiting several orders of
 magnitude fewer cause--witness configurations.
 
@@ -142,7 +143,7 @@ necessity term under witness pinning.
 Section~\ref{sec:avm} applies \ourapproach to a deployed automated valuation
 model with machine-learned components trained on millions of points, a regime
 where actual causality is intractable; SHAP returns qualitatively different
-attributions, assigning virtually all responsibility to downstream variables
+attributions, assigning virtually all responsibility to very few downstream variables
 and effectively ignoring the rest.
 Section~\ref{sec:discussion} closes with discussion.
 
