@@ -98,31 +98,7 @@ SHAP-vs-PCI comparison rests on the synthetic benchmark of Section~\ref{sub:synt
 with the production model serving as a feasibility witness rather than as quantitative
 evidence.
 
-\medskip\noindent\textit{Where \ourapproach falls short.} Three caveats about
-\ourapproach's reach deserve explicit discussion.
-\emph{(i) AC mismatch under noise integration.}
-Observation~\ref{obs:misalignment} shows that integrating the kernel against
-$P_{\mathbf{U}}$ before maximisation can drop AC causes that are subset-minimal but
-not cardinality-minimal: the $\Gamma$-weighted ranking is governed by cardinality,
-while AC's minimality is governed by the subset relation.
-Proposition~\ref{prop:filter} provides the operational route to AC verdicts in such
-cases; Theorem~\ref{th:local_max_to_ac} closes the gap only under \emph{necessity
-dilution} (Definition~\ref{def:necessity-dilution}), a regularity that fails in
-disjunctive overdetermination.
-\emph{(ii) Cardinality knob versus sample efficiency.}
-The cardinality cap is a tunable hyperparameter rather than a hidden default, but it
-trades precision for variance: tight bounds shrink the search space and reduce Monte
-Carlo variance per iteration but exclude joint-cause sets that AC's exhaustive
-enumeration would surface; loose bounds restore generality at the cost of slower
-convergence. Problem families with diffuse joint causation need more generous settings
-than the canonical AC benchmark uses, and the cap is therefore worth reporting
-alongside results.
-\emph{(iii) Cost of the PSCM-availability assumption.}
-Pointwise verdicts at the configuration level require a sampleable structural model.
-Methods that bound PN/PS/PNS from observational data and a causal graph alone, e.g.\
-Tian and Pearl's bounds, apply in settings where \ourapproach cannot, and the
-stronger PSCM commitment should be weighed against this when only a graph and a dataset
-are available.
+
 
 Taken together, \ourapproach provides a scalable, context-sensitive, causal explanation
 method for causal probabilistic machine-learning models. A natural probabilistic
@@ -135,6 +111,4 @@ computational feasibility on a production-grade model.
 Responsibility attribution has not yet been effectively mechanised in software for large,
 complicated models, which makes the exact notions present in the literature infeasible to
 apply. \Ourapproach develops approximate causal attribution workable for users of models
-of non-trivial size, with the design choices --- which variables are suspects, what
-counts as an alternative value, what counts as a difference --- exposed to the user
-rather than baked in.
+of non-trivial size, with the design choices exposed to the user.

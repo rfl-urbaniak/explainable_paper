@@ -103,18 +103,25 @@ and exogenous variables
 which induce independent Bernoulli noise.
 
 The structural assignments in the case at hand take the form $V_i = f_i(\mathbf{Pa}_i, U_i)$
-promised by the PSCM definition above, with indicator-threshold mechanisms against
-uniform exogenous noise:
+promised by the PSCM definition above. Each stochastic node is a Bernoulli draw whose
+success probability is a primitive parameter of the model (possibly depending on the
+node's parents); writing $V \sim \mathrm{Bernoulli}(p)$ for a node equal to $1$ with
+probability $p$, the mechanisms are
 \begin{align*}
-\varname{gender}        &= \mathbb{1}[U_g \le \alpha_g], \\
-\varname{credit}        &= \mathbb{1}[U_c \le \alpha_c], \\
-\varname{check}         &= \mathbb{1}\bigl[U_{ck} \le \gamma_F(1-\varname{gender}) + \gamma_M\varname{gender}\bigr], \\
-\varname{check\text{-}failed}  &= \varname{check}(1-\varname{credit}), \\
-\varname{loan\text{-}if\text{-}checked} &= \mathbb{1}\bigl[U_\ell \le \mathrm{loan\text{-}prob}(\varname{gender}, \varname{check\text{-}failed})\bigr], \\
-\varname{loan}          &= \varname{loan\text{-}if\text{-}checked} \cdot \varname{check},
+\varname{gender}        &\sim \mathrm{Bernoulli}(p_g), \\
+\varname{credit}        &\sim \mathrm{Bernoulli}(p_c), \\
+\varname{check}         &\sim \mathrm{Bernoulli}\bigl(\gamma_F(1-\varname{gender}) + \gamma_M\,\varname{gender}\bigr), \\
+\varname{check\text{-}failed}  &= \varname{check}\,(1-\varname{credit}), \\
+\varname{loan\text{-}if\text{-}checked} &\sim \mathrm{Bernoulli}\bigl(\mathrm{loan\text{-}prob}(\varname{gender}, \varname{check\text{-}failed})\bigr), \\
+\varname{loan}          &= \varname{loan\text{-}if\text{-}checked} \cdot \varname{check}.
 \end{align*}
-with $U_g, U_c, U_{ck}, U_\ell \overset{\text{iid}}{\sim} \mathrm{Unif}[0,1]$ as the
-exogenous noise. For the running example we take $\alpha_g = \alpha_c = 0.5$,
+So \varname{gender} and \varname{credit} are fair coin flips; \varname{check} fires with
+probability $\gamma_F$ for women and $\gamma_M$ for men; \varname{check\text{-}failed} and
+\varname{loan} are deterministic functions of the nodes above them. To keep the model a
+PSCM, each draw $V \sim \mathrm{Bernoulli}(p)$ is realised as $V = \mathbb{1}[U_V \le p]$
+with $U_V \overset{\text{iid}}{\sim} \mathrm{Unif}[0,1]$; it is this exogenous $U_V$,
+held fixed across the factual and counterfactual worlds, that makes counterfactuals
+well-defined. For the running example we take $p_g = p_c = 0.5$,
 $\gamma_F = 0.2$, $\gamma_M = 0.9$, and the values of $\mathrm{loan\text{-}prob}$
 given in Example~\ref{ex:obcb_stochastic}.
 
@@ -473,7 +480,7 @@ Section~\ref{sec:shap_examples}.
 % \end{align}
 % \end{definition}
 
-\paragraph{Where we are.} The PSCM and intervention apparatus give us a notion of
+The PSCM and intervention apparatus give us a notion of
 counterfactual outcome for any fixed noise realisation $\mathbf{u}$; $\Gamma$ tells
 us which suspect/witness configurations to ask about; $\Delta$ tells us which
 non-factual values to substitute when evaluating necessity. What remains is to plug

@@ -1,7 +1,7 @@
 \section{Synthetic Evaluation with Overdetermination and Undercutting}
 \label{sub:synthetic}
 
-\paragraph{Where we are.} Section~\ref{sec:shap_examples} has compared \ourapproach
+Section~\ref{sec:shap_examples} has compared \ourapproach
 with SHAP and Causal SHAP on two small examples and shown where the SHAP
 framework's desiderata fail. Those examples cover only two causal patterns:
 overdetermination through a gating mediator (OBCB) and correlated mediation
@@ -116,7 +116,7 @@ excess scores $\Delta_N, \Delta_S$ rather than raw ci values: subtracting $D$ wi
 each case normalises out the regime-dependent floor, so the archetype patterns can be
 read off stably regardless of $D$'s absolute drift.
 
-\paragraph{The threshold from the data, not from a guess.}
+\paragraph{The threshold comes from the data.}
 The directional desiderata of the form $\Delta > \epsilon$ or $\lvert \Delta \rvert <
 \epsilon$ all depend on a single tolerance $\epsilon$. Rather than hand-pick it, we
 derive it from the Monte Carlo budget. For every $\Delta$ score appearing in any
@@ -174,7 +174,7 @@ gap that, at $N = 20\,000$ samples, exceeds Monte Carlo noise at one-sided $95\%
 confidence. Subscripts $w/l$ denote the winner / loser of the
 $\max(5 O_1, 5 O_2)$ branch in the given case. Per-row check identifiers and the
 underlying numerical computations are listed in the companion notebook
-\texttt{responsibility\_archetypes.ipynb}.}
+\nb{responsibility\_archetypes}.}
 \label{tab:archetypes_desiderata}
 \end{table}
 
@@ -205,7 +205,7 @@ the row's \emph{pass region}, the set of $\Delta$ values that would confirm that
 row's claim given the bootstrap-derived threshold $\epsilon \approx 0.151$. The
 right-hand column annotates the formula and its point estimate. All ten dots fall
 inside their pass bands. Underlying numerical computations are in the companion
-notebook \texttt{responsibility\_archetypes.ipynb}.}
+notebook \nb{responsibility\_archetypes}.}
 \label{fig:archetypes_threshold_forest}
 \end{figure}
 
