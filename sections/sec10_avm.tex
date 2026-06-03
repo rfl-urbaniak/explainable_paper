@@ -1,6 +1,6 @@
 \section{Scaling \ourapproach to a Real-World Automated Valuation Model}\label{sec:avm}
 
-\paragraph{Where we are.} The synthetic archetypes of
+ The synthetic archetypes of
 Section~\ref{sub:synthetic}, the AC benchmark of
 Section~\ref{sec:ac_benchmark}, and the SIR benchmark of
 Section~\ref{sec:sir_benchmark} have all controlled the model and the ground
@@ -42,7 +42,7 @@ standardized-truncated, or standardized.} $x_{con} = x_{k+1}, \dots, x_n$.
 A causal DAG $\mathcal{G}$ expresses our causal assumptions about the relationships between
 variables. It was written manually in collaboration with domain experts and refined by
 adding edges to break implied conditional independencies that are not upheld by the
-data. The NY-prototype DAG has 25 nodes and 99 edges; topology with anonymised node
+data. The simplified NY-prototype DAG has 25 nodes and 99 edges; topology with anonymised node
 labels is shown in Figure~\ref{fig:avm_dag}; the full national DAG is larger and is
 not shown. As demonstrated in Section~\ref{sec:ac_benchmark}, even the prototype is
 already large enough that exact actual-causality enumeration is computationally
@@ -122,9 +122,3 @@ the controlled-setting comparison of Section~\ref{sec:shap_examples}.}
 \label{fig:avm_attribution}
 \end{figure}
 
-\paragraph{Where we go next.} Section~\ref{sec:discussion} closes the paper by
-articulating the relationship between \ourapproach and the two traditions it
-inherits from, Halpern's actual causality and Pearl's PN/PS/PNS, against
-the background of what every preceding section has shown, and points out the
-limitations of the present construction along with the natural follow-up
-directions.

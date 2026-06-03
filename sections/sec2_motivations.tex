@@ -38,7 +38,7 @@ Concretely, consider a model $M$ with \emph{exogenous variables} $\mathbf{U}$, w
 Let $\mathbf{S} \subseteq \mathbf{V}$ be the variables we suspect to be causally responsible (call them \emph{causal suspects}), and 
 $Y \in  \mathbf{V}$ be an outcome of interest. 
 Suppose we consider only one suspect $S \in \mathbf{S}$ and mark factual values with $^\star$. 
-Under a setting $\mathbf{U} = \mathbf{u}$ of the exogenous variables, $M$ produces $S = s^\star$ and $Y = y^\star$, denoted $(M, \mathbf{u}) \models S=s^\star, Y=y^\star$.
+Under a setting $\mathbf{U} = \mathbf{u}$ of the exogenous variables, $M$ produces $S = s^\star$ and $Y = y^\star$, denoted $(M, \mathbf{u}) \models S=s^\star, Y=y^\star$. We read $\models$ as ``yields'' (the model under noise $\mathbf{u}$ makes the stated equalities true), and its crossed form $\not\models$ as ``does not yield'' (the stated event fails to hold).
 We call this the \emph{factual} scenario.
 An intervened model where a variable $S$ is set to an alternative value $s'$ is denoted $(M, \mathbf{u})[S \leftarrow s']$.
 
@@ -272,9 +272,11 @@ This quantity factorises into a weighted sum of $\pn$ and $\ps$ by the
 consistency rule of counterfactuals
 \citep[\S 9.2]{causalityPearl}:
 \[
-  \pns(C = c^\star,\, Y = y^\star)
-  = P(C = c^\star,\, Y = y^\star)\,\pn(C = c^\star,\, Y = y^\star)
-  + P(C = c',\, Y \neq y^\star)\,\ps(C = c^\star,\, Y = y^\star).
+  \begin{aligned}
+    \pns(C = c^\star,\, Y = y^\star)
+    &= P(C = c^\star,\, Y = y^\star)\,\pn(C = c^\star,\, Y = y^\star) \\
+    &\quad + P(C = c',\, Y \neq y^\star)\,\ps(C = c^\star,\, Y = y^\star).
+  \end{aligned}
 \]
 \end{definition}
 
@@ -311,7 +313,7 @@ These values capture the relative causal impact of $\varname{gender}$ and $\varn
 Yet the bank never evaluated Alice's credit: the $\varname{check}$ variable was $F$ throughout.
 PNS has no mechanism to register this: it asks counterfactually what would happen if credit were different, without fixing $\varname{check\text{-}failed}$, the mediating variable that blocked credit's causal path.
 
-As an attempt to help Alice better understand her particular situation, we might consider a modification of PNS with additional conditioning:
+As an attempt to help us better understand Alice's particular situation, we might consider a modification of PNS with additional conditioning:
 \[\pns_{c}(C = c^\star, Y = y^\star ~|~ Z=z^\star) = P(Y_{c^\star} = y^\star, Y_{c'} \neq y^\star ~|~ Z = z^\star)\]
 Using this definition, we can compute $\pns_c(\varname{gender} = \text{female}, \varname{loan} = F ~|~ \varname{credit} = \text{bad}) = 0.045$ and $\pns_c(\varname{credit} = \text{bad}, \varname{loan} = F ~|~ \varname{gender} = \text{female}) = 0.18$.
 Conditioning does not solve the problem described above (Alice's credit was in reality never evaluated) because the interventions override the mediating variable that tracks whether her credit has been checked.

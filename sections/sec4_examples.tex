@@ -1,6 +1,6 @@
 \section{Examples and Comparison to SHAP and Causal SHAP}\label{sec:shap_examples}
 
-\paragraph{Where we are.} Section~\ref{sec:causal_impact} defined \ourapproach
+ Section~\ref{sec:causal_impact} defined \ourapproach
 and verified, on Alice and Bob, that the resulting attribution satisfies all seven
 desiderata of that section, where PN/PS/PNS fail at least two. The natural next
 question is how \ourapproach compares to the dominant practical alternative for
@@ -55,7 +55,7 @@ Despite this repair, both methods share deeper limitations. First, both plain an
 Causal SHAP can assign non-zero responsibility to variables that play no causal role
 with respect to the target: attribution can run against the direction of the causal
 graph, a failure the interventional correction does not address. Second, both methods
-explain a model's predicted output averaged over the population, not the individual
+explain a model's predicted output's departure from the same model's output averaged over the population, not the individual
 factual outcome of a specific person: when the goal is \emph{causal responsibility
 attribution}, this produces further failures that are not always made explicit in the
 literature. The first limitation will surface in our signal example as violations of
@@ -227,23 +227,25 @@ suffices per individual.}
 \begin{table}[h]
 \centering
 \small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{llcccccc}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llccccccc}
 \toprule
-Person & Feature & PNS & SHAP & ATE & CATE & PCI (no wit.) & PCI (with wit.) \\
+Person & Feature & PNS & SHAP & ATE & CATE & ITE & PCI (no wit.) & PCI (with wit.) \\
 \midrule
-Alice & \varname{gender} & 0.045 & \phantom{$-$}0.107 & 0.383 & 0.045 & 0.210 & \textbf{0.263} \\
-Alice & \varname{credit} & 0.180 & \phantom{$-$}0.174 & 0.518 & 0.180 & 0.240 & \textbf{0.199} \\
-Bob   & \varname{gender} & 0.000 & $-$0.107           & 0.383 & 0.045 & 0.038 & \textbf{0.019} \\
-Bob   & \varname{credit} & 0.860 & \phantom{$-$}0.343 & 0.518 & 0.855 & 0.228 & \textbf{0.119} \\
+Alice & \varname{gender} & 0.045 & \phantom{$-$}0.107 & 0.383 & 0.045 & 0.045 & 0.210 & \textbf{0.263} \\
+Alice & \varname{credit} & 0.180 & \phantom{$-$}0.174 & 0.518 & 0.180 & 0.180 & 0.240 & \textbf{0.199} \\
+Bob   & \varname{gender} & 0.000 & $-$0.107           & 0.383 & 0.045 & 0.000 & 0.038 & \textbf{0.019} \\
+Bob   & \varname{credit} & 0.860 & \phantom{$-$}0.343 & 0.518 & 0.855 & 0.895 & 0.228 & \textbf{0.119} \\
 \bottomrule
 \end{tabular}
 \caption{Responsibility attributions for Alice and Bob.
 SHAP values are signed ($\phi^g_i$ for $P(\varname{loan}=0\mid x)$); desiderata compare magnitudes $|\cdot|$.
 ATE is a population quantity (identical across the two persons by feature); CATE conditions on
-the \emph{other} covariate (credit for the gender rows; the person's gender for the credit rows).
-PNS and PCI values from Table~\ref{tab:pci_decomp}; ATE/CATE computed by direct PSCM evaluation in
-\texttt{docs/source/obcb\_computations.ipynb}.}
+the \emph{other} covariate (credit for the gender rows; the person's gender for the credit rows);
+ITE abducts the individual's exogenous noise from the full factual record (covariates \emph{and}
+the observed denial) and takes the counterfactual contrast on that pinned noise.
+PNS and PCI values from Table~\ref{tab:pci_decomp}; ATE/CATE/ITE computed by direct PSCM evaluation in
+\nb{obcb\_computations}.}
 \label{tab:shap_obcb}
 \end{table}
 
@@ -259,6 +261,35 @@ ranking as $\pns_c$ and the same \textbf{D-A-rank} failure.
 CATE also fails \textbf{D-comp}, since
 $\mathrm{CATE}(\varname{gender}\mid\varname{credit}{=}\text{bad}) = 0.045$ is the same number
 for Alice and Bob.
+
+The individual treatment effect (ITE) is the natural endpoint of this ladder:
+where ATE marginalises all exogenous noise and CATE conditions only on observed
+covariates, the ITE abducts the unit's noise from its \emph{full} factual record
+--- covariates \emph{and} the observed denial --- and then takes the
+counterfactual contrast holding that abducted noise fixed, the
+abduction--action--prediction reading already used for $\pn$ in
+Section~\ref{sec:motivations}. This buys back exactly the information CATE
+discards. The ITE separates the two applicants on \textbf{D-comp} where CATE
+cannot: $\mathrm{ITE}(\varname{gender}\mid\text{Alice}) = 0.045$ but
+$\mathrm{ITE}(\varname{gender}\mid\text{Bob}) = 0$, because abduction places Bob
+in the checked-and-failed branch, where being male is not what blocked him ---
+flipping him to female (still bad credit) leaves him denied with certainty.
+The ITE is also a genuine counterfactual rather than an intervention: because it
+conditions on the outcome, $\mathrm{ITE}(\varname{credit}\mid\text{Bob}) = 0.895$
+rather than the interventional $P(\varname{loan}{=}1\mid do(\varname{credit}{=}\text{good}),\varname{gender}{=}\text{male}) = 0.90$,
+as conditioning on Bob's denial shifts posterior mass toward the unchecked branch.
+But the ITE does \emph{not} fix \textbf{D-A-rank}: for Alice it still returns
+$0.180$ for credit against $0.045$ for gender, the same inversion as $\pns_c$ and
+CATE. Abduction pins the \emph{noise} but not the \emph{mechanism} --- the
+counterfactual still routes through a hypothetical credit check in the $20\%$ of
+Alice's posterior in which she was checked, so credit retains spurious
+responsibility. Recovering the correct ranking requires \ourapproach's witness
+mechanism, which pins $\varname{check\text{-}failed}$ at its factual value
+(dominantly the unchecked branch for Alice, where credit is causally
+disconnected from the loan) rather than merely integrating over its noise. In
+this sense \ourapproach is the ITE \emph{plus} the structural machinery needed to
+see the mediated path: it inherits the ITE's individual-level, counterfactual
+character and adds the context-fixing the ITE alone lacks.
 
 SHAP fails two desiderata. The primary failure is \textbf{D-A-rank}: Alice's
 credit outranks her gender ($0.174 > 0.107$). This is an overdetermination
