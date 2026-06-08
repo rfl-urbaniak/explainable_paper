@@ -60,16 +60,14 @@ def abs_diff_score_inverse_transformed(
     tensors (``factual_outcomes``, ``suff_outcomes``, ``nec_outcomes``) using the provided
     parameters, then computes the absolute difference score using the transformed values.
 
-    :param factual_outcomes: The tensor of factual outcomes to be compared.
-    :param suff_outcomes: The tensor of sufficiency outcomes to be compared.
-    :param nec_outcomes: The tensor of necessity outcomes to be compared.
-    :param params: Dictionary of parameters needed for ``inverse_transform_log_epsilon``.
-    :param to_percentile: If True, the output score may be converted to a percentile scale (currently
-        not used in this implementation). Default is False.
-    :type to_percentile: bool
-    :return: A dictionary containing the absolute difference scores computed by
-        ``abs_diff_score``, using the inverse-transformed tensors. Keys and values
-        are as returned by ``abs_diff_score``.
+    :param factual_outcomes: factual outcomes to be compared.
+    :param suff_outcomes: sufficiency outcomes to be compared.
+    :param nec_outcomes: necessity outcomes to be compared.
+    :param params: parameters needed for ``inverse_transform_log_epsilon``.
+    :param to_percentile: if true, the output score may be converted to a percentile scale
+        (currently not used in this implementation). Defaults to false.
+    :returns: the absolute difference scores computed by ``abs_diff_score`` from the
+        inverse-transformed outcomes; keys and values are as returned by ``abs_diff_score``.
 
     .. note::
        The actual score computation is delegated to ``abs_diff_score``.

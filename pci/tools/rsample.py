@@ -58,6 +58,18 @@ class RSampleDistConfig:
 
     @functools.cached_property
     def transformed_event_dim(self) -> int:
+        """
+        Compute the event dimension of the distribution obtained by applying
+        the configured transforms to ``base_dist``.
+
+        Mirrors the event-dimension logic of
+        ``torch.distributions.TransformedDistribution``: it accounts for any
+        change in event dimension introduced by the composed transform and
+        takes the larger of the transform's own coupling and the base
+        distribution's event dimension shifted by that change.
+
+        :returns: The event dimension of the transformed distribution.
+        """
         # This logic extracted from torch.distributions.TransformedDistribution.__init__
         base_event_dim = len(self.base_dist.event_shape)
 
@@ -77,6 +89,24 @@ class RSampleDistConfig:
     def get_log_prob_and_u(
         self, value: torch.Tensor, base_sample: torch.Tensor | None = None
     ) -> tuple[torch.Tensor, torch.Tensor]:
+        """
+        Recover the base noise underlying an observed value and the associated
+        log-probability correction.
+
+        If an analytic log-prob/inverse callable is configured, it is used
+        directly (with log-probability masking, so any internal ``pyro.sample``
+        calls do not contribute to the trace). Otherwise the transforms are
+        inverted in reverse order, accumulating the negated log absolute
+        determinant of the Jacobian at each step to form the correction term.
+        The base distribution's own log-probability is deliberately omitted,
+        since the base noise sample site contributes it separately.
+
+        :param value: The transformed (observed) value to invert.
+        :param base_sample: Optional base noise sample forwarded to the
+            analytic callable so it can reuse identical noise.
+        :returns: A pair of the log-probability correction and the recovered
+            base noise.
+        """
         # If analytic function is provided, use it instead of transform inversion
         if self.analytic_log_prob_and_inv is not None:
             # Mask log probabilities in case the analytic function uses pyro.sample
@@ -109,12 +139,34 @@ class RSampleDistConfig:
         return log_prob, z
 
     def get_factual_values(self, v, event_dim=None) -> torch.Tensor:
+        """
+        Gather the factual (non-counterfactual) slice of a tensor along the
+        active counterfactual index plates.
+
+        :param v: The tensor to gather factual values from.
+        :param event_dim: The event dimension to respect when gathering;
+            defaults to the transformed distribution's event dimension.
+        :returns: The factual slice of ``v``.
+        """
         if event_dim is None:
             # FIXME this won't work generally, as the event dim depends on where we are in the transform stack.
             event_dim = self.transformed_event_dim
         return gather(v, get_factual_indices(), event_dim=event_dim)
 
     def factualize_transform_params(self, transform: Transform) -> Transform:
+        """
+        Return a copy of a transform whose tensor-valued parameters have been
+        replaced by their factual slices.
+
+        Each attribute of the transform is gathered to its factual values where
+        possible; scalar numeric parameters are left untouched when an event
+        dimension is present (since gathering does not apply to them), and
+        parameters that cannot be gathered are skipped. This lets transforms
+        carrying counterfactual parameters be evaluated on factual data.
+
+        :param transform: The transform whose parameters should be factualized.
+        :returns: A copy of the transform with factualized parameters.
+        """
         warnings.warn(
             "Using very invasive strategy in RSampleDistConfig.factualize_transform_params."
         )
@@ -138,11 +190,48 @@ def rsample(
     transforms: list[Transform],
     analytic_log_prob_and_inv: AnalyticLogProbFn | None = None,
 ) -> torch.Tensor:
+    """
+    Effectful entry point for drawing a reparameterized sample from a base
+    distribution composed with a sequence of transforms.
+
+    This function has no default implementation; it is intended to be handled
+    by an effect handler such as :class:`Exogenate`, which interprets the
+    ``rsample`` effect to materialize the base noise site and the transformed
+    value. Calling it without an active handler raises
+    :exc:`NotImplementedError`.
+
+    :param name: The sample site name for the transformed value.
+    :param base_dist: The base distribution to sample noise from.
+    :param transforms: The transforms applied in order to the base noise.
+    :param analytic_log_prob_and_inv: Optional analytic log-prob/inverse
+        callable used in place of generic transform inversion.
+    :returns: The reparameterized sample (supplied by the handling effect
+        handler).
+    :raises NotImplementedError: If invoked without an effect handler.
+    """
     raise NotImplementedError()
 
 
 class Exogenate(pyro.poutine.messenger.Messenger):
+    """
+    Pyro effect handler that exogenizes ``rsample`` sites by exposing their
+    base noise as explicit sample sites.
+
+    When this messenger is active, each ``rsample`` effect is interpreted to
+    create a separate base-noise sample site alongside the transformed value,
+    making the underlying exogenous randomness available for conditioning and
+    counterfactual reasoning. The handler tracks per-site reparameterization
+    configurations, the names of their base-noise sites, and the noise samples
+    drawn for them. Instances are single-use and may not be re-entered.
+    """
+
     def __init__(self, noise_suffix: str | None = "_u"):
+        """
+        Initialize the messenger and its per-site bookkeeping.
+
+        :param noise_suffix: Suffix appended to a site's name to form the name
+            of its exogenous base-noise sample site.
+        """
         super().__init__()
 
         self.noise_suffix = noise_suffix
@@ -155,6 +244,13 @@ class Exogenate(pyro.poutine.messenger.Messenger):
 
     # messenger is stateful, reuse not allowed
     def __enter__(self):
+        """
+        Enter the messenger context, enforcing single use.
+
+        :returns: The activated messenger context.
+        :raises RuntimeError: If this instance has already been used; a fresh
+            :class:`Exogenate` must be created for each model execution.
+        """
         if self._used:
             raise RuntimeError(
                 "Exogenate messenger instances are single-use. "
@@ -164,6 +260,16 @@ class Exogenate(pyro.poutine.messenger.Messenger):
         return super().__enter__()
 
     def _pyro_sample(self, msg) -> None:
+        """
+        Handle ``sample`` effects at exogenated sites.
+
+        For a site that has an associated reparameterization configuration,
+        this dispatches to the observation or non-observation handler depending
+        on whether the site is observed; sites without a configuration are left
+        untouched.
+
+        :param msg: The Pyro effect message for the sample site.
+        """
         rsample_config = self.rsample_configs.get(msg["name"], None)
 
         if rsample_config is None:
@@ -177,6 +283,24 @@ class Exogenate(pyro.poutine.messenger.Messenger):
     def handle_observation_of_exogenated_sites(
         self, msg, rsample_config: RSampleDistConfig
     ) -> None:
+        """
+        Handle an observed exogenated site by inferring its base noise and
+        re-expressing the site as a deterministic projection of that noise.
+
+        The observed value is inverted to recover the base noise, which is
+        broadcast to the base distribution's shape if needed and then pushed
+        back through the transforms to obtain a projected value. The factual
+        observation is scattered into this projected value so factual and
+        counterfactual worlds coexist, the site's function is replaced by a
+        :class:`Delta` carrying the log-probability correction, and the inferred
+        noise is recorded by observing the base-noise sample site. When index
+        plates are active, downstream plate expansion of the ``Delta`` is
+        suppressed.
+
+        :param msg: The Pyro effect message for the observed sample site.
+        :param rsample_config: The reparameterization configuration for the
+            site.
+        """
         _lp, inferred_u = rsample_config.get_log_prob_and_u(msg["value"])
 
         # Get event_dim first
@@ -235,6 +359,18 @@ class Exogenate(pyro.poutine.messenger.Messenger):
     def handle_nonobservation_of_exogenated_sites(
         self, msg, rsample_config: RSampleDistConfig
     ) -> None:
+        """
+        Handle an unobserved exogenated site by replaying its base noise.
+
+        The base-noise sample drawn earlier for this site is re-observed at its
+        base-noise sample site, so the exogenous randomness is pinned while the
+        site's transformed value continues to be produced by the ``rsample``
+        machinery.
+
+        :param msg: The Pyro effect message for the unobserved sample site.
+        :param rsample_config: The reparameterization configuration for the
+            site.
+        """
         base_noise_name = self.base_noise_sites[msg["name"]]
         pyro.sample(
             base_noise_name,
@@ -247,6 +383,23 @@ class Exogenate(pyro.poutine.messenger.Messenger):
         # It's just the log abs det jac part, then the base dist adds its own log prob.
 
     def _pyro_rsample(self, msg) -> None:
+        """
+        Interpret an ``rsample`` effect by drawing base noise and emitting the
+        transformed value.
+
+        A reparameterization configuration is built from the effect arguments
+        and validated to ensure the base distribution carries no counterfactual
+        indices. Base noise is sampled (without contributing to the trace),
+        recorded for later replay, and pushed through the transforms. The
+        resulting value is emitted at the named site as a :class:`Delta`
+        carrying the log-probability correction, with the original base sample
+        forwarded so analytic helpers can reuse identical noise.
+
+        :param msg: The Pyro effect message for the ``rsample`` effect.
+        :raises ValueError: If the base distribution has counterfactual
+            indices, which typically indicates an intervened variable is used
+            as one of its parameters.
+        """
         name = msg["name"] = msg["args"][0]
 
         rsample_config = self.rsample_configs[name] = RSampleDistConfig(**msg["kwargs"])
@@ -297,6 +450,12 @@ class RSampleSites(pyro.poutine.messenger.Messenger, ABC):
     """
 
     def __init__(self, *sites: str):
+        """
+        Initialize the messenger with the set of sites to reparameterize.
+
+        :param sites: Names of the sample sites this messenger should rewrite
+            via reparameterized sampling.
+        """
         super().__init__()
         self.sites = set(sites)
 
@@ -364,6 +523,20 @@ class RSampleSites(pyro.poutine.messenger.Messenger, ABC):
         return None
 
     def _pyro_sample(self, msg) -> None:
+        """
+        Rewrite a targeted sample site into a reparameterized sample.
+
+        For sites in this messenger's set whose function matches the target
+        distribution type (unwrapping :class:`Independent` if needed), this
+        builds a standardized base distribution and the transforms mapping it to
+        the original distribution, expands the base distribution to the
+        appropriate batch and event shape (accounting for both interventional
+        index plates and active Pyro plates), optionally constructs an analytic
+        log-prob/inverse function, and replaces the site's value with an
+        :func:`rsample` draw. Non-matching sites are left untouched.
+
+        :param msg: The Pyro effect message for the sample site.
+        """
         if msg["name"] not in self.sites:
             return
 
@@ -427,20 +600,52 @@ class RSampleNormalSites(RSampleSites):
     """Rsample messenger for Normal distributions."""
 
     def _get_target_distribution_type(self):
+        """
+        Identify the distribution type handled by this messenger.
+
+        :returns: The :class:`Normal` distribution class.
+        """
         return Normal
 
     def _create_base_distribution(self, device: torch.device) -> Dist:
+        """
+        Create the standard normal base distribution for reparameterization.
+
+        :param device: The device on which to place the distribution's
+            parameters.
+        :returns: A standard normal base distribution.
+        """
         return Normal(
             torch.tensor(0.0, device=device), torch.tensor(1.0, device=device)
         )
 
     def _create_transforms(self, original_dist: Dist) -> list[Transform]:
+        """
+        Build the affine transform mapping standard normal noise to the
+        original normal distribution.
+
+        :param original_dist: The original normal distribution whose location
+            and scale parameterize the transform.
+        :returns: A list containing the affine transform.
+        """
         assert isinstance(original_dist, Normal)
         return [AffineTransform(original_dist.loc, original_dist.scale)]
 
     def _create_analytic_log_prob_and_inv(
         self, original_dist: Dist, base_dist: Dist, event_shape: torch.Size
     ) -> AnalyticLogProbFn | None:
+        """
+        Build the analytic log-prob/inverse function for the normal site's
+        affine transform.
+
+        :param original_dist: The original normal distribution supplying the
+            location and scale parameters.
+        :param base_dist: The expanded base distribution (unused here).
+        :param event_shape: The event shape used to determine the event
+            dimension.
+        :returns: An analytic log-prob/inverse callable for the affine
+            transform.
+        """
         assert isinstance(original_dist, Normal)
         return make_analytic_log_prob_and_inv(
             original_dist.loc, original_dist.scale, event_shape
@@ -449,6 +654,16 @@ class RSampleNormalSites(RSampleSites):
 
 @dataclass
 class AffineLogProbAndInv:
+    """
+    Analytic log-probability and inverse for a single affine transform.
+
+    Captures the location and scale of an affine transform and provides a
+    closed-form inversion together with the corresponding log absolute
+    determinant of the Jacobian, avoiding the generic transform-inversion
+    machinery. A mutable call counter records how many times it has been
+    invoked.
+    """
+
     x: torch.Tensor
     scale: torch.Tensor
     event_dim: int
@@ -457,6 +672,21 @@ class AffineLogProbAndInv:
     def __call__(
         self, value: torch.Tensor, base_sample: torch.Tensor | None = None
     ) -> tuple[torch.Tensor, torch.Tensor]:
+        """
+        Invert an affine-transformed value and return its log-probability
+        correction.
+
+        The factual slices of the value, location, and scale are gathered, the
+        base noise is recovered as ``(value - loc) / scale``, and the
+        log-probability correction is ``-log(scale)`` summed over the event
+        dimensions. Increments the call counter on each invocation.
+
+        :param value: The affine-transformed value to invert.
+        :param base_sample: Unused here, since the log absolute determinant of
+            the Jacobian is available analytically.
+        :returns: A pair of the log-probability correction and the recovered
+            base noise.
+        """
         self.call_count[0] += 1
 
         # NOTE r9t7k1: base_sample unused here because log abs det jac is available,

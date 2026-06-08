@@ -252,6 +252,11 @@ class CausalKernelConditional(CausalKernel):
         )
 
         def _not_implemented(*args, **kwargs):
+            """Placeholder for neural_distribution until a subclass provides one.
+
+            :raises NotImplementedError: Always, since subclasses must implement
+                neural_distribution.
+            """
             raise NotImplementedError("Subclasses must implement neural_distribution")
 
         self.neural_distribution = _not_implemented
@@ -338,6 +343,10 @@ class StructuredModel(pyro.nn.PyroModule):
 
     @property
     def device(self):
+        """The device on which the model's parameters reside.
+
+        :returns: The device of the first model parameter.
+        """
         return next(self.parameters()).device
 
     def __init__(self, causal_kernels: Collection[CausalKernel]):

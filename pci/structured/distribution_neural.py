@@ -8,20 +8,48 @@ from torchvision.ops import MLP
 
 # for type hinting
 class NeuralDistribution(pyro.nn.PyroModule):
+    """Abstract base for neural distribution wrappers used as causal kernels.
+
+    Subclasses parameterise a Pyro distribution (categorical or normal,
+    conditional or unconditional) and sample a named outcome inside their
+    :meth:`forward`. This base only provides a common type and an unimplemented
+    forward contract.
+    """
+
     def forward(
         self,
         condition: torch.Tensor,
     ):
+        """Sample the wrapped distribution.
+
+        :param condition: The conditioning context driving the distribution
+            parameters; ignored by unconditional subclasses.
+        :raises NotImplementedError: Always, since subclasses must override this.
+        """
         raise NotImplementedError("Subclasses must implement a forward method")
 
 
 class NeuralDistributionUnconditionalCategorical(NeuralDistribution):
+    """Unconditional categorical distribution over a fixed set of outcomes.
+
+    The category logits are free learnable parameters and do not depend on any
+    conditioning context.
+    """
+
     def __init__(
         self,
         outcome_name: str,
         num_outcome_cat: int,
         event_dim: int = 1,
     ):
+        """Initialise the unconditional categorical wrapper.
+
+        :param outcome_name: Name under which the sampled outcome is registered
+            with Pyro.
+        :param num_outcome_cat: Number of categories the outcome can take.
+        :param event_dim: Number of trailing dimensions reinterpreted as event
+            dimensions when sampling.
+        """
         super().__init__()
 
         self.event_dim = event_dim
@@ -32,6 +60,10 @@ class NeuralDistributionUnconditionalCategorical(NeuralDistribution):
     def forward(
         self,
     ):
+        """Sample the named categorical outcome from the learned logits.
+
+        :returns: The sampled categorical outcome.
+        """
         return pyro.sample(
             self.outcome_name,
             dist.Categorical(logits=self.logits).to_event(self.event_dim),
@@ -39,6 +71,12 @@ class NeuralDistributionUnconditionalCategorical(NeuralDistribution):
 
 
 class NeuralDistributionConditionalCategorical(NeuralDistribution):
+    """Categorical distribution whose logits are predicted from a context.
+
+    A neural network maps the conditioning context to per-category logits, so
+    the outcome distribution depends on the input.
+    """
+
     def __init__(
         self,
         outcome_name: str,
@@ -47,6 +85,18 @@ class NeuralDistributionConditionalCategorical(NeuralDistribution):
         in_channels: int = 1,
         event_dim: int = 1,
     ):
+        """Initialise the conditional categorical wrapper.
+
+        :param outcome_name: Name under which the sampled outcome is registered
+            with Pyro.
+        :param num_outcome_cat: Number of categories the outcome can take.
+        :param neural_net: Network mapping the context to category logits. If
+            ``None``, a default MLP is constructed.
+        :param in_channels: Width of the conditioning context, used to build the
+            default network.
+        :param event_dim: Number of trailing dimensions reinterpreted as event
+            dimensions when sampling.
+        """
         super().__init__()
 
         if neural_net is None:
@@ -66,6 +116,12 @@ class NeuralDistributionConditionalCategorical(NeuralDistribution):
         self.event_dim = event_dim
 
     def forward(self, condition: torch.Tensor):
+        """Predict logits from the context and sample the categorical outcome.
+
+        :param condition: The conditioning context fed to the network to produce
+            the category logits.
+        :returns: The sampled categorical outcome.
+        """
         logits = self.net(condition)
 
         sample = pyro.sample(
@@ -82,6 +138,12 @@ class NeuralDistributionConditionalCategorical(NeuralDistribution):
 
 
 class NeuralDistributionUnconditionalNormal(NeuralDistribution):
+    """Unconditional normal distribution with learnable location and scale.
+
+    The location and (softplus-transformed) scale are free parameters and do not
+    depend on any conditioning context.
+    """
+
     def __init__(
         self,
         outcome_name: str,
@@ -89,6 +151,16 @@ class NeuralDistributionUnconditionalNormal(NeuralDistribution):
         raw_scale: torch.Tensor = torch.tensor([1.0]),
         event_dim: int = 1,
     ):
+        """Initialise the unconditional normal wrapper.
+
+        :param outcome_name: Name under which the sampled outcome is registered
+            with Pyro.
+        :param loc: Initial value for the learnable location parameter.
+        :param raw_scale: Initial pre-softplus value for the scale parameter; the
+            effective scale is obtained by applying softplus.
+        :param event_dim: Number of trailing dimensions reinterpreted as event
+            dimensions when sampling.
+        """
         super().__init__()
         self.loc = nn.Parameter(loc)
         self.raw_scale = nn.Parameter(raw_scale)
@@ -98,11 +170,20 @@ class NeuralDistributionUnconditionalNormal(NeuralDistribution):
 
     @property
     def scale(self) -> torch.Tensor:
+        """The positive scale, obtained from the raw parameter via softplus.
+
+        :returns: The softplus-transformed scale with a small positive floor for
+            numerical stability.
+        """
         return self.softplus(self.raw_scale) + 1e-6
 
     def forward(
         self,
     ):
+        """Sample the named normal outcome from the learned location and scale.
+
+        :returns: The sampled normal outcome.
+        """
         scale = self.softplus(self.raw_scale)
         return pyro.sample(
             self.outcome_name, dist.Normal(self.loc, scale).to_event(self.event_dim)
@@ -110,6 +191,12 @@ class NeuralDistributionUnconditionalNormal(NeuralDistribution):
 
 
 class NeuralDistributionConditionalNormal(NeuralDistribution):
+    """Normal distribution whose location and scale are predicted from a context.
+
+    Separate neural networks map the conditioning context to the location and the
+    (positive) scale, so the outcome distribution depends on the input.
+    """
+
     def __init__(
         self,
         outcome_name: str,
@@ -118,6 +205,19 @@ class NeuralDistributionConditionalNormal(NeuralDistribution):
         in_channels: int = 1,
         event_dim: int = 1,
     ):
+        """Initialise the conditional normal wrapper.
+
+        :param outcome_name: Name under which the sampled outcome is registered
+            with Pyro.
+        :param loc_neural_net: Network mapping the context to the location. If
+            ``None`` (or together with ``scale_neural_net``), a default is built.
+        :param scale_neural_net: Network mapping the context to the scale. If
+            ``None`` (or together with ``loc_neural_net``), a default is built.
+        :param in_channels: Width of the conditioning context, used to build the
+            default networks.
+        :param event_dim: Number of trailing dimensions reinterpreted as event
+            dimensions when sampling.
+        """
         super().__init__()
 
         self.outcome_name = outcome_name
@@ -143,6 +243,15 @@ class NeuralDistributionConditionalNormal(NeuralDistribution):
         self.event_dim = event_dim
 
     def forward(self, condition: torch.Tensor):
+        """Predict location and scale from the context and sample the outcome.
+
+        The predicted scale is floored at a small positive value to avoid
+        underflow when random initialisation yields large negative inputs.
+
+        :param condition: The conditioning context fed to the location and scale
+            networks.
+        :returns: The sampled normal outcome.
+        """
         loc = self.loc_neural_net(condition)
         scale = self.scale_neural_net(condition).clamp_min(
             1e-4
@@ -159,6 +268,18 @@ def make_default_categorical_neural_net(
     num_outcome_cat: int,
     activation_layer=nn.LeakyReLU,
 ) -> torch.nn.Module:
+    """Build the default MLP that maps a context to categorical logits.
+
+    Stacks a hidden MLP with a final linear layer producing one logit per
+    category.
+
+    :param in_channels: Width of the conditioning context input.
+    :param hidden_channels: Widths of the hidden layers; must be non-empty.
+    :param num_outcome_cat: Number of categories, i.e. the size of the logit
+        output.
+    :param activation_layer: Activation module class used between hidden layers.
+    :returns: The constructed logit-producing network.
+    """
     assert len(hidden_channels) > 0, "hidden_channels must be non-empty"
 
     assert activation_layer is not None
@@ -179,6 +300,17 @@ def make_default_categorical_neural_net(
 def make_default_normal_neural_nets(
     in_channels: int, hidden_channels: list[int], activation_layer=nn.LeakyReLU
 ) -> tuple[torch.nn.Module, torch.nn.Module]:
+    """Build the default pair of MLPs for a conditional normal distribution.
+
+    The location network ends in a linear layer; the scale network ends in a
+    linear layer followed by softplus to keep the scale positive.
+
+    :param in_channels: Width of the conditioning context input.
+    :param hidden_channels: Widths of the hidden layers; must be non-empty.
+    :param activation_layer: Activation module class used between hidden layers.
+    :returns: A pair ``(loc_net, scale_net)`` predicting the location and the
+        positive scale respectively.
+    """
     assert len(hidden_channels) > 0, "hidden_channels must be non-empty"
     assert activation_layer is not None
 
@@ -205,6 +337,13 @@ def make_default_normal_neural_nets(
 
 
 class DataEmbedder(nn.Module):
+    """Embeds categorical inputs and concatenates them with continuous inputs.
+
+    Each named categorical input is passed through its own learned embedding, the
+    results are concatenated with the continuous inputs, and the whole is
+    broadcast to a common batch shape to form a single feature tensor.
+    """
+
     def __init__(
         self,
         input_cat_cardinalities: dict[str, int],
@@ -284,6 +423,17 @@ class DataEmbedder(nn.Module):
         return x
 
     def broadcast_batch(self, *tensors, event_dim=1):
+        """Broadcast several tensors to a common batch shape, keeping event dims.
+
+        Computes the broadcast of the batch shapes (all dimensions except the
+        trailing ``event_dim`` ones) and expands every tensor to it, leaving each
+        tensor's own event dimensions untouched.
+
+        :param tensors: Tensors to align to a shared batch shape.
+        :param event_dim: Number of trailing dimensions treated as event
+            dimensions and excluded from broadcasting.
+        :returns: The input tensors expanded to the common batch shape.
+        """
         batch_shapes = [t.shape[:-event_dim] for t in tensors]
         broadcasted_batch_shape = torch.broadcast_shapes(*batch_shapes)
         return [

@@ -36,12 +36,25 @@ class TransformParams:
 
 @dataclass
 class StandardizeParams(TransformParams):
+    """Parameters needed to reverse a standardization transform.
+
+    Bundles the per-feature mean and standard deviation used to map a
+    standardized tensor back to its original scale.
+    """
+
     mean: torch.Tensor
     std: torch.Tensor
 
 
 @dataclass
 class MinMaxParams(TransformParams):
+    """Parameters needed to reverse a min-max scaling transform.
+
+    Holds the per-feature minimum, the span between maximum and minimum used
+    as the divisor, and the original maximum, so that a scaled tensor can be
+    restored to its original range.
+    """
+
     min_val: torch.Tensor
     range_val: torch.Tensor
     max_val: torch.Tensor
@@ -49,6 +62,13 @@ class MinMaxParams(TransformParams):
 
 @dataclass
 class LogEpsilonParams(TransformParams):
+    """Parameters needed to reverse a log-epsilon transform.
+
+    Captures the epsilon offset added before taking the logarithm together
+    with the mean and standard deviation of the post-log standardization, so
+    the full ``log(x + epsilon)`` then standardize pipeline can be undone.
+    """
+
     epsilon: float
     mean: torch.Tensor
     std: torch.Tensor
@@ -63,6 +83,12 @@ class IdentityParams(TransformParams):
 
 @dataclass
 class CategoricalParams(TransformParams):
+    """Parameters describing a categorical reindexing transform.
+
+    Stores the mapping from original category values to contiguous integer
+    indices and the total number of distinct categories.
+    """
+
     mapping: dict[Any, int]
     n_cat: int
 
@@ -98,6 +124,19 @@ def standardize_tensor(
     std: torch.Tensor | None = None,
     target_device: torch.device | str = "cpu",
 ) -> tuple[torch.Tensor, dict]:
+    """Standardizes a tensor to zero mean and unit variance along the batch dimension.
+
+    Computes ``(tensor - mean) / std`` column-wise. When mean or std are not
+    supplied they are estimated from the tensor along dimension 0. The standard
+    deviation is floored at epsilon to avoid division by zero.
+
+    :param tensor: Values to standardize, with features along the last dimension
+    :param epsilon: Lower bound applied to the standard deviation. Defaults to 1e-6
+    :param mean: Precomputed per-feature mean; estimated from the data when omitted
+    :param std: Precomputed per-feature standard deviation; estimated from the data when omitted
+    :param target_device: Device on which to perform the computation. Defaults to "cpu"
+    :returns: The standardized tensor and the mean and std used, keyed for later inversion
+    """
     if mean is None:
         mean = tensor.mean(dim=0)
     if std is None:
@@ -117,6 +156,16 @@ def destandardize_tensor(
     params: dict | StandardizeParams | LogEpsilonParams,
     target_device: torch.device | str = "cpu",
 ) -> torch.Tensor:
+    """Reverses a standardization, mapping a standardized tensor back to its original scale.
+
+    Computes ``tensor * std + mean`` column-wise using the stored standardization
+    parameters.
+
+    :param tensor: Standardized values to restore to the original scale
+    :param params: Standardization parameters carrying the mean and std, as a mapping or dataclass
+    :param target_device: Device on which to perform the computation. Defaults to "cpu"
+    :returns: The destandardized tensor on the original scale
+    """
     mean = params["mean"] if isinstance(params, dict) else params.mean
     std = params["std"] if isinstance(params, dict) else params.std
     mean_tensor = (
@@ -143,6 +192,19 @@ def min_max_scale_tensor(
     max_val: torch.Tensor | None = None,
     target_device: torch.device | str = "cpu",
 ) -> tuple[torch.Tensor, dict]:
+    """Scales a tensor into the [0, 1] range using min-max normalization along the batch dimension.
+
+    Computes ``(tensor - min) / (max - min)`` column-wise. When the minimum or
+    maximum are not supplied they are estimated from the tensor along dimension 0.
+    The range is floored at epsilon to avoid division by zero.
+
+    :param tensor: Values to scale, with features along the last dimension
+    :param epsilon: Lower bound applied to the range. Defaults to 1e-6
+    :param min_val: Precomputed per-feature minimum; estimated from the data when omitted
+    :param max_val: Precomputed per-feature maximum; estimated from the data when omitted
+    :param target_device: Device on which to perform the computation. Defaults to "cpu"
+    :returns: The scaled tensor and the min, range, and max used, keyed for later inversion
+    """
     if min_val is None:
         min_val = tensor.min(dim=0, keepdim=True)[0]
     if max_val is None:
@@ -164,6 +226,16 @@ def descale_tensor(
     params: dict | MinMaxParams,
     target_device: torch.device | str = "cpu",
 ) -> torch.Tensor:
+    """Reverses a min-max scaling, mapping a scaled tensor back to its original range.
+
+    Computes ``tensor * range + min`` column-wise using the stored scaling
+    parameters.
+
+    :param tensor: Scaled values in [0, 1] to restore to the original range
+    :param params: Min-max parameters carrying the minimum and range, as a mapping or dataclass
+    :param target_device: Device on which to perform the computation. Defaults to "cpu"
+    :returns: The descaled tensor on the original range
+    """
     min_val = params["min_val"] if isinstance(params, dict) else params.min_val
     range_val = params["range_val"] if isinstance(params, dict) else params.range_val
     min_val = (
@@ -452,6 +524,21 @@ def invert_all_features(
     continuous_transformations: dict[str, str | TransformParams],
     clip_raw_data_dict: dict[str, tuple[float, float]] | None = None,
 ) -> dict[str, torch.Tensor]:
+    """Inverts every feature in a dictionary back to its raw, untransformed scale.
+
+    For each feature, applies the inverse of the transformation that produced it:
+    categorical features are unmapped from integer indices, while continuous
+    features are passed through the inverse of their recorded transform. Features
+    absent from ``continuous_transformations`` are treated as categorical
+    reindexings. Optionally clamps each restored continuous feature to a provided
+    minimum and maximum.
+
+    :param feature_dict: Transformed feature tensors keyed by feature name
+    :param transformation_params: Per-feature parameters needed to invert each transform, keyed by transformed feature name
+    :param continuous_transformations: Mapping from continuous feature name to its transformation method or parameter bundle
+    :param clip_raw_data_dict: Optional per-feature lower and upper bounds applied to restored continuous values. Defaults to None
+    :returns: Raw feature tensors keyed by feature name
+    """
     raw_dict = {}
     for key in feature_dict.keys():
         transformed_value = feature_dict[key]
@@ -670,6 +757,17 @@ def data_to_transformed_tensors(
 def enrich_data_dict_with_nd_tensors(
     data_dict: dict, input_feature_map: dict, device: torch.device | str = "cpu"
 ):
+    """Adds concatenated multi-dimensional feature tensors to a data dictionary.
+
+    For each grouped key in the feature map, concatenates the transformed tensors
+    of its constituent continuous features along the last dimension and stores the
+    result under the grouped key, in place.
+
+    :param data_dict: Data dictionary holding transformed continuous feature tensors
+    :param input_feature_map: Mapping from each grouped feature name to the list of constituent feature names to concatenate
+    :param device: Device associated with the computation. Defaults to "cpu"
+    :returns: The data dictionary augmented with the concatenated multi-dimensional tensors
+    """
     for key in input_feature_map:
         feature_list = input_feature_map[key]
         tensors = [
@@ -1114,6 +1212,16 @@ def prepare_conditional_features(
     # embedding_dim_list = [embedding_dim] * len(num_embeddings_list)
 
     def split_categorical_continuous(variables: set):
+        """Partitions a set of variable names into categorical and continuous groups.
+
+        Each variable is resolved against the categorical and continuous variable
+        specifications, with its name rewritten to the corresponding suffixed key;
+        multi-dimensional keys are kept as-is and routed to the continuous group.
+
+        :param variables: Variable names to partition
+        :returns: The list of categorical keys and the list of continuous keys
+        :raises ValueError: If a variable is not found in any known specification
+        """
         # process a list of variable names into a list of categorical variables and a list of continuous variables
         # the number of categories for each categorical variable will be collected in GenerativeConditionalModel
         categorical = []
