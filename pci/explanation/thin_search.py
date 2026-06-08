@@ -20,6 +20,14 @@ from pci.tools.data_processing import get_variable_from_structured_data
 
 @dataclass
 class ThinSearchResult:
+    """Container for the outcomes of a thin search.
+
+    Holds the per-site sufficiency and necessity tensors, the boolean indicators
+    of which antecedents and witnesses were active, and the optional Pyro traces
+    recorded under the sufficiency and necessity interventions. Also exposes a
+    minimal dict-like interface so legacy code can index it by field name.
+    """
+
     sufficiency: Mapping[str, torch.Tensor]  #: sufficiency tensors for each site
     necessity: Mapping[str, torch.Tensor]  #: necessity tensors for each site
 
@@ -34,9 +42,19 @@ class ThinSearchResult:
 
     # Optional: make it dict-like so old code won’t break immediately
     def __getitem__(self, key: str):
+        """Return the field whose name matches ``key``, enabling dict-style access.
+
+        :param key: name of the result field to retrieve.
+        :returns: the value stored in the attribute named by ``key``.
+        :raises AttributeError: if no field with that name exists.
+        """
         return getattr(self, key)
 
     def keys(self):
+        """Return the names of the available result fields.
+
+        :returns: the field names, in declaration order.
+        """
         return (
             "sufficiency",
             "necessity",

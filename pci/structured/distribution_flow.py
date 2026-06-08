@@ -6,6 +6,14 @@ from torch import nn
 
 
 class SplineFlow(PyroModule):
+    """Normalizing flow that transforms a standard normal base distribution
+    through a stack of spline transforms.
+
+    A Pyro module wrapping one or more (optionally coupling) spline transforms
+    applied to a multivariate standard normal base, yielding a learnable
+    transformed distribution suitable for flexible density modelling.
+    """
+
     def __init__(
         self,
         dim: int,
@@ -14,6 +22,18 @@ class SplineFlow(PyroModule):
         bound: float | None = None,
         event_dim: int = 1,
     ):
+        """Build the base distribution buffers and the stack of spline transforms.
+
+        :param dim: Dimensionality of the base distribution and each transform.
+        :param coupling: Whether to use spline coupling transforms; otherwise
+            plain spline transforms are used.
+        :param count_bins: Number of spline bins for each transform in the
+            stack, one entry per transform.
+        :param bound: Boundary of the spline's support region; if not given the
+            transform's default is used.
+        :param event_dim: Number of rightmost dimensions treated as event
+            dimensions of the base distribution.
+        """
         super().__init__()
 
         self.event_dim = event_dim
@@ -32,6 +52,16 @@ class SplineFlow(PyroModule):
             self.transform_modules.append(transform)
 
     def forward(self):
+        """Construct the transformed distribution from the base normal.
+
+        Resolves the base location, scale, and event dimension (falling back to
+        a previously stored ``base_dist`` for backwards compatibility with
+        loaded objects lacking the registered buffers), then applies the spline
+        transforms to the standard normal base.
+
+        :returns: The transformed distribution defined by the spline stack over
+            the standard normal base.
+        """
         # Backwards compatibility with loaded SplineFlow objects that do not
         # have base_loc or base_scale registered as buffers.
         if hasattr(self, "base_dist"):

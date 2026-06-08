@@ -11,6 +11,17 @@ T = TypeVar("T")
 
 
 class Excisions(pyro.poutine.messenger.Messenger):
+    """
+    Pyro effect handler that excises (removes) intervals from sample sites.
+
+    At each registered sample site, the original distribution is replaced by an
+    excised counterpart (``ExcisedNormal`` or ``ExcisedCategorical``) whose
+    support has the specified intervals removed, and any existing observation is
+    overridden with a fresh sample from that excised distribution. This makes the
+    handler suitable for sampling counterfactual alternatives but incompatible
+    with inference.
+    """
+
     def __init__(
         self,
         intervals: Mapping[Hashable, list[tuple[torch.Tensor, torch.Tensor]]],
@@ -41,6 +52,18 @@ class Excisions(pyro.poutine.messenger.Messenger):
         super().__init__()
 
     def _pyro_sample(self, msg):
+        """
+        Replace the distribution at a registered sample site with an excised one.
+
+        For sites named in ``intervals`` (and not flagged with
+        ``_do_not_intervene``), determine the distribution type, build the
+        corresponding excised distribution with the configured intervals removed,
+        install it on the message, and resample the site's value from it.
+
+        :param msg: The Pyro sample message being processed.
+        :raises NotImplementedError: If logits cannot be extracted from a
+            categorical site, or the distribution type is unsupported.
+        """
         if msg["name"] not in self.intervals.keys() or msg["infer"].get(
             "_do_not_intervene", None
         ):
@@ -75,6 +98,17 @@ class Excisions(pyro.poutine.messenger.Messenger):
         # that result from our reparametrized distributions.
         # TODO simplify once reparametrization has been refactored
         def get_normal_params(distr):
+            """
+            Extract the location and scale of a (possibly wrapped) Normal site.
+
+            Reads ``loc``/``scale`` directly from a Normal, falls back to the
+            ``base_dist`` of the message's distribution, or to ``loc``/``scale``
+            stashed in the message's ``infer`` dict for masked/independent
+            reparametrized distributions.
+
+            :param distr: The distribution to extract parameters from.
+            :returns: The location and scale of the underlying Normal.
+            """
             if isinstance(distr, dist.Normal):
                 base_loc = getattr(distr, "loc", getattr(distr, "mean"))
                 base_scale = getattr(distr, "scale", getattr(distr, "stddev", None))
@@ -164,7 +198,20 @@ else:
         fn: Callable,
         truncated_intervals: Mapping[Hashable, list[tuple[torch.Tensor, torch.Tensor]]],
         distribution_type_selectors: dict["str", "str"] | None = None,
-    ): ...
+    ):
+        """
+        Context-manager / decorator form of the :class:`Excisions` handler.
+
+        Applies excision of the given intervals to ``fn`` (or to the enclosing
+        model when used as a context manager).
+
+        :param fn: The model or callable to apply excision to.
+        :param truncated_intervals: A mapping from sample-site names to lists of
+            intervals to remove from each site's support.
+        :param distribution_type_selectors: Optional mapping from sample-site
+            names to distribution type indicators ("normal" or "categorical").
+        """
+        ...
 
 
 @contextmanager

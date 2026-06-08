@@ -85,6 +85,18 @@ def get_alternative_sample(
         if distribution_type_selectors is None:
             # if not passed, try to infer from name suffixes
             def get_distribution_type_selector(dict):
+                """Infer per-antecedent distribution types from name suffixes.
+
+                Maps each active antecedent to a distribution type by matching
+                known naming-convention suffixes (e.g. ``_reind`` to categorical,
+                ``_logp`` to normal). Used as a fallback when explicit selectors
+                are not supplied.
+
+                :param dict: Mapping of factual values to avoid, whose keys are
+                    inspected for known suffixes.
+                :returns: Mapping from antecedent name to its inferred
+                    distribution type.
+                """
                 suffix_to_type = {
                     "_reind": "categorical",
                     "_logp": "normal",
