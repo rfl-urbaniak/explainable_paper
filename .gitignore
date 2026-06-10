@@ -35,3 +35,6 @@ tests/coverage/
 
 # OS
 .DS_Store
+
+# Editor (personal; not shared via the repo)
+.vscode/settings.json
