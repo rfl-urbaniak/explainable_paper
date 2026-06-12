@@ -74,7 +74,7 @@ $(M, \mathbf{u}) \models \mathbf{C} = \mathbf{c}^\star, Y = y^\star$ and $(M, \m
 Under this generalization, the set  $\mathbf{c}^\star = \{\varname{gender}=\text{female}, \varname{credit}=\text{bad}\}$
  is jointly responsible for Alice's application being denied because 
  there exists $\mathbf{c}' = \{\varname{gender}=\text{male}, \varname{credit}=\text{good}\}$ that would change the decision
-and $\mathbf{c}^\star$ is minimal. But what can we say about the individual features? 
+and $\mathbf{c}^\star$ is minimal; neither gender or credit alone would have changed the decision. But what can we say about the individual features? 
 We could say that the whole set bears responsibility but individual features do not, or that any feature in a cause set is partially and equally accountable.
 Both approaches have issues, as they imply the features are equally responsible.
 This conflicts with our intuition: OBCB did not evaluate Alice’s credit score, so her denial was caused by her gender.
@@ -148,8 +148,8 @@ of the reasons we turn next to a different family of attribution tools.
 
 \subsection{Probability of Necessity and Sufficiency}
 
-To bring probability into the picture, we now consider a stochastic variant of
-OBCB in which the bank's gendered policies apply only with some probability:
+To bring probability into the picture, we now consider a stochastic variant of the
+OBCB example in which the bank's gendered policies apply only with some probability:
 women are checked only sometimes, men are skipped only sometimes, and even when
 the check happens its outcome is occasionally overridden by loan-officer
 discretion. This is the natural setting for Pearl's probabilities of necessity,
@@ -319,8 +319,8 @@ Using this definition, we can compute $\pns_c(\varname{gender} = \text{female}, 
 Conditioning does not solve the problem described above (Alice's credit was in reality never evaluated) because the interventions override the mediating variable that tracks whether her credit has been checked.
 When we compute $\pns_c(\varname{credit}=\text{bad}, \varname{loan}=F \mid \varname{gender}=\text{female})$, conditioning on gender being female is consistent with the factual, but when we then intervene to set credit to good, this intervention propagates downstream and changes $\varname{check\text{-}failed}$, overriding what we learned from conditioning on Alice's factual outcome.
 The context we fixed is undone by the very intervention meant to probe it.
-We will not consider this use of conditioning further, and this observation motivates the need for intervention-based (as
-opposed to conditioning-based) context-sensitivity, which is what the witness mechanism provides.
+We will not consider this use of conditioning further, and this observation motivates the need to intervene on (as
+opposed to condition) mediating variables that provide important context, which is what the witness mechanism provides.
 
 The propagation problem is not specific to PNS.
 The two most familiar causal quantities in the ML and policy literature are the average treatment effect
