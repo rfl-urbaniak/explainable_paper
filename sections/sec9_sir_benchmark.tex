@@ -1,8 +1,10 @@
 \section{Dynamical SIR Benchmark: PCI on Continuous Outcomes}\label{sec:sir_benchmark}
 
-The actual-causality benchmark of Section~\ref{sec:ac_benchmark} exercises the
+This appendix details the continuous-outcome SIR benchmark summarised in \cref{sec:evaluation}.
+
+The actual-causality benchmark of \cref{sec:ac_benchmark} exercises the
 necessity-only specialisation of \ourapproach on a discrete outcome with a
-closed-form ground truth. This section shifts to the regime where AC has no
+closed-form ground truth. This appendix shifts to the regime where AC has no
 verdict to compare against: a Bayesian dynamical model with a continuous
 outcome and asymmetrically interacting causes. The benchmark mirrors a public
 ChiRho tutorial%
@@ -106,7 +108,7 @@ suspects intervened, witnesses at factual). These are the necessity- and
 sufficiency-world outcomes $y^n, y^s$ of Section~\ref{sec:causal_impact}; we
 write $y_{\mathrm{nec}}, y_{\mathrm{suff}}$ here to match the figure axes. Plotting one point per regime in the
 $(y_{\mathrm{nec}}, y_{\mathrm{suff}})$ plane gives a per-suspect cloud
-(Figure~\ref{fig:sir_heatmap}) that exposes the score geometry before any
+(Figure~\ref{fig:eval_sir}) that exposes the score geometry before any
 averaging. Three reference lines orient the plane: the dotted red cross-hair
 marks the factual outcome $y^\star$ at the both-policies-on world
 ($\mathrm{lockdown}=\mathrm{mask}=1$); because that world is the high-overshoot
@@ -125,21 +127,6 @@ displaced below the diagonal toward smaller $y_{\mathrm{nec}}$, while the mask
 cloud sits closer to it: the visual form of the verdict the next paragraph
 quantifies.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.92\linewidth]{docs/source/sir_benchmark/sir_heatmap.png}
-\caption{Joint necessity-sufficiency overshoot density per suspect. Each
-point is one sampled regime. Dotted red cross-hair: factual $y^\star$ at
-$\mathrm{lockdown}=\mathrm{mask}=1$ (the high-overshoot anchor); dash-dot
-blue: the $24$-overshoot threshold; dashed black:
-$y_{\mathrm{nec}}=y_{\mathrm{suff}}$. A regime contributes positively to
-the PCI total iff it sits further from the red cross-hair along the
-necessity axis than along the sufficiency axis. The lockdown density is
-shifted toward smaller $y_{\mathrm{nec}}$ relative to $y_{\mathrm{suff}}$
-(the cause signature on this geometry); the mask density sits closer to
-the diagonal.}
-\label{fig:sir_heatmap}
-\end{figure}
 
 \medskip\noindent\textit{Single-world results.}
 \ourapproach assigns lockdown roughly $2.0\times$ the responsibility of
@@ -165,7 +152,7 @@ policy \emph{alone} is roughly equally bad. What distinguishes the suspects
 is that lockdown's removal \emph{under context} (with witnesses pinned to
 factual) pulls the world further from $y^\star$ than mask's removal does ---
 the lockdown cloud's displacement below the diagonal toward smaller
-$y_{\mathrm{nec}}$ in Figure~\ref{fig:sir_heatmap}, against the mask cloud's
+$y_{\mathrm{nec}}$ in Figure~\ref{fig:eval_sir}, against the mask cloud's
 near-diagonal position.
 
 \medskip\noindent\textit{Robustness across factual worlds.}
@@ -209,7 +196,7 @@ robust cause.}
 
 \medskip\noindent\textit{Takeaway.}
 On the dynamical SIR setting, \ourapproach recovers both intuitions set out
-at the start of this section --- lockdown is the proximate cause of excessive
+at the start of this appendix --- lockdown is the proximate cause of excessive
 overshoot and masking only a context-sensitive one, despite both policies
 appearing similar under but-for analysis --- and expresses them on a
 continuous, decomposable scale. The
@@ -222,7 +209,7 @@ over interventional regimes.
 
 \paragraph{Where we go next.} The SIR benchmark scales \ourapproach to a
 research-grade Bayesian dynamical model and demonstrates that the joint kernel
-captures patterns that AC cannot adjudicate. Section~\ref{sec:avm} pushes the
+captures patterns that AC cannot adjudicate. \cref{sec:avm} pushes the
 demonstration one step further: a deployed automated valuation model trained on
 millions of points, with deep neural-network components and a sparse variational
 GP outcome head. The question there is no longer whether \ourapproach agrees with

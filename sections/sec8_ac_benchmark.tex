@@ -1,9 +1,11 @@
 \section{Scaling Actual-Cause Computation: An Empirical Comparison}\label{sec:ac_benchmark}
 
+This appendix details the actual-cause scaling benchmark summarised in \cref{sec:evaluation}.
+
 The correspondence in Theorems~\ref{th:ac-exp}--\ref{th:exp-ac} and
 Proposition~\ref{prop:filter} is a statement about verdicts: under the stated
 hypotheses, AC actual causes coincide with the support of $\sum_{\mathbf{T}}\Phi$.
-This section reports an empirical companion to the correspondence. We ask whether
+This appendix reports an empirical companion to the correspondence. We ask whether
 the necessity-only PCI kernel of Definition~\ref{def:ackernel}, instantiated with a
 finite Monte Carlo estimator, recovers AC verdicts at problem sizes where exact
 subset enumeration is no longer tractable. The full implementation, raw outputs and
@@ -50,7 +52,7 @@ method.
 The PCI estimator instantiates the kernel of Definition~\ref{def:ackernel}
 via the Monte Carlo search procedure of Section~\ref{sec:causal_impact}. Algorithm~\ref{alg:pci_thin_search} is the
 explicit procedure used to produce the curves in
-Figures~\ref{fig:ac_runtime}--\ref{fig:ac_accuracy}.
+Figure~\ref{fig:eval_scaling} and Figure~\ref{fig:ac_search_space}.
 
 \begin{algorithm}[ht]
 \caption{Approximate PCI estimator on the scaled throwing problem.}
@@ -111,7 +113,7 @@ and the active witness set has size $|\mathbf{W}|-n_w$ or larger. The
 witness ablation flag $\mathrm{wit}=\text{off}$ is handled once on line~2
 by emptying $\mathbf{W}$; this collapses the witness machinery on
 lines~11--12 and 14--15 to no-ops, producing the dotted accuracy curves of
-Figure~\ref{fig:ac_accuracy}.
+Figure~\ref{fig:eval_scaling}.
 
 Alternative values on line~13 are bit flips: on $\{0,1\}$ the
 $\epsilon$-excised alternative-value distribution has a single support
@@ -124,8 +126,7 @@ nan-mean of $|y^n_j - y^\star|$ over the draws in which
 $X\in\mathbf{C}_j$. The sufficiency outcome $y^s_j$ is computed but not
 consumed: the AC verdict against which we benchmark has no sufficiency
 clause, so we read only the necessity world. The joint estimator with
-sufficiency active is exercised in Sections~\ref{sub:synthetic},
-\ref{sec:DCE}, and~\ref{sec:sir_benchmark}, where AC has no comparable
+sufficiency active is exercised in Appendices~\ref{sub:synthetic}, \ref{sec:DCE}, and~\ref{sec:sir_benchmark}, where AC has no comparable
 verdict to benchmark against. At each site
 $i = 1,\dots,n$, line~24 returns the suspect, $A_i$ or $B_i$, with
 the higher mean.
@@ -155,14 +156,14 @@ Section~\ref{sec:causal_impact}.
 
 \medskip\noindent\textit{Results.}
 Three observations summarise the experiment. First, runtime
-(Figure~\ref{fig:ac_runtime}): the exact procedure times out at $4n+1=17$ variables
+(Figure~\ref{fig:eval_scaling}): the exact procedure times out at $4n+1=17$ variables
 ($n=4$) once the cause-witness search space crosses sixty-five thousand pairs, while
 the approximate methods continue to roughly $73$--$145$ variables depending on
 sample budget, with the frugal $\alpha{=}0.5$ run reaching the largest sizes.
 Second, search-space size (Figure~\ref{fig:ac_search_space}, log scale): the exact
 method visits the full powerset, while the approximate methods visit at most a few
 hundred unique configurations per problem size: the gap is several orders of
-magnitude and widens with $n$. Third, accuracy (Figure~\ref{fig:ac_accuracy}): the
+magnitude and widens with $n$. Third, accuracy (Figure~\ref{fig:eval_scaling}): the
 exact method is correct by construction up to its early demise; the witness-using
 approximate methods stay above $0.85$ correct-attribution rate up to roughly $60$
 variables and degrade gracefully beyond that, with the dynamic-set-size run
@@ -171,16 +172,6 @@ runs (dotted) underperform throughout, starting near $0.67$ already at $n=1$. Th
 ablation confirms a structural claim of Section~\ref{sec:causal_impact}: pinning
 factual witness values is doing real work.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.92\linewidth]{docs/source/ac_benchmark/plot1_runtime.png}
-\caption{Per-world runtime against problem size. The exact method (orange) times
-out at 17 variables; approximate methods continue, with reach controlled by total
-sample budget. Five approximate configurations vary initial sample size, the
-linear-growth factor $\alpha$, the witness ablation, and dynamic cardinality
-bounds; see Benchmark protocol.}
-\label{fig:ac_runtime}
-\end{figure}
 
 \begin{figure}[htbp]
 \centering
@@ -192,19 +183,6 @@ several orders of magnitude that grows with $n$.}
 \label{fig:ac_search_space}
 \end{figure}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.92\linewidth]{docs/source/ac_benchmark/plot3_accuracy.png}
-\caption{Correct-attribution rate against problem size. Each approximate
-configuration is lightly smoothed (Gaussian filter, $\sigma=1$) with its raw
-per-size points overlaid, and is shape-coded in the legend (marker, colour, and
-line style). The exact method is correct up to 17 variables. Configurations
-using witnesses stay above $0.85$ up to roughly 60 variables and degrade
-gracefully thereafter; the witness-free configurations ($\mathrm{wit\ off}$)
-underperform throughout, starting near $0.67$. Dynamic-set-size sampling
-($\mathrm{dyn\ on}$) is among the highest at moderate problem sizes.}
-\label{fig:ac_accuracy}
-\end{figure}
 
 \medskip\noindent\textit{Scope of the conclusion.}
 The benchmark establishes that the necessity-only PCI estimator tracks AC verdicts
@@ -217,7 +195,7 @@ These regularities account for some of the favourable scaling: in particular,
 the cardinality-bounded sampling losing little to dynamic-set-sizes sampling on
 this problem. Two extensions are natural follow-ups. First, a comparison against
 SHAP and causal SHAP on the same scaled-throwing problem is deferred to a
-companion benchmark (cf.\ Section~\ref{sub:synthetic} for the corresponding
+companion benchmark (cf.\ \cref{sub:synthetic} for the corresponding
 comparison on the continuous overdetermination example); the sufficiency component
 of PCI is what distinguishes it from those baselines, and a clean head-to-head
 requires the joint kernel rather than the necessity-only restriction used here.
@@ -230,7 +208,7 @@ present comparison is sufficient.
 
 \paragraph{Where we go next.} The AC benchmark exercises the necessity-only
 specialisation of \ourapproach on a discrete-outcome problem with a closed-form
-ground truth. Section~\ref{sec:sir_benchmark} shifts to the regime where AC has no
+ground truth. \cref{sec:sir_benchmark} shifts to the regime where AC has no
 verdict to compare against: a Bayesian dynamical SIR model with a continuous
 outcome and asymmetrically interacting policies. The point is to exercise the joint
 necessity-sufficiency machinery on threshold events that the actual-causality

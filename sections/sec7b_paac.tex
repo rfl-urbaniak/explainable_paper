@@ -363,7 +363,7 @@ $\mathrm{AC}(x,y;M,\mathbf{u})$ for propositional $x, y$, and extensions to
 continuous variables require discretising the relevant event before the predicate
 applies. PCI's $ci$ function is continuous-native (the absolute-difference impact
 score of Section~\ref{sec:causal_impact}), and the synthetic benchmark of
-Section~\ref{sub:synthetic} exercises that continuity directly.
+\cref{sub:synthetic} exercises that continuity directly.
 
 \medskip\noindent\textbf{Lineage in Pearl's PN/PS.}
 Def.~10.3.5 takes a binary actual-causation predicate --- itself a
@@ -396,8 +396,8 @@ whereas \ourapproach supplies a cardinal probabilistic magnitude on the same str
 information. The cases where sufficiency does even more graded
 work --- the continuous signal-mediation walkthrough of
 Section~\ref{sec:signal}, the synthetic archetypes of
-Section~\ref{sub:synthetic}, and the SIR benchmark of
-Section~\ref{sec:sir_benchmark} --- are where these constructions answer
+\cref{sub:synthetic}, and the SIR benchmark of
+\cref{sec:sir_benchmark} --- are where these constructions answer
 recognisably different questions, and the question PCI answers is the one we need
 for ML-grade causal attribution.
 
@@ -557,10 +557,9 @@ degrees of freedom along which the quantities of
 leave to future work.
 
 \paragraph{Where we go next.} Sections~\ref{sec:relation_with_ac}--\ref{sub:pearl_actual_cause_prob}
-have laid out the formal relation between \ourapproach and actual causality (and
-its Pearlian probabilistic wrapper). Section~\ref{sec:ac_benchmark} now turns to the
-\emph{empirical} side of that comparison: a generalised stone-throwing problem
-where exact subset enumeration of actual causes scales as $\bigl(2^{2n}-1\bigr)^2$
-cause-witness pairs and is therefore the natural pressure test for the
-necessity-only PCI estimator. We report runtime, search-space size, and
-attribution-accuracy curves as the problem size grows.
+have laid out the formal relation between \ourapproach and actual causality and
+its Pearlian probabilistic wrapper. \cref{sec:evaluation} now turns to the
+\emph{empirical} side: a claim-by-claim comparison against feature-attribution
+baselines, the Differential Causal Effect, exact actual-cause enumeration, a
+continuous dynamical model, and a deployed valuation system, with the full
+protocols collected in the appendices.

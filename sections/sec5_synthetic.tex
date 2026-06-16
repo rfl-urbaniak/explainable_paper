@@ -1,11 +1,13 @@
 \section{Synthetic Evaluation with Overdetermination and Undercutting}
 \label{sub:synthetic}
 
+This appendix gives the full model, estimator, and per-row analysis behind the synthetic-archetype result summarised in \cref{sec:evaluation}.
+
 Section~\ref{sec:shap_examples} has compared \ourapproach
 with SHAP and Causal SHAP on two small examples and shown where the SHAP
 framework's desiderata fail. Those examples cover only two causal patterns:
 overdetermination through a gating mediator (OBCB) and correlated mediation
-(signal). This section stress-tests \ourapproach across a wider catalogue of
+(signal). This appendix stress-tests \ourapproach across a wider catalogue of
 patterns, with an analytic ground truth available throughout: the question is
 whether \ourapproach correctly separates linear, overdetermined, and preempted
 contributions on a single structural model, and stays at the noise floor on a
@@ -178,7 +180,7 @@ underlying numerical computations are listed in the companion notebook
 \label{tab:archetypes_desiderata}
 \end{table}
 
-Figure~\ref{fig:archetypes_threshold_forest} visualises the same ten claims as a forest
+Figure~\ref{fig:eval_archetypes} visualises the same ten claims as a forest
 plot: each row carries a plain-language statement of the structural expectation; the
 dot is the point estimate of the relevant $\Delta$ score (or difference of $\Delta$
 scores); the horizontal bar is its bootstrap $95\%$ CI; and the green band is the row's
@@ -194,23 +196,9 @@ The tightest row is \#10 ($\Delta_N(P) > \epsilon$ in Case~2, gate on): the poin
 estimate $+0.250$ clears $\epsilon \approx 0.151$ by roughly one $\sigma$, with its CI
 lower edge at $+0.079$ still inside the band on the right side of zero.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{figures/archetypes_threshold_forest.png}
-\caption{Forest plot of the ten numbered archetype desiderata. Each row carries a
-plain-language statement of the structural expectation (the case label C1 / C2 marks
-the factual observation it applies to); the dot is the bootstrap point estimate of the
-relevant $\Delta$ score, the horizontal bar is its $95\%$ CI, and the green band is
-the row's \emph{pass region}, the set of $\Delta$ values that would confirm that
-row's claim given the bootstrap-derived threshold $\epsilon \approx 0.151$. The
-right-hand column annotates the formula and its point estimate. All ten dots fall
-inside their pass bands. Underlying numerical computations are in the companion
-notebook \nb{responsibility\_archetypes}.}
-\label{fig:archetypes_threshold_forest}
-\end{figure}
 
 \paragraph{Diagnostics that do not survive the bootstrap-derived threshold.}
-Two claims from earlier drafts of this section, both about the preempted variable $P$,
+Two claims from earlier drafts of this appendix, both about the preempted variable $P$,
 fail at the honest threshold and are reported as diagnostics rather than numbered
 desiderata. (D1) The cross-regime flip
 $\Delta_N(P,\text{Case~2}) - \Delta_N(P,\text{Case~1})$ measures $+0.139$ with CI
@@ -228,7 +216,7 @@ exactly desideratum \#10 for $P$ and built into Case~2 by construction for $L_1$
 
 \paragraph{Where we go next.} The archetype evaluation establishes that \ourapproach
 recovers the right qualitative pattern on every standard causal motif against an
-analytic ground truth. Section~\ref{sec:DCE} now turns to a complementary
+analytic ground truth. \cref{sec:DCE} now turns to a complementary
 continuous-input comparison: how does \ourapproach behave next to gradient-based
 attribution (Differential Causal Effect of \citealp{butler2022differential}) when
 the same continuous cause is rescaled or moved out of the steep region of the

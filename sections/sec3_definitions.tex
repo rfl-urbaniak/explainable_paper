@@ -329,7 +329,7 @@ and $\mathbf{W}$, the rejection step is vacuous and $\Gamma$ is exactly the prod
 range becomes substantive: sampling uniformly from the full powerset yields an
 expected intervention size of $|\mathbf{S}|/2$, which spreads attribution
 across large coalitions and may make individual feature contributions harder
-to isolate; we return to this issue in Section~\ref{sec:ac_benchmark}, where
+to isolate; we return to this issue in \cref{sec:ac_benchmark}, where
 the cardinality cap is treated as a tunable hyperparameter and a
 dynamic-set-sizes ablation measures the empirical cost of bounding it.
 
@@ -821,15 +821,15 @@ $|\mathbf{S}|=2$ deliberately, to demonstrate joint-subset attribution.
 \subsection{Continuous Outcomes and the General Causal Impact Function}
 \label{sub:continuous_ci}
 
-\noindent The causal impact function $ci$ is a user-defined component of \ourapproach, and different choices encode different causal questions. In the benchmarking experiments of Section~\ref{sec:ac_benchmark}, we instantiate $ci$ using only the necessity component, since Halpern’s actual causality has no sufficiency counterpart: necessity-only attribution allows a direct parallel comparison. The full framework incorporating both $Y^s$ and $Y^n$ is instantiated in the PNS binary
+\noindent The causal impact function $ci$ is a user-defined component of \ourapproach, and different choices encode different causal questions. In the benchmarking experiments of \cref{sec:ac_benchmark}, we instantiate $ci$ using only the necessity component, since Halpern’s actual causality has no sufficiency counterpart: necessity-only attribution allows a direct parallel comparison. The full framework incorporating both $Y^s$ and $Y^n$ is instantiated in the PNS binary
 example above and in the Absolute Difference example below; the OBCB analysis of this
 section (Tables~\ref{tab:pci_decomp}--\ref{tab:desiderata}) provides a concrete
 validation, since the PNS binary $ci$ jointly conditions on $Y^s=y^\star$ and
 $Y^n\neq y^\star$ and it is precisely this combination that produces the correct
 \textbf{D-A-rank} ordering. Further experiments using the full $ci$ on continuous outcomes are presented in
 the signal-with-mediation example (Section~\ref{sec:signal}), the synthetic
-evaluation (Section~\ref{sub:synthetic}), and the SIR benchmark
-(Section~\ref{sec:sir_benchmark}).
+evaluation (\cref{sub:synthetic}), and the SIR benchmark
+(\cref{sec:sir_benchmark}).
 
 When the outcome variable $Y$ is continuous rather than binary, indicators are replaced by a distance-based score that measures how far the necessity and sufficiency worlds land from the factual value $y^\star$.
 The natural choice, paralleling L$_1$-based scores such as ATE and SHAP, is the absolute difference.
@@ -860,8 +860,8 @@ value distribution, joint necessity-sufficiency measure, and causal impact funct
   via $\mathbf{W}$ disambiguates overdetermination and undercutting scenarios where
   necessity-only methods assign equal or zero attribution, as demonstrated above for
   Alice and Bob, and further developed in Section~\ref{sec:shap_examples} (SHAP and
-  Causal SHAP comparison), Section~\ref{sub:synthetic} (synthetic overdetermination
-  and undercutting archetypes), and Section~\ref{sec:ac_benchmark} (witness ablation
+  Causal SHAP comparison), \cref{sub:synthetic} (synthetic overdetermination
+  and undercutting archetypes), and \cref{sec:ac_benchmark} (witness ablation
   on the scaled throwing problem).
 \item \textbf{Composability.} $\Gamma$, $\Delta$, and $ci$ are probability distributions
   and a measurable function respectively; they slot naturally into Bayesian pipelines,

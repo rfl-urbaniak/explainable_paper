@@ -1,0 +1,132 @@
+\section{Empirical and Comparative Evaluation}\label{sec:evaluation}
+
+Having established what \ourapproach is (Section~\ref{sec:causal_impact}) and that
+it agrees with actual causality and Pearl's probability of causation where those
+are defined (Section~\ref{sec:relation_with_ac},
+Section~\ref{sub:pearl_actual_cause_prob}), we now ask how it behaves empirically:
+against the dominant feature-attribution baselines, against a causal-effect
+attribution method, and as the model grows from textbook size to a deployed
+system. This section reads each result at a glance --- one claim, one figure, the
+headline number, and the honest caveat --- and points to the appendix that carries
+the full protocol. A reader can follow the comparative and empirical story here
+without descending into those appendices.
+
+\subsection{\ourapproach recovers principled verdicts where they exist}
+\label{sec:eval_verdicts}
+On the small models where actual causality is well defined, \ourapproach should
+reproduce its verdicts; on the canonical overdetermination and undercutting
+patterns it should separate a genuine cause from a preempted one. We test this on a
+synthetic structural model carrying four archetypes at once --- linear
+necessary-and-sufficient, overdetermined, preempted (gated), and an irrelevance
+control --- with an analytic ground truth throughout
+(Appendix~\ref{sub:synthetic}). Across two contrasting factual cases, all ten
+archetype desiderata hold: \ourapproach scores the active cause above the
+preempted one, keeps the irrelevant control at the noise floor, and --- unlike the
+binary actual-cause verdict --- does so with graded magnitudes that extend to
+continuous variables. The same agreement holds on Pearl's desert-traveller, where
+\ourapproach reproduces his within-scenario ranking
+(Section~\ref{sub:pearl_actual_cause_prob}, Appendix~\ref{app:desert}).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/archetypes_threshold_forest.png}
+\caption{\textbf{\ourapproach recovers the actual-causality verdicts on a
+four-archetype synthetic model.} Each row is one archetype desideratum (linear
+necessity/sufficiency, overdetermination, preemption, irrelevance control); the
+dot is the bootstrap point estimate of the relevant $\Delta$ score, the bar its
+$95\%$ CI, and the green band the pass region given the data-derived threshold
+$\epsilon \approx 0.151$. All ten dots fall inside their bands. Full model,
+estimator, and per-row analysis in Appendix~\ref{sub:synthetic}.}
+\label{fig:eval_archetypes}
+\end{figure}
+
+\subsection{Against SHAP and Causal SHAP}
+\label{sec:eval_shap}
+The worked comparisons of Section~\ref{sec:shap_examples} (OBCB and the
+signal-with-mediation chain) are the substance here, with the formal SHAP and Causal SHAP definitions in Appendix~\ref{app:signal}; we recall only the verdict.
+Both plain and Causal SHAP \emph{leak attribution backward}, against the arrows of
+the causal graph (they violate the zero desiderata D-YX/D-YM/D-MX, with Causal
+SHAP's interventional correction repairing only D-YX), and both \emph{tie} the
+direct and indirect causes of an outcome (D-MXY), because they decompose a
+prediction's departure from a population mean rather than the realized outcome.
+\ourapproach{}'s realized-outcome reference and witness mechanism break both
+symmetries, separating the direct cause from the indirect one at every instance.
+
+\subsection{Against the Differential Causal Effect}
+\label{sec:eval_dce}
+The Differential Causal Effect (DCE) attributes an outcome change to features via
+local derivatives of the structural map. On a model with a non-monotone internal
+response (Appendix~\ref{sec:DCE}), DCE and \ourapproach can disagree on sign and
+magnitude where the local gradient is unrepresentative of the counterfactual
+contrast \ourapproach integrates over. \ourapproach tracks the realized-outcome
+contrast rather than a point derivative, which is what keeps its attribution
+aligned with the structural role of each feature. The full contrast is shown over a credit-limit grid in Appendix~\ref{sec:DCE} (Figure~\ref{fig:contrast}).
+
+
+\subsection{Scaling past exact actual causality}
+\label{sec:eval_scaling}
+Actual-cause computation requires enumerating counterfactual subsets, which is
+exponential; \ourapproach replaces enumeration with a Monte Carlo thin search.
+On a controlled family of problems (Appendix~\ref{sec:ac_benchmark}), exact subset
+enumeration times out at about $17$ variables, whereas the necessity-only
+\ourapproach estimator continues to roughly $73$--$145$ variables under an
+undemanding sample budget and a per-size compute cap of $60$ minutes, sustaining a
+correct-attribution rate above $0.85$ up to about $60$ variables while visiting
+several orders of magnitude fewer cause--witness configurations.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.49\linewidth]{docs/source/ac_benchmark/plot1_runtime.png}
+\hfill
+\includegraphics[width=0.49\linewidth]{docs/source/ac_benchmark/plot3_accuracy.png}
+\caption{\textbf{\ourapproach stays tractable where exact actual causality does
+not.} Left: wall-clock vs.\ problem size --- exact subset enumeration times out
+near $17$ variables; the \ourapproach estimator continues to $\sim$$73$--$145$.
+Right: correct-attribution rate, held above $0.85$ to about $60$ variables. Full
+benchmark protocol in Appendix~\ref{sec:ac_benchmark}.}
+\label{fig:eval_scaling}
+\end{figure}
+
+\subsection{Continuous, dynamical outcomes}
+\label{sec:eval_sir}
+Actual causality offers no verdict when the outcome is continuous and the causes
+interact through a dynamical system. On a Bayesian SIR model with two
+non-pharmaceutical policies and a threshold (peak-overshoot) outcome
+(Appendix~\ref{sec:sir_benchmark}), but-for analysis cannot separate the two
+policies, whereas \ourapproach assigns lockdown roughly twice the responsibility
+of masking --- with the gap driven by the necessity term under witness pinning.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.80\linewidth]{docs/source/sir_benchmark/sir_heatmap.png}
+\caption{\textbf{\ourapproach separates interacting policies on a continuous
+dynamical outcome.} Joint necessity-sufficiency over the two policies for the
+peak-overshoot event; lockdown carries roughly twice the responsibility of masking
+where but-for analysis ties them. Full model and query in
+Appendix~\ref{sec:sir_benchmark}.}
+\label{fig:eval_sir}
+\end{figure}
+
+\subsection{A real-world deployed model}
+\label{sec:eval_avm}
+Finally, \ourapproach runs on a deployed automated valuation model (AVM) with
+machine-learned components trained on millions of points --- a regime where actual
+causality is intractable and SHAP is the practical default
+(Appendix~\ref{sec:avm}). \ourapproach returns a structured, context-sensitive
+attribution across the model's internal variables, whereas SHAP concentrates
+almost all responsibility on a few downstream variables and effectively ignores
+the rest.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.49\linewidth]{figures/search_query_figure.png}
+\hfill
+\includegraphics[width=0.49\linewidth]{figures/shap_figure.png}
+\caption{\textbf{\ourapproach vs.\ SHAP on a deployed automated valuation model.}
+Left: \ourapproach's context-sensitive attribution across the AVM's internal
+variables. Right: SHAP concentrates responsibility on a few downstream variables.
+Full pipeline and anonymized structure in Appendix~\ref{sec:avm}.}
+\label{fig:eval_avm}
+\end{figure}
+
+\medskip\noindent Across these settings \ourapproach matches the principled verdicts where they exist and extends past them where they do not, at a cost that stays feasible from textbook models to a deployed system; the full protocols, derivations, and additional figures are collected in Appendices~\ref{app:obcb}--\ref{sec:avm}. \cref{sec:discussion} draws out the implications.

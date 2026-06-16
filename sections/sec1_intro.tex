@@ -115,54 +115,40 @@ $\Gamma$, the alternative-value distribution $\Delta$, and the causal impact
 function.
 
 The second phase positions \ourapproach against existing attribution methods.
-Section~\ref{sec:shap_examples} compares \ourapproach with SHAP, Causal SHAP,
-ATE, and CATE on two small examples (OBCB, with two binary features, and a
-signal-with-mediation model), tabulating which desiderata each satisfies or fails,
-including cases where SHAP and Causal SHAP attributions track correlation rather
-than counterfactual dependence.
-Section~\ref{sub:synthetic} reports a synthetic evaluation built around
-overdetermination and undercutting, the patterns on which pre-AC accounts most
-often diverge from intuition, and shows that \ourapproach recovers the literature's
-verdicts.
-Section~\ref{sec:DCE} contrasts \ourapproach with gradient-based attribution,
-instantiated by Differential Causal Effect \citep{butler2022differential}, on a
-continuous credit-limit example, showing where the two diverge and why
-\ourapproach better tracks responsibility under unit rescaling and outside the
-steep region of the response surface.
+\cref{sec:shap_examples} compares \ourapproach with SHAP, Causal SHAP, ATE, and
+CATE on two worked examples --- OBCB, with two binary features, and a
+signal-with-mediation model --- tabulating which desiderata each satisfies or
+fails, including cases where SHAP and Causal SHAP track correlation rather than
+counterfactual dependence.
 
-The third phase establishes the formal and empirical relationship between
-\ourapproach and actual causality. Section~\ref{sec:relation_with_ac} shows that
-under specific choices of $\Gamma$ and $\Delta$ the \ourapproach kernel is
-positive on a configuration exactly when that configuration is an actual cause in
-Halpern's sense, so aproximate AC verdicts can be read off the kernel without enumerating
-witnesses.
-Section~\ref{sub:pearl_actual_cause_prob} positions \ourapproach against Pearl's
-probability of actual causation: on the canonical desert-traveller example,
-\ourapproach recovers Pearl's within-scenario ranking with graded magnitudes,
-and a weak-poison variant surfaces two additional responsibility intuitions
+The third phase establishes the formal relationship between \ourapproach and
+actual causality. \cref{sec:relation_with_ac} shows that under specific choices of
+$\Gamma$ and $\Delta$ the \ourapproach kernel is positive on a configuration
+exactly when that configuration is an actual cause in Halpern's sense, so
+approximate AC verdicts can be read off the kernel without enumerating witnesses.
+\cref{sub:pearl_actual_cause_prob} positions \ourapproach against Pearl's
+probability of actual causation: on the canonical desert-traveller example
+\ourapproach recovers Pearl's within-scenario ranking with graded magnitudes, and
+a weak-poison variant surfaces two further responsibility intuitions
 (path-reliability and cross-scenario reliability) that Pearl's binary indicator
-structurally cannot express but \ourapproach's expectation does.
-Section~\ref{sec:ac_benchmark} then benchmarks \ourapproach against explicit
-actual-cause computation: exact subset enumeration times out at $17$ variables,
-while the necessity-only \ourapproach estimator continues to roughly $73$--$145$
-variables (still with relatively undemanding sample budget and  per-problem-size computation duration <=60 minutes) and sustains above a $0.85$
-correct-attribution rate up to about $60$ variables, visiting several orders of
-magnitude fewer cause--witness configurations.
+cannot express but \ourapproach's expectation does.
 
-The fourth phase pushes \ourapproach into settings where actual causality no
-longer applies.
-Section~\ref{sec:sir_benchmark} extends the benchmarking to a continuous-outcome
-dynamical-SIR (Susceptible--Infected--Recovered) setting --- a regime where classical
-actual causality returns only a binary, all-or-nothing verdict and cannot rank
-competing causes. \ourapproach instead delivers a graded comparison, assigning the
-lockdown policy roughly twice the responsibility of masking --- a distinction that
-simple counterfactual (``but-for'') reasoning cannot draw.
-Section~\ref{sec:avm} applies \ourapproach to a deployed automated valuation
-model with machine-learned components trained on millions of points, a regime
-where actual causality is intractable; SHAP returns qualitatively different
-attributions, assigning virtually all responsibility to very few downstream variables
-and effectively ignoring the rest.
-Section~\ref{sec:discussion} closes with discussion.
+The fourth phase is an empirical and comparative evaluation.
+\cref{sec:evaluation} reads the results at a glance --- one claim, one figure, the
+headline number --- and defers the full protocols to the appendices: \ourapproach
+recovers the actual-causality literature's verdicts on overdetermination and
+undercutting (\cref{sub:synthetic}); it diverges from gradient-based Differential
+Causal Effect attribution where the local gradient misreads the counterfactual
+contrast (\cref{sec:DCE}); it stays tractable where exact actual-cause enumeration
+times out at $17$ variables, continuing to roughly $73$--$145$ variables above a
+$0.85$ correct-attribution rate (\cref{sec:ac_benchmark}); it delivers a graded
+comparison on a continuous-outcome dynamical SIR model, assigning lockdown roughly
+twice the responsibility of masking where but-for reasoning cannot separate them
+(\cref{sec:sir_benchmark}); and it scales to a deployed automated valuation model
+with machine-learned components trained on millions of points, where SHAP
+concentrates attribution on a few downstream variables while \ourapproach spreads
+it across the upstream causal structure (\cref{sec:avm}).
+\cref{sec:discussion} closes with discussion.
 
 \paragraph{Reproducibility.}
 Every quantitative claim in this paper --- the worked-example numbers, the

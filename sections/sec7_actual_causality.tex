@@ -1,14 +1,13 @@
 \section{Relation with Actual Causality} \label{sec:relation_with_ac}
 
- Sections~\ref{sec:shap_examples}--\ref{sec:DCE} have
-positioned \ourapproach against feature-attribution baselines. We now turn to
-\ourapproach's relation to the causal-attribution tradition it inherits the
-witness mechanism from --- Halpern's actual causality. This section establishes
-the \emph{formal} connection (Theorems~\ref{th:ac-exp}--\ref{th:exp-ac} and
-Proposition~\ref{prop:filter}); Section~\ref{sub:pearl_actual_cause_prob} adds
-the side-by-side comparison with Pearl's \emph{probability of actual
-causation}; and Section~\ref{sec:ac_benchmark} measures the empirical gap in
-runtime and verdict recovery.
+ \cref{sec:shap_examples} positioned \ourapproach against feature-attribution
+baselines. We now turn to \ourapproach's relation to the causal-attribution
+tradition it inherits the witness mechanism from --- Halpern's actual causality.
+This section establishes the \emph{formal} connection
+(Theorems~\ref{th:ac-exp}--\ref{th:exp-ac} and Proposition~\ref{prop:filter});
+\cref{sub:pearl_actual_cause_prob} adds the side-by-side comparison with Pearl's
+\emph{probability of actual causation}; and the empirical comparison --- runtime
+and verdict recovery as model size grows --- is reported in \cref{sec:evaluation}.
 
 \ourapproach{} is not meant to explicate Halpern's notion of actual causality; the goal
 is to combine the intuitions underlying Halpern's notion with those motivating Pearl's
@@ -30,10 +29,10 @@ of the kernel $\Phi$ defined below acts as a factivity check (restoring factual 
 must preserve $\varphi$ under fixed noise), not as a substantive sufficiency-attribution
 component. The substantive sufficiency component of \ourapproach{}, the $Y^s$ factor
 in Definition~\ref{def:jointnecsuf} and the $ci_S$ term in
-Section~\ref{sub:synthetic}, is exercised in the synthetic overdetermination and
-undercutting evaluation (Section~\ref{sub:synthetic}), the differential causal effect
-comparison (Section~\ref{sec:DCE}), and the SIR benchmark
-(Section~\ref{sec:sir_benchmark}), all of which are settings where AC cannot adjudicate.
+\cref{sub:synthetic}, is exercised in the synthetic overdetermination and
+undercutting evaluation (\cref{sub:synthetic}), the differential causal effect
+comparison (\cref{sec:DCE}), and the SIR benchmark
+(\cref{sec:sir_benchmark}), all of which are settings where AC cannot adjudicate.
 The narrowness of this section's correspondence reflects what AC itself permits, not a
 limitation of \ourapproach{}.
 
@@ -127,7 +126,7 @@ $\mathbf{T}'\subseteq\mathbf{W}$, $\mathbf{C}'\cap\mathbf{T}'=\emptyset$.
 We can now record the forward direction.
 
 \begin{theorem}\label{th:ac-exp}
-    Suppose that $\mathbf{C}$ is an actual cause of $\varphi$ with witness set $\mathbf{T}$ in $(M,\mathbf{u})$. Take any $\{\mathbf{S}=\mathbf{s}\}\supseteq\mathbf{C}$ as the potential cause set, subject to the constraint that no element of $\mathbf{S}$ is a deterministic function (under $M$) of any subset of the remaining elements of $\mathbf{S}$,\footnote{Equivalently, $\mathbf{S}$ is closed under no nontrivial structural equation of $M$. The constraint excludes admitting both $S$ and a deterministic descendant $H=f(S,\ldots)$ as candidates in the same suspect set, but covers all candidate sets standardly considered in the AC literature, where structural descendants of one candidate are not admitted as separate candidates: their contribution is mediated by the equation, and AC's minimality clause already prefers the ancestor alone. The same closure condition discharges a joint-support concern: the next assumption requires $\Delta(\mathbf{s})$ to place positive density on every \emph{joint} alternative configuration $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$, not merely positive marginal density on each component. In a chain $S\to H$ with $H=f(S)$, joint assignments such as $(S{=}0, H{=}1)$ are impossible under the structural equations, so any $\Delta$ that placed mass on them would be incompatible with $M$. Closure rules out exactly this case: when no element of $\mathbf{S}$ is a deterministic function of the remaining elements, the joint domain $\dom(\mathbf{S})$ contains no rectangles forced to zero measure by $M$, and a $\Delta$ with positive PMF or Lebesgue density on every $\mathbf{s}'\neq\mathbf{s}$ is consistent with $M$ on the suspect set. In the stone-throwing benchmark of Section~\ref{sec:ac_benchmark}, the suspect set is $\{A_i,B_i\}_i$ and the deterministic mediators $\{W^a_i,W^b_i\}_i$ live in the witness set, not the suspect set, exactly to keep the suspect set closure-respecting. Witnesses are pinned at their factual values and are not subject to a joint-support requirement on alternatives, so they need no analogous condition.} and any $\mathbf{W}\supseteq\mathbf{T}$ as the potential witness set. Assume $\Gamma$ is regular and that $\Delta(\mathbf{s})$ assigns positive density to every $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$ (positive PMF in the discrete case, positive Lebesgue density in the continuous case). In the continuous case, assume additionally:
+    Suppose that $\mathbf{C}$ is an actual cause of $\varphi$ with witness set $\mathbf{T}$ in $(M,\mathbf{u})$. Take any $\{\mathbf{S}=\mathbf{s}\}\supseteq\mathbf{C}$ as the potential cause set, subject to the constraint that no element of $\mathbf{S}$ is a deterministic function (under $M$) of any subset of the remaining elements of $\mathbf{S}$,\footnote{Equivalently, $\mathbf{S}$ is closed under no nontrivial structural equation of $M$. The constraint excludes admitting both $S$ and a deterministic descendant $H=f(S,\ldots)$ as candidates in the same suspect set, but covers all candidate sets standardly considered in the AC literature, where structural descendants of one candidate are not admitted as separate candidates: their contribution is mediated by the equation, and AC's minimality clause already prefers the ancestor alone. The same closure condition discharges a joint-support concern: the next assumption requires $\Delta(\mathbf{s})$ to place positive density on every \emph{joint} alternative configuration $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$, not merely positive marginal density on each component. In a chain $S\to H$ with $H=f(S)$, joint assignments such as $(S{=}0, H{=}1)$ are impossible under the structural equations, so any $\Delta$ that placed mass on them would be incompatible with $M$. Closure rules out exactly this case: when no element of $\mathbf{S}$ is a deterministic function of the remaining elements, the joint domain $\dom(\mathbf{S})$ contains no rectangles forced to zero measure by $M$, and a $\Delta$ with positive PMF or Lebesgue density on every $\mathbf{s}'\neq\mathbf{s}$ is consistent with $M$ on the suspect set. In the stone-throwing benchmark of \cref{sec:ac_benchmark}, the suspect set is $\{A_i,B_i\}_i$ and the deterministic mediators $\{W^a_i,W^b_i\}_i$ live in the witness set, not the suspect set, exactly to keep the suspect set closure-respecting. Witnesses are pinned at their factual values and are not subject to a joint-support requirement on alternatives, so they need no analogous condition.} and any $\mathbf{W}\supseteq\mathbf{T}$ as the potential witness set. Assume $\Gamma$ is regular and that $\Delta(\mathbf{s})$ assigns positive density to every $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$ (positive PMF in the discrete case, positive Lebesgue density in the continuous case). In the continuous case, assume additionally:
     \begin{itemize}
     \item[(i)] the structural equations of $M$ downstream of $\mathbf{C}$ are continuous in
     $\mathbf{c}'$ under fixed $\mathbf{u}$;
@@ -186,7 +185,7 @@ a fact we will use in Proposition~\ref{prop:filter}.
 
 \medskip\noindent\textit{Remark (when (i)--(ii) bite).} In settings with continuous
 outcomes and an open event such as a threshold $\{Y>y_0\}$ (for instance the SIR
-overshoot benchmark of Section~\ref{sec:sir_benchmark}), both hypotheses are
+overshoot benchmark of \cref{sec:sir_benchmark}), both hypotheses are
 satisfied trivially. Binary-output models, where $Y$ takes values in $\{0,1\}$, satisfy
 (ii) automatically (every subset of a discrete codomain is open) but may not satisfy
 (i) when the binary output comes from thresholding a continuous score. In such cases
@@ -474,9 +473,9 @@ over noise misaligns with subset-minimality; and
 (v) a corrective filter procedure (Proposition~\ref{prop:filter}) that recovers AC
 verdicts exactly. The empirical counterpart of the correspondence, a benchmark of
 the necessity-only PCI estimator against exact subset enumeration on a scaled
-stone-throwing problem, is reported in Section~\ref{sec:ac_benchmark}.
+stone-throwing problem, is reported in \cref{sec:ac_benchmark}.
 
-\paragraph{Where we go next.} Before turning to the empirical benchmark, the next
+\paragraph{Where we go next.} The next
 section locates \ourapproach against the construction in the literature closest to
 its expectation form: Pearl's \emph{probability of actual causation}. The two share
 the same surface idea, ``how often, under the noise, does the actual-cause
