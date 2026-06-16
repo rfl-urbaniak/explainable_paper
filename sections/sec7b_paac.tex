@@ -77,7 +77,7 @@ toxicology finding cyanide in the body is incompatible with $u=1$, so
 $P(\text{caused poisoner}\mid e_A) = 1$; a forensic report of no cyanide is
 incompatible with $u=0$, so $P(\text{caused shooter}\mid e_B) = 1$.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{lcc}
 \toprule
@@ -130,7 +130,7 @@ J_C &= \mathbb{E}\bigl[\,\mathbb{1}\{Y^n \neq y^\star\}\,\mathbb{1}\{Y^s = y^\st
 
 Under the spec above (computation in the companion notebook), the results are:
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{llcccc}
 \toprule
@@ -267,7 +267,7 @@ identical to the basic version (Table~\ref{tab:pearl-pac-weak}). Pearl's
 binary indicator is structurally indifferent to whether the cyanide path is
 deterministic or stochastic, and indifferent to a cross-scenario comparison.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{lcc}
 \toprule
@@ -296,7 +296,7 @@ Table~\ref{tab:pci-weak-dt} reports PCI's three quantities alongside Pearl's
 verdict. The values are computed in the companion notebook and verified by a
 hand-rolled enumeration matching the framework.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{llcccc}
 \toprule
@@ -389,13 +389,172 @@ necessity--sufficiency kernel against a joint distribution over suspect sets,
 witness sets, alternative values, and noise. The basic desert traveller shows the
 two agree on ranking with PCI providing graded magnitudes; the weak-poison variant
 shows three intuitions that PCI's graded reading captures and Pearl's binary
-indicator structurally cannot. The cases where sufficiency does even more graded
+indicator structurally cannot. That actual causation admits of degrees is not itself
+new --- \citet{Halpern2015-HALGCA} already make it graded and context-sensitive through
+defaults and normality --- but that account delivers an ordinal, comparative verdict,
+whereas \ourapproach supplies a cardinal probabilistic magnitude on the same structural
+information. The cases where sufficiency does even more graded
 work --- the continuous signal-mediation walkthrough of
 Section~\ref{sec:signal}, the synthetic archetypes of
 Section~\ref{sub:synthetic}, and the SIR benchmark of
 Section~\ref{sec:sir_benchmark} --- are where these constructions answer
 recognisably different questions, and the question PCI answers is the one we need
 for ML-grade causal attribution.
+
+\subsection{Other probabilistic accounts of actual causation}
+\label{sec:other-prob-ac}
+
+Pearl's probability of causation is not the only probabilistic reading of the
+Halpern--Pearl definition. \citet{Fenton-Glynn2017-FENAPP-2} proposes a probabilistic
+extension that keeps HP's witness/contingency machinery intact but replaces the
+deterministic counterfactual-dependence clause with a \emph{probability-raising}
+condition: with the off-path variables $\mathbf{W}$ pinned at their actual values
+$\mathbf{w}^\star$, the cause $\mathbf{C}=\mathbf{c}$ qualifies when intervening to set
+it raises the probability of the outcome relative to an alternative $\mathbf{c}'$,
+$P(\varphi \mid \mathrm{do}(\mathbf{C}=\mathbf{c}),\mathbf{W}=\mathbf{w}^\star) >
+P(\varphi \mid \mathrm{do}(\mathbf{C}=\mathbf{c}'),\mathbf{W}=\mathbf{w}^\star)$,
+required to hold for every subset of the on-path mediators held at their factual values.
+\citet{fang2022probabilistic} modifies this in turn, replacing the interventional
+probability-raising with a \emph{counterfactual} one --- conditioning on the actual
+situation rather than intervening afresh --- which repairs the verdicts
+Fenton-Glynn's account returns on voting, trumping, and overdetermination cases.
+
+Both are close neighbours of \ourapproach, and the contrast is worth drawing precisely,
+since these are the accounts nearest to ours. Three differences stand out. First, each
+probabilifies only the \emph{necessity} side of HP: it raises or conditions a
+probability of the witnessed-necessity test, with no analogue of \ourapproach's
+\emph{sufficiency} component --- the $Y^s$ factor of Definition~\ref{def:jointnecsuf},
+which asks whether \emph{restoring} the factual cause sustains the outcome. Second, the
+contingency enters differently. Fenton-Glynn fixes the witness $\mathbf{W}$
+deterministically at its actual values and quantifies \emph{universally} over the
+mediator subsets (picking the alternative $\mathbf{c}'$ existentially); \ourapproach
+replaces those quantifiers with \emph{distributions} --- a $\Gamma$-weighted expectation
+over which suspects and witnesses to activate, and an alternative-value distribution
+$\Delta$ --- both surfaced as user-facing knobs and approximated by Monte Carlo rather
+than enumerated. Third, \ourapproach integrates a \emph{continuous}
+necessity--sufficiency kernel rather than thresholding a binary actual-cause indicator.
+\ourapproach is therefore not a third probabilistic-HP variant but a PN/PS-style
+necessity-and-sufficiency measure that \emph{contains} the witnessed-necessity test they
+probabilify as one regime --- the actual-causality analogue of the contrast drawn just
+above with Pearl.
+
+These accounts have begun to see applied use. \citet{maldonado2025robot} instantiate
+Fenton-Glynn's definition in a robot-pouring task, learning the causal graph by
+discovery and the conditional distributions with neural networks, and use it not only to
+identify the cause of spillage but to select a corrective action --- searching by hand
+over contrastive values and a probability threshold for an alternative that would avert
+the outcome. That search is precisely the alternative-value reasoning \ourapproach
+packages into $\Delta$ and a causal-impact threshold, and it inherits the differences
+just drawn: it remains necessity-only, with no sufficiency check, and it fixes the
+contingency rather than averaging over it. The application is nonetheless evidence that
+tractable probabilistic actual causation has demand in exactly the ML-driven settings
+\ourapproach targets.
+
+\paragraph{Probabilistic versus nondeterministic models.}
+\ourapproach lives in a probabilistic world: we push all the indeterminism into the
+exogenous noise $\mathbf{U}$, so that once a noise value $\mathbf{u}$ is fixed the
+mechanisms are ordinary functions, each necessity or sufficiency question becomes a
+plain interventional expectation, and we average those over $P_{\mathbf{U}}$.
+\citet{beckers2025nondeterministic} takes a different route out of determinism. His
+nondeterministic causal models let a mechanism return a \emph{set} of admissible values
+rather than a single one, with no probabilities attached, and he reads actual causation
+off two modalities: a cause \emph{must} make a difference if it does so in every
+admissible resolution, and \emph{might} make one if it does so in some. He notes in
+passing that this brings the logical and probabilistic pictures of causation closer
+together than they are in the deterministic case, since the order-of-operations
+distinction that matters for Pearl's probabilities of counterfactuals resurfaces here
+as a distinction between these two modalities.
+
+It is tempting to read the two pictures as lining up, though we do not try to make this
+precise. If one were to turn a nondeterministic mechanism into a probabilistic one, by
+placing some full-support distribution over its admissible values, then \emph{might}
+would seem to answer to ``the outcome changes with positive probability'' and
+\emph{must} to ``the outcome changes with probability one.'' On that reading the modal
+verdict would depend only on which alternatives are possible and not on how they are
+weighted, so any full-support choice --- the uniform one being the most agnostic ---
+would give the same yes-or-no answer, with a graded score like \ourapproach's filling
+in the range between. Where genuine probabilities are not on hand, the modal account is
+the natural tool and \ourapproach has nothing to add; where they are, \ourapproach
+trades the bare list of possibilities for a plausibility-weighted magnitude, and, as
+Section~\ref{sec:causal_impact} stresses, it is in no way committed to weighting those
+possibilities uniformly. We mention this only to locate the two frameworks relative to
+one another, not to claim a correspondence.
+
+\subsection{Recovering actual-causality quantities (a conjecture)}
+\label{sec:recovering-ac}
+
+The actual-causality tradition has accumulated a family of named quantities beyond
+causation itself. \citet{chocklerResponsibilityBlameStructuralModel2004} introduce
+\emph{degree of responsibility} and \emph{degree of blame}; \citet{actualCausalityHalpern}
+develops \emph{causal explanation} and \emph{explanatory power} at book length, and
+\citet{beckersExplanationsXAI2022} recasts both for explainable AI;
+\citet{beckersSufficiency2021} and \citet{beckersNESS2021} reconstruct causation through
+\emph{causal sufficiency} and a counterfactual NESS condition; and
+\citet{beckersHarm2022} define \emph{harm}, with \citet{beckersQuantifyingHarm2023} adding
+its graded refinement and \citet{beckersMoralResponsibility2023} an allied account of
+moral responsibility. Each is introduced with its own definitional apparatus --- a
+counterfactual test, a minimisation over contingencies, an averaging over an agent's
+epistemic state, or a stipulated baseline --- and the relations among them are largely
+left implicit.
+
+We conjecture that most of these are not independent primitives but
+\emph{reparametrisations of the single counterfactual contrast} that \ourapproach already
+exposes --- or, where a knob is missing, notions that fold into the same framework by an
+appropriate generalisation, \emph{mutatis mutandis}. The construction of Section~\ref{sec:causal_impact} carries a small number of
+user-facing knobs: the variable selection distribution $\Gamma$ (which and how many
+suspects enter a candidate cause set $\mathbf{C}$), the witness set $\mathbf{T}$ (which
+context is held fixed, in the contingency sense of \citealp{actualCausalityHalpern}), the
+alternative value distribution $\Delta$ (what counts as a counterfactual departure ---
+equivalently, the \emph{default} against which alternatives are graded), the causal impact
+function $ci$ (how a sufficiency--necessity pair is scored,
+Definition~\ref{def:causalimpact}), and the exogenous law $P_{\mathbf{U}}$ (what the
+attribution is averaged over). Read against these knobs, the named quantities look like
+settings rather than rivals. \emph{Actual causation} in the sense of
+\citet{actualCausalityHalpern} is the necessity component at a single-suspect $\Gamma$ with
+witnesses admitted; the \emph{causal explanation} of \citet{actualCausalityHalpern} --- a
+context that, given what the agent already takes for granted, makes the cause necessary ---
+is recovered in intent by the held-fixed witness configuration $\mathbf{T}$ together with the
+marginalisation over $P_{\mathbf{U}}$ that stands in for the agent's epistemic state; the
+sufficient and counterfactual \emph{explanations} of \citet{beckersExplanationsXAI2022} are
+organised around a held-fixed witness that coincides with \ourapproach's witness set
+$\mathbf{T}$ --- both descend from Halpern's modified definition --- although his additional
+\emph{safeguarded network} (variables protected from intervention, as opposed to held at their
+factual values) is not among the present knobs and would enter only as a natural
+generalisation --- a set safeguarded from intervention alongside the witnesses held at factual
+values --- and where he rates an
+explanation only as \emph{good} or not (non-domination, i.e.\ minimality), a $ci$ on the
+necessity--sufficiency differential of Definition~\ref{def:jointnecsuf} would supply a graded
+refinement rather than recover an existing measure; the \emph{degree of blame} of
+\citet{chocklerResponsibilityBlameStructuralModel2004} is the same
+attribution marginalised over a prior on models alongside $P_{\mathbf{U}}$, with their
+\emph{degree of responsibility} its single-model special case; the \emph{harm} of \citet{beckersHarm2022}
+and \citet{beckersQuantifyingHarm2023} is \ourapproach under a $\Delta$ pinned to a default
+contract together with a utility-valued $ci$; and the \emph{causal sufficiency} of
+\citet{beckersSufficiency2021} is the sufficiency regime itself --- the necessity of $X_k$
+\emph{within} a sufficient set $\mathbf{C}$.
+
+What this reframing \emph{discards} is as telling as what it keeps. The idiosyncratic
+packaging of each notion --- the $1/(N{+}1)$ responsibility weight of
+\citet{chocklerResponsibilityBlameStructuralModel2004}, the all-or-nothing causation
+threshold, the non-domination criterion that rates an explanation only \emph{good} or not
+\citep{actualCausalityHalpern,beckersExplanationsXAI2022}, the stipulated default in the harm contrast of
+\citet{beckersHarm2022} --- are artifacts of forcing a graded, model-relative phenomenon
+into a labelled box. \ourapproach retains the underlying graded probability and relocates
+each of these to an \emph{explicit} downstream choice: a cardinality band in $\Gamma$, a
+threshold on $ci$, a prior over models, a particular $\Delta$. On this view the named
+quantities are reporting conventions over one measure, not competing definitions of
+distinct phenomena.
+
+We state this only as a conjecture, and deliberately do not develop it here. Establishing
+it would require, for each quantity, matching \ourapproach's verdicts against the originals
+on the counterexamples that motivate them --- a separate undertaking that would
+substantially lengthen a paper already centred on the estimator and its experiments. We
+raise it because it bears on whether the present apparatus is \emph{ad hoc}: the very
+knobs we introduced to separate necessity from sufficiency appear, prima facie, to be the
+degrees of freedom along which the quantities of
+\citet{chocklerResponsibilityBlameStructuralModel2004}, \citet{actualCausalityHalpern}, and
+\citet{beckersSufficiency2021,beckersHarm2022} themselves vary. A careful accounting we
+leave to future work.
 
 \paragraph{Where we go next.} Sections~\ref{sec:relation_with_ac}--\ref{sub:pearl_actual_cause_prob}
 have laid out the formal relation between \ourapproach and actual causality (and

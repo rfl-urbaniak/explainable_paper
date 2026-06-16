@@ -23,9 +23,7 @@ impact function $ci$ whose expectation is the \ourapproach score, and show how t
 choice of $ci$ generalises the framework from binary to continuous outcomes; (5) compute
 the score on the OBCB example, verify that all seven desiderata hold, and
 contrast \ourapproach's necessity/sufficiency decomposition with Pearl's
-PN/PS/PNS. The closing paragraph then points forward to
-Section~\ref{sec:shap_examples}, which positions \ourapproach against SHAP
-and Causal SHAP.
+PN/PS/PNS.
 
 Let $R(V \rightsquigarrow \varname{loan} \mid \text{person})$ denote the causal responsibility of variable $V$
 for the loan outcome at the individual level ($R$ is a placeholder for any attribution score and
@@ -45,9 +43,18 @@ magnitudes $|R(\cdot)|$, allowing for directionality:
 \end{align*}
 
 \noindent \textbf{D-A1} and \textbf{D-A2} both require non-zero attribution for Alice because two
-distinct causal routes were available: gender filtered her out at the checking stage without her
-credit ever being evaluated, while bad credit would have mattered had she been checked. Neither is
-causally inert. \textbf{D-A-rank} is the substantive constraint: because Alice never underwent a
+distinct causal routes were available. Gender filtered her out at the checking stage. Credit is not
+causally inert either: the check is only \emph{probabilistic} --- women are still checked with positive
+probability ($\gamma_F=0.2$ in the model below) --- so conditioning on Alice's denial leaves nonzero
+probability that she was in fact checked, in which case her bad credit was the operative cause. The
+broader principle is a graded ordering of three roles. An \emph{active} cause, on the path that actually
+produced the outcome, carries the most responsibility. A \emph{preempted} cause is not discarded but
+retains a \emph{residual} share --- strictly positive, yet strictly below the active cause (exactly what
+\textbf{D-A-rank} demands) --- here governed by the probability that the preemption fails to fire,
+leaving the credit route live. An \emph{irrelevant} variable, with no active path to the outcome under
+any context, receives the least of all, approaching zero. This is a deliberate departure from the binary
+Halpern--Pearl/Beckers treatment of preemption, which collapses the first two roles by zeroing a fully
+preempted cause. \textbf{D-A-rank} is the substantive constraint: because Alice never underwent a
 credit evaluation, gender's causal role is immediate, whereas credit's is purely
 hypothetical. A method that ranks credit above gender for Alice is misattributing the cause of her
 rejection.
@@ -278,7 +285,10 @@ averages marginal contributions using the observational conditional
 $\mathbb{E}[f(\mathbf{X}_{\mathcal{S}} = \mathbf{x}_{\mathcal{S}}, \mathbf{X}_{\bar{\mathcal{S}}})]$, marginalising over
 the empirical distribution of non-suspect features; this means a variable that is merely
 correlated with a cause, but not itself causally active, can receive positive
-attribution. PCI instead evaluates counterfactual outcomes
+attribution. \citet{janzing2020feature} frame exactly this as a causal problem,
+arguing that dropping a feature should be \emph{interventional} rather than
+observational, since the conditional version lets a feature inherit relevance from its
+correlates. PCI instead evaluates counterfactual outcomes
 $P(Y \in A \mid \mathbf{u},\, \mathrm{do}(\mathbf{C}=\mathbf{c}',
 \mathbf{T}=\mathbf{t}^\star))$ computed via the structural model, so attribution flows
 only along genuine causal paths. The witness mechanism adds a further distinction: by
@@ -379,8 +389,10 @@ conditioned on upstream factual values, optionally excised near the factual valu
 
 \medskip\noindent Upstream-only conditioning operationalises the intuition shared with
 the descriptive-normality literature \citep{Halpern2015-HALGCA,
-icardNormalityActualCausal2017}: factual upstream values play the role of the
-\emph{default} against which counterfactual alternatives are graded.
+icardNormalityActualCausal2017, hitchcock2009cause}: factual upstream values play the role of the
+\emph{default} against which counterfactual alternatives are graded --- the same role a
+stipulated baseline plays in causal analyses of harm \citep{beckersHarm2022}, where a
+default contract fixes what counts as a departure from the expected course of events.
 \ourapproach does not aim to resolve the specific counterexamples motivating that
 literature; the link is at the level of \emph{why} a non-uniform $\Delta$ matters at
 all.
@@ -727,7 +739,7 @@ parameter choices: Pearl's PN/PS/PNS, PCI without witnesses
 active, with the latter further decomposed into its necessity and sufficiency
 marginals.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
@@ -867,7 +879,7 @@ PNS fails \textbf{D-A-rank} and \textbf{D-B1}.
 (The table uses the shorthand $|R(V\mid\text{person})|$ for
 $|R(V\rightsquigarrow\varname{loan}\mid\text{person})|$.)
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lccc}

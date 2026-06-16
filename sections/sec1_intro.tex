@@ -1,7 +1,8 @@
 \section{Introduction}
 \label{sec:intro}
 
-Causal attribution is a central reasoning task in many important problems, such as
+Causal attribution --- determining which factors brought about a given outcome, and to
+what degree --- is a central reasoning task in many important problems, such as
 gauging the efficacy of medical treatments \citep{Shepherd2024}, pinpointing drivers
 of economic growth \citep{CheshireMagrini2009}, root cause analysis in automated
 systems \citep{Papageorgiou2022}, or assessing the impact of public policy
@@ -53,28 +54,45 @@ probability of necessary and sufficient causation \citep{pearl2022probabilities}
 binary to arbitrary variable domains, and incorporates the \emph{witness} mechanism
 from actual causality \citep{actualCausalityHalpern} via integration over a
 distribution of witness sets rather than existential quantification.
-
-\ourapproach also shares an intuition with the literature on \emph{descriptive
-normality} \citep{Halpern2015-HALGCA, icardNormalityActualCausal2017}: attributions
-are computed as expectations against a distribution over counterfactual worlds
-conditioned on upstream factual context, so factual upstream values play the role
-of a default against which alternatives are graded. We do not aim to resolve the
-specific counterexamples that motivate the normality literature; the connection
-is at the level of why a non-uniform alternative-value distribution matters, not
-in handling explicit normality orderings. Several components have precedents --- expectations over
+Intuitively, a witness set records the variables held at their factual values while a
+candidate cause is varied, so that causal paths inactive in the factual world stay
+blocked rather than re-activating under intervention --- delivering the
+context-sensitivity that ATE and CATE forgo. The effect is to
+read actual causation --- otherwise an all-or-nothing verdict, and graded only
+comparatively, by the relative normality of the witnessing contingency
+\citep{Halpern2015-HALGCA} --- as a cardinal probabilistic magnitude on the same
+structural information.
+Several components have precedents --- expectations over
 exogenous noise \citep{actualCausalityHalpern}, weighting by alternative-value
 probabilities \citep{Beckers2015CombiningPC}, aggregation over witness sets
 \citep{Beckers2015CombiningPC, actualCausalityHalpern} --- but no prior construction
-combines such intuitively compelling components into a single tractable estimator 
+combines such intuitively compelling components into a single tractable estimator
 handling arbitrary variable domains.
+Crucially, every quantity in the \Ourapproach definition is a standard interventional
+or counterfactual expectation that causal probabilistic-programming systems such as
+ChiRho%
+\footnote{\url{https://basisresearch.github.io/chirho/explainable_sir.html}}
+already evaluate automatically for a broad class of probabilistic causal models, so
+\Ourapproach can be computed without bespoke per-model derivation.
 
 \ourapproach presumes access to a trained probabilistic causal model from which
 counterfactual outcomes can be sampled, a stronger requirement than methods that
-work from observational data and a causal graph alone (e.g., PN/PS/PNS bounds, Causal
-SHAP). Within that requirement, however, we place no strong restrictions on the form
+work from observational data and a causal graph alone (e.g., the PN/PS/PNS bounds of
+\citet{muellerpearl2022causes}, which return \emph{intervals} on the probability of
+causation where \ourapproach, given a fully specified model, returns point values, or
+Causal SHAP). Within that requirement, however, we place no strong restrictions on the form
 of the model, distributions, or types of variables.
-Such models can comprise standard machine learning components such as neural 
+Such models can comprise standard machine learning components such as neural
 network parametrized distributions or Gaussian processes.
+Allowing neural components makes this far less restrictive than it first appears:
+\citet{xia2022neural} show that neural causal models, being universal approximators,
+are expressive enough to recover nonparametric counterfactual-identification results,
+so a sufficiently flexible trained model forfeits no identification power available to
+an explicitly specified structural model.
+Nor do we require that counterfactual outcomes be point-identified: \ourapproach is an
+expectation over the counterfactual distribution the model induces, so it is
+well-defined whenever the model captures the relevant causal uncertainty, whether or
+not that distribution is uniquely pinned down from data.
 
 With this breadth of application, and a measure that surfaces its design choices ---
 the variable selection distribution, alternative value distribution, and causal impact
@@ -91,7 +109,7 @@ and average/conditional treatment effects each get right and miss, motivating
 the design choices behind \ourapproach.
 Section~\ref{sec:causal_impact} then defines the method: a kernel built from a
 sufficiency check at the factual configuration and a necessity check against
-alternatives, integrated against a distribution over suspect/witness sets, with
+alternatives, integrated over a distribution of suspect/witness sets, with
 three components exposed as user choices: the variable selection distribution
 $\Gamma$, the alternative-value distribution $\Delta$, and the causal impact
 function.
@@ -134,12 +152,11 @@ magnitude fewer cause--witness configurations.
 The fourth phase pushes \ourapproach into settings where actual causality no
 longer applies.
 Section~\ref{sec:sir_benchmark} extends the benchmarking to a continuous-outcome
-dynamical-SIR (Susceptible--Infected--Recovered) setting, exercising the joint
-necessity-sufficiency machinery on threshold events (peak overshoot) where AC
-has no comparable verdict. Where but-for analysis cannot separate the two
-policies, lockdown and masking, \ourapproach correctly assigns lockdown roughly
-twice the responsibility of masking, with the gap driven entirely by the
-necessity term under witness pinning.
+dynamical-SIR (Susceptible--Infected--Recovered) setting --- a regime where classical
+actual causality returns only a binary, all-or-nothing verdict and cannot rank
+competing causes. \ourapproach instead delivers a graded comparison, assigning the
+lockdown policy roughly twice the responsibility of masking --- a distinction that
+simple counterfactual (``but-for'') reasoning cannot draw.
 Section~\ref{sec:avm} applies \ourapproach to a deployed automated valuation
 model with machine-learned components trained on millions of points, a regime
 where actual causality is intractable; SHAP returns qualitatively different
