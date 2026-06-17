@@ -20,8 +20,8 @@ Here we present a tool for accurate and tractable causal attribution applicable 
 wide array of causal, probabilistic, machine-learned models.
 
 What would a satisfactory causal attribution method look like? At minimum, it
-should be (i) \textit{causally grounded}, tracking counterfactual dependence
-rather than correlation; (ii) \textit{context-sensitive}, distinguishing
+should be (i) \textit{causally grounded}, tracking genuine counterfactual
+dependence; (ii) \textit{context-sensitive}, distinguishing
 causes whose path was active in the factual world from those whose path was
 blocked; (iii) \textit{broadly applicable}, handling stochastic models,
 discrete and continuous variables, and finite (not just infinitesimal)
@@ -34,8 +34,9 @@ broadly applicable nor tractable in general, with no clear approximation
 scale either give up causal grounding or are restricted in scope. SHAP
 \citep{lundberg2017unified} grounds attribution in observational correlations,
 so a feature can receive high attribution merely for being correlated with a
-true cause; Causal SHAP \citep{heskes2020causal} addresses this to some extent,
-but failure modes persist (Section~\ref{sec:shap_examples}).
+true cause; \citet{janzing2020feature} make essentially this point, and Causal
+SHAP \citep{heskes2020causal} addresses it to some extent, though some
+divergences from causal dependence remain (Section~\ref{sec:shap_examples}).
 \citet{butler2022differential}'s Differential Causal Effect (DCE) is causally
 grounded but local: it relies on gradients, so requires differentiability and
 does not capture effects from non-infinitesimal changes in potential causes.%
@@ -58,15 +59,15 @@ Intuitively, a witness set records the variables held at their factual values wh
 candidate cause is varied, so that causal paths inactive in the factual world stay
 blocked rather than re-activating under intervention --- delivering the
 context-sensitivity that ATE and CATE forgo. The effect is to
-read actual causation --- otherwise an all-or-nothing verdict, and graded only
-comparatively, by the relative normality of the witnessing contingency
-\citep{Halpern2015-HALGCA} --- as a cardinal probabilistic magnitude on the same
+read actual causation, otherwise an all-or-nothing verdict graded only
+comparatively by the relative normality of the witnessing contingency
+\citep{Halpern2015-HALGCA}, as a cardinal probabilistic magnitude on the same
 structural information.
-Several components have precedents --- expectations over
+Several components have precedents (expectations over
 exogenous noise \citep{actualCausalityHalpern}, weighting by alternative-value
-probabilities \citep{Beckers2015CombiningPC}, aggregation over witness sets
-\citep{Beckers2015CombiningPC, actualCausalityHalpern} --- but no prior construction
-combines such intuitively compelling components into a single tractable estimator
+probabilities \citep{Beckers2015CombiningPC}, and aggregation over witness sets
+\citep{Beckers2015CombiningPC, actualCausalityHalpern}), but no prior construction
+combines these components into a single tractable estimator
 handling arbitrary variable domains.
 Crucially, every quantity in the \Ourapproach definition is a standard interventional
 or counterfactual expectation that causal probabilistic-programming systems such as
@@ -94,23 +95,27 @@ expectation over the counterfactual distribution the model induces, so it is
 well-defined whenever the model captures the relevant causal uncertainty, whether or
 not that distribution is uniquely pinned down from data.
 
-With this breadth of application, and a measure that surfaces its design choices ---
-the variable selection distribution, alternative value distribution, and causal impact
-function --- as explicit user-facing components rather than hidden defaults,
-\ourapproach hopes to provide causal attribution and explanation tooling for a
+With this breadth of application, and a measure that exposes its design choices ---
+the variable selection distribution, the alternative-value distribution, and the
+causal impact function --- as explicit user-facing components instead of buried
+defaults, \ourapproach can serve causal attribution and explanation needs for a
 wide array of users and applications.
 
 \paragraph{Paper structure.}
-The paper proceeds in four phases.
+The paper proceeds in four phases, tracked by a recurring layered roadmap
+(Figure~\ref{fig:roadmap_inspirations}) that highlights the current stage at the end of
+each section --- motivations, definitions, examples and SHAP, actual causality, the
+probability of actual causation, and evaluation --- with the supporting appendix material
+collected in a separate band.
 The first establishes motivation and formalism.
 Section~\ref{sec:motivations} works through a running example
-to surface what actual causality, the probability of necessity/sufficiency,
+to draw out what actual causality, the probability of necessity/sufficiency,
 and average/conditional treatment effects each get right and miss, motivating
 the design choices behind \ourapproach.
 Section~\ref{sec:causal_impact} then defines the method: a kernel built from a
 sufficiency check at the factual configuration and a necessity check against
 alternatives, integrated over a distribution of suspect/witness sets, with
-three components exposed as user choices: the variable selection distribution
+three components given as user choices: the variable selection distribution
 $\Gamma$, the alternative-value distribution $\Delta$, and the causal impact
 function.
 
@@ -129,7 +134,7 @@ approximate AC verdicts can be read off the kernel without enumerating witnesses
 \cref{sub:pearl_actual_cause_prob} positions \ourapproach against Pearl's
 probability of actual causation: on the canonical desert-traveller example
 \ourapproach recovers Pearl's within-scenario ranking with graded magnitudes, and
-a weak-poison variant surfaces two further responsibility intuitions
+a weak-poison variant reveals two further responsibility intuitions
 (path-reliability and cross-scenario reliability) that Pearl's binary indicator
 cannot express but \ourapproach's expectation does.
 
@@ -148,7 +153,28 @@ twice the responsibility of masking where but-for reasoning cannot separate them
 with machine-learned components trained on millions of points, where SHAP
 concentrates attribution on a few downstream variables while \ourapproach spreads
 it across the upstream causal structure (\cref{sec:avm}).
-\cref{sec:discussion} closes with discussion.
+\cref{sec:discussion} closes with discussion. We engage related work where it
+bears on the argument. The broader literature on actual-causality-based
+attribution and responsibility scores --- probabilities of causation, degree of
+blame and harm, and score-based explanations in databases and machine learning,
+surveyed by \citet{bertossiAttributionScores2023} --- comes up mainly in
+\cref{sec:relation_with_ac,sub:pearl_actual_cause_prob} and the discussion.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/structure_map_01_motivations.pdf}
+  \caption{\textbf{Roadmap of the paper.} An overview of the argument, here at its
+  starting point. \ourapproach builds on two ideas --- \emph{actual causality} and the
+  \emph{probability of necessity and sufficiency} (top tier, highlighted as the current
+  stage). From there the paper develops the motivations (\cref{sec:motivations}),
+  defines \ourapproach (\cref{sec:causal_impact}), positions it against SHAP, Causal
+  SHAP, PNS, actual causality, and the probability of actual causation
+  (\cref{sec:shap_examples,sec:relation_with_ac,sub:pearl_actual_cause_prob}), and
+  closes with an empirical overview (\cref{sec:evaluation}); the running-example
+  computations and benchmark protocols are deferred to the appendices, to which that
+  overview points.}
+  \label{fig:roadmap_inspirations}
+\end{figure}
 
 \paragraph{Reproducibility.}
 Every quantitative claim in this paper --- the worked-example numbers, the

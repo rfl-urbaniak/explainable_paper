@@ -1,19 +1,19 @@
 \section{Causal Impact: Motivations}\label{sec:motivations}
 
-The central difficulty in causal attribution is not computing counterfactuals --- it is knowing which counterfactuals to compute, and recognising when a cause is blocked by context rather than absent altogether.
-Here a cause is \emph{blocked by context} when it is a genuine cause in general --- it does produce the outcome in other situations --- yet its causal path was inactive in the particular case at hand, so it made no difference to what actually happened.
+The central difficulty in causal attribution is not computing counterfactuals --- it is knowing which counterfactuals to compute, and recognising when a cause is merely blocked by context while still genuinely present.
+Here a cause is \emph{blocked by context} when it is a genuine cause in general (it does produce the outcome in other situations) yet its causal path was inactive in the particular case at hand, so it made no difference to what actually happened.
 This is the distinction between \emph{type} causation (does $X$ tend to cause $Y$?) and \emph{token}, or actual, causation (was $X$'s contribution live in the specific situation we are explaining?); methods built for the former routinely miss the latter, which is the gap the running example below makes concrete.
-There are principled probabilistic theories of type-level causal strength --- \citet{sprenger2018foundations}, for instance, derives a difference-making measure $p^*(E \mid C) - p^*(E \mid \neg C)$ axiomatically --- but they deliberately bracket the token-level question of which cause was live in the case at hand, and amalgamate over mediators rather than tracking them, which is exactly the context-sensitivity we are after.
+There are principled probabilistic theories of type-level causal strength --- \citet{sprenger2018foundations}, for instance, derives a difference-making measure $p^*(E \mid C) - p^*(E \mid \neg C)$ axiomatically --- but they deliberately bracket the token-level question of which cause was live in the case at hand, and amalgamate over mediators just where the context-sensitivity we are after requires tracking them.
 The closest predecessors of this approach, taken individually, fail to capture this: actual causality handles context sensitivity but is computationally intractable and not general enough;
 the probability of necessity and sufficiency scales well, but lacks context sensitivity.
 This section builds intuition for both limitations through a running example, setting up the design choices that motivate \ourapproach in Section~\ref{sec:causal_impact}.
-We proceed in three steps: revisit Halpern's actual-cause construction on a
-deterministic OBCB example to see what witnesses do and why a plain but-for clause
-misses Alice's case; turn to Pearl's PN/PS/PNS on a stochastic OBCB to introduce
-the probabilistic machinery actual causality lacks while showing that, without
-witnesses, PN/PS/PNS cannot register Alice's missing credit check; and close with a
-``Path forward'' subsection that distils what \ourapproach must inherit from each
-predecessor before Section~\ref{sec:causal_impact} formalises it.
+The section builds intuition in stages. We first revisit Halpern's actual-cause
+construction on a deterministic OBCB example to see what witnesses do and why a plain
+but-for clause misses Alice's case. We then turn to Pearl's PN/PS/PNS on a stochastic
+OBCB to introduce the probabilistic machinery actual causality lacks, while showing
+that, without witnesses, PN/PS/PNS cannot register Alice's missing credit check. We
+close with a ``Path forward'' subsection that distils what \ourapproach must inherit
+from each predecessor before Section~\ref{sec:causal_impact} formalises it.
 
 \subsection{Actual Causality}
 
@@ -41,7 +41,7 @@ Concretely, consider a model $M$ with \emph{exogenous variables} $\mathbf{U}$, w
 Let $\mathbf{S} \subseteq \mathbf{V}$ be the variables we suspect to be causally responsible (call them \emph{causal suspects}), and 
 $Y \in  \mathbf{V}$ be an outcome of interest. 
 Suppose we consider only one suspect $S \in \mathbf{S}$ and mark factual values with $^\star$. 
-Under a setting $\mathbf{U} = \mathbf{u}$ of the exogenous variables, $M$ produces $S = s^\star$ and $Y = y^\star$, denoted $(M, \mathbf{u}) \models S=s^\star, Y=y^\star$. We read $\models$ as ``yields'' (the model under noise $\mathbf{u}$ makes the stated equalities true), and its crossed form $\not\models$ as ``does not yield'' (the stated event fails to hold).
+Under a setting $\mathbf{U} = \mathbf{u}$ of the exogenous variables, $M$ produces $S = s^\star$ and $Y = y^\star$, denoted $(M, \mathbf{u}) \vDash S=s^\star, Y=y^\star$. We read $\vDash$ as ``yields'' (the model under noise $\mathbf{u}$ makes the stated equalities true), and its crossed form $\not\vDash$ as ``does not yield'' (the stated event fails to hold).
 We call this the \emph{factual} scenario.
 An intervened model where a variable $S$ is set to an alternative value $s'$ is denoted $(M, \mathbf{u})[S \leftarrow s']$.
 
@@ -49,7 +49,7 @@ A first attempt at defining a counterfactual notion of causal responsibility,
 following the counterfactual-dependence tradition \citep{lewis1973causation,
 actualCausalityHalpern}, is:
 \begin{definition}[But-for, single]
-$S=s^\star$ is causally responsible for  $Y=y^\star$  in $(M, \mathbf{u})$ if and only if $(M, \mathbf{u}) \models S=s^\star, Y=y^\star$ and $(M, \mathbf{u})[S \leftarrow s'] \not \models Y=y^\star$ for some $s' \neq s^\star$.
+$S=s^\star$ is causally responsible for  $Y=y^\star$  in $(M, \mathbf{u})$ if and only if $(M, \mathbf{u}) \vDash S=s^\star, Y=y^\star$ and $(M, \mathbf{u})[S \leftarrow s'] \not \vDash Y=y^\star$ for some $s' \neq s^\star$.
 \end{definition}
 
 \noindent 
@@ -71,7 +71,7 @@ To address this example, we could consider sets of factors as causes:
 \begin{attempt}[But-for, sets]
 Variables $\mathbf{C}\subseteq \mathbf{S}$ with factual values $\mathbf{C} = \mathbf{c}^\star$ 
 are causally responsible for $Y = y^\star$ in $(M, \mathbf{u})$ if and only if 
-$(M, \mathbf{u}) \models \mathbf{C} = \mathbf{c}^\star, Y = y^\star$ and $(M, \mathbf{u})[\mathbf{C} \leftarrow \mathbf{c'}] \not \models Y= y ^\star$ for some $\mathbf{c'}$ everywhere different from $\mathbf{c}^\star$, where no proper subset of $\mathbf{C}$ has this property. 
+$(M, \mathbf{u}) \vDash \mathbf{C} = \mathbf{c}^\star, Y = y^\star$ and $(M, \mathbf{u})[\mathbf{C} \leftarrow \mathbf{c'}] \not \vDash Y= y ^\star$ for some $\mathbf{c'}$ everywhere different from $\mathbf{c}^\star$, where no proper subset of $\mathbf{C}$ has this property. 
 \end{attempt}
 
 \noindent The minimality condition reflects our preference for explanations that include only relevant properties.
@@ -83,7 +83,7 @@ and $\mathbf{c}^\star$ is minimal; neither gender nor credit alone would have ch
 We could say that the whole set bears responsibility but individual features do not, or that any feature in a cause set is partially and equally accountable.
 Both approaches have issues, as they imply the features are equally responsible.
 This conflicts with our intuition: OBCB did not evaluate Alice’s credit score, so her denial was caused by her gender.
-This verdict does not rest on counterfactual reasoning alone. Tracing the model on Alice's inputs, her denial is produced through the $\varname{gender}$ term of the $\varname{loan}$ equation, while $\varname{credit}$ enters only through $\varname{check\text{-}failed}$, which is false and never propagates to the outcome --- so on a production (causal-process) view of causation \citep{hall2004two}, credit transmits no influence to Alice's denial at all.
+This verdict does not rest on counterfactual reasoning alone. Tracing the model on Alice's inputs, her denial is produced through the $\varname{gender}$ term of the $\varname{loan}$ equation, while $\varname{credit}$ enters only through $\varname{check\text{-}failed}$, which is false and never propagates to the outcome, so on a production (causal-process) view of causation \citep{hall2004two}, credit transmits no influence to Alice's denial at all.
 The counterfactual and production traditions thus converge, so the attribution is not an artifact of one chosen formalism.
 
 The structural pattern is what the actual-causality literature calls
@@ -97,7 +97,7 @@ The closely related notion of \emph{over-determination}~\citep{paulhall2013,
 actualCausalityHalpern} covers cases in which
 multiple sufficient causes coexist without one preempting the other (e.g., two
 simultaneous fatal shots).
-Both phenomena defeat naive but-for tests, since intervening on any one of the
+Both phenomena defeat a simple single-cause but-for test, since intervening on any one of the
 candidate causes leaves the outcome unchanged.\footnote{
 The canonical preemption example: Jim is both stabbed and poisoned, and dies.
 Stabbing works quickly, so it kills Jim before the poison takes effect, and the
@@ -129,7 +129,7 @@ $\varname{credit}{=}\text{bad}$    & ${\to}\,\text{good}$ & any
 \end{tabular}
 \end{center}
 
-\noindent Fixing the mediator $\varname{check\text{-}failed}$ at its factual value exposes
+\noindent Fixing the mediator $\varname{check\text{-}failed}$ at its factual value reveals
 $\varname{gender}$ as an actual cause (row~1); without the witness the intervention recomputes the
 mediator and the outcome does not flip (row~2); no witness makes $\varname{credit}$ a cause (row~3).
 This motivates the following formalization:
@@ -144,7 +144,7 @@ disjoint from $\mathbf{C}$ such that:
 \begin{itemize}[itemsep=2pt,topsep=2pt,parsep=0pt]
     \item \textbf{Factivity.} The cause, the witness pool, and the outcome
     are all observed at their factual values:
-    \[ (M,\mathbf{u})\models \mathbf{C}=\mathbf{c}^\star,\;
+    \[ (M,\mathbf{u})\vDash \mathbf{C}=\mathbf{c}^\star,\;
                               \mathbf{W}=\mathbf{w}^\star,\;
                               Y=y^\star. \]
     \item \textbf{Witnessed necessity.} Holding $\mathbf{T}$ at its factual
@@ -153,7 +153,7 @@ disjoint from $\mathbf{C}$ such that:
     $\mathbf{c}^\star$:
     \[ (M,\mathbf{u})\bigl[\mathbf{C}\leftarrow\mathbf{c}',\;
                             \mathbf{T}\leftarrow\mathbf{t}^\star\bigr]
-        \not\models Y=y^\star. \]
+        \not\vDash Y=y^\star. \]
     \item \textbf{Minimality.} No proper subset of $\mathbf{C}$ satisfies the
     two conditions above.
 \end{itemize}
@@ -183,7 +183,7 @@ sets, where a cause is a necessary element of a set that suffices for the outcom
 structural models. We build on the
 same witnessed-necessity core, but --- anticipating the probabilistic turn below --- read its two
 halves, necessity under intervention and sufficiency of the held-fixed configuration, as graded
-quantities rather than a single binary verdict.
+quantities, not a single binary verdict.
 
 Putting computational difficulties aside, the deeper limitation of the
 construction so far is that it lives entirely in deterministic models.
@@ -198,7 +198,7 @@ constructions of Chockler, Halpern, and Beckers
 \citep{chocklerResponsibilityBlameStructuralModel2004, beckersHarm2022,
 beckersQuantifyingHarm2023}.
 But this averages an all-or-nothing verdict over contexts: it inherits actual
-causality's binary reading and its intractability rather than removing them.
+causality's binary reading and its intractability instead of removing them.
 This construction --- Pearl's \emph{probability of actual causation}
 \citep[Def.~10.3.5]{causalityPearl} --- is also the closest neighbour of \ourapproach{}
 and agrees with it in simple cases, so we defer a precise side-by-side comparison to
@@ -213,7 +213,12 @@ women are checked only sometimes, men are skipped only sometimes, and even when
 the check happens its outcome is occasionally overridden by loan-officer
 discretion. This is the natural setting for Pearl's probabilities of necessity,
 sufficiency, and their conjunction (PN, PS, PNS)
-\citep{pearl1999probabilities,tian2000probabilities}, which we introduce in this
+\citep{pearl1999probabilities,tian2000probabilities},\footnote{Probabilities of
+causation have also been put to work outside token-level attribution:
+\citet{wangJordanDesiderata2021} formalize representation-learning desiderata ---
+non-spuriousness, efficiency, and disentanglement --- as computable criteria built
+from probabilities of causation, paralleling our use of the same primitives for
+feature attribution.} which we introduce in this
 subsection. As we will see, these scale gracefully into the stochastic regime
 but, without an analogue of the witness mechanism, mis-attribute Alice's denial.
 
@@ -245,6 +250,23 @@ Formally, the model, using 1 for male and 1 for good credit, is:
 \varname{loan} &= \varname{loan\text{-}if\text{-}checked} \cdot \varname{check}
 \end{align*}
 \end{example}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\linewidth]{figures/dag_obcb.pdf}
+\caption[OBCB causal structure]{Causal structure of the OBCB loan model
+(Example~\ref{ex:obcb_stochastic}). Node shape and colour encode role: the
+\emph{candidate causes} \varname{gender} and \varname{credit} (teal boxes), the
+\emph{witness} \varname{check-failed} (gold hexagon), and the \emph{outcome}
+\varname{loan} (purple double box); intermediate variables are grey. Dashed circles
+are the exogenous noise $U_V$ feeding each \emph{stochastic} mechanism---the
+deterministic nodes \varname{check-failed} and \varname{loan} carry none. Note that
+\varname{check} reaches \varname{loan} along two routes: through the
+\varname{check-failed} bottleneck and directly as the screening gate
+($\varname{loan}=\varname{loan-if-checked}\cdot\varname{check}$). \ourapproach holds
+the bottleneck witness fixed to keep these two routes distinct.}
+\label{fig:dag_obcb}
+\end{figure}
 
 \noindent The witness mechanism works well for deterministic models, but actual causality
 in its standard form offers no straightforward way to handle probabilistic ones. Before
@@ -322,7 +344,7 @@ rather than $1$ because the model includes a $5\%$ exception rate for males who 
 the credit check.
 
 
-To somehow combine insights provided by the two scores, we would like to find causes that are both necessary and sufficient.
+To combine the insights of the two scores, we would like to find causes that are both necessary and sufficient.
 This notion is  formalized as follows:
 
 \begin{definition}[Probability of necessity and sufficiency]
@@ -428,7 +450,7 @@ We revisit the example in full once the method is defined (Section~\ref{sec:caus
 Two features distinguish \ourapproach{} from both predecessors.
 Unlike actual causality, it does not ask whether \emph{some} witness set validates a counterfactual dependency; it integrates over a distribution of witness sets, weighting each by its probability.
 This replaces combinatorial enumeration with statistical estimation.
-The gain is conceptual as much as computational. Existential quantification certifies a cause as soon as \emph{some} witness set validates the dependence, a sensitivity that graded and normality-based accounts were introduced in part to address; integration instead weights each witness set by its probability, so a variable is responsible to the degree that \emph{typical} contexts render it efficacious.
+The gain is also conceptual. Existential quantification certifies a cause as soon as \emph{some} witness set validates the dependence, a sensitivity that graded and normality-based accounts were introduced in part to address; integration instead weights each witness set by its probability, so a variable is responsible to the degree that \emph{typical} contexts render it efficacious.
 The witness still does the essential work of holding context fixed --- \ourapproach{} simply declines to privilege one hand-picked set, letting the structural facts decide which witnesses carry the mass (for Alice, those pinning $\varname{check\text{-}failed}$ favour gender; almost none favour credit).
 As a by-product, actual causality's binary verdict becomes a graded magnitude.
 Unlike PN/PS/PNS, it inherits the context-sensitivity of actual causality through this integration: causally inert variables are downweighted automatically, because almost every witness set leaves them disconnected from the outcome, while variables that drive the outcome are upweighted, because almost every witness set leaves them connected.

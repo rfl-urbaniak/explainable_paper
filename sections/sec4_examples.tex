@@ -1,3 +1,14 @@
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/structure_map_03_examples_shap.pdf}
+  \caption{\textbf{Roadmap: positioning against SHAP} (current stage). With
+  \ourapproach defined, the next section compares it with SHAP, Causal SHAP, ATE, and
+  CATE on two worked examples. The argument then establishes the formal relation to
+  actual causality (\cref{sec:relation_with_ac}) and to Pearl's probability of actual
+  causation, before the empirical evaluation.}
+  \label{fig:roadmap_examples}
+\end{figure}
+
 \section{Examples and Comparison to SHAP and Causal SHAP}\label{sec:shap_examples}
 
  Section~\ref{sec:causal_impact} defined \ourapproach
@@ -51,14 +62,59 @@ overdetermination and undercutting symmetries that \ourapproach{}'s witness set
 $\mathbf{W}$ resolves on the OBCB and signal walkthroughs of this section.}
 Formal definitions of both are given in \cref{sec:shap_defs}.
 
+Two recent methods come even closer, since they too build attribution on Pearl's
+probabilities of necessity and sufficiency. FANS \citep{chenFANS2024} explains a
+prediction by searching a small region around the input (a ball of radius $b$ in the
+perturbed coordinates) for the largest PNS attainable there, estimating the
+counterfactual probabilities by resampling. LEWIS \citep{galhotraLewis2021} works from a
+causal graph and input--output data, computing necessity, sufficiency, and combined
+scores for a black-box decision, typically at the population or subgroup level, and turns
+them into recourse. Both are well suited to their stated aims, explaining and providing
+recourse for opaque models under limited assumptions, and both share our starting point
+that attribution is a probability of causation. They differ from \ourapproach{} on four
+design choices, each reflecting our narrower focus on token-level, context-sensitive
+attribution when a full model is available.
+
+First, we keep necessity and sufficiency apart. FANS combines them into a single PNS
+number and LEWIS reports them as separate population averages, whereas \ourapproach{}
+carries both as a joint pair $(Y^s, Y^n)$ and applies the user's impact function $ci$
+only afterwards. As the synthetic models of \cref{sub:synthetic} illustrate, a cause can
+be necessary without being sufficient, or the reverse, and keeping the two components
+together lets a single sweep tell these archetypes apart.
+
+Second, we average rather than optimise for a best case, both over the model's noise and
+over candidate cause sets. FANS reports the maximum PNS over the local regions it searches
+and uses gradient-based optimisation to extract the single feature subset with the highest
+PNS; LEWIS scores individual attributes or a user-specified set. \ourapproach{} averages
+instead: the selection distribution $\Gamma$ samples suspect sets within a chosen
+cardinality band, so a feature's responsibility reflects its participation across many
+sets rather than its most favourable one, with the Shapley kernel arising as a special
+case of $\Gamma$. The resulting score is the feature's probability of causation in the
+case at hand, and it does not depend on a region- or subset-search procedure.
+
+Third, we use witnesses where FANS uses a local region and LEWIS a population average.
+When two causes overdetermine an outcome, or one acts only through a mediator, recovering
+the intended verdict means holding the inactive path fixed at its factual value, which a
+ball around the input cannot express and a population average smooths over. \ourapproach{}
+holds witness variables $\mathbf{W}$ fixed and averages over which variables serve as
+witnesses, and the OBCB and signal walkthroughs below turn on exactly this mechanism.
+
+Fourth, we compare against a distribution of alternatives rather than a single reference.
+FANS measures change from one baseline input and LEWIS from one contrast value, while
+\ourapproach{} averages over an alternative-value distribution $\Delta$, removing the
+dependence on a chosen reference at the cost of assuming more of the model. That cost is a
+deliberate trade: as noted in \cref{sec:intro}, LEWIS recovers its scores from a graph and
+observational data at the population level, whereas \ourapproach{} assumes a fully
+specified model and returns a value for the individual case.
+
 Despite this repair, both methods share deeper limitations. First, both plain and
 Causal SHAP can assign non-zero responsibility to variables that play no causal role
 with respect to the target: attribution can run against the direction of the causal
 graph, a failure the interventional correction does not address. Second, both methods
 explain a model's predicted output's departure from the same model's output averaged over the population, not the individual
 factual outcome of a specific person: when the goal is \emph{causal responsibility
-attribution}, this produces further failures that are not always made explicit in the
-literature. The first limitation will surface in our signal example as violations of
+attribution} rather than prediction explanation, this mismatch in target produces
+further divergences, which we make explicit below. The first limitation will surface in our signal example as violations of
 D-YX, D-YM, and D-MX; the second will surface in OBCB as the D-A-rank overdetermination
 effect, and in the signal example as Instance~2's budget collapse when the prediction
 equals its baseline.
@@ -335,7 +391,7 @@ enters with weight $0.5$ and again hits the impossible cell. Plain SHAP gives
 undefined Shapley values for both individuals.\footnote{The underlying issue
 is that plain SHAP does not see that $\varname{credit}$ and
 $\varname{check\text{-}failed}$ are linked by the structural equation
-$cf = \varname{check}\cdot(1 - c)$, and so cheerfully samples a combination
+$cf = \varname{check}\cdot(1 - c)$, and so places weight on a combination
 the PSCM rules out.}
 
 \textbf{Causal SHAP for Alice.}
@@ -399,8 +455,8 @@ $(c{=}1, cf^\star)$ combination with positive weight; whether $\tilde f$ has
 a value for that combination depends on which $cf^\star$ value Causal SHAP is
 intervening on.
 
-Promoting the mediator to a feature therefore does not rescue Causal SHAP:
-it fails the desideratum on Alice and breaks down outright on Bob.
+Promoting the mediator to a feature therefore does not recover the desideratum:
+Causal SHAP still misses it for Alice and is left undefined for Bob.
 
 \medskip\noindent
 The OBCB analysis exposed two structural failure modes: SHAP's
@@ -429,10 +485,24 @@ M &= X + \varepsilon_M, \quad \varepsilon_M \sim \mathcal{N}(0,\ 0.1) \label{eq:
 Y &= M + \varepsilon_Y, \quad \varepsilon_Y \sim \mathcal{N}(0,\ 0.1) \label{eq:Y}
 \end{align}
 
-\noindent The causal graph is $X \to M \to Y$, a simple mediation chain. All noise terms
+\noindent The causal graph is $X \to M \to Y$, a simple mediation chain
+(Figure~\ref{fig:dag_signal}). All noise terms
 are independent of each other and of $X$. Since everything is jointly Gaussian, all
 conditional expectations are linear functions of the conditioning variables,
 and no approximations are required.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.70\linewidth]{figures/dag_signal.pdf}
+\caption[Signal-with-mediation graph]{The signal-with-mediation model. $X$ (teal)
+reaches the outcome $Y$ (purple double box) \emph{only} through the mediator $M$
+(gold hexagon); the faded, crossed-out arc marks the \emph{absent} direct path
+$X\to Y$. Dashed circles are the independent Gaussian noises $U_X,U_M,U_Y$ of
+\crefrange{eq:X}{eq:Y}. That one missing edge is what desideratum \textbf{D-MXY}
+asks an attribution to register: $M$ acts on $Y$ directly, whereas $X$ acts only
+at one remove.}
+\label{fig:dag_signal}
+\end{figure}
 
 Let $R(X \rightsquigarrow Y)$ denote the causal responsibility of $X$ for $Y$.
 Following the convention of Section~\ref{sec:causal_impact}, the desiderata are
@@ -520,8 +590,10 @@ prose statements about desiderata refer to magnitudes $|R(A \rightsquigarrow B)|
 Here $A$ denotes the candidate cause and $B$ the target outcome (the generic $Y$ of
 Section~\ref{sec:causal_impact}); for the PCI columns $B^n, B^s$ are its
 necessity/sufficiency worlds, $B^\star$ its factual value, and
-$\bar c = |B^n - B^\star| - |B^s - B^\star|$ the absolute-difference impact of
-Example~\ref{ex:absolute_score}.
+$\bar c = \mathbb{E}\!\left[\,|B^n - B^\star| - |B^s - B^\star|\,\right]$ the expected
+absolute-difference impact of Example~\ref{ex:absolute_score} (equivalently
+$\mathbb{E}[|B^n-B^\star|] - \mathbb{E}[|B^s-B^\star|]$, as in the caption of
+Table~\ref{tab:signal_desid}).
 Table~\ref{tab:signal_desid} maps the desiderata from Section~\ref{sec:signal}
 to the values computed above.
 
@@ -566,7 +638,7 @@ $\bar c = \mathbb{E}[|B^n-B^\star|] - \mathbb{E}[|B^s-B^\star|]$ with $\Gamma_s,
 uniform over non-empty subsets and rejection on
 $\mathbf{C}\cap\mathbf{T}\neq\emptyset$. \textbf{W=3rd} sets the third variable
 (neither $A$ nor $B$) as the witness when not in $\mathbf{C}$.
-$^\dagger$~0.186 weights three suspect-containing $(C,T)$ configurations at
+$^\dagger$~0.186 weights three suspect-containing $(\mathbf{C},\mathbf{T})$ configurations at
 $1/4$ each (the rejection-sampling filter keeps $2/3$ of $\Gamma_s\times\Gamma_w$
 draws, including a fourth valid pair $(\{M\},\emptyset)$ that does not contain $X$):
 one pins $M$ as
@@ -597,7 +669,7 @@ the interventional regime.
 Causal SHAP replaces the conditioning distribution but cannot remove a feature that
 the prediction model itself uses.
 
-\noindent\textbf{D-MX worsens under Causal SHAP.}
+\noindent\textbf{D-MX: the interventional correction reallocates rather than removes the spurious attribution.}
 Plain SHAP assigns $\phi_M^X=0.219$; Causal SHAP assigns $0.357$.
 Fixing D-YX reduces $v_{\mathrm{causal}}(\{Y\})$ from $0.778$ to $0.5$, driving
 $\phi_Y^X$ to zero, but reallocates the freed attribution to~$M$.
@@ -636,7 +708,7 @@ ordering could flip.
 Admitting the third variable as a witness amplifies the gap by roughly
 fourfold.
 $\mathrm{PCI}(X\to Y\mid\mathbf{W}{=}\{M\})\approx 0.186$ weights three
-suspect-containing $(C,T)$ configurations at $1/4$ each: in two cases $M$
+suspect-containing $(\mathbf{C},\mathbf{T})$ configurations at $1/4$ each: in two cases $M$
 propagates freely (contributing~$0.320$ and $0.425$) and in one case $M$ is
 pinned as witness in both worlds, equalizing them and contributing~$0$.
 $\mathrm{PCI}(M\to Y\mid\mathbf{W}{=}\{X\})\approx 0.319$ weights three cases
@@ -676,9 +748,10 @@ D-MXY & \multicolumn{2}{c}{$0.000=0.000$~$\times$} & \multicolumn{2}{c}{$0.189>0
 \bottomrule
 \end{tabular}
 \caption{Desiderata at the baseline instance $X^\star=M^\star=Y^\star=0.5$.
-SHAP collapses to zero on every cell, correctly assigning zero to the
-non-causal triples by accident, but with no signal to offer on the causal
-ones. PCI reports the same structural verdicts as at $X^\star=M^\star=Y^\star=1$.}
+SHAP collapses to zero on every cell, assigning zero to the
+non-causal triples --- though here that zero reflects the vanishing attribution
+budget rather than a detected absence of a causal path --- while offering no
+signal on the causal ones. PCI reports the same structural verdicts as at $X^\star=M^\star=Y^\star=1$.}
 \label{tab:signal_desid_baseline}
 \end{table}
 
@@ -741,7 +814,7 @@ asymmetry in the sufficiency world produces a structural gap on D-MXY,
 which appears already in the witness-free single game and is amplified into a
 robust margin under a witness rule.
 
-\paragraph{Where we go next.} The two examples here are small enough to inspect
+The two examples here are small enough to inspect
 every desideratum individually; the broader empirical comparison --- a synthetic
 archetype catalogue and a contrast with gradient-based Differential Causal Effect
 attribution --- is summarised in \cref{sec:evaluation} and detailed in

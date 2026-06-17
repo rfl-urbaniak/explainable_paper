@@ -1,3 +1,13 @@
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/structure_map_06_evaluation.pdf}
+  \caption{\textbf{Roadmap: empirical evaluation} (current stage). The next, final phase
+  evaluates \ourapproach across four settings, reading each result at a glance with the
+  full protocols and derivations in the appendices (dashed band). \cref{sec:discussion}
+  then closes the paper.}
+  \label{fig:roadmap_eval}
+\end{figure}
+
 \section{Empirical and Comparative Evaluation}\label{sec:evaluation}
 
 Having established what \ourapproach is (Section~\ref{sec:causal_impact}) and that
@@ -7,7 +17,7 @@ Section~\ref{sub:pearl_actual_cause_prob}), we now ask how it behaves empiricall
 against the dominant feature-attribution baselines, against a causal-effect
 attribution method, and as the model grows from textbook size to a deployed
 system. This section reads each result at a glance --- one claim, one figure, the
-headline number, and the honest caveat --- and points to the appendix that carries
+headline number, and the caveat --- and points to the appendix that carries
 the full protocol. A reader can follow the comparative and empirical story here
 without descending into those appendices.
 
@@ -16,9 +26,9 @@ without descending into those appendices.
 On the small models where actual causality is well defined, \ourapproach should
 reproduce its verdicts; on the canonical overdetermination and undercutting
 patterns it should separate a genuine cause from a preempted one. We test this on a
-synthetic structural model carrying four archetypes at once --- linear
-necessary-and-sufficient, overdetermined, preempted (gated), and an irrelevance
-control --- with an analytic ground truth throughout
+synthetic structural model carrying three archetypes at once --- linear
+necessary-and-sufficient, overdetermined, and preempted (gated) --- together with an
+irrelevance control, with an analytic ground truth throughout
 (Appendix~\ref{sub:synthetic}). Across two contrasting factual cases, all ten
 archetype desiderata hold: \ourapproach scores the active cause above the
 preempted one, keeps the irrelevant control at the noise floor, and --- unlike the
@@ -44,9 +54,9 @@ estimator, and per-row analysis in Appendix~\ref{sub:synthetic}.}
 \label{sec:eval_shap}
 The worked comparisons of Section~\ref{sec:shap_examples} (OBCB and the
 signal-with-mediation chain) are the substance here, with the formal SHAP and Causal SHAP definitions in Appendix~\ref{app:signal}; we recall only the verdict.
-Both plain and Causal SHAP \emph{leak attribution backward}, against the arrows of
-the causal graph (they violate the zero desiderata D-YX/D-YM/D-MX, with Causal
-SHAP's interventional correction repairing only D-YX), and both \emph{tie} the
+Both plain and Causal SHAP \emph{assign attribution backward}, against the arrows of
+the causal graph (they do not satisfy the zero desiderata D-YX/D-YM/D-MX, with Causal
+SHAP's interventional correction recovering only D-YX), and both \emph{tie} the
 direct and indirect causes of an outcome (D-MXY), because they decompose a
 prediction's departure from a population mean rather than the realized outcome.
 \ourapproach{}'s realized-outcome reference and witness mechanism break both
@@ -114,8 +124,8 @@ machine-learned components trained on millions of points --- a regime where actu
 causality is intractable and SHAP is the practical default
 (Appendix~\ref{sec:avm}). \ourapproach returns a structured, context-sensitive
 attribution across the model's internal variables, whereas SHAP concentrates
-almost all responsibility on a few downstream variables and effectively ignores
-the rest.
+almost all responsibility on a few downstream variables and places little weight
+on the rest.
 
 \begin{figure}[htbp]
 \centering

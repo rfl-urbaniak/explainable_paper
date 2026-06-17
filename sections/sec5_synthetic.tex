@@ -120,7 +120,7 @@ read off stably regardless of $D$'s absolute drift.
 
 \paragraph{The threshold comes from the data.}
 The directional desiderata of the form $\Delta > \epsilon$ or $\lvert \Delta \rvert <
-\epsilon$ all depend on a single tolerance $\epsilon$. Rather than hand-pick it, we
+\epsilon$ all depend on a single tolerance $\epsilon$. We do not hand-pick it; we
 derive it from the Monte Carlo budget. For every $\Delta$ score appearing in any
 desideratum we bootstrap a standard error $\sigma_V$ and take
 \[
@@ -135,15 +135,15 @@ chatter at the chosen budget. At $N = 20\,000$ samples we measure $\sigma_{\max}
 0.092$, giving $\epsilon \approx 0.151$. Smaller budgets give a noisier $\epsilon$ that
 defeats the point (e.g.\ at $N = 5\,000$, $\sigma_{\max} \approx 0.18$ would push
 $\epsilon$ into the signal range); this fixes the production sample size for the
-section. Ten of the twelve desiderata listed in earlier drafts survive this honest
+section. Ten of the twelve desiderata we considered survive this
 threshold; the two that do not (cross-regime $P$ flip, and quantitative match of
 $\Delta_N(P)$ to $\Delta_N(L_1)$ in Case~2) are discussed below as diagnostics.
 
 \begin{table}[ht]
 \centering
 \footnotesize
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{r p{8.2cm} r r r}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{r p{7.5cm} r r r}
 \toprule
 \# & Formal desideratum & Measured & 95\% CI & Result \\
 \midrule
@@ -198,8 +198,8 @@ lower edge at $+0.079$ still inside the band on the right side of zero.
 
 
 \paragraph{Diagnostics that do not survive the bootstrap-derived threshold.}
-Two claims from earlier drafts of this appendix, both about the preempted variable $P$,
-fail at the honest threshold and are reported as diagnostics rather than numbered
+Two further claims about the preempted variable $P$
+fail at this threshold and are reported as diagnostics rather than numbered
 desiderata. (D1) The cross-regime flip
 $\Delta_N(P,\text{Case~2}) - \Delta_N(P,\text{Case~1})$ measures $+0.139$ with CI
 $[-0.081, +0.365]$: the CI straddles zero, so $P$'s rise across regimes is not, on
@@ -209,12 +209,13 @@ this claim is already carried by desiderata \#8 (P at the noise floor in Case~1)
 an independent claim. (D2) The quantitative match
 $\lvert \Delta_N(P) - \Delta_N(L_1) \rvert < \epsilon$ in Case~2: the signed gap
 $\Delta_N(P) - \Delta_N(L_1)$ measures $-0.267$ with
-CI $[-0.441, -0.106]$, whose magnitude $0.267$ is well above $\epsilon$. At this sample budget,
+CI $[-0.441, -0.106]$; the point estimate's magnitude $0.267$ lies above $\epsilon$, though
+the interval's near edge ($0.106$) dips below it. At this sample budget,
 gated $P$ does not quantitatively mirror ungated $L_1$; what we can claim is the
 weaker, qualitative statement that both clear the noise floor in Case~2, which is
 exactly desideratum \#10 for $P$ and built into Case~2 by construction for $L_1$.
 
-\paragraph{Where we go next.} The archetype evaluation establishes that \ourapproach
+The archetype evaluation establishes that \ourapproach
 recovers the right qualitative pattern on every standard causal motif against an
 analytic ground truth. \cref{sec:DCE} now turns to a complementary
 continuous-input comparison: how does \ourapproach behave next to gradient-based

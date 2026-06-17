@@ -1,9 +1,17 @@
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/structure_map_05_prob_ac.pdf}
+  \caption{\textbf{Roadmap: relating to the probability of actual causation} (current
+  stage). The next section compares \ourapproach side by side with Pearl's construction.
+  With the positioning complete, the empirical and comparative evaluation follows
+  (\cref{sec:evaluation}), with the supporting protocols in the appendices.}
+  \label{fig:roadmap_probac}
+\end{figure}
+
 \section{Relation with the Probability of Actual Causality}
 \label{sub:pearl_actual_cause_prob}
 
-
-
-Now we are in the position to discuss the relation between PCI and
+We now discuss the relation between PCI and
 Pearl's probability of actual causation. On 
 Pearl's Definition~10.3.5 \citep[Ch.~10]{causalityPearl},
 \begin{equation}\label{eq:pearl-paac}
@@ -24,16 +32,29 @@ enumeration; the two agree within Monte Carlo noise on every value reported
 below.}
 The same construction underwrites Chockler and Halpern's degree of blame
 \citep{chocklerResponsibilityBlameStructuralModel2004}, which substitutes a
-graded responsibility share inside the expectation. Because
+graded responsibility share inside the expectation~--- and, more directly,
+Halpern and Kleiman-Weiner's \emph{degree of blameworthiness}
+\citep{halpernKleimanWeinerBlameworthiness2018}, which takes the expectation
+of an actual-causation quantity over an epistemic state (a probability
+distribution over causal models). \ourapproach{}'s expectation over noise
+states in Definition~\ref{def:jointnecsuf} has exactly this shape. In
+multi-agent settings, Friedenberg and Halpern
+\citep{friedenbergHalpernBlameworthiness2019} apportion group blameworthiness
+to individual agents via the Shapley value (see also
+\citealp{alechinaTeamPlans2020}, who compute causality, responsibility, and
+blame for multi-agent team plans); this is a \emph{causal} use of the
+same game-theoretic averaging that, applied associationally to a predictive
+model, underlies SHAP~[though we raise our own concerns about SHAP-style
+attribution in Section~\ref{sec:shap_examples}]. Because
 \eqref{eq:pearl-paac} is the closest construction in the literature to
-\ourapproach{}'s expectation in Definition~\ref{def:jointnecsuf}, we now ask
+\ourapproach{}'s expectation, we now ask
 in detail how it differs from PCI and how PCI improves on it.
 
-We proceed in three steps. We replay Pearl's canonical desert-traveller
-illustration and Pearl's binary actual-cause verdicts; compute PCI on the same
+We replay Pearl's canonical desert-traveller
+illustration and his binary actual-cause verdicts; compute PCI on the same
 example and show it recovers Pearl's ranking with graded magnitudes; and
 introduce a weak-poison variant that exhibits three intuitive responsibility
-patterns, two of which Pearl's binary verdict cannot capture but PCI's
+patterns, two of which Pearl's binary verdict cannot capture though PCI's
 graded reading does, and one (within-scenario ranking) Pearl preserves.
 Then we move to discuss other differences between PCI and Pearl's probability of
 causation, which make the former more general and more scalable.
@@ -60,10 +81,24 @@ $u$:
     killed him.
 \end{itemize}
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\linewidth]{figures/dag_desert.pdf}
+\caption[Desert-traveller graph]{Pearl's desert traveller as a graph. The two
+candidate causes (teal)---$X$, who empties the canteen, and $P$, who poisons the
+water---feed two competing mechanisms (gold hexagons), the cyanide path $c$ and
+the thirst path $d$, whose disjunction is death $y$ (purple double box). The
+exogenous noise comprises the order coin $u$---a named exogenous variable that
+enters $c$ and $d$ directly---and the coins $U_X,U_P$ realising the two enemies'
+actions; the mechanisms $c,d,y$ are deterministic and carry none. It is $u$,
+deciding which path operates first, that creates the preemption making this case
+hard for theories of actual causation.}
+\label{fig:dag_desert}
+\end{figure}
 
-There are at least two intuitions here that we would like to recover. One, in any particular case, we want 
-to be able to identify the actual cause. The other, perhaps a bit weaker, we still don't want to say 
-that the dormant cause is completely blameless. Actual causality gives us the first half of the 
+There are at least two intuitions here that we would like to recover. One, in any particular case, we want
+to be able to identify the actual cause. The other, slightly weaker, is that we should not call
+the dormant cause completely blameless. Actual causality gives us the first half of the 
 story, assigning full responsibility to one source here. Pearl's beam analysis \citep[Ch.~10]{causalityPearl} (equivalently
 Halpern--Pearl AC1--AC3 of \citealp{actualCausalityHalpern}) gives the
 actual-cause verdicts at each deterministic state:
@@ -127,11 +162,14 @@ J_C &= \mathbb{E}\bigl[\,\mathbb{1}\{Y^n \neq y^\star\}\,\mathbb{1}\{Y^s = y^\st
        &&\text{(joint PNS-style)}.
 \end{aligned}
 \end{equation}
+Thus $J_C$ is the PCI score $\mathrm{PCI}_C$ of Definition~\ref{def:causalimpact} under
+the PNS-binary $ci$, and $N_C$, $S_C$ are its necessity and sufficiency marginals.
 
 Under the spec above (computation in the companion notebook), the results are:
 
 \begin{table}[ht]
 \centering
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{llcccc}
 \toprule
 Forensic posterior & Cause & $N$ & $S$ & $J$ & Pearl $P(\text{caused})$ \\
@@ -150,7 +188,7 @@ Pearl returns the binary $\{0, 1\}$.}
 \label{tab:pci-basic-dt}
 \end{table}
 
-Three points to read off Table~\ref{tab:pci-basic-dt}:
+Reading off Table~\ref{tab:pci-basic-dt}:
 
 \textbf{(1) PCI and Pearl agree on the ranking.} In each scenario, $J$ is
 strictly larger for the cause Pearl identifies, and strictly smaller for the
@@ -175,8 +213,8 @@ graded information away.
 
 \subsection{PCI Expectation vs the AC Machinery}
 
-The agreement above is reassuring, but the more interesting observation is
-what changes underneath. AC's necessity clause is an \emph{existential}:
+The agreement is reassuring; the substantive change is in how the verdict is
+computed. AC's necessity clause is an \emph{existential}:
 \emph{there exists} a witness set $\mathbf{T}$ and an alternative value $c'$
 such that the intervention flips $Y$. To verify the existential one in
 principle enumerates the candidate $(\mathbf{T}, c')$ pairs: this is the
@@ -188,10 +226,10 @@ inheriting the enumeration unchanged.
 over the joint $(\mathbf{C}, \mathbf{T}, \mathbf{u})$ under $\Gamma \otimes
 P_{\mathbf{U}}$. The existential ``does \emph{some} witness work?'' becomes
 the quantitative ``\emph{what fraction} of witnesses work?'', the
-information AC uses only one piece of, exposed as a graded score with
+information AC uses only one piece of, expressed as a graded score with
 sampling-based estimation.
 
-In the desert traveller this is small change: four candidate witness sets,
+In the desert traveller this difference is minor: four candidate witness sets,
 all trivially enumerable. The point is the scaling. In a model with $n$
 candidate witness variables, AC's existential demands checking up to $2^n$
 subsets per noise state, and Pearl's posterior over the AC indicator inherits
@@ -213,9 +251,15 @@ attribution method should capture.
 \label{sub:weak-poison}
 
 We modify the desert traveller so the cyanide path is unreliable while the
-dehydration path stays deterministic. The change is small, but it surfaces three
+dehydration path stays deterministic. The change is small, but it brings out three
  intuitions that a graded responsibility metric
-should capture and a binary actual-cause indicator structurally cannot.
+should capture and a binary actual-cause indicator structurally cannot.\footnote{That
+human responsibility judgments are in fact graded, and sensitive to the structure by
+which individual contributions combine into a group outcome, has empirical support:
+\citet{gerstenbergSpreadingBlame2010} found that across experimental conditions the
+structural-model account of \citet{chocklerResponsibilityBlameStructuralModel2004}
+predicted participants' responsibility allocations better than competing cognitive
+models.}
 
 \begin{example}[Desert traveller, weak poison]\label{ex:desert_traveler_weak_poison}
 Same enemies as in Example~\ref{ex:desert_traveler}. The cyanide is a small
@@ -298,6 +342,7 @@ hand-rolled enumeration matching the framework.
 
 \begin{table}[ht]
 \centering
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{llcccc}
 \toprule
 Forensic posterior & Cause & $N$ & $S$ & $J$ & Pearl $P(\text{caused})$ \\
@@ -420,7 +465,7 @@ situation rather than intervening afresh --- which repairs the verdicts
 Fenton-Glynn's account returns on voting, trumping, and overdetermination cases.
 
 Both are close neighbours of \ourapproach, and the contrast is worth drawing precisely,
-since these are the accounts nearest to ours. Three differences stand out. First, each
+since these are the accounts nearest to ours. First, each
 probabilifies only the \emph{necessity} side of HP: it raises or conditions a
 probability of the witnessed-necessity test, with no analogue of \ourapproach's
 \emph{sufficiency} component --- the $Y^s$ factor of Definition~\ref{def:jointnecsuf},
@@ -430,7 +475,7 @@ deterministically at its actual values and quantifies \emph{universally} over th
 mediator subsets (picking the alternative $\mathbf{c}'$ existentially); \ourapproach
 replaces those quantifiers with \emph{distributions} --- a $\Gamma$-weighted expectation
 over which suspects and witnesses to activate, and an alternative-value distribution
-$\Delta$ --- both surfaced as user-facing knobs and approximated by Monte Carlo rather
+$\Delta$ --- both presented as user-facing knobs and approximated by Monte Carlo rather
 than enumerated. Third, \ourapproach integrates a \emph{continuous}
 necessity--sufficiency kernel rather than thresholding a binary actual-cause indicator.
 \ourapproach is therefore not a third probabilistic-HP variant but a PN/PS-style
@@ -499,7 +544,7 @@ left implicit.
 
 We conjecture that most of these are not independent primitives but
 \emph{reparametrisations of the single counterfactual contrast} that \ourapproach already
-exposes --- or, where a knob is missing, notions that fold into the same framework by an
+makes explicit --- or, where a control is missing, notions that fold into the same framework by an
 appropriate generalisation, \emph{mutatis mutandis}. The construction of Section~\ref{sec:causal_impact} carries a small number of
 user-facing knobs: the variable selection distribution $\Gamma$ (which and how many
 suspects enter a candidate cause set $\mathbf{C}$), the witness set $\mathbf{T}$ (which
@@ -533,17 +578,24 @@ contract together with a utility-valued $ci$; and the \emph{causal sufficiency} 
 \citet{beckersSufficiency2021} is the sufficiency regime itself --- the necessity of $X_k$
 \emph{within} a sufficient set $\mathbf{C}$.
 
-What this reframing \emph{discards} is as telling as what it keeps. The idiosyncratic
-packaging of each notion --- the $1/(N{+}1)$ responsibility weight of
-\citet{chocklerResponsibilityBlameStructuralModel2004}, the all-or-nothing causation
+What the reframing sets aside is equally telling. The specific convention each notion
+adopts --- the $1/(N{+}1)$ responsibility weight of
+\citet{chocklerResponsibilityBlameStructuralModel2004},\footnote{That this
+particular weight reflects a modelling choice rather than a necessity has precedent:
+\citet{salimiQuantifyingCausalEffects2016}, applying Chockler--Halpern
+responsibility to database query answering, found the $1/(N{+}1)$ measure
+gave unintuitive rankings in their setting and replaced it with a graded \emph{causal-effect}
+measure that, they argue, recovers the intended results.} the all-or-nothing causation
 threshold, the non-domination criterion that rates an explanation only \emph{good} or not
 \citep{actualCausalityHalpern,beckersExplanationsXAI2022}, the stipulated default in the harm contrast of
-\citet{beckersHarm2022} --- are artifacts of forcing a graded, model-relative phenomenon
-into a labelled box. \ourapproach retains the underlying graded probability and relocates
+\citet{beckersHarm2022} --- each encodes a deliberate modelling commitment suited to that
+work's aims, summarising a graded, model-relative phenomenon under a single label.
+\ourapproach retains the underlying graded probability and relocates
 each of these to an \emph{explicit} downstream choice: a cardinality band in $\Gamma$, a
 threshold on $ci$, a prior over models, a particular $\Delta$. On this view the named
-quantities are reporting conventions over one measure, not competing definitions of
-distinct phenomena.
+quantities offer complementary readings of one underlying measure rather than competing
+definitions of distinct phenomena --- a unifying vantage point, not a shortcoming of the
+original constructions.
 
 We state this only as a conjecture, and deliberately do not develop it here. Establishing
 it would require, for each quantity, matching \ourapproach's verdicts against the originals
@@ -556,7 +608,7 @@ degrees of freedom along which the quantities of
 \citet{beckersSufficiency2021,beckersHarm2022} themselves vary. A careful accounting we
 leave to future work.
 
-\paragraph{Where we go next.} Sections~\ref{sec:relation_with_ac}--\ref{sub:pearl_actual_cause_prob}
+Sections~\ref{sec:relation_with_ac}--\ref{sub:pearl_actual_cause_prob}
 have laid out the formal relation between \ourapproach and actual causality and
 its Pearlian probabilistic wrapper. \cref{sec:evaluation} now turns to the
 \emph{empirical} side: a claim-by-claim comparison against feature-attribution

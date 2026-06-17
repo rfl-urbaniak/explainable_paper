@@ -1,3 +1,14 @@
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/structure_map_04_actual_causality.pdf}
+  \caption{\textbf{Roadmap: relating to actual causality} (current stage). The next
+  section establishes the formal correspondence between the \ourapproach kernel and
+  Halpern's actual cause. It then positions \ourapproach against Pearl's probability of
+  actual causation (\cref{sub:pearl_actual_cause_prob}), before the empirical
+  evaluation.}
+  \label{fig:roadmap_ac}
+\end{figure}
+
 \section{Relation with Actual Causality} \label{sec:relation_with_ac}
 
  \cref{sec:shap_examples} positioned \ourapproach against feature-attribution
@@ -20,6 +31,12 @@ distribution $\Delta$ under which \ourapproach{} verdicts agree with actual-caus
 verdicts. With one caveat: probability-of-causation maximisation will not identify
 subset-minimal causes that are not cardinality-minimal, a misalignment we
 characterise and remedy below.
+
+\medskip\noindent Throughout this section $\varphi$ denotes the outcome event whose
+causes we attribute --- $\{Y=y^\star\}$ in the binary case, or a threshold event such
+as $\{Y>y_0\}$ for continuous outcomes (as in \cref{sec:sir_benchmark}) --- and
+$\neg\varphi$ its complement. This is the event written as the measurable set
+$A\subseteq\dom(Y)$ in Definition~\ref{def:jointnecsuf}.
 
 \medskip\noindent\textit{Scope: a necessity-only correspondence.} Halpern's definition
 involves factivity, context-sensitive necessity, and minimality, but no sufficiency
@@ -67,7 +84,10 @@ configuration $(\mathbf{C}, \mathbf{T})$ and a fixed noise realisation $\mathbf{
 and read off the configuration-level contribution. The resulting kernel combines the
 same three ingredients as Halpern's definition: a sufficiency check at factual values,
 a necessity check against alternatives, and a $\Gamma$-weight that records how much
-the configuration is being asked about.
+the configuration is being asked about. Throughout the kernel and its proofs we write
+the restored factual values as the restrictions $\mathbf{s}^\star\!\mid_{\mathbf{C}}$
+and $\mathbf{w}^\star\!\mid_{\mathbf{T}}$; these are the $\mathbf{c}^\star$ and
+$\mathbf{t}^\star$ of Halpern's definition above.
 
 \begin{definition}[AC-aligned PCI kernel] \label{def:ackernel}
 Fix a PSCM $M=\langle\mathbf{U},\mathbf{V},\mathbf{F},P_{\mathbf{U}}\rangle$,\footnote{%
@@ -86,7 +106,7 @@ outcome event $\varphi$, active suspect set $\mathbf{C}\subseteq\mathbf{S}$ and 
 witness set $\mathbf{T}\subseteq\mathbf{W}$ with $\mathbf{T}\cap\mathbf{C}=\emptyset$,
 define
 \begin{align}
-\Phi(\mathbf{C},\mathbf{T})
+\Phi_{\mathbf{u}}(\mathbf{C},\mathbf{T})
 &\;:=\;
 p^\Gamma(\mathbf{C},\mathbf{T})
 \;\cdot\;
@@ -104,7 +124,11 @@ p^\Gamma(\mathbf{C},\mathbf{T})
 \end{align}
 \end{definition}
 
-\medskip\noindent Concretely, $\Phi(\mathbf{C},\mathbf{T})$ is the
+\medskip\noindent The kernel depends on the fixed noise realisation $\mathbf{u}$
+through its two indicators; we write $\Phi_{\mathbf{u}}$ when that dependence is in play
+(as in the noise-integrated score $P(\mathbf{C}\!\rightsquigarrow\!\varphi)$ below) and
+abbreviate it to $\Phi$ when $\mathbf{u}$ is fixed and clear from context. Concretely,
+$\Phi_{\mathbf{u}}(\mathbf{C},\mathbf{T})$ is the
 matched-configuration slice of the joint necessity-sufficiency measure $P_k^{s,n}$
 from Definition~\ref{def:jointnecsuf}: integration over $P_{\mathbf{U}}$ is replaced
 by point evaluation at $\mathbf{u}$, and both the sufficiency and the necessity sums
@@ -116,9 +140,9 @@ factual values while holding $\mathbf{T}$ fixed preserves $\varphi$ under $\math
 (the factivity-as-sufficiency component); and there exists a
 $\Delta$-positive-density alternative $\mathbf{c}'$ for which the corresponding
 intervention overturns $\varphi$ under $\mathbf{u}$ (the necessity component). The
-first factor takes the role played by the suspect/witness biases $b_s,b_w$ in earlier
-work: regularity of $\Gamma$ --- positive $p^\Gamma$ on every legal configuration
---- corresponds to the old $-0.5<b_s,b_w<0.5$ regularity. We will say that $\Gamma$
+first factor is the $\Gamma$-selection weight, positive exactly when
+$(\mathbf{C},\mathbf{T})$ carries positive mass; the regularity we need is that this
+weight never vanishes on a legal configuration. We will say that $\Gamma$
 is \emph{regular} when $p^\Gamma(\mathbf{C}',\mathbf{T}')>0$ for every
 $(\mathbf{C}',\mathbf{T}')$ with $\mathbf{C}'\subseteq\mathbf{S}$,
 $\mathbf{T}'\subseteq\mathbf{W}$, $\mathbf{C}'\cap\mathbf{T}'=\emptyset$.
@@ -126,7 +150,7 @@ $\mathbf{T}'\subseteq\mathbf{W}$, $\mathbf{C}'\cap\mathbf{T}'=\emptyset$.
 We can now record the forward direction.
 
 \begin{theorem}\label{th:ac-exp}
-    Suppose that $\mathbf{C}$ is an actual cause of $\varphi$ with witness set $\mathbf{T}$ in $(M,\mathbf{u})$. Take any $\{\mathbf{S}=\mathbf{s}\}\supseteq\mathbf{C}$ as the potential cause set, subject to the constraint that no element of $\mathbf{S}$ is a deterministic function (under $M$) of any subset of the remaining elements of $\mathbf{S}$,\footnote{Equivalently, $\mathbf{S}$ is closed under no nontrivial structural equation of $M$. The constraint excludes admitting both $S$ and a deterministic descendant $H=f(S,\ldots)$ as candidates in the same suspect set, but covers all candidate sets standardly considered in the AC literature, where structural descendants of one candidate are not admitted as separate candidates: their contribution is mediated by the equation, and AC's minimality clause already prefers the ancestor alone. The same closure condition discharges a joint-support concern: the next assumption requires $\Delta(\mathbf{s})$ to place positive density on every \emph{joint} alternative configuration $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$, not merely positive marginal density on each component. In a chain $S\to H$ with $H=f(S)$, joint assignments such as $(S{=}0, H{=}1)$ are impossible under the structural equations, so any $\Delta$ that placed mass on them would be incompatible with $M$. Closure rules out exactly this case: when no element of $\mathbf{S}$ is a deterministic function of the remaining elements, the joint domain $\dom(\mathbf{S})$ contains no rectangles forced to zero measure by $M$, and a $\Delta$ with positive PMF or Lebesgue density on every $\mathbf{s}'\neq\mathbf{s}$ is consistent with $M$ on the suspect set. In the stone-throwing benchmark of \cref{sec:ac_benchmark}, the suspect set is $\{A_i,B_i\}_i$ and the deterministic mediators $\{W^a_i,W^b_i\}_i$ live in the witness set, not the suspect set, exactly to keep the suspect set closure-respecting. Witnesses are pinned at their factual values and are not subject to a joint-support requirement on alternatives, so they need no analogous condition.} and any $\mathbf{W}\supseteq\mathbf{T}$ as the potential witness set. Assume $\Gamma$ is regular and that $\Delta(\mathbf{s})$ assigns positive density to every $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$ (positive PMF in the discrete case, positive Lebesgue density in the continuous case). In the continuous case, assume additionally:
+    Suppose that $\mathbf{C}$ is an actual cause of $\varphi$ with witness set $\mathbf{T}$ in $(M,\mathbf{u})$. Take any potential cause set $\mathbf{S}\supseteq\mathbf{C}$ with factual values $\mathbf{S}=\mathbf{s}$, subject to the constraint that no element of $\mathbf{S}$ is a deterministic function (under $M$) of any subset of the remaining elements of $\mathbf{S}$,\footnote{Equivalently, $\mathbf{S}$ is closed under no nontrivial structural equation of $M$. The constraint excludes admitting both $S$ and a deterministic descendant $H=f(S,\ldots)$ as candidates in the same suspect set, but covers all candidate sets standardly considered in the AC literature, where structural descendants of one candidate are not admitted as separate candidates: their contribution is mediated by the equation, and AC's minimality clause already prefers the ancestor alone. The same closure condition discharges a joint-support concern: the next assumption requires $\Delta(\mathbf{s})$ to place positive density on every \emph{joint} alternative configuration $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$, not merely positive marginal density on each component. In a chain $S\to H$ with $H=f(S)$, joint assignments such as $(S{=}0, H{=}1)$ are impossible under the structural equations, so any $\Delta$ that placed mass on them would be incompatible with $M$. Closure rules out exactly this case: when no element of $\mathbf{S}$ is a deterministic function of the remaining elements, the joint domain $\dom(\mathbf{S})$ contains no rectangles forced to zero measure by $M$, and a $\Delta$ with positive PMF or Lebesgue density on every $\mathbf{s}'\neq\mathbf{s}$ is consistent with $M$ on the suspect set. In the stone-throwing benchmark of \cref{sec:ac_benchmark}, the suspect set is $\{A_i,B_i\}_i$ and the deterministic mediators $\{W^a_i,W^b_i\}_i$ live in the witness set, not the suspect set, exactly to keep the suspect set closure-respecting. Witnesses are pinned at their factual values and are not subject to a joint-support requirement on alternatives, so they need no analogous condition.} and any $\mathbf{W}\supseteq\mathbf{T}$ as the potential witness set. Assume $\Gamma$ is regular and that $\Delta(\mathbf{s})$ assigns positive density to every $\mathbf{s}'\in\dom(\mathbf{S})\setminus\{\mathbf{s}\}$ (positive PMF in the discrete case, positive Lebesgue density in the continuous case). In the continuous case, assume additionally:
     \begin{itemize}
     \item[(i)] the structural equations of $M$ downstream of $\mathbf{C}$ are continuous in
     $\mathbf{c}'$ under fixed $\mathbf{u}$;
@@ -148,7 +172,7 @@ We can now record the forward direction.
 Fix $\mathbf{u}$, $\mathbf{c}'$, and $\mathbf{T}$ as witnesses to the satisfaction of
 the conditions in Definition~\ref{def:ac}. The context-sensitive-necessity clause
 forces $\mathbf{T}\cap\mathbf{C}=\emptyset$, since otherwise the joint intervention
-$[\mathbf{C}\!\leftarrow\!\mathbf{c}',\,\mathbf{T}\!\leftarrow\!\mathbf{t}^\star]$ would
+$[\mathbf{C}\!\leftarrow\!\mathbf{c}',\,\mathbf{T}\!\leftarrow\!\mathbf{w}^\star\!\mid_{\mathbf{T}}]$ would
 be ill-defined. It remains to show that each of the three factors in
 $\Phi(\mathbf{C},\mathbf{T})$ is strictly positive.
 \begin{itemize}
@@ -161,7 +185,7 @@ leaves the model agreeing with $(M,\mathbf{u})$ on every variable, so the indica
 evaluates to $1$.
 \item \emph{Necessity integral.} Context-sensitive necessity provides a specific
 $\mathbf{c}'$ witnessing
-$(M,\mathbf{u})\vDash[\mathbf{C}\!\leftarrow\!\mathbf{c}',\mathbf{T}\!\leftarrow\!\mathbf{t}^\star]\neg\varphi$.
+$(M,\mathbf{u})\vDash[\mathbf{C}\!\leftarrow\!\mathbf{c}',\mathbf{T}\!\leftarrow\!\mathbf{w}^\star\!\mid_{\mathbf{T}}]\neg\varphi$.
 The closure condition on $\mathbf{S}$ and the positive-density assumption on
 $\Delta(\mathbf{s})$ imply that $\mathbf{c}'$ lies in the support of
 $\Delta_{\mathbf{C}}(\mathbf{s}^\star)$. We treat the two cases separately.
@@ -195,7 +219,7 @@ witnessing $\mathbf{c}'$.
 The opposite direction follows by reading the proof in reverse on the necessity factor.
 
 \begin{theorem}\label{th:exp-ac}
-Under the same hypotheses on $\{\mathbf{S}=\mathbf{s}\}$, $\Gamma$, and $\Delta$ as
+Under the same hypotheses on $\mathbf{S}$, $\Gamma$, and $\Delta$ as
 in Theorem~\ref{th:ac-exp}, if
 \[
 \sum_{\mathbf{T}'\subseteq\mathbf{W}} \Phi(\mathbf{C},\mathbf{T}')\;>\;0,
@@ -221,7 +245,7 @@ context-sensitive-necessity clause of Definition~\ref{def:ac}.
 \end{proof}
 
 \medskip\noindent\textit{Remark (deterministic intermediates and joint support).}
-The hypothesis on $\{\mathbf{S}=\mathbf{s}\}$ is what rules out the following obstruction.
+The hypothesis on $\mathbf{S}$ is what rules out the following obstruction.
 Suppose the suspect set were closed under the structural equations of $M$, e.g., both
 Sally's throw $S$ and the bottle's hit $H = f(S,\ldots)$ admitted as candidates. Then the
 joint assignment $(S{=}0, H{=}1)$ is structurally impossible, and any alternative-value
@@ -277,11 +301,11 @@ as well.
 
 \begin{theorem}\label{th:local_max_to_ac}
 Consider the set of optimisers
-$\mathcal{O}^\star = \arg\max_{\mathbf{C}\subseteq\{\mathbf{S}=\mathbf{s}\},\,\mathbf{T}\subseteq\mathbf{W}}
+$\mathcal{O}^\star = \arg\max_{\mathbf{C}\subseteq\mathbf{S},\,\mathbf{T}\subseteq\mathbf{W}}
 \Phi(\mathbf{C},\mathbf{T})$. Assume $(\mathbf{C}^\dagger,\mathbf{T}^\dagger)\in\mathcal{O}^\star$
 with $\Phi(\mathbf{C}^\dagger,\mathbf{T}^\dagger)>0$, that factivity is satisfied for
 $\mathbf{C}^\dagger$ (as in Definition~\ref{def:ac}), and that no element of
-$\{\mathbf{S}=\mathbf{s}\}$ is a deterministic function under $M$ of the others. Let
+$\mathbf{S}$ is a deterministic function under $M$ of the others. Let
 $\Gamma_w$ be uniform on $2^{\mathbf{W}}$ and let $\Gamma_s$ be strictly
 cardinality-decreasing, and assume that $(M,\Delta)$ satisfies necessity dilution on
 $\mathbf{S}$. Then $\mathbf{C}^\dagger$ is an actual cause of $\varphi$ according to
@@ -325,7 +349,7 @@ contradicting $(\mathbf{C}^\dagger,\mathbf{T}^\dagger)\in\mathcal{O}^\star$.
 \begin{corollary}\label{cor:marginalize}
 Keep the notation and hypotheses of Theorem~\ref{th:local_max_to_ac}. Consider the set
 of optimisers
-$\mathcal{O}^\Sigma = \arg\max_{\mathbf{C}\subseteq\{\mathbf{S}=\mathbf{s}\}}
+$\mathcal{O}^\Sigma = \arg\max_{\mathbf{C}\subseteq\mathbf{S}}
 \sum_{\mathbf{T}\subseteq\mathbf{W}} \Phi(\mathbf{C},\mathbf{T})$. Assume
 $\mathbf{C}^\dagger\in\mathcal{O}^\Sigma$ with
 $\sum_{\mathbf{T}\subseteq\mathbf{W}} \Phi(\mathbf{C}^\dagger,\mathbf{T})>0$ and that
@@ -345,7 +369,8 @@ cause of $\varphi$.
 \end{proof}
 
 \medskip\noindent\textit{When necessity dilution holds.} The hypothesis is a property
-of the pair $(M,\Delta)$, not of $\Gamma$. It says that adding suspects to a candidate
+of the pair $(M,\Delta)$, not of $\Gamma$ (we abbreviate $N(\mathbf{C},\mathbf{T})$ to
+$N(\mathbf{C})$ when the witness argument plays no role). It says that adding suspects to a candidate
 cause does not introduce new $\Delta$-mass of flipping alternatives, and three settings
 make it automatic. \emph{(i) Single-pivot models}: one variable $X^\star\in\mathbf{S}$
 is pivotal under $(M,\mathbf{u})$ and the others are structurally idle, so $N$ peaks at
@@ -366,7 +391,7 @@ tool; Proposition~\ref{prop:filter} is.
 \medskip\noindent We can now return to the misalignment we mentioned earlier. One can
 imagine a reasoning mode in which one looks for causes of an outcome by inspecting
 the integrated probability $P(\mathbf{C}\!\rightsquigarrow\!\varphi):=
-\int\sum_{\mathbf{T}}\Phi(\mathbf{C},\mathbf{T})\,P_{\mathbf{U}}(d\mathbf{u})$, not knowing
+\int\sum_{\mathbf{T}}\Phi_{\mathbf{u}}(\mathbf{C},\mathbf{T})\,P_{\mathbf{U}}(d\mathbf{u})$, not knowing
 what the values of $\mathbf{u}$ are but knowing that $\varphi$ occurred. It is worth
 pointing out that
 $\arg\max_{\mathbf{C}\subseteq\mathbf{S}} P(\mathbf{C}\!\rightsquigarrow\!\varphi)$
@@ -389,10 +414,10 @@ $\mathbf{W}=\emptyset$. Compare $\mathbf{C}^\dagger=\{A,B\}$ at noise $\mathbf{u
 parents to $0$ yields $Y=0$, no proper subset achieves this, and the indicators in
 $\Phi$ are $1$. With $\Gamma_w$ uniform on $2^{\emptyset}$ (a single configuration of
 weight $1$) and a strictly cardinality-decreasing $\Gamma_s$,
-$\Phi(\mathbf{C}^\dagger,\emptyset)\propto p^{\Gamma_s}(\{A,B\})$.
+$\Phi_{\mathbf{u}_{11}}(\mathbf{C}^\dagger,\emptyset)\propto p^{\Gamma_s}(\{A,B\})$.
 \item In $\mathbf{u}_{10}$, $\mathbf{C}^\sharp$ is an actual cause:
 intervening to $A=0$ flips $Y$ to $0$, the singleton is minimal, and again the
-indicators are $1$. So $\Phi(\mathbf{C}^\sharp,\emptyset)\propto p^{\Gamma_s}(\{A\})$.
+indicators are $1$. So $\Phi_{\mathbf{u}_{10}}(\mathbf{C}^\sharp,\emptyset)\propto p^{\Gamma_s}(\{A\})$.
 \end{itemize}
 Integrating uniformly over the four noise realisations $\{\mathbf{u}_{ij}\}$,
 $P(\mathbf{C}^\dagger\!\rightsquigarrow\!\varphi)\propto p^{\Gamma_s}(\{A,B\})$ (only
@@ -453,8 +478,8 @@ contradicting the assumption that $\mathbf{C}^\dagger$ is an actual cause.
 into a procedure: enumerate $\{\mathbf{C}\subseteq\mathbf{S}:\sum_{\mathbf{T}}\Phi(\mathbf{C},\mathbf{T})>0\}$
 (which by Theorem~\ref{th:exp-ac} are exactly the cause sets satisfying
 context-sensitive necessity), filter for factivity and subset-minimality, and read off
-the actual causes. Some idiosyncratic features of the AC notion (in particular, the
-subset-minimality clause, which interacts poorly with $\Gamma$-weighted scoring) are
+the actual causes. Certain features of the AC notion (in particular, the
+subset-minimality clause, which does not align cleanly with $\Gamma$-weighted scoring) are
 part of what motivated the more scalable \ourapproach{} formulation of
 Section~\ref{sec:causal_impact} in the first place; the filter procedure here is the
 right tool when AC verdicts specifically are wanted, but expectation-based
@@ -475,7 +500,7 @@ verdicts exactly. The empirical counterpart of the correspondence, a benchmark o
 the necessity-only PCI estimator against exact subset enumeration on a scaled
 stone-throwing problem, is reported in \cref{sec:ac_benchmark}.
 
-\paragraph{Where we go next.} The next
+The next
 section locates \ourapproach against the construction in the literature closest to
 its expectation form: Pearl's \emph{probability of actual causation}. The two share
 the same surface idea, ``how often, under the noise, does the actual-cause
