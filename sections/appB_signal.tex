@@ -104,7 +104,7 @@ $X\!\to\!M\!\to\!Y$, so $\mathbb{E}[X\mid M,Y]=\mathbb{E}[X\mid M]
 =0.5+\tfrac{\mathrm{Cov}(X,M)}{\mathrm{Var}(M)}(M-0.5)
 =0.5+\tfrac{0.25}{0.35}(M-0.5)=0.5+\tfrac{5}{7}(M-0.5)$.
 
-\subsection{Plain SHAP at Instance 1}\label{app:signal_plain}
+\subsection{Plain SHAP}\label{app:signal_plain}
 
 \textit{Target $Y$, features $\{X, M\}$.} First, compute the coalition values:
 \begin{align}
@@ -140,7 +140,7 @@ $v(\{M,Y\})=\mathbb{E}[X\mid M{=}1]=0.857$ (since $X\perp Y\mid M$).
 \phi_Y &= \tfrac{1}{2}(0.778-0.5)+\tfrac{1}{2}(0.857-0.857)=0.139.
 \end{align}
 
-\subsection{Causal SHAP at Instance 1}\label{app:signal_causal}
+\subsection{Causal SHAP}\label{app:signal_causal}
 
 We apply Causal SHAP (Definition~\ref{def:causalshap}) and compare against
 plain SHAP.
@@ -182,7 +182,7 @@ $v_{\mathrm{causal}}(\{M,Y\})=0.857$.
 \phi_Y &= \tfrac{1}{2}(0.5-0.5)+\tfrac{1}{2}(0.857-0.857)=0.
 \end{align}
 
-\subsection{PCI at Instance 1}\label{app:signal_pci}
+\subsection{PCI}\label{app:signal_pci}
 
 We work at the factual instance $X^\star = M^\star = Y^\star = 1$ with the
 absolute-difference score (Example~\ref{ex:absolute_score}):

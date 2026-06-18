@@ -1,8 +1,8 @@
 \section{Introduction}
 \label{sec:intro}
 
-Causal attribution --- determining which factors brought about a given outcome, and to
-what degree --- is a central reasoning task in many important problems, such as
+Causal attribution, determining which factors brought about a given outcome and to
+what degree, is a central reasoning task in many important problems, such as
 gauging the efficacy of medical treatments \citep{Shepherd2024}, pinpointing drivers
 of economic growth \citep{CheshireMagrini2009}, root cause analysis in automated
 systems \citep{Papageorgiou2022}, or assessing the impact of public policy
@@ -13,9 +13,7 @@ outcome could be brought about.
 In the absence of scalable, formal causal attribution tools, analysts often resort to
 ad-hoc methods: strong correlation, historical comparison, domain expertise, or
 non-causal attribution like Granger causality \citep{Granger1969} and SHAP
-\citep{lundberg2017unified}. Even researchers with an advanced command of
-statistical and experimental methods may not possess a thorough understanding of how
-to ascribe cause \citep{Shepherd2024}, and would benefit from scalable automation.
+\citep{lundberg2017unified}. Causal attribution is subtle enough that even researchers with an advanced command of statistical and experimental methods benefit from scalable automation \citep{Shepherd2024}.
 Here we present a tool for accurate and tractable causal attribution applicable to a
 wide array of causal, probabilistic, machine-learned models.
 
@@ -26,8 +24,9 @@ causes whose path was active in the factual world from those whose path was
 blocked; (iii) \textit{broadly applicable}, handling stochastic models,
 discrete and continuous variables, and finite (not just infinitesimal)
 counterfactual changes; and (iv) \textit{tractable}, estimable from samples
-without combinatorial enumeration over witness sets and alternatives. Existing
-methods each forfeit one or more of these. Actual causality
+without combinatorial enumeration over witness sets and alternatives.
+A further, stronger demand --- which we flag but do not treat as a minimum bar --- is \textit{gradedness under preemption}: ranking active causes above preempted would-be-sufficient ones, and those above truly irrelevant factors, rather than collapsing the latter two as actual causality does.
+Existing methods each forfeit one or more of these. Actual causality
 \citep{actualCausalityHalpern} is grounded and context-sensitive, but neither
 broadly applicable nor tractable in general, with no clear approximation
 \citep{eiterComplexityResultsStructurebased2002}. Methods that \textit{do}
@@ -35,8 +34,7 @@ scale either give up causal grounding or are restricted in scope. SHAP
 \citep{lundberg2017unified} grounds attribution in observational correlations,
 so a feature can receive high attribution merely for being correlated with a
 true cause; \citet{janzing2020feature} make essentially this point, and Causal
-SHAP \citep{heskes2020causal} addresses it to some extent, though some
-divergences from causal dependence remain (Section~\ref{sec:shap_examples}).
+SHAP \citep{heskes2020causal} addresses it to some extent, though its attributions still conflict with the causal structure in important cases (Section~\ref{sec:shap_examples}).
 \citet{butler2022differential}'s Differential Causal Effect (DCE) is causally
 grounded but local: it relies on gradients, so requires differentiability and
 does not capture effects from non-infinitesimal changes in potential causes.%
@@ -136,7 +134,7 @@ probability of actual causation: on the canonical desert-traveller example
 \ourapproach recovers Pearl's within-scenario ranking with graded magnitudes, and
 a weak-poison variant reveals two further responsibility intuitions
 (path-reliability and cross-scenario reliability) that Pearl's binary indicator
-cannot express but \ourapproach's expectation does.
+don't express but \ourapproach's expectation does.
 
 The fourth phase is an empirical and comparative evaluation.
 \cref{sec:evaluation} reads the results at a glance --- one claim, one figure, the
