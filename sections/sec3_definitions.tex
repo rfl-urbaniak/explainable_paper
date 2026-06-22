@@ -22,9 +22,7 @@ In this section, we present a formal development. To ground it, we return to Exa
   a continuous illustration is given in Sections~\ref{sec:signal} and~\ref{sub:synthetic}.
 
 \paragraph{Roadmap of this section.}
-The development unfolds as follows. We write down seven \emph{desiderata} that any
-responsibility attribution for Alice and Bob should satisfy, so that the formal
-construction can be judged against an explicit target. We introduce the probabilistic
+We state seven \emph{desiderata} that any responsibility attribution for Alice and Bob should satisfy, giving the formal construction an explicit target. We introduce the probabilistic
 structural causal model (PSCM) and interventions, the substrate on which everything
 else rests, and then the two distributions \ourapproach offers to the user: the
 variable selection distribution $\Gamma$ over suspect/witness pairs and the
@@ -130,19 +128,15 @@ probability $p$, the mechanisms are
 \begin{align*}
 \varname{gender}        &\sim \mathrm{Bernoulli}(p_g), \\
 \varname{credit}        &\sim \mathrm{Bernoulli}(p_c), \\
-\varname{check}         &\sim \mathrm{Bernoulli}\bigl(\gamma_F(1-\varname{gender}) + \gamma_M\,\varname{gender}\bigr), \\
+\varname{check} \mid \varname{gender}        &\sim \mathrm{Bernoulli}\bigl(\gamma_F(1-\varname{gender}) + \gamma_M\,\varname{gender}\bigr), \\
 \varname{check\text{-}failed}  &= \varname{check}\,(1-\varname{credit}), \\
-\varname{loan\text{-}if\text{-}checked} &\sim \mathrm{Bernoulli}\bigl(\mathrm{loan\text{-}prob}(\varname{gender}, \varname{check\text{-}failed})\bigr), \\
+\varname{loan\text{-}if\text{-}checked} \mid \varname{gender}, \varname{check\text{-}failed} &\sim \mathrm{Bernoulli}\bigl(\mathrm{loan\text{-}prob}(\varname{gender}, \varname{check\text{-}failed})\bigr), \\
 \varname{loan}          &= \varname{loan\text{-}if\text{-}checked} \cdot \varname{check}.
 \end{align*}
 So \varname{gender} and \varname{credit} are fair coin flips; \varname{check} fires with
 probability $\gamma_F$ for women and $\gamma_M$ for men; \varname{check\text{-}failed} and
 \varname{loan} are deterministic functions of the nodes above them
-(Figure~\ref{fig:dag_obcb}). To keep the model a
-PSCM, each draw $V \sim \mathrm{Bernoulli}(p)$ is realised as $V = \mathbb{1}[U_V \le p]$
-with $U_V \overset{\text{iid}}{\sim} \mathrm{Unif}[0,1]$; it is this exogenous $U_V$,
-held fixed across the factual and counterfactual worlds, that makes counterfactuals
-well-defined. For the running example we take $p_g = p_c = 0.5$,
+(Figure~\ref{fig:dag_obcb}). The Bernoulli draws are coupled across factual and counterfactual worlds, making counterfactuals well-defined. For the running example we take $p_g = p_c = 0.5$,
 $\gamma_F = 0.2$, $\gamma_M = 0.9$, and the values of $\mathrm{loan\text{-}prob}$
 given in Example~\ref{ex:obcb_stochastic}.
 
@@ -221,8 +215,7 @@ First, $\mathbf{C}$ is the object of the test: it encodes the causal claim
 being evaluated, while $\mathbf{T}$ is the auxiliary device that holds
 context fixed.
 Pruning $\mathbf{C}$ would silently change the claim under test; pruning
-$\mathbf{T}$ leaves the claim intact and merely weakens the context held
-fixed --- a weaker probe of the same hypothesis, not a different one.
+$\mathbf{T}$ leaves the claim intact and merely weakens the context held fixed.
 Second, the convention extends cleanly to the limit $\mathbf{C} = \mathbf{V}$,
 where every variable is a suspect: the pruned $\mathbf{T}$ collapses to
 $\emptyset$ and we recover the unconditional but-for test, the right
@@ -270,7 +263,7 @@ In the general framework we search for causes by intervening on subsets of suspe
 and holding fixed subsets of witnesses. To make this search tractable, we need a way to prioritize which subsets to consider.
 
 \begin{definition}[Variable Selection Distribution]
-Let $\mathbf{X}$ be a finite set of random variables. A \emph{variable selection distribution} $\Gamma$ is a probability distribution on $2^\mathbf{X}$. We write $\mathbf{Y}\sim\Gamma$ to mean $\mathbf{Y}$ is a random subset of $\mathbf{X}$ drawn from $\Gamma$, with probability mass function $p^\Gamma(\mathbf{y})=\mathbb{P}(\mathbf{Y}=\mathbf{y})$ for $\mathbf{y}\subseteq\mathbf{X}$.
+Let $\mathbf{X}$ be a finite set of random variables. A \emph{variable selection distribution} $\Gamma$ is a probability distribution on $2^\mathbf{X}$. We write $\mathbf{Y}\sim\Gamma$ to mean $\mathbf{Y}$ is a random subset of $\mathbf{X}$ drawn from $\Gamma$, with $p^\Gamma(\mathbf{y})$ denoting the probability assigned to $\mathbf{y}\subseteq\mathbf{X}$.
 \end{definition}
 
 \medskip\noindent The variable selection distribution $\Gamma$ encodes
@@ -415,9 +408,6 @@ knowledge motivates them: a uniform distribution over $\dom(\mathbf{X})$ trades
 plausibility for breadth; the empirical marginal $p(\mathbf{x}')$ trades
 context-sensitivity for simplicity; a fully conditional posterior on every observable
 (including downstream evidence) trades outcome-independence for sharper conditioning.
-Each reads as an informed relaxation of one of the three properties above, not an
-unconsidered default --- exactly the user-facing choice the framework is designed to
-make explicit.
 
 
 \noindent One natural alternative value distribution results from taking the one currently embodied in the model and excising it around the factual setting. Then, the semantics for  ``alternative value'' means ``a sufficiently different value, following the original distribution otherwise''. In the discrete case, of course, the analogue is simply the probability mass function conditioned on the factual value not holding.

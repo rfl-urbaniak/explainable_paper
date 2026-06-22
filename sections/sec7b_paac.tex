@@ -224,10 +224,7 @@ inheriting the enumeration unchanged.
 
 \ourapproach{} collapses both moves into one expectation: $\Phi$ is averaged
 over the joint $(\mathbf{C}, \mathbf{T}, \mathbf{u})$ under $\Gamma \otimes
-P_{\mathbf{U}}$. The existential ``does \emph{some} witness work?'' becomes
-the quantitative ``\emph{what fraction} of witnesses work?'', the
-information AC uses only one piece of, expressed as a graded score with
-sampling-based estimation.
+P_{\mathbf{U}}$. The existential ``does \emph{some} witness work?'' becomes a $\Gamma$-weighted measure of how much witnesses collectively support causation --- a graded score that uses the full quantity AC collapses to a yes/no verdict, estimable by sampling.
 
 In the desert traveller this difference is minor: four candidate witness sets,
 all trivially enumerable. The point is the scaling. In a model with $n$
@@ -327,7 +324,7 @@ is insensitive to $\alpha$.}
 \label{tab:pearl-pac-weak}
 \end{table}
 
-\paragraph{What PCI does on the same model.}
+\paragraph{PCI on the weak-poison model.}
 
 We run PCI exactly as in Section~\ref{sub:pci-basic-dt}, with one mechanical
 change: the witness pool becomes $\mathbf{W} = \{c, d, v_C\}$ (the new mediator
@@ -495,6 +492,45 @@ contingency rather than averaging over it. The application is nonetheless eviden
 tractable probabilistic actual causation has demand in exactly the ML-driven settings
 \ourapproach targets.
 
+\paragraph{FANS and LEWIS.}
+Two recent attribution methods also build on Pearl's probabilities of necessity and sufficiency, bringing them closer still to \ourapproach. FANS \citep{chenFANS2024} explains a
+prediction by searching a small region around the input for the largest PNS attainable there, estimating counterfactual probabilities by resampling. LEWIS \citep{galhotraLewis2021} works from a
+causal graph and input--output data, computing necessity, sufficiency, and combined
+scores for a black-box decision at the population or subgroup level, and turns them into recourse. Both are well suited to their stated aims and share our starting point
+that attribution is a probability of causation. They differ from \ourapproach{} on four
+design choices, each reflecting our narrower focus on token-level, context-sensitive
+attribution when a full model is available.
+
+First, we keep necessity and sufficiency apart. FANS combines them into a single PNS
+number and LEWIS reports them as separate population averages, whereas \ourapproach{}
+carries both as a joint pair $(Y^s, Y^n)$ and applies the user's impact function $ci$
+only afterwards. As the synthetic models of \cref{sub:synthetic} illustrate, a cause can
+be necessary without being sufficient, or the reverse, and keeping the two components
+together lets a single sweep tell these archetypes apart.
+
+Second, we average rather than optimise for a best case. FANS reports the maximum PNS over the local regions it searches
+and uses gradient-based optimisation to extract the single feature subset with the highest
+PNS; LEWIS scores individual attributes or a user-specified set. \ourapproach{} averages
+instead: the selection distribution $\Gamma$ samples suspect sets within a chosen
+cardinality band, so a feature's responsibility reflects its participation across many
+sets rather than its most favourable one, with the Shapley kernel arising as a special
+case.
+
+Third, we use witnesses where FANS uses a local region and LEWIS a population average.
+When two causes overdetermine an outcome, or one acts only through a mediator, recovering
+the intended verdict means holding the inactive path fixed at its factual value, which a
+ball around the input cannot express and a population average smooths over. \ourapproach{}
+holds witness variables $\mathbf{W}$ fixed and averages over which variables serve as
+witnesses, as the OBCB and signal walkthroughs of \cref{sec:shap_examples} illustrate.
+
+Fourth, we compare against a distribution of alternatives rather than a single reference.
+FANS measures change from one baseline input and LEWIS from one contrast value, while
+\ourapproach{} averages over an alternative-value distribution $\Delta$, removing the
+dependence on a chosen reference at the cost of assuming more of the model. That cost is a
+deliberate trade: LEWIS recovers its scores from a graph and observational data at the
+population level, whereas \ourapproach{} assumes a fully specified model and returns a
+value for the individual case.
+
 \paragraph{Probabilistic versus nondeterministic models.}
 \ourapproach lives in a probabilistic world: we push all the indeterminism into the
 exogenous noise $\mathbf{U}$, so that once a noise value $\mathbf{u}$ is fixed the
@@ -520,10 +556,9 @@ weighted, so any full-support choice --- the uniform one being the most agnostic
 would give the same yes-or-no answer, with a graded score like \ourapproach's filling
 in the range between. Where genuine probabilities are not on hand, the modal account is
 the natural tool and \ourapproach has nothing to add; where they are, \ourapproach
-trades the bare list of possibilities for a plausibility-weighted magnitude, and, as
-Section~\ref{sec:causal_impact} stresses, it is in no way committed to weighting those
-possibilities uniformly. We mention this only to locate the two frameworks relative to
-one another, not to claim a correspondence.
+trades the bare list of possibilities for a plausibility-weighted magnitude. We mention
+this only to locate the two frameworks relative to one another, not to claim a
+correspondence.
 
 \subsection{Actual-causality-adjacent quantities}
 \label{sec:recovering-ac}
@@ -578,7 +613,7 @@ contract together with a utility-valued $ci$; and the \emph{causal sufficiency} 
 \citet{beckersSufficiency2021} is the sufficiency regime itself --- the necessity of $X_k$
 \emph{within} a sufficient set $\mathbf{C}$.
 
-What the reframing sets aside is equally telling. The specific convention each notion
+The limits of the reframing. The specific convention each notion
 adopts --- the $1/(N{+}1)$ responsibility weight of
 \citet{chocklerResponsibilityBlameStructuralModel2004},\footnote{That this
 particular weight reflects a modelling choice rather than a necessity has precedent:
@@ -594,19 +629,15 @@ work's aims, summarising a graded, model-relative phenomenon under a single labe
 each of these to an \emph{explicit} downstream choice: a cardinality band in $\Gamma$, a
 threshold on $ci$, a prior over models, a particular $\Delta$. On this view the named
 quantities offer complementary readings of one underlying measure rather than competing
-definitions of distinct phenomena --- a unifying vantage point, not a shortcoming of the
+definitions of distinct phenomena --- a vantage point, not a shortcoming of the
 original constructions.
 
-We state this only as a conjecture, and deliberately do not develop it here. Establishing
-it would require, for each quantity, matching \ourapproach's verdicts against the originals
-on the counterexamples that motivate them --- a separate undertaking that would
-substantially lengthen a paper already centred on the estimator and its experiments. We
-raise it because it bears on whether the present apparatus is \emph{ad hoc}: the very
+We state this only as a conjecture and do not develop it here. We raise it because the
 knobs we introduced to separate necessity from sufficiency appear, prima facie, to be the
 degrees of freedom along which the quantities of
 \citet{chocklerResponsibilityBlameStructuralModel2004}, \citet{actualCausalityHalpern}, and
-\citet{beckersSufficiency2021,beckersHarm2022} themselves vary. A careful accounting we
-leave to future work.
+\citet{beckersSufficiency2021,beckersHarm2022} themselves vary. We leave a full accounting
+to future work.
 
 Sections~\ref{sec:relation_with_ac}--\ref{sub:pearl_actual_cause_prob}
 have laid out the formal relation between \ourapproach and actual causality and

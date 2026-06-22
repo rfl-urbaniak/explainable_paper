@@ -53,18 +53,7 @@ comparison (\cref{sec:DCE}), and the SIR benchmark
 The narrowness of this section's correspondence reflects what AC itself permits, not a
 limitation of \ourapproach{}.
 
-\medskip\noindent The absence of a sufficiency clause in Halpern's definition is exactly
-what a separate strand of the actual-causality literature sets out to repair.
-\citet{beckersSufficiency2021}, building on the counterfactual NESS account
-\citep{beckersNESS2021}, make sufficiency central: a cause is a necessary element of a set
-that is \emph{sufficient} for the outcome. \ourapproach's sufficiency component --- the
-$Y^s$ factor of Definition~\ref{def:jointnecsuf}, which restores a candidate set
-$\mathbf{C}$ to factual values, holds the witnesses $\mathbf{T}$ fixed, and checks that the
-outcome persists --- is the graded, probabilistic analogue of that condition: where the
-NESS test returns set membership, the joint measure returns a $\Gamma$-weighted degree, and
-the witness set supplies the held-fixed context that NESS sufficient sets leave implicit.
-The necessity-only correspondence below is thus the AC-facing half of a construction whose
-sufficiency half answers to Beckers' program rather than to Halpern's.
+\medskip\noindent Halpern's definition lacks a sufficiency clause --- a gap \citet{beckersSufficiency2021} addresses directly. Building on the counterfactual NESS account \citep{beckersNESS2021}, Beckers makes sufficiency central: a cause must be a necessary element of a set that is sufficient for the outcome. \ourapproach's sufficiency component --- the $Y^s$ factor of Definition~\ref{def:jointnecsuf}, which restores a candidate set $\mathbf{C}$ to factual values, holds the witnesses $\mathbf{T}$ fixed, and checks that the outcome persists --- is the graded, probabilistic analogue: where the NESS test returns set membership, the joint measure returns a $\Gamma$-weighted degree, with the witness set supplying the held-fixed context that NESS sufficient sets leave implicit. The correspondence below is thus the AC-facing half of a construction whose sufficiency half answers to Beckers' program rather than Halpern's.
 
 We first recall Halpern's definition.
 
@@ -207,7 +196,7 @@ $\mathbf{C}$ satisfies factivity and context-sensitive necessity in $(M,\mathbf{
 a fact we will use in Proposition~\ref{prop:filter}.
 \end{proof}
 
-\medskip\noindent\textit{Remark (when (i)--(ii) bite).} In settings with continuous
+\medskip\noindent In settings with continuous
 outcomes and an open event such as a threshold $\{Y>y_0\}$ (for instance the SIR
 overshoot benchmark of \cref{sec:sir_benchmark}), both hypotheses are
 satisfied trivially. Binary-output models, where $Y$ takes values in $\{0,1\}$, satisfy
@@ -368,11 +357,7 @@ Theorem~\ref{th:local_max_to_ac} are satisfied, so $\mathbf{C}^\dagger$ is an ac
 cause of $\varphi$.
 \end{proof}
 
-\medskip\noindent\textit{When necessity dilution holds.} The hypothesis is a property
-of the pair $(M,\Delta)$, not of $\Gamma$ (we abbreviate $N(\mathbf{C},\mathbf{T})$ to
-$N(\mathbf{C})$ when the witness argument plays no role). It says that adding suspects to a candidate
-cause does not introduce new $\Delta$-mass of flipping alternatives, and three settings
-make it automatic. \emph{(i) Single-pivot models}: one variable $X^\star\in\mathbf{S}$
+\medskip\noindent Necessity dilution is a property of $(M,\Delta)$ alone, not of $\Gamma$; we write $N(\mathbf{C})$ for $N(\mathbf{C},\mathbf{T})$ when the witness argument plays no role. The condition requires that the $\Delta$-mass of alternatives that flip the outcome does not grow as the candidate cause expands. Three settings make it automatic. \emph{(i) Single-pivot models}: one variable $X^\star\in\mathbf{S}$
 is pivotal under $(M,\mathbf{u})$ and the others are structurally idle, so $N$ peaks at
 $\{X^\star\}$ and falls off as more suspects are added. \emph{(ii) Factored $\Delta$
 without Boolean-OR redundancy}: $\Delta_{\mathbf{C}}$ is a product of marginals

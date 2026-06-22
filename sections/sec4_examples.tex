@@ -18,8 +18,7 @@ question is how \ourapproach compares to the dominant practical alternative for
 feature attribution in the ML literature, SHAP and Causal SHAP, since these
 are the tools practitioners typically reach for. This section runs that comparison
 on two examples, recording where each method passes or fails an explicit
-desideratum. We first define SHAP and Causal SHAP formally
-(\cref{sec:shap_defs}), then re-run OBCB
+desideratum. Formal definitions of SHAP and Causal SHAP are in \cref{sec:shap_defs}; we re-run OBCB
 (Section~\ref{sec:obcb_shap}), where the two SHAP variants coincide because the
 feature set is exogenous, so the divergence between PCI and SHAP is the only
 contrast to draw. We then introduce a continuous mediation example
@@ -62,50 +61,6 @@ overdetermination and undercutting symmetries that \ourapproach{}'s witness set
 $\mathbf{W}$ resolves on the OBCB and signal walkthroughs of this section.}
 Formal definitions of both are given in \cref{sec:shap_defs}.
 
-Two recent methods come even closer, since they too build attribution on Pearl's
-probabilities of necessity and sufficiency. FANS \citep{chenFANS2024} explains a
-prediction by searching a small region around the input (a ball of radius $b$ in the
-perturbed coordinates) for the largest PNS attainable there, estimating the
-counterfactual probabilities by resampling. LEWIS \citep{galhotraLewis2021} works from a
-causal graph and input--output data, computing necessity, sufficiency, and combined
-scores for a black-box decision, typically at the population or subgroup level, and turns
-them into recourse. Both are well suited to their stated aims, explaining and providing
-recourse for opaque models under limited assumptions, and both share our starting point
-that attribution is a probability of causation. They differ from \ourapproach{} on four
-design choices, each reflecting our narrower focus on token-level, context-sensitive
-attribution when a full model is available.
-
-First, we keep necessity and sufficiency apart. FANS combines them into a single PNS
-number and LEWIS reports them as separate population averages, whereas \ourapproach{}
-carries both as a joint pair $(Y^s, Y^n)$ and applies the user's impact function $ci$
-only afterwards. As the synthetic models of \cref{sub:synthetic} illustrate, a cause can
-be necessary without being sufficient, or the reverse, and keeping the two components
-together lets a single sweep tell these archetypes apart.
-
-Second, we average rather than optimise for a best case, both over the model's noise and
-over candidate cause sets. FANS reports the maximum PNS over the local regions it searches
-and uses gradient-based optimisation to extract the single feature subset with the highest
-PNS; LEWIS scores individual attributes or a user-specified set. \ourapproach{} averages
-instead: the selection distribution $\Gamma$ samples suspect sets within a chosen
-cardinality band, so a feature's responsibility reflects its participation across many
-sets rather than its most favourable one, with the Shapley kernel arising as a special
-case of $\Gamma$. The resulting score is the feature's probability of causation in the
-case at hand, and it does not depend on a region- or subset-search procedure.
-
-Third, we use witnesses where FANS uses a local region and LEWIS a population average.
-When two causes overdetermine an outcome, or one acts only through a mediator, recovering
-the intended verdict means holding the inactive path fixed at its factual value, which a
-ball around the input cannot express and a population average smooths over. \ourapproach{}
-holds witness variables $\mathbf{W}$ fixed and averages over which variables serve as
-witnesses, and the OBCB and signal walkthroughs below turn on exactly this mechanism.
-
-Fourth, we compare against a distribution of alternatives rather than a single reference.
-FANS measures change from one baseline input and LEWIS from one contrast value, while
-\ourapproach{} averages over an alternative-value distribution $\Delta$, removing the
-dependence on a chosen reference at the cost of assuming more of the model. That cost is a
-deliberate trade: as noted in \cref{sec:intro}, LEWIS recovers its scores from a graph and
-observational data at the population level, whereas \ourapproach{} assumes a fully
-specified model and returns a value for the individual case.
 
 Despite this repair, both methods share deeper limitations. First, both plain and
 Causal SHAP can assign non-zero responsibility to variables that play no causal role
@@ -373,7 +328,6 @@ other is not.}
 \label{tab:vS_optionB}
 \end{table}
 
-\textbf{Plain SHAP.}
 Plain SHAP treats $\varname{credit}$ and $\varname{check\text{-}failed}$ as
 independent, so whenever both are dropped from the coalition the average runs
 over all four $(c, cf)$ combinations, with the impossible $(c{=}1, cf{=}1)$
@@ -394,7 +348,6 @@ $\varname{check\text{-}failed}$ are linked by the structural equation
 $cf = \varname{check}\cdot(1 - c)$, and so places weight on a combination
 the PSCM rules out.}
 
-\textbf{Causal SHAP for Alice.}
 Causal SHAP samples $cf$ following its structural equation
 $cf = \varname{check}\cdot(1 - c)$, with $\varname{check}\sim\mathrm{Bern}(p_\text{check}[g])$,
 given whatever $(g, c)$ values appear in the integrand. When $c=1$ the
@@ -408,7 +361,6 @@ $|\phi_{\varname{credit}}|>|\phi_{\varname{gender}}|$ and \textbf{D-A-rank}
 fails: credit outranks gender, exactly the same pathology plain SHAP exhibited
 on the 2-feature game.
 
-\textbf{Causal SHAP for Bob.}
 Two coalitions break for Bob: $\mathcal{S}=\{\varname{check\text{-}failed}\}$ and
 $\mathcal{S}=\{\varname{gender},\varname{check\text{-}failed}\}$. Both hold
 $\varname{check\text{-}failed}$ at Bob's factual value $cf^\star=1$ and average
@@ -432,7 +384,6 @@ $v_\mathrm{causal}(\{g, cf\})$ for the same reason. These two coalitions
 appear in the Shapley sum for every feature, so all three of Bob's Causal
 SHAP values are NaN (Bob's columns in Table~\ref{tab:vS_optionB}).
 
-\textbf{Why Bob breaks and Alice does not.}
 The same two coalitions arise for Alice; the difference is the value of
 $cf^\star$ being held fixed. With Alice's $cf^\star = 0$, the $c{=}1$ summand
 in the formula above evaluates $\tilde f(g, 1, 0) =
@@ -444,8 +395,7 @@ impossible cell, ``good credit and a failed check'', which the PSCM
 rules out, since failing the credit check requires bad credit by the
 structural equation $cf = \varname{check}\cdot(1 - c)$.
 
-The mechanism producing this asymmetry is the intervention itself. When the
-PSCM runs forward, $\varname{credit}$ and $\varname{check\text{-}failed}$ are
+When the PSCM runs forward, $\varname{credit}$ and $\varname{check\text{-}failed}$ are
 linked by $cf = \varname{check}\cdot(1 - c)$, which keeps $c{=}1$ and
 $cf{=}1$ from co-occurring. When Causal SHAP intervenes via
 $do(cf = cf^\star)$, this link is overridden: $\varname{check\text{-}failed}$ is fixed
@@ -527,10 +477,7 @@ the cause closer to the outcome:
 \begin{align*}
 \textbf{D-MXY} \quad & |R(M \rightsquigarrow Y)| > |R(X \rightsquigarrow Y)|
 \end{align*}
-\noindent The direction of the inequality is a convention rather than a law of
-responsibility; what matters is that the method separates the direct from the
-indirect path at all, and scoring the closer cause higher is one principled,
-consistent way to register that separation. We apply this convention throughout.
+\noindent The direction of the inequality is a convention rather than a law of responsibility; what matters is that the method separates the direct from the indirect path at all. A method that assigns the larger score to the more distal cause would be equally principled --- we adopt the direction stated here for consistency.
 
 \noindent The key \textbf{distributional facts} we will use are:
 \begin{align}
@@ -669,7 +616,7 @@ the interventional regime.
 Causal SHAP replaces the conditioning distribution but cannot remove a feature that
 the prediction model itself uses.
 
-\noindent\textbf{D-MX: the interventional correction reallocates rather than removes the spurious attribution.}
+\noindent\textbf{D-MX: the interventional correction reallocates the spurious attribution.}
 Plain SHAP assigns $\phi_M^X=0.219$; Causal SHAP assigns $0.357$.
 Fixing D-YX reduces $v_{\mathrm{causal}}(\{Y\})$ from $0.778$ to $0.5$, driving
 $\phi_Y^X$ to zero, but reallocates the freed attribution to~$M$.
@@ -772,14 +719,7 @@ not whether $f(x^\star)$ deviates from $\mathbb{E}[f(X)]$. The structural
 mechanism is unchanged at the baseline, so the three causal pairs continue
 to register positive values; the three non-causal pairs continue to register
 zero exactly, because intervening on a variable that does not structurally
-affect the target leaves both worlds with identical distributions. The D-MXY
-verdict is preserved in both witness configurations, with margin
-$0.035$ at $\mathbf{W}=\emptyset$ (vs.\ $0.034$ at the
-$X^\star=M^\star=Y^\star=1$ instance) and $0.097$ at
-$\mathbf{W}=\{$third$\}$ (vs.\ $0.133$). The gap is a property of the
-PSCM's noise variances, not of where the factual sits.
-
-The two instances together make the contrast sharp. At Instance~1, SHAP's
+affect the target leaves both worlds with identical distributions. The two instances together make the contrast sharp. At Instance~1, SHAP's
 attribution budget $f(x^\star)-\mathbb{E}[f(X)]$ is non-zero and SHAP returns
 non-trivial numbers; at Instance~2 the budget vanishes and every cell collapses.
 PCI returns the same structural verdicts on all seven desiderata across the two

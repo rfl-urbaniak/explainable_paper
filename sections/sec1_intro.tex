@@ -40,7 +40,7 @@ grounded but local: it relies on gradients, so requires differentiability and
 does not capture effects from non-infinitesimal changes in potential causes.%
 \footnote{DCE is, fairly, not designed for responsibility attribution:
 \citeauthor{butler2022differential} target rates of change of treatment.}
-Standard treatment-effect quantities, ATE and CATE, are causally grounded and
+Standard treatment-effect quantities, the average treatment effect (ATE) and conditional average treatment effect (CATE), are causally grounded and
 often tractable but lack context-sensitivity: every intervention propagates downstream
 through the structural equations, overriding the mediator values that mark which
 causal paths were active in the factual world
@@ -76,9 +76,9 @@ already evaluate automatically for a broad class of probabilistic causal models,
 
 \ourapproach presumes access to a trained probabilistic causal model from which
 counterfactual outcomes can be sampled, a stronger requirement than methods that
-work from observational data and a causal graph alone (e.g., the PN/PS/PNS bounds of
+work from observational data and a causal graph alone (e.g., the probability-of-necessity/sufficiency (PN/PS/PNS) bounds of
 \citet{muellerpearl2022causes}, which return \emph{intervals} on the probability of
-causation where \ourapproach, given a fully specified model, returns point values, or
+causation where \ourapproach, given a fully specified model, returns a posterior distribution of kernel values, summarised as point scores via their means, or
 Causal SHAP). Within that requirement, however, we place no strong restrictions on the form
 of the model, distributions, or types of variables.
 Such models can comprise standard machine learning components such as neural
@@ -101,11 +101,9 @@ wide array of users and applications.
 
 \paragraph{Paper structure.}
 The paper proceeds in four phases, tracked by a recurring layered roadmap
-(Figure~\ref{fig:roadmap_inspirations}) that highlights the current stage at the end of
-each section --- motivations, definitions, examples and SHAP, actual causality, the
-probability of actual causation, and evaluation --- with the supporting appendix material
+(Figure~\ref{fig:roadmap_inspirations}) that highlights the current stage, with the supporting appendix material
 collected in a separate band.
-The first establishes motivation and formalism.
+The first stage establishes motivation and formalism.
 Section~\ref{sec:motivations} works through a running example
 to draw out what actual causality, the probability of necessity/sufficiency,
 and average/conditional treatment effects each get right and miss, motivating
@@ -121,7 +119,7 @@ The second phase positions \ourapproach against existing attribution methods.
 \cref{sec:shap_examples} compares \ourapproach with SHAP, Causal SHAP, ATE, and
 CATE on two worked examples --- OBCB, with two binary features, and a
 signal-with-mediation model --- tabulating which desiderata each satisfies or
-fails, including cases where SHAP and Causal SHAP track correlation rather than
+fails, including cases where SHAP and even Causal SHAP track correlation rather than
 counterfactual dependence.
 
 The third phase establishes the formal relationship between \ourapproach and
@@ -137,8 +135,7 @@ a weak-poison variant reveals two further responsibility intuitions
 don't express but \ourapproach's expectation does.
 
 The fourth phase is an empirical and comparative evaluation.
-\cref{sec:evaluation} reads the results at a glance --- one claim, one figure, the
-headline number --- and defers the full protocols to the appendices: \ourapproach
+\cref{sec:evaluation} reads the results at a glance and defers the full protocols to the appendices: \ourapproach
 recovers the actual-causality literature's verdicts on overdetermination and
 undercutting (\cref{sub:synthetic}); it diverges from gradient-based Differential
 Causal Effect attribution where the local gradient misreads the counterfactual

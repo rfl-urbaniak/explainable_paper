@@ -17,13 +17,13 @@ Section~\ref{sub:pearl_actual_cause_prob}), we now ask how it behaves empiricall
 against the dominant feature-attribution baselines, against a causal-effect
 attribution method, and as the model grows from textbook size to a deployed
 system. This section reads each result at a glance --- one claim, one figure, the
-headline number, and the caveat --- and points to the appendix that carries
+headline number --- and points to the appendix that carries
 the full protocol. A reader can follow the comparative and empirical story here
 without descending into those appendices.
 
 \subsection{\ourapproach matches actual-causality verdicts on canonical archetypes}
 \label{sec:eval_verdicts}
-On the small models where actual causality is well defined, \ourapproach should
+On the discrete structural models where actual-causality verdicts are available, \ourapproach should
 reproduce its verdicts; on the canonical overdetermination and undercutting
 patterns it should separate a genuine cause from a preempted one. We test this on a
 synthetic structural model carrying three archetypes at once --- linear
@@ -92,7 +92,8 @@ several orders of magnitude fewer cause--witness configurations.
 \caption{\textbf{\ourapproach stays tractable where exact actual causality does
 not.} Left: wall-clock vs.\ problem size --- exact subset enumeration times out
 near $17$ variables; the \ourapproach estimator continues to $\sim$$73$--$145$.
-Right: correct-attribution rate, held above $0.85$ to about $60$ variables. Full
+Right: correct-attribution rate --- witness-enabled configurations stay above
+$0.85$ well past the exact cut-off, degrading gradually with problem size. Full
 benchmark protocol in Appendix~\ref{sec:ac_benchmark}.}
 \label{fig:eval_scaling}
 \end{figure}
