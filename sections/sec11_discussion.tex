@@ -1,22 +1,22 @@
 \section{Discussion and Conclusions}
 \label{sec:discussion}
 
-We are now in a position to articulate the main differences between \ourapproach and the
+We can now state the main differences between \ourapproach and the
 two approaches that inspired it, against the background of what the rest of the paper has
 shown. The main lesson from the literature on actual causality is that intuitive causal
 attribution often requires holding some endogenous variables, members of a ``witness
 set'', fixed at their factual values. This ensures context sensitivity by controlling
-complicating causal paths. We treat witnesses somewhat differently: instead of looking for
+complicating causal paths. We treat witnesses differently: instead of looking for
 a single witness set that reveals a causal relationship, we use a distribution over
 witness sets and integrate the causal impact score across them. As in many probabilistic
-generalisations, this focuses on distributions rather than point estimates, and it lets
+generalisations, this focuses on whole distributions, and it lets
 \ourapproach account for the number of witness sets and the strength of
 within-witness-set effects. Moreover, the construction admits off-the-shelf probabilistic
-inference rather than worst-case subset enumeration. The relationship between the two
-views is now formal rather than gestural: under matching choices of $\Gamma$ and
+inference in place of worst-case subset enumeration. The relationship between the two
+views is now formal where it was once gestural: under matching choices of $\Gamma$ and
 $\Delta$, AC verdicts coincide with the support of $\sum_{\mathbf{T}}\Phi$
 (Theorems~\ref{th:ac-exp}--\ref{th:exp-ac} and Proposition~\ref{prop:filter}), and the
-empirical companion in Section~\ref{sec:ac_benchmark} confirms this at scales where AC
+empirical companion in \cref{sec:ac_benchmark} confirms this at scales where AC
 enumeration is intractable.
 
 The main concept borrowed from Pearl's probability of necessity and sufficiency is the
@@ -25,8 +25,8 @@ a user-chosen causal impact function. The key difference is that we use witness 
 allow for context-sensitivity and to break symmetries present in otherwise pathological
 cases like overdetermination and undercutting. Section~\ref{sec:shap_examples} works
 through the binary instantiation in which the necessity and sufficiency components
-coincide with PN and PS, and Section~\ref{sub:synthetic} reads the two components apart on
-a continuous synthetic model where each is needed to surface a different causal
+coincide with PN and PS, and \cref{sub:synthetic} reads the two components apart on
+a continuous synthetic model where each is needed to bring out a different causal
 archetype.
 
 The further generalisations are mostly bookkeeping in the same spirit. Instead of fixing
@@ -38,22 +38,22 @@ impact. Instead of asking whether the outcome differs, a customisable causal imp
 function $ci$ measures the differences across counterfactual worlds, including between
 continuous variables. The variable-selection distribution $\Gamma$, the alternative-value
 distribution $\Delta$, and the impact function $ci$ become explicit, user-facing
-components of the framework rather than implicit defaults.
+components of the framework, no longer implicit defaults.
 
 Against SHAP-family attributions, the framework's central commitment is to
-\emph{intervention with witnesses} rather than \emph{observational marginalisation}. The
-controlled comparisons of Section~\ref{sec:shap_examples} show that this commitment is
-load-bearing on canonical overdetermination and continuous-mediation examples, where SHAP
-and Causal SHAP fail in characteristic ways that \ourapproach does not. The synthetic
-benchmark of Section~\ref{sub:synthetic} confirms this on a model with known ground
-truth, and the case study of Section~\ref{sec:avm} reports the same qualitative pattern
+\emph{intervention with witnesses} over \emph{observational marginalisation}. The
+controlled comparisons of Section~\ref{sec:shap_examples} show that this commitment does
+real work on canonical overdetermination and continuous-mediation examples, where SHAP
+and Causal SHAP fail in characteristic ways that \ourapproach avoids. The synthetic
+benchmark of \cref{sub:synthetic} confirms this on a model with known ground
+truth, and the case study of \cref{sec:avm} reports the same qualitative pattern
 on a production-grade trained model with millions of data points. A separate comparison
-to gradient-based attribution, where the contrast is differentiability and locality
-rather than the causal/non-causal axis, is reported in Section~\ref{sec:DCE}. The
+to gradient-based attribution, where the difference is one of differentiability and locality, not the
+causal/non-causal axis, is reported in \cref{sec:DCE}. The
 thread connecting these results is structural: the witness mechanism that satisfies
 D-A-rank for Alice in the binary OBCB walkthrough of
 Section~\ref{sec:shap_examples} is the same machinery driving the upstream-versus-downstream
-attribution split on the AVM in Section~\ref{sec:avm}.
+attribution split on the AVM in \cref{sec:avm}.
 
 A broader test is how \ourapproach fares against the desiderata that the XAI
 literature typically asks counterfactual-explanation methods to meet, of which
@@ -61,9 +61,9 @@ literature typically asks counterfactual-explanation methods to meet, of which
 explanations change as few features as possible, follows directly from the
 cardinality cap on suspect sets in $\Gamma$, which biases the search toward small
 $\mathbf{C}$. \emph{Multiple counterfactuals} (the ability to return several
-alternative explanations rather than commit to one) falls out of the Monte Carlo
+alternative explanations instead of committing to one) falls out of the Monte Carlo
 construction, since a single sweep over $\Gamma$ and $\Delta$ produces a population of
-$(\mathbf{C}, \mathbf{c}', \mathbf{T})$ triples rather than a single optimum.
+$(\mathbf{C}, \mathbf{c}', \mathbf{T})$ triples, not a single optimum.
 \emph{Causal-constraint satisfaction}, the demand that explanations respect
 downstream propagation rather than treat features as independently editable, is
 automatic once suspect interventions are routed through the causal model: changing
@@ -79,28 +79,28 @@ cause-identification procedure itself, weighting features by mutability so that
 immutable ones are never returned as causes (\cite{verma2022recourses}; cf.\
 \cite{Karimi2021}, who shift the focus from explanations altogether to interventions).
 We think this conflates two distinct questions. A procedure that suppresses gender as
-a possible cause whenever a loan decision is at stake will help applicants game the
-existing system, but it will also prevent them from noticing the kind of structural
-problem that responsibility attribution can in principle surface. Cost-of-action
+a possible cause whenever a loan decision is at stake will help applicants satisfy the
+existing system without surfacing the kind of structural
+problem that responsibility attribution can in principle reveal. Cost-of-action
 layers can sit downstream of \ourapproach for users who need actionable
-recommendations, but they should compose with responsibility attribution rather than
-replace it.
+recommendations, but they should compose with responsibility attribution instead of
+replacing it.
 
 Several limitations are worth flagging. \Ourapproach presumes access to a trained
 probabilistic causal model from which counterfactual outcomes can be sampled, a
 stronger requirement than methods that work from observational data and a causal graph
 alone. The Monte Carlo variance of the estimator grows with model size and with the
-cardinalities of suspect and witness sets; Section~\ref{sec:ac_benchmark} reports
+cardinalities of suspect and witness sets; \cref{sec:ac_benchmark} reports
 empirical scaling and an ablation that isolates the contribution of witness pinning, but
 sample-efficient estimators for high-cardinality settings remain an open direction.
 Finally, the AVM case study is deliberately limited in disclosure: the apples-to-apples
-SHAP-vs-PCI comparison rests on the synthetic benchmark of Section~\ref{sub:synthetic},
-with the production model serving as a feasibility witness rather than as quantitative
+SHAP-vs-PCI comparison rests on the synthetic benchmark of \cref{sub:synthetic},
+with the production model serving as a feasibility witness, not as quantitative
 evidence.
 
 
 
-Taken together, \ourapproach provides a scalable, context-sensitive, causal explanation
+In sum, \ourapproach provides a scalable, context-sensitive causal explanation
 method for causal probabilistic machine-learning models. A natural probabilistic
 generalisation of ideas already in the literature leads to a tractable estimator that can
 be paired with standard inference algorithms. We benchmarked the approach against exact
@@ -108,7 +108,13 @@ actual-causality computations, characterised its qualitative behaviour on synthe
 models with known ground truth and on canonical SHAP failure cases, and showed its
 computational feasibility on a production-grade model.
 
-Responsibility attribution has not yet been effectively mechanised in software for large,
-complicated models, which makes the exact notions present in the literature infeasible to
-apply. \Ourapproach develops approximate causal attribution workable for users of models
-of non-trivial size, with the design choices exposed to the user.
+Prior efforts to mechanise actual-causality reasoning in software --- notably the Actual
+Causality Canvas of \citet{ibrahimCanvas2020} and the SAT- and optimization-based
+computations of \citet{ibrahimChecking2020}, which operationalise the Halpern--Pearl
+definition for forensic investigation, fault diagnosis, and explainable AI --- are built
+for \emph{discrete} (typically binary) structural models, where the actual cause is
+recovered by combinatorial search over candidate sets. The complementary regime of large,
+continuous-valued models has received less attention, and it is there that the exact
+notions become harder to apply directly. \Ourapproach develops approximate causal
+attribution workable for users of models of non-trivial size, with the design choices left
+to the user.
