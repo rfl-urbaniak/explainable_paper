@@ -19,6 +19,9 @@
 
 \usepackage[font=small]{caption}
 \captionsetup[table]{skip=14pt}
+\usepackage{float}  % [H] for the recurring roadmap maps, pinned at section ends
+\usepackage{placeins}  % \FloatBarrier to keep figures inside their section
+\raggedbottom  % don't stretch under-full pages (section-opening figures leave slack)
 
 \usepackage{tikz}
 \usetikzlibrary{bayesnet}
@@ -151,28 +154,35 @@
 \newcommand{\nbsite}{https://rfl-urbaniak.github.io/explainable\_paper}
 \newcommand{\nb}[1]{\href{\nbsite/#1.html}{\texttt{#1}}}
 
-\title{A Computationally Feasible Framework for Causal Probabilistic Explanation}
+\title{A Computationally Feasible Framework for Causal Probabilistic Explanation\thanks{Code and companion notebooks are available at \url{https://rfl-urbaniak.github.io/explainable_paper/}. Correspondence to \texttt{rafal@basis.ai}.}}
 
 \author{%
-  Rafal Urbaniak\thanks{\texttt{rafal@basis.ai}} \\
+  Rafal Urbaniak \\
   Basis Research Institute
   \And
-  Eli Bingham\thanks{\texttt{eli@basis.ai}} \\
+  Eli Bingham \\
   Basis Research Institute
   \And
   Sam Witty \\
+  Sorbus AI
   ~
   \And
-  Poorva Garg\thanks{\texttt{poorvagarg@cs.ucla.edu}} \\
+  Daniel Waxman \\
+  Basis Research Institute \\
+  Massachusetts Institute of Technology
+  \And
+  Poorva Garg \\
   University of California, Los Angeles
   \And
-  Jack Feser\thanks{\texttt{jack@basis.ai}} \\
+  Emily Bunnapradist \\
   Basis Research Institute
   \And
-  Daniel Waxman\thanks{\texttt{dan@basis.ai}} \\
+  Jack Feser \\
   Basis Research Institute
+  \And
+  Drew Lehe \\
+  HouseIQ
 }
-% TODO: add Andy, Sam, Drew (full names, emails, affiliations).
 
 \begin{document}
 
@@ -214,27 +224,25 @@
   spatio-temporal model with deep ML components trained on millions of points,
   where \ourapproach and SHAP attributions diverge in the same qualitative
   ways as in the synthetic setting.
- 
-  
-  
 
-  \medskip\noindent\textbf{Keywords:} Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency.
+  \noindent\textbf{Keywords:} Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency.
 \end{abstract}
 
+% Compact single-page TOC: smaller font + tighter line spacing.
+\begingroup
+\renewcommand{\baselinestretch}{0.88}\small
+\setlength{\parskip}{0pt}
 \tableofcontents
+\endgroup
 \newpage
 
 \input{sections/sec1_intro}
 \input{sections/sec2_motivations}
 \input{sections/sec3_definitions}
 \input{sections/sec4_examples}
-\input{sections/sec5_synthetic}
-\input{sections/sec6_dce}
 \input{sections/sec7_actual_causality}
 \input{sections/sec7b_paac}
-\input{sections/sec8_ac_benchmark}
-\input{sections/sec9_sir_benchmark}
-\input{sections/sec10_avm}
+\input{sections/sec_evaluation}
 \input{sections/sec11_discussion}
 
 \bibliographystyle{plainnat}
@@ -244,5 +252,11 @@
 \input{sections/appA_obcb}
 \input{sections/appB_signal}
 \input{sections/appC_desert}
+% --- relocated to appendix (Phase 1 restructure): detailed protocols summarized in Sec~\ref{sec:evaluation} ---
+\input{sections/sec5_synthetic}
+\input{sections/sec6_dce}
+\input{sections/sec8_ac_benchmark}
+\input{sections/sec9_sir_benchmark}
+\input{sections/sec10_avm}
 
 \end{document}

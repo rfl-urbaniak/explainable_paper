@@ -1,31 +1,26 @@
 \section{Scaling \ourapproach to a Real-World Automated Valuation Model}\label{sec:avm}
 
- The synthetic archetypes of
-Section~\ref{sub:synthetic}, the AC benchmark of
-Section~\ref{sec:ac_benchmark}, and the SIR benchmark of
-Section~\ref{sec:sir_benchmark} have all controlled the model and the ground
-truth, so that \ourapproach could be judged against either an analytic verdict or
-a competing AC enumeration. This section drops both: we apply \ourapproach to a
-deployed production model on which neither ground truth nor exact AC enumeration
-is available, and ask whether the computation remains feasible and whether the
-qualitative SHAP-vs-PCI divergence persists.
+ This appendix details the deployed-AVM study summarised in \cref{sec:evaluation}.
 
-In this section, we apply \ourapproach to a valuation model for residential housing.
-Disclosure constraints on the trained model and its training data prevent us from
-publishing a quantitative accuracy comparison against ground truth on this system;
-the quantitative validation of \ourapproach{} therefore lives entirely in the controlled
-synthetic benchmark of Section~\ref{sub:synthetic}, against an analytic ground truth
-that the production model does not admit. The role of this section is correspondingly
-narrow: to report (i) that \ourapproach{} is computationally feasible at production
-scale on a model with millions of training points, and (ii) that the qualitative
-SHAP-vs-PCI divergence observed in Section~\ref{sec:shap_examples} persists when the
-model is a real trained one. What is reportable here is the shape of the two
-attribution distributions and the structural pattern of where attribution mass lands,
-not the substantive content of the features they assign to.
+The synthetic archetypes of \cref{sub:synthetic}, the AC benchmark of
+\cref{sec:ac_benchmark}, and the SIR benchmark of \cref{sec:sir_benchmark} all
+controlled the model and the ground truth, so that \ourapproach could be judged
+against an analytic verdict or a competing AC enumeration. Here we drop both,
+applying \ourapproach to a deployed valuation model for residential housing on
+which neither ground truth nor exact AC enumeration is available. Disclosure
+constraints on the trained model and its training data prevent a quantitative
+accuracy comparison on this system, so the quantitative validation of
+\ourapproach{} lives entirely in the controlled synthetic benchmark of
+\cref{sub:synthetic}. The role of this appendix is correspondingly narrow: to
+report (i) that \ourapproach{} is computationally feasible at production scale on a
+model with millions of training points, and (ii) that the qualitative SHAP-vs-PCI
+divergence observed in \cref{sec:shap_examples} persists when the model is a real
+trained one --- the shape of the two attribution distributions and where
+attribution mass lands, not the substantive content of the features they assign to.
 
 \paragraph{Setting.}
 The unit of analysis is a residential property transaction. \ourapproach is run
-against the full country-level production AVM; what we show in this section,
+against the full country-level production AVM; what we show here,
 however, is an illustrative prototype based on the state of New York rather than
 the full national model structure, which we cannot disclose in detail. The NY
 prototype shares the architecture and the causal-kernel construction described
@@ -44,7 +39,7 @@ variables. It was written manually in collaboration with domain experts and refi
 adding edges to break implied conditional independencies that are not upheld by the
 data. The simplified NY-prototype DAG has 25 nodes and 99 edges; topology with anonymised node
 labels is shown in Figure~\ref{fig:avm_dag}; the full national DAG is larger and is
-not shown. As demonstrated in Section~\ref{sec:ac_benchmark}, even the prototype is
+not shown. As demonstrated in \cref{sec:ac_benchmark}, even the prototype is
 already large enough that exact actual-causality enumeration is computationally
 infeasible, and the same conclusion applies a fortiori to the national system.
 
@@ -70,7 +65,7 @@ space, jointly optimized with the GP.
 anonymised. The graph has 25 nodes and 99 edges; the full national DAG is larger
 and is not shown. Several variables sit deep in the DAG with high in-degree; these
 are the nodes towards which SHAP allocates disproportionate attribution mass (see
-Figure~\ref{fig:avm_attribution}).}
+Figure~\ref{fig:eval_avm}).}
 \label{fig:avm_dag}
 \end{figure}
 
@@ -98,27 +93,8 @@ across the upstream causal structure. The pattern is consistent with what
 Section~\ref{sec:shap_examples} establishes on controlled examples: SHAP's observational
 marginalisation allocates weight differently from intervention-and-witness-based PCI
 scores, and on a deep DAG this difference manifests as concentration on
-summary-statistic-like nodes. Figure~\ref{fig:avm_attribution} shows the two attribution
+summary-statistic-like nodes. Figure~\ref{fig:eval_avm} shows the two attribution
 distributions with anonymised feature labels; what is reportable here is the shape of
 the two distributions, not which features they assign to.
 
-\begin{figure}[htbp]
-\centering
-\begin{minipage}[t]{0.48\linewidth}
-\centering
-\includegraphics[width=\linewidth]{figures/search_query_figure.png}\\[0.3em]
-{\small (a) \ourapproach attribution mass.}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.48\linewidth}
-\centering
-\includegraphics[width=\linewidth]{figures/shap_figure.png}\\[0.3em]
-{\small (b) SHAP attribution mass.}
-\end{minipage}
-\caption{Attribution distributions on the AVM, with feature labels anonymised.
-\textbf{Left:} \ourapproach attribution mass spread across upstream causal variables
-(suspects~1--15, ranked by mean total score). \textbf{Right:} SHAP attribution mass
-concentrated on a small number of downstream variables. The qualitative pattern matches
-the controlled-setting comparison of Section~\ref{sec:shap_examples}.}
-\label{fig:avm_attribution}
-\end{figure}
 
