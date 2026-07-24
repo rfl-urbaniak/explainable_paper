@@ -74,7 +74,8 @@ counterfactual changes; and (iv) \textit{tractable}, estimable from samples
 without exhaustive enumeration over witness sets and alternatives.%
 \footnote{This trades enumeration for Monte Carlo sampling, not for a lower
 asymptotic cost: achieving a fixed estimator variance still requires a sample count
-that scales with the cardinalities of the suspect and witness sets, and we do not
+that scales with the cardinalities of the suspect (candidate-cause) and witness
+sets, and we do not
 have a general way to know in advance when fewer samples suffice.
 Section~\ref{sec:ac_benchmark} reports empirical scaling; Section~\ref{sec:discussion}
 returns to this and other limitations.}
@@ -116,8 +117,10 @@ tradeoffs.
 
 Table~\ref{tab:method_comparison}'s row (ii) is exactly Alice's case: actual
 causality names her gender as the cause because its witness mechanism holds the
-untriggered credit check fixed, while Pearl's PN/PS/PNS, lacking any such mechanism,
-assigns her credit comparable responsibility despite it never being checked.
+untriggered credit check fixed, while Pearl's probability-of-necessity/sufficiency
+family (PN/PS/PNS, three related quantities we define in
+Section~\ref{sec:motivations}), lacking any such mechanism, assigns her credit
+comparable responsibility despite it never being checked.
 Section~\ref{sec:motivations} works through this example, and its stochastic
 counterpart, in full.
 
@@ -151,7 +154,9 @@ witness set that does, or sampling can simply miss it if it is rare enough --- i
 worst case, as expensive to find as enumeration itself (Section~\ref{sec:discussion}).
 Two facts limit the damage. Proposition~\ref{prop:filter} shows existence survives the
 move exactly: the suspects with positive score are precisely Halpern's actual causes,
-for any regular $\Gamma$; $\Gamma$ only sets the score's \emph{magnitude}. And that
+for any \emph{regular} $\Gamma$ (one that rules nothing out, assigning positive
+weight to every legal suspect-witness pairing); $\Gamma$ only sets the score's
+\emph{magnitude}. And that
 magnitude is a different kind of quantity than a normality ranking: Halpern's own
 graded extension \citep{Halpern2015-HALGCA} grades which alternative value is
 typical, while $\Gamma$ grades which suspect-witness explanation is worth asking
@@ -159,12 +164,14 @@ about --- a parsimony prior over candidate explanations, not a typicality rankin
 over outcomes. Since $\Gamma$ only sets magnitude, we read \ourapproach scores
 comparatively throughout.
 
-Several components have precedents (expectations over
-exogenous noise \citep{actualCausalityHalpern}, weighting by alternative-value
-probabilities \citep{Beckers2015CombiningPC}, and aggregation over witness sets
-\citep{Beckers2015CombiningPC, actualCausalityHalpern}), but no prior construction
-combines these components into a single tractable estimator
-handling arbitrary variable domains.
+Prior work anticipates pieces of this. Halpern's own account already averages over
+exogenous noise when computing probabilities of causation
+\citep{actualCausalityHalpern}. \citet{Beckers2015CombiningPC} weights alternative
+replacement values by how probable they are, rather than treating every departure
+from the factual as equally good. And both aggregate, rather than existentially
+quantify, over witness sets in restricted settings
+\citep{Beckers2015CombiningPC, actualCausalityHalpern}. No prior construction
+combines all three into a single estimator that scales to arbitrary variable domains.
 Every quantity entering the \Ourapproach definition is a standard
 interventional or counterfactual quantity; the estimands built from them, the
 expectations that give \Ourapproach its score, are already approximated automatically
@@ -177,7 +184,8 @@ without bespoke per-model derivation.
 counterfactual outcomes can be sampled, a stronger requirement than methods that
 work from observational data and a causal graph alone (e.g., the probability-of-necessity/sufficiency (PN/PS/PNS) bounds of
 \citet{muellerpearl2022causes}, which return \emph{intervals} on the probability of
-causation where \ourapproach, given a fully specified model, returns a posterior distribution of kernel values, summarised as point scores via their means, or
+causation where \ourapproach, given a fully specified model, returns a full posterior
+over its score, summarised as a point estimate via the mean, or
 Causal SHAP). Within that requirement, however, we place no strong restrictions on the form
 of the model, distributions, or types of variables.
 Such models can comprise standard machine learning components such as neural
