@@ -8,11 +8,10 @@ attribution often requires holding some endogenous variables, members of a ``wit
 set'', fixed at their factual values. This ensures context sensitivity by controlling
 complicating causal paths. We treat witnesses differently: instead of looking for
 a single witness set that reveals a causal relationship, we use a distribution over
-witness sets and integrate the causal impact score across them. As in many probabilistic
-generalisations, this focuses on whole distributions, and it lets
+witness sets and integrate the causal impact score across them, which lets
 \ourapproach account for the number of witness sets and the strength of
-within-witness-set effects. Moreover, the construction admits off-the-shelf probabilistic
-inference in place of worst-case subset enumeration. The relationship between the two
+within-witness-set effects. The construction also admits off-the-shelf probabilistic
+inference, avoiding worst-case subset enumeration. The relationship between the two
 views is now formal where it was once gestural: under matching choices of $\Gamma$ and
 $\Delta$, the support of $\sum_{\mathbf{T}}\Phi$ coincides with factivity and
 context-sensitive necessity (Theorems~\ref{th:ac-exp}--\ref{th:exp-ac}), and a
@@ -30,16 +29,16 @@ coincide with PN and PS, and \cref{sub:synthetic} reads the two components apart
 a continuous synthetic model where each is needed to bring out a different causal
 archetype.
 
-The further generalisations are mostly bookkeeping in the same spirit. Instead of fixing
-a single alternative value for a potential cause, we integrate over a factual-excised
-alternative-value distribution; this generalises immediately to continuous variables.
-Instead of asking whether a particular set is an actual cause, we sample suspect sets and
-gauge a feature's responsibility in terms of its participation in sets with causal
-impact. Instead of asking whether the outcome differs, a customisable causal impact
-function $ci$ measures the differences across counterfactual worlds, including between
-continuous variables. The variable-selection distribution $\Gamma$, the alternative-value
-distribution $\Delta$, and the impact function $ci$ become explicit, user-facing
-components of the framework, no longer implicit defaults.
+The further generalisations are mostly bookkeeping in the same spirit: a single
+alternative value for a potential cause becomes a factual-excised alternative-value
+distribution we integrate over, which generalises immediately to continuous variables;
+asking whether a particular set is an actual cause becomes sampling suspect sets and
+gauging a feature's responsibility by its participation in sets with causal impact; and
+asking whether the outcome differs becomes measuring how much, via a customisable causal
+impact function $ci$ that reads differences across counterfactual worlds, including
+between continuous variables. The variable-selection distribution $\Gamma$, the
+alternative-value distribution $\Delta$, and the impact function $ci$ become explicit,
+user-facing components of the framework, no longer implicit defaults.
 
 Against SHAP-family attributions, the framework's central commitment is to
 \emph{intervention with witnesses} over \emph{observational marginalisation}. The
@@ -49,8 +48,8 @@ and Causal SHAP fail in characteristic ways that \ourapproach avoids. The synthe
 benchmark of \cref{sub:synthetic} confirms this on a model with known ground
 truth, and the case study of \cref{sec:avm} reports the same qualitative pattern
 on a production-grade trained model with millions of data points. A separate comparison
-to gradient-based attribution, where the difference is one of differentiability and locality, not the
-causal/non-causal axis, is reported in \cref{sec:DCE}. The
+to gradient-based attribution, where the difference is one of differentiability and locality,
+as distinct from the causal/non-causal axis, is reported in \cref{sec:DCE}. The
 thread connecting these results is structural: the witness mechanism that satisfies
 D-A-rank for Alice in the binary OBCB walkthrough of
 Section~\ref{sec:shap_examples} is the same machinery driving the upstream-versus-downstream
@@ -61,15 +60,15 @@ literature typically asks counterfactual-explanation methods to meet, of which
 \cite{verma2022recourses} list five. \emph{Sparsity}, the requirement that
 explanations change as few features as possible, follows directly from the
 cardinality cap on suspect sets in $\Gamma$, which biases the search toward small
-$\mathbf{C}$. \emph{Multiple counterfactuals} (the ability to return several
-alternative explanations instead of committing to one) falls out of the Monte Carlo
-construction, since a single sweep over $\Gamma$ and $\Delta$ produces a population of
-$(\mathbf{C}, \mathbf{c}', \mathbf{T})$ triples, not a single optimum.
+$\mathbf{C}$. \emph{Multiple counterfactuals}, the ability to return several
+alternative explanations, falls out of the Monte Carlo construction: a single sweep
+over $\Gamma$ and $\Delta$ produces a population of
+$(\mathbf{C}, \mathbf{c}', \mathbf{T})$ triples.
 \emph{Causal-constraint satisfaction}, the demand that explanations respect
 downstream propagation rather than treat features as independently editable, is
 automatic once suspect interventions are routed through the causal model: changing
 $\mathbf{C}$ propagates to descendants by construction. \emph{Model-agnosticism}
-(applicability to arbitrary predictors) \ourapproach satisfies only partially: it
+(applicability to arbitrary predictors), \ourapproach satisfies only partially: it
 can wrap a black-box predictor, but at the cost of the causal sensitivity that
 motivates the framework in the first place.
 
@@ -87,10 +86,15 @@ layers can sit downstream of \ourapproach for users who need actionable
 recommendations, but they should compose with responsibility attribution instead of
 replacing it.
 
-Several limitations are worth flagging. \Ourapproach presumes access to a trained
-probabilistic causal model from which counterfactual outcomes can be sampled, a
+Set against that favourable comparison, several limitations temper the picture.
+\Ourapproach presumes access to a trained
+probabilistic causal model from which it can sample counterfactual outcomes, a
 stronger requirement than methods that work from observational data and a causal graph
-alone. The Monte Carlo variance of the estimator grows with model size and with the
+alone. It also inherits whatever error is in that model: a misspecified structural
+equation or noise distribution yields systematically wrong attributions, with
+nothing in the construction to flag this from the scores alone, since \ourapproach
+evaluates counterfactuals under the model the user supplies, without checking that
+model against data. The Monte Carlo variance of the estimator grows with model size and with the
 cardinalities of suspect and witness sets; \cref{sec:ac_benchmark} reports
 empirical scaling and an ablation that isolates the contribution of witness pinning.
 In the worst case, a single revealing witness set among $2^{|\mathbf{W}|}$ candidates
@@ -101,33 +105,48 @@ of size $2^m$ for $m$ such inert candidates, giving revealing mass at least
 $2^{m-|\mathbf{W}|}$ rather than $2^{-|\mathbf{W}|}$. Whether this rescues sampling
 generically, or only in graphs sparse relative to the tested intervention, is a
 sharper open question than we have characterised here. A $\Gamma$ built from the
-graph, weighting witness candidates by their relevance to the tested intervention
-rather than uniformly, would exploit exactly this sparsity, but building it requires
+graph, weighting witness candidates by their relevance to the tested intervention,
+would exploit exactly this sparsity, but building it requires
 the graph's relevance structure to be legible in the first place, which trades away
-desideratum (iii)'s reach into grey-box models where structural facts are not
-cheaply available.
-Finally, the AVM case study is deliberately limited in disclosure: the apples-to-apples
+desideratum~\hyperref[des:broad]{(iii)}'s reach into grey-box models where structural
+facts are not cheaply available.
+Exposing $\Gamma$, $\Delta$, and $ci$ as user-facing choices is also a burden:
+a practitioner with no strong prior view on which suspect sets or alternative values are plausible has nothing
+principled to fall back on, and a bad choice can silently shift which variables
+the score favours, with no signal in the output that anything went wrong.
+Finally, we deliberately limited what the AVM case study discloses: the apples-to-apples
 SHAP-vs-PCI comparison rests on the synthetic benchmark of \cref{sub:synthetic},
 with the production model serving as a feasibility witness, not as quantitative
 evidence.
 
-
-
-In sum, \ourapproach provides a scalable, context-sensitive causal explanation
-method for causal probabilistic machine-learning models. A natural probabilistic
-generalisation of ideas already in the literature leads to a tractable estimator that can
-be paired with standard inference algorithms. We benchmarked the approach against exact
+\Ourapproach provides a context-sensitive causal explanation method for causal
+probabilistic machine-learning models that stays tractable, at the sampling cost
+discussed above, past the point where exact actual-causality enumeration does not
+(\cref{sec:ac_benchmark}). It arrives at this as a natural probabilistic
+generalisation of ideas already in the literature, yielding an estimator that
+pairs with standard inference algorithms. We benchmarked it against exact
 actual-causality computations, characterised its qualitative behaviour on synthetic
-models with known ground truth and on canonical SHAP failure cases, and showed its
+models with known ground truth and on canonical SHAP failure cases, and demonstrated
 computational feasibility on a production-grade model.
 
-Prior efforts to mechanise actual-causality reasoning in software (notably the Actual
-Causality Canvas of \citet{ibrahimCanvas2020} and the SAT- and optimization-based
-computations of \citet{ibrahimChecking2020}, which operationalise the Halpern--Pearl
-definition for forensic investigation, fault diagnosis, and explainable AI) are built
+This estimator also sits within a longer line of efforts to mechanise
+actual-causality reasoning in software: the Actual Causality Canvas of
+\citet{ibrahimCanvas2020} and the SAT- and optimization-based computations of
+\citet{ibrahimChecking2020} operationalise the Halpern--Pearl definition for
+forensic investigation, fault diagnosis, and explainable AI; those tools are built
 for \emph{discrete} (typically binary) structural models, where the actual cause is
 recovered by combinatorial search over candidate sets. The complementary regime of large,
 continuous-valued models has received less attention, and it is there that the exact
-notions become harder to apply directly. \Ourapproach develops approximate causal
-attribution workable for users of models of non-trivial size, with the design choices left
-to the user.
+notions become harder to apply directly. \Ourapproach targets exactly that regime,
+turning approximate causal attribution into something workable for users of models of
+non-trivial size, with $\Gamma$, $\Delta$, and $ci$ exposed as knobs for the user to set
+rather than defaults buried in the implementation.
+
+The same mechanisation goal motivates a parallel literature in databases, where
+responsibility and causal-effect measures explain query answers over relational
+data rather than outcomes of a structural causal model (surveyed by
+\citealp{bertossiAttributionScores2023}; \citealp{salimiQuantifyingCausalEffects2016},
+already noted in \cref{sub:pearl_actual_cause_prob}, is one instance). In that
+vocabulary, \ourapproach's witness-integrated score is a graded, model-relative
+responsibility measure of the same family, specialised to probabilistic structural
+causal models.

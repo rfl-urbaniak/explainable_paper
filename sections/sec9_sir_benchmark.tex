@@ -83,13 +83,13 @@ actual-cause probabilities. We state them here so the comparison that follows
 does not depend on consulting that tutorial.
 
 \medskip\noindent\textit{\ourapproach thin-search procedure.}
-The suspects are $\{\mathrm{lockdown},\mathrm{mask}\}$. The witnesses are
-drawn from the policy efficiencies
+The suspects are $\{\mathrm{lockdown},\mathrm{mask}\}$. On each draw, the
+sampler draws witnesses from the policy efficiencies
 $\{\mathrm{lockdown\_efficiency}, \mathrm{mask\_efficiency},
-\mathrm{joint\_efficiency}\}$, with the suspect itself excluded from the
-witness set on each draw. The factual world fixes both policies on
-($\mathrm{lockdown}=1, \mathrm{mask}=1$), so the factual outcome
-$y^\star=\mathrm{overshoot}$ is read from the same trajectory. For each
+\mathrm{joint\_efficiency}\}$, excluding the suspect itself from the
+witness set. The factual world fixes both policies on
+($\mathrm{lockdown}=1, \mathrm{mask}=1$), so the sampler reads the factual
+outcome $y^\star=\mathrm{overshoot}$ from the same trajectory. For each
 suspect the sampler draws $2{,}500$ regimes, scoring each with the
 $|y^\star-y_{\mathrm{nec}}| - |y^\star-y_{\mathrm{suff}}|$ statistic and
 averaging across regimes. The $\mathrm{nec}$ term rewards regimes where
@@ -163,22 +163,22 @@ worlds; the verdict is not an artifact of the chosen factual.
 
 \medskip\noindent\textit{Effect of context.}
 The ChiRho tutorial isolates one downstream variable at a time, asking
-whether the verdict survives when that variable is held fixed at factual
-versus left free. We replicate the experiment by partitioning the
-\ourapproach regimes by whether the partner-policy efficiency variable was
-sampled into the witness set
+whether the verdict survives holding that variable fixed at factual versus
+leaving it free. We replicate the experiment by partitioning the
+\ourapproach regimes by whether the sampler drew the partner-policy
+efficiency variable into the witness set
 (Figure~\ref{fig:sir_contexts}). For lockdown, with
 $\mathrm{mask\_efficiency}$ \emph{fixed} as a witness the score is $0.81$;
 \emph{free}, it rises to $2.67$. For mask, with $\mathrm{lockdown\_efficiency}$
 \emph{fixed} the score is $-0.48$ (mask fails to register as a cause at
 all under that context regime) and \emph{free} it rises to $2.72$.
 This experiment partitions the regimes differently from the single hand-set
-world reported earlier, so the fixed/free scores are not expected to average
+world reported earlier, so we do not expect the fixed/free scores to average
 to that world's totals (lockdown $1.54$, mask $0.76$).
 Lockdown therefore registers as a cause in both context regimes, while
 mask's status as a cause is contingent on its partner being allowed to
-adapt. \ourapproach thus expresses not just \emph{which} policy is the
-dominant cause but \emph{how robustly} that causal claim holds across
+adapt. \ourapproach thus expresses both \emph{which} policy is the
+dominant cause and \emph{how robustly} that causal claim holds across
 counterfactual contexts: a finer-grained verdict than the binary
 ``actual cause / not'' that classical AC produces.
 
@@ -186,8 +186,8 @@ counterfactual contexts: a finer-grained verdict than the binary
 \centering
 \includegraphics[width=0.92\linewidth]{docs/source/sir_benchmark/sir_contexts.png}
 \caption{Different-contexts experiment. Bars compare PCI total score (left)
-and $\Pr(\mathrm{overshoot}>24\mid\mathrm{necessity})$ (right) when the
-partner-policy efficiency variable is fixed as a witness versus left free.
+and $\Pr(\mathrm{overshoot}>24\mid\mathrm{necessity})$ (right) when we fix
+the partner-policy efficiency variable as a witness versus leave it free.
 Lockdown's score is positive in both regimes; mask's score flips sign
 across regimes, indicating that mask is a context-sensitive rather than a
 robust cause.}

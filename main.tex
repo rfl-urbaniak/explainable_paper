@@ -221,13 +221,10 @@
   which subsets of variables to consider as candidate explanations, a
   distribution $\Delta$ over the counterfactual values to which those variables
   might be changed, and a function $ci$ that measures how much such a change
-  shifts the outcome. The result is a tractable, causally grounded explanation
-  procedure that applies to large models. A correspondence theorem shows that
-  \ourapproach agrees with actual causality on the small models where AC is
-  well-defined; against Pearl's probability of actual causation, \ourapproach
-  recovers Pearl's within-scenario ranking and additionally captures
-  path-reliability and cross-scenario reliability, intuitions Pearl's binary
-  indicator cannot capture.
+  shifts the outcome. The result is a tractable, causally grounded, graded
+  explanation procedure that applies to large models and provably agrees with
+  actual causality and Pearl's probability of causation wherever those are
+  defined.
 
   We evaluate \ourapproach in four increasingly demanding settings: a synthetic
   structural model with redundant and preempting causes, where \ourapproach

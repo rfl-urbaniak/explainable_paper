@@ -2,10 +2,11 @@
 
  Section~\ref{sec:causal_impact} defined \ourapproach
 and verified, on Alice and Bob, that the resulting attribution satisfies all seven
-desiderata of that section, where PN/PS/PNS fail at least two. The natural next
-question is how \ourapproach compares to the dominant practical alternative for
-feature attribution in the ML literature, SHAP and Causal SHAP, since these
-are the tools practitioners typically reach for. This section runs that comparison
+desiderata of Section~\ref{sec:motivations} (p.~\pageref{desid}), where PN/PS/PNS
+fail at least two. The natural next
+question is how \ourapproach compares to SHAP and Causal SHAP, the dominant
+practical alternatives for feature attribution that practitioners typically
+reach for. This section runs that comparison
 on two examples, recording where each method passes or fails an explicit
 desideratum. Formal definitions of SHAP and Causal SHAP are in \cref{sec:shap_defs}; we re-run OBCB
 (Section~\ref{sec:obcb_shap}), where the two SHAP variants coincide because the
@@ -19,10 +20,9 @@ failure to one of three structural gaps in the SHAP framework that PCI's witness
 mechanism, suspect-set distribution $\Gamma_s$, and realised-outcome reference
 jointly close.
 
-Shapley values have become one of the most widely used tools for explaining the
-predictions of complex machine learning models. Grounded in cooperative game theory,
-they provide a principled decomposition of a model's prediction into additive
-contributions from individual features.
+Shapley values, grounded in cooperative game theory, decompose a model's
+prediction into additive contributions from individual features and have
+become one of the most widely used attribution tools in the ML literature.
 \citet{janzing2020feature} argued that the conditional expectation in plain SHAP is the
 conceptually wrong way to model feature removal: a dropped feature should be
 marginalised under a $do$-intervention, not under conditioning.
@@ -48,29 +48,24 @@ sufficiency separately.
 \emph{(iii)} CF-Shapley has no witness mechanism, so it cannot break the
 overdetermination and undercutting symmetries that \ourapproach{}'s witness set
 $\mathbf{W}$ resolves on the OBCB and signal walkthroughs of this section.}
-Formal definitions of both are given in \cref{sec:shap_defs}.
 
 
 Despite this repair, both methods share deeper limitations. First, both plain and
 Causal SHAP can assign non-zero responsibility to variables that play no causal role
 with respect to the target: attribution can run against the direction of the causal
 graph, a failure the interventional correction does not address. Second, both methods
-explain a model's predicted output's departure from the same model's output averaged over the population, not the individual
-factual outcome of a specific person: when the goal is \emph{causal responsibility
+explain how a model's prediction departs from that model's population-average
+output, not the factual outcome an individual actually experienced. When the goal is \emph{causal responsibility
 attribution} rather than prediction explanation, this mismatch in target produces
 further divergences, which we make explicit below. The first limitation will surface in our signal example as violations of
 D-YX, D-YM, and D-MX; the second will surface in OBCB as the D-A-rank overdetermination
 effect, and in the signal example as Instance~2's budget collapse when the prediction
 equals its baseline.
 
-We trace these failures through two examples, comparing plain SHAP, Causal SHAP, and
-PCI against the desiderata of Section~\ref{sec:causal_impact} and some further desiderata related to the example we
-will employ. We first return to the
-OBCB model: it permits exact analytic computation and the desiderata are already
-known. In OBCB the feature set contains only exogenous roots, so plain and Causal
-SHAP coincide: the comparison is short. We then turn to a continuous mediation
-example where downstream variables are observable model inputs; there the two methods
-diverge, and we examine what Causal SHAP fixes and what it does not.
+With these general limitations in view, we trace them through the same two
+examples, comparing plain SHAP, Causal SHAP, and PCI against the desiderata of
+Section~\ref{sec:causal_impact} together with the desiderata specific to each
+example.
 
 
 
@@ -223,7 +218,7 @@ Alice's posterior in which she was checked, so credit retains spurious
 responsibility. Recovering the correct ranking requires \ourapproach's witness
 mechanism, which pins $\varname{check\text{-}failed}$ at its factual value
 (dominantly the unchecked branch for Alice, where credit is causally
-disconnected from the loan) rather than merely integrating over its noise. In
+disconnected from the loan) instead of integrating over its noise. In
 this sense \ourapproach is the ITE \emph{plus} the structural machinery needed to
 see the mediated path: it inherits the ITE's individual-level, counterfactual
 character and adds the context-fixing the ITE alone lacks.
@@ -694,9 +689,8 @@ signal on the causal ones. PCI reports the same structural verdicts as at $X^\st
 The pattern in Table~\ref{tab:signal_desid_baseline} reflects the object each
 method is decomposing. SHAP attributes the quantity
 $f(x^\star)-\mathbb{E}[f(X)]$ across features. At the baseline this gap is
-zero on every target, so the budget being distributed is zero, and every cell
-collapses to zero, uniformly, regardless of how the realized outcome was
-actually produced. The non-causal triples (D-YX, D-YM, D-MX) are satisfied only
+zero on every target, so every cell collapses to zero, uniformly, regardless
+of how the realized outcome was produced. The non-causal triples (D-YX, D-YM, D-MX) are satisfied only
 by this collapse: SHAP is not isolating the absence of a causal path; it is
 reporting that there is nothing to attribute. The same collapse turns D-XY,
 D-MY, and D-XM into violations.
@@ -708,21 +702,18 @@ not whether $f(x^\star)$ deviates from $\mathbb{E}[f(X)]$. The structural
 mechanism is unchanged at the baseline, so the three causal pairs continue
 to register positive values; the three non-causal pairs continue to register
 zero exactly, because intervening on a variable that does not structurally
-affect the target leaves both worlds with identical distributions. The two instances together make the contrast sharp. At Instance~1, SHAP's
-attribution budget $f(x^\star)-\mathbb{E}[f(X)]$ is non-zero and SHAP returns
-non-trivial numbers; at Instance~2 the budget vanishes and every cell collapses.
-PCI returns the same structural verdicts on all seven desiderata across the two
-instances. The lesson is not that SHAP gives the wrong answer at the baseline:
-it correctly reports that the factual prediction does not deviate from its mean.
-The point is that this is a different question from causal responsibility for
-$y^\star$: when the prediction equals its baseline, SHAP has no budget to
-distribute even when the PSCM's causal mechanism is perfectly intact. PCI asks
+affect the target leaves both worlds with identical distributions.
+SHAP is not wrong at the baseline: it correctly reports that the
+factual prediction does not deviate from its mean. But that is a different
+question from causal responsibility for $y^\star$, and when the prediction
+equals its baseline SHAP has no budget to distribute even though the PSCM's
+causal mechanism remains intact. PCI asks
 the responsibility question directly, and answers it whether or not the
 prediction happens to coincide with its population mean.
 
 \subsection{Summary Across Both Examples}\label{sec:shap_summary}
 
-The failures above are not artifacts of a particular feature set or
+The ranking failures above are not artifacts of a particular feature set or
 parameter choice: each traces to a structural limitation of the SHAP/Causal
 SHAP framework. Causal SHAP strictly improves on plain SHAP for one
 desideratum~(D-YX), by replacing observational conditioning with
@@ -731,17 +722,25 @@ prediction models include non-causal features that the conditioning
 distribution cannot exclude~(D-YM, D-MX), and Shapley averaging cannot
 distinguish direct from indirect causal paths~(D-MXY). The OBCB analysis of
 Section~\ref{sec:obcb_shap} exhibits the same family in different surface
-form: plain SHAP fails \textbf{D-A-rank} on the 2-feature game, and Causal
-SHAP either inherits that failure (Alice) or becomes undefined outright
-(Bob) once the mediator is admitted as a feature. Across both examples,
+form: plain SHAP fails \textbf{D-A-rank} on the 2-feature game, and once the
+mediator is admitted as a feature, Causal SHAP inherits that same ranking
+failure for Alice. For Bob it instead becomes undefined outright, which
+Section~\ref{sec:obcb_shap} traces to this particular PSCM's impossible-cell
+structure rather than the ranking failure itself; the signal-mediation
+example, which has no such cell, shows the same family of genuine failures
+recur regardless. Across both examples,
 neither SHAP variant reliably satisfies the desiderata that motivated
-\Ourapproach in Section~\ref{sec:causal_impact}. PCI addresses these gaps
-through three ingredients the SHAP framework systematically lacks: the
+\Ourapproach in Section~\ref{sec:causal_impact}. Section~\ref{sec:motivations}
+grounds D-A-rank, D-B-rank, and D-comp in distinctions the preemption and
+actual-causality literature established well before this paper: active versus
+preempted versus irrelevant causes, and direct versus indirect causal paths.
+PCI addresses these gaps
+through three ingredients the SHAP framework lacks: the
 witness mechanism, the suspect-set distribution $\Gamma_s$, and the use of
-the realized outcome rather than the prediction baseline; the path-noise
-asymmetry in the sufficiency world produces a structural gap on D-MXY,
-which appears already in the witness-free single game and is amplified into a
-robust margin under a witness rule.
+the realized outcome rather than the prediction baseline. On top of these,
+the path-noise asymmetry in the sufficiency world produces a structural gap on D-MXY,
+which appears already in the witness-free single game and widens further under
+a witness rule.
 
 The two examples here are small enough to inspect
 every desideratum individually; the broader empirical comparison (a synthetic

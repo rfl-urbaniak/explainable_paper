@@ -3,14 +3,17 @@
 Explanation and causal attribution seek to connect a potentially causal \textit{event} $X=x$ to an outcome event $Y=y$.\footnote{This is quite different from type-level causal queries, where one is interested in some group-level attribution, as when one estimates average treatment effect or conditional average treatment effect.}
 % To measure the strength of causation, we (i) intervene to change $X$ and measure the extent to which this changes $Y$ (call this a \emph{necessity intervention}), and (ii) intervene on $X$ to have the actual value and measure the extent to which this ensures $Y=y$ (call this a \emph{sufficiency intervention}), while (iii) preserving context-sensitivity, and (iv) allowing for some variation in which parts of the contexts are fixed and in what combinations the cause candidates are intervened on, to account for interactions.
 % Moreover, (v) to search for causes, we also need to perform a search through potential sets of causes.
-In this section, we present a formal development. To ground it, we return to Example~\ref{ex:obcb_stochastic} and
- use Alice and Bob as running illustrations throughout this section. Both are rejected for a loan; the question is
+We return to Example~\ref{ex:obcb_stochastic} to ground the formal development that follows,
+ using Alice and Bob as running illustrations throughout this section. Both are rejected for a loan; the question is
  which of their attributes (\varname{gender} and \varname{credit}) was causally responsible for each rejection,
  and to what degree. While the example is discrete, the machinery applies to continuous and mixed-type variables;
   a continuous illustration is given in Sections~\ref{sec:signal} and~\ref{sub:synthetic}.
 
 \paragraph{Roadmap of this section.}
-We state seven \emph{desiderata} that any responsibility attribution for Alice and Bob should satisfy, giving the formal construction an explicit target. We introduce the probabilistic
+Section~\ref{sec:motivations} already stated seven \emph{desiderata}
+(p.~\pageref{desid}) that any responsibility attribution for Alice and Bob
+should satisfy; they give the formal construction below an explicit target. We
+introduce the probabilistic
 structural causal model (PSCM) and interventions, the substrate on which everything
 else rests, and then the two distributions \ourapproach offers to the user: the
 variable selection distribution $\Gamma$ over suspect/witness pairs and the
@@ -22,56 +25,13 @@ Finally we compute the score on the OBCB example, verify that all seven desidera
 hold, and contrast \ourapproach's necessity/sufficiency decomposition with Pearl's
 PN/PS/PNS.
 
-Let $R(V \rightsquigarrow \varname{loan} \mid \text{person})$ denote the causal responsibility of variable $V$
-for the loan outcome at the individual level ($R$ is a placeholder for any attribution score and
-should not be identified with a specific formal quantity; \ourapproach interprets $R$ as the
-PCI score $\mathrm{PCI}_{X_k}$ of Definition~\ref{def:causalimpact}, but the desiderata are
-method-agnostic). Here $V$ ranges over the candidate variables; in the general development
+Recall $R(V \rightsquigarrow \varname{loan} \mid \text{person})$, the placeholder for
+the causal responsibility of variable $V$ for the loan outcome at the individual level
+used to state those desiderata (Section~\ref{sec:motivations}, p.~\pageref{desid}):
+\ourapproach interprets $R$ as the PCI score $\mathrm{PCI}_{X_k}$ of
+Definition~\ref{def:causalimpact}, but the desiderata themselves are method-agnostic.
+Here $V$ ranges over the candidate variables; in the general development
 it is the variable of interest $X_k$.
-Attribution methods may produce signed values; the desiderata are stated in terms of absolute
-magnitudes $|R(\cdot)|$, allowing for directionality:
-\label{desid}
-\begin{align*}
-\textbf{D-A1} \quad & |R(\varname{gender} \rightsquigarrow \varname{loan} \mid \text{Alice})| > 0 \\[2pt]
-\textbf{D-A2} \quad & |R(\varname{credit} \rightsquigarrow \varname{loan} \mid \text{Alice})| > 0 \\[2pt]
-\textbf{D-A-rank} \quad & |R(\varname{gender} \rightsquigarrow \varname{loan} \mid \text{Alice})| > |R(\varname{credit} \rightsquigarrow \varname{loan} \mid \text{Alice})| \\[6pt]
-\textbf{D-B1} \quad & |R(\varname{gender} \rightsquigarrow \varname{loan} \mid \text{Bob})| > 0 \\[2pt]
-\textbf{D-B2} \quad & |R(\varname{credit} \rightsquigarrow \varname{loan} \mid \text{Bob})| > 0 \\[2pt]
-\textbf{D-B-rank} \quad & |R(\varname{credit} \rightsquigarrow \varname{loan} \mid \text{Bob})| > |R(\varname{gender} \rightsquigarrow \varname{loan} \mid \text{Bob})| \\[6pt]
-\textbf{D-comp} \quad & |R(\varname{gender} \rightsquigarrow \varname{loan} \mid \text{Alice})| > |R(\varname{gender} \rightsquigarrow \varname{loan} \mid \text{Bob})|
-\end{align*}
-
-\noindent \textbf{D-A1} and \textbf{D-A2} both require non-zero attribution for Alice because two
-distinct causal routes were available. Gender filtered her out at the checking stage. Credit is not
-causally inert either: the check is only \emph{probabilistic} (women are still checked with positive
-probability, $\gamma_F=0.2$ in the model below), so conditioning on Alice's denial leaves nonzero
-probability that she was in fact checked, in which case her bad credit was the operative cause. The
-broader principle is a graded ordering of three roles. An \emph{active} cause, on the path that actually
-produced the outcome, carries the most responsibility. A \emph{preempted} cause is not discarded but
-retains a \emph{residual} share, strictly positive yet strictly below the active cause (exactly what
-\textbf{D-A-rank} demands), here governed by the probability that the preemption fails to fire,
-leaving the credit route live. An \emph{irrelevant} variable, with no active path to the outcome under
-any context, receives the least of all, approaching zero. This is a deliberate departure from the binary
-Halpern--Pearl/Beckers treatment of preemption, which collapses the first two roles by zeroing a fully
-preempted cause. \textbf{D-A-rank} is the substantive constraint: because Alice never underwent a
-credit evaluation, gender's causal role is immediate, whereas credit's is purely
-hypothetical. A method that ranks credit above gender for Alice is misattributing the cause of her
-rejection.
-
-For Bob, \textbf{D-B2} reflects that the credit check occurred and directly produced the rejection:
-the causal chain $\varname{credit} \to \varname{check\text{-}failed} \to \varname{loan}$ was
-activated. \textbf{D-B1} requires strictly positive attribution for \varname{gender}: being male
-gave Bob a $90\%$ probability of being checked, so gender opened the evaluation that rejected him.
-This indirect causal role is non-zero; a method returning exactly zero fails to capture it.
-\textbf{D-B-rank} corresponds to the intuition that credit is the proximate cause.
-\textbf{D-comp} captures the cross-individual asymmetry that is hardest for naive methods to
-express: gender is more causally responsible for Alice's rejection than for Bob's, because for
-Alice \varname{gender}=female was sufficient on its own to produce the rejection (no
-evaluation took place, so credit was never a factor), while for Bob \varname{gender}=male
-merely opened the evaluation that \varname{credit}=bad then caused.
-We will verify at the end of this section that \ourapproach satisfies all seven desiderata,
-while PN, PS, PNS fail some of them. Later, we will also revisit this example and its
- desiderata in the context of SHAP and Causal SHAP (Section~\ref{sec:shap_examples}).
 
 We work within the context of probabilistic structural causal models \citep{causalityPearl}.
 \begin{definition}[Probabilistic Structural Causal Model (PSCM)]
@@ -87,7 +47,7 @@ V_i := f_i(\mathbf{Pa}_i, U_i), \qquad i = 1,\dots,n,
 \]
 with \(\mathbf{Pa}_i \subseteq \mathbf{V}\setminus\{V_i\}\) denoting the parents of \(V_i\).
 The distribution \(P_{\mathbf{U}}\) is a probability measure on $\dom(\mathbf{U})$,
-and the assignments in \(\mathbf{F}\) are assumed to be acyclic and to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).\footnote{Working within the PSCM framework commits the practitioner to fully specified structural assignments $\mathbf{F}$ and an exogenous distribution $P_{\mathbf{U}}$, analogous to how Bayesian inference requires a likelihood and a prior. This is precisely what enables \ourapproach to yield individual-level counterfactual attributions rather than population-level bounds, and once $\mathbf{F}$ and $P_{\mathbf{U}}$ are specified, sampling from $P_{\mathbf{U}}$ is a routine probabilistic inference operation.}
+and the assignments in \(\mathbf{F}\) are assumed to be acyclic and to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).\footnote{Working within the PSCM framework commits the practitioner to fully specified structural assignments $\mathbf{F}$ and an exogenous distribution $P_{\mathbf{U}}$, analogous to how Bayesian inference requires a likelihood and a prior. This is what enables \ourapproach to yield individual-level counterfactual attributions rather than population-level bounds, and once $\mathbf{F}$ and $P_{\mathbf{U}}$ are specified, sampling from $P_{\mathbf{U}}$ is a routine probabilistic inference operation.}
 \end{definition}
 
 \medskip\noindent A PSCM encodes which variables influence which others, 
@@ -139,9 +99,9 @@ We denote this intervention by either \([\mathbf{X} \leftarrow \mathbf{x}]\) or 
 disconnecting it from its usual causes. The rest of the model propagates downstream as normal under the new assignment;
  the exogenous noise is unchanged.
 
-In the OBCB model, $\mathrm{do}(\varname{gender}=1)$ replaces Alice's gender assignment with male, leaving all other structural equations intact. The downstream effect propagates: \varname{check} now draws from $\mathrm{Bern}(0.9)$ rather than $\mathrm{Bern}(0.2)$, so Alice would be checked in 90\% of noise realizations instead of 20\%. This is the counterfactual world in which we ask whether her loan outcome would have differed.
+In the OBCB model, $\mathrm{do}(\varname{gender}=1)$ replaces Alice's gender assignment with male, leaving all other structural equations intact. The downstream effect propagates: \varname{check} now draws from $\mathrm{Bern}(0.9)$ instead of $\mathrm{Bern}(0.2)$, so Alice would be checked in 90\% of noise realizations. This is the counterfactual world in which we ask whether her loan outcome would have differed.
 
-Because \ourapproach supports arbitrary variable types, it will be helpful to define a measure theoretic object corresponding to interventional outcomes. Because outcomes are a deterministic function of exogenous noise, this will be a Dirac measure.
+Since \ourapproach supports arbitrary variable types, it will be helpful to define a measure-theoretic object corresponding to interventional outcomes; because outcomes are a deterministic function of exogenous noise, this object turns out to be a Dirac measure.
 
 \begin{definition}[Pointwise Interventional Law] \label{def:interlaw}
 Let $M=\langle \mathbf{U},\mathbf{V},\mathbf{F},P_{\mathbf{U}}\rangle$ be a probabilistic
@@ -167,7 +127,7 @@ $\mathbf{u}$: since the modified structural equations make $Y$ a function of $\m
 alone, its distribution collapses to a point mass. Integrating over $P_{\mathbf{U}}$
 then recovers the full interventional distribution.
 
-We define a \emph{causal set} to be a set of assignments to the variables of a probabilistic structural causal model.
+The suspect and witness apparatus introduced below is built from a single primitive, defined next.
 
 \begin{definition}[Causal set]
 Given a model \(\langle \mathbf{U}, \mathbf{V}, \mathbf{F}, P_{\mathbf{U}}\rangle\), a causal set is a set of pairs $X = x$ where $X \in \mathbf{V}$ and $x \in \mathit{dom}(X)$.
@@ -288,9 +248,7 @@ $P(Y \in A \mid \mathbf{u},\, \mathrm{do}(\mathbf{C}=\mathbf{c}',
 \mathbf{T}=\mathbf{t}^\star))$ computed via the structural model, so attribution flows
 only along genuine causal paths. The witness mechanism adds a further distinction: by
 holding intermediate variables fixed, PCI can resolve overdetermination and undercutting
-scenarios where SHAP assigns equal or incorrect attribution. The choice of $J$ and $K$
-remains a design decision; practitioners can set $J=K=1$ for single-variable attribution
-or allow higher-order interactions as discussed above. A detailed comparison of PCI,
+scenarios where SHAP assigns equal or incorrect attribution. A detailed comparison of PCI,
 SHAP, and Causal SHAP on concrete examples is given in
 Section~\ref{sec:shap_examples}.}
 \end{example}
@@ -398,7 +356,7 @@ context-sensitivity for simplicity; a fully conditional posterior on every obser
 (including downstream evidence) trades outcome-independence for sharper conditioning.
 
 
-\noindent One natural alternative value distribution results from taking the one currently embodied in the model and excising it around the factual setting. Then, the semantics for  ``alternative value'' means ``a sufficiently different value, following the original distribution otherwise''. In the discrete case, of course, the analogue is simply the probability mass function conditioned on the factual value not holding.
+\noindent One natural alternative value distribution takes the one already embodied in the model and excises it around the factual setting: ``alternative value'' then means ``a sufficiently different value, following the original distribution otherwise.'' In the discrete case, the analogue is simply the probability mass function conditioned on the factual value not holding.
 
 
 
@@ -421,10 +379,10 @@ not just the factual point $\mathbf{x}$ but its entire
 $\epsilon$-neighbourhood is excluded.
 \end{example}
 
-\medskip\noindent Informally, the alternative value distribution $\Delta$
-operationalises what ``counterfactually different'' means for each suspect variable:
-it specifies which alternative values are considered when asking whether the outcome would
-have changed under an alternative cause.
+\medskip\noindent With plausibility, outcome-independence, and context-sensitivity as
+design criteria, and $\epsilon$-excision as a concrete construction satisfying them, we
+return to the OBCB example to see what $\Delta$ looks like when the suspect variables are
+binary.
 
 In the OBCB model both \varname{gender} and \varname{credit} are binary, so $\Delta$ is
 trivial. For Alice, the only alternative to $\varname{gender}=0$ (female) is
@@ -492,7 +450,7 @@ next two definitions do exactly that: first the joint necessity-sufficiency
 measure $P_k^{s,n}$, then its expectation against a user-chosen impact function
 $ci$, with the OBCB scores and the desiderata verification immediately after.
 
-We now state the main definitions of \Ourapproach. The core idea is to
+The core idea behind \Ourapproach's main definitions is to
 measure two complementary things for a variable of interest $X_k$: (a) how much $X_k$'s
 factual value contributes to producing $y^\star$, the \emph{sufficiency} question,
 and (b) how much replacing $X_k$'s value with alternatives would shift the outcome away
@@ -572,6 +530,15 @@ $\mathbf{C}$ containing $X_k$, hold the witness set $\mathbf{T}$ at its factual 
 and observe where the outcome lands. $P_k^n(\cdot\mid\mathbf{u})$ is the distribution of
 $Y$ in the \emph{necessity world}: replace $\mathbf{C}$'s values with alternatives
 drawn from $\Delta$, hold $\mathbf{T}$ fixed, and ask how the outcome shifts.
+Because only the \emph{joint} alternative is guaranteed to depart from
+$\mathbf{s}^\star$, a drawn $\mathbf{c}'$ can coincide with $\mathbf{C}$'s own
+factual restriction $\mathbf{s}^\star\!\mid_{\mathbf{C}}$ even though the full
+$\mathbf{s}'$ it came from does not; such a draw intervenes on $\mathbf{C}$
+without changing it, contributing a sufficiency-like term to the necessity
+integral rather than a genuine test of necessity. This can only dilute the
+necessity signal, never invalidate it: a $\Delta$ constructed to depart from
+$\mathbf{s}^\star$ coordinate-wise, not just jointly, avoids the degeneracy
+entirely.
 The sum over suspect-containing pairs $\{(\mathbf{C},\mathbf{T}):X_k\in\mathbf{C}\}$
 weights each configuration by its $\Gamma$-mass: more focused interventions
 receive whatever weight the practitioner assigns them; configurations with
@@ -631,7 +598,7 @@ $2^{\mathbf{S}}\times2^{\mathbf{W}}$; only the later results that specifically a
 $\Gamma_w$-uniformity (Theorem~\ref{th:local_max_to_ac} and
 Corollary~\ref{cor:marginalize}) would need re-derivation for such a $\Gamma$.
 
-With the necessity-sufficiency measure fully defined, we are ready to characterize the causal impact of an event $X_k$. In particular, we will proceed by defining an arbitrary \emph{causal impact function} $ci$, the \emph{impact kernel}, whose expectation over the necessity-sufficiency measure determines the causal impact. We first proceed with a formal definition of the causal impact measure, followed by several intuitive candidates for the impact kernel.
+With the necessity-sufficiency measure fully defined, we are ready to characterize the causal impact of an event $X_k$. We do so by defining an arbitrary \emph{causal impact function} $ci$, the \emph{impact kernel}, whose expectation over the necessity-sufficiency measure determines the causal impact. Below we first give the formal definition, then several intuitive candidates for the impact kernel.
 
 \begin{definition}[Causal Impact Function and Its Expectation]  \label{def:causalimpact}
 Let $y^\star\in\dom(Y)$ denote the factual outcome value, and let $Y^s, Y^n \sim P_k^{s,n}$.
@@ -874,7 +841,7 @@ $|\mathbf{S}|=2$ PCI averages over $\{\varname{gender}\}$, $\{\varname{credit}\}
 and $\{\varname{gender},\varname{credit}\}$ (each weighted $\tfrac{1}{3}$),
 whereas PNS evaluates a single counterfactual on one variable at a time.
 Property~(i) below establishes that the two agree exactly when $|\mathbf{S}|=1$
-(single suspect, no witnesses, binary outcome), whereas the OBCB setup uses
+(single suspect, no witnesses, binary outcome); the OBCB setup here instead uses
 $|\mathbf{S}|=2$ deliberately, to demonstrate joint-subset attribution.
 
 % \begin{definition}[Causal impact and its push-forward]
@@ -900,7 +867,7 @@ $|\mathbf{S}|=2$ deliberately, to demonstrate joint-subset attribution.
 example above and in the Absolute Difference example below; the OBCB analysis of this
 section (Tables~\ref{tab:pci_decomp}--\ref{tab:desiderata}) provides a concrete
 validation, since the PNS binary $ci$ jointly conditions on $Y^s=y^\star$ and
-$Y^n\neq y^\star$ and it is precisely this combination that produces the correct
+$Y^n\neq y^\star$ and it is this combination that produces the correct
 \textbf{D-A-rank} ordering. Further experiments using the full $ci$ on continuous outcomes are presented in
 the signal-with-mediation example (Section~\ref{sec:signal}), the synthetic
 evaluation (\cref{sub:synthetic}), and the SIR benchmark
@@ -943,17 +910,18 @@ value distribution, joint necessity-sufficiency measure, and causal impact funct
   Causal SHAP comparison), \cref{sub:synthetic} (synthetic overdetermination
   and undercutting archetypes), and \cref{sec:ac_benchmark} (witness ablation
   on the scaled throwing problem).
-\item \textbf{Composability.} $\Gamma$, $\Delta$, and $ci$ are probability distributions
-  and a measurable function respectively; they slot naturally into Bayesian pipelines,
-  accept posteriors as inputs, and admit Monte Carlo estimation without modification to
-  the core formalism.
+\item \textbf{Composability.} $\Gamma$ and $\Delta$ are probability distributions and
+  $ci$ is a measurable function, so all three compose directly with the
+  probabilistic-programming machinery discussed in Section~\ref{sec:intro};
+  \cref{sec:evaluation}'s benchmarks estimate them by Monte Carlo throughout, without
+  modification to the core formalism.
 \end{enumerate}
 
 \subsection{Back to the Running Example: Verifying the Desiderata}
 \label{sub:verify_desiderata}
 
-Table~\ref{tab:desiderata} verifies the seven desiderata introduced at the start of this
-section (p.~\pageref{desid}) against the values in Table~\ref{tab:pci_decomp}.
+Table~\ref{tab:desiderata} verifies the seven desiderata introduced in
+Section~\ref{sec:motivations} (p.~\pageref{desid}) against the values in Table~\ref{tab:pci_decomp}.
 PCI with witnesses satisfies all seven; PCI without witnesses fails \textbf{D-A-rank};
 PNS fails \textbf{D-A-rank} and \textbf{D-B1}.
 (The table uses the shorthand $|R(V\mid\text{person})|$ for
@@ -1003,7 +971,7 @@ because $P(\varname{loan}=1\mid\text{female},\text{bad})=0$,
 the counterfactual necessity calculation returns zero, missing gender's indirect role in
 opening the credit evaluation. The \varname{check\text{-}failed} witness resolves both.}
 
-To close this section, it is worth comparing PCI's decomposition with the one already
+To close this section, we compare PCI's decomposition with the one already
 present in Pearl's framework. Pearl's framework defines three related but distinct
 binary scores: the probability of necessity
 $\mathrm{PN} = P(Y_{x'} = y' \mid X = x^\star, Y = y^\star)$, the probability of sufficiency

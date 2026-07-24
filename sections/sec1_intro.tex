@@ -45,12 +45,28 @@ everything on one. Because every quantity involved is a standard counterfactual
 query, the score is estimable by sampling from the same probabilistic-programming
 machinery already used to build the underlying model.
 
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/hero_verdicts_and_scaling.pdf}
+\caption{\textbf{The headline result.} \textbf{(a)} On a synthetic model
+carrying four causal archetypes at once (linear necessity/sufficiency,
+overdetermination, preemption, irrelevance), \ourapproach's score gaps land on
+the correct side of the actual-causality verdict on all ten archetype checks;
+green bars and green dots confirm the claim, none land in refuting red.
+\textbf{(b), (c)} \ourapproach stays tractable, in runtime and in
+correct-attribution rate, well past the problem size at which exact
+actual-cause enumeration times out. \cref{sec:evaluation} reads this and the
+rest of the empirical story at a glance; full protocols are in
+Appendices~\ref{sub:synthetic} and~\ref{sec:ac_benchmark}.}
+\label{fig:hero}
+\end{figure*}
+
 The rest of this section makes this precise, positions \ourapproach{} against
 existing methods, and introduces its central technical move.
 
 What would a satisfactory causal attribution method look like? At minimum, it
-should be (i) \textit{causally grounded}, tracking genuine counterfactual
-dependence; (ii) \textit{context-sensitive},%
+should be \phantomsection\label{des:grounded}(i) \textit{causally grounded}, tracking genuine counterfactual
+dependence; \phantomsection\label{des:context}(ii) \textit{context-sensitive},%
 \footnote{We use \emph{context-sensitive} in Halpern's sense: sensitivity to which
 \emph{endogenous} mediators are held fixed at their factual values during a
 counterfactual evaluation, the witness mechanism formalised in
@@ -68,9 +84,9 @@ even a ``vanilla'' structural counterfactual, which recomputes every mediator
 downstream of an intervention rather than holding any of them fixed, is not
 context-sensitive in this sense.}
 distinguishing
-active and inactive causes in particular instances; (iii) \textit{broadly applicable}, handling stochastic models,
+active and inactive causes in particular instances; \phantomsection\label{des:broad}(iii) \textit{broadly applicable}, handling stochastic models,
 discrete and continuous variables, and finite (not just infinitesimal)
-counterfactual changes; and (iv) \textit{tractable}, estimable from samples
+counterfactual changes; and \phantomsection\label{des:tractable}(iv) \textit{tractable}, estimable from samples
 without exhaustive enumeration over witness sets and alternatives.%
 \footnote{This trades enumeration for Monte Carlo sampling, not for a lower
 asymptotic cost: achieving a fixed estimator variance still requires a sample count
@@ -130,19 +146,20 @@ generalises Pearl's
 probability of necessary and sufficient causation \citep{pearl2022probabilities} from
 binary to arbitrary variable domains,%
 \footnote{\citet{kawakammi_2024_poc_for_cont_and_vec} independently extend PNS to
-continuous outcomes, but via a different route: a monotonicity assumption on the
+continuous outcomes via a different route: a monotonicity assumption on the
 structural mechanism yields point identification from observational conditional
-distributions alone. \ourapproach instead works from a fitted causal model via
-simulation, requires neither monotonicity nor point identification, and adds the
+distributions alone. \ourapproach works from a fitted causal model via
+simulation, requiring neither monotonicity nor point identification, and adds the
 context-sensitivity that the witness mechanism below provides; we return to this
 contrast in Section~\ref{sec:other-prob-ac}.}
 and incorporates the \emph{witness} mechanism from actual causality
 \citep{actualCausalityHalpern}, but changes its logical form: Halpern's account asks
 whether \emph{some} witness set, out of exponentially many, reveals the dependency;
-\ourapproach instead asks how much of a $\Gamma$-weighted distribution over witness
-sets reveals it, replacing an existential quantifier with an expectation.
-Intuitively, a witness set records the variables held at their factual values while a
-candidate cause is varied, so that causal paths inactive in the factual world stay
+\ourapproach instead asks how much of a $\Gamma$-weighted distribution over
+candidate-cause and witness sets reveals it, replacing an existential quantifier
+with an expectation.
+Intuitively, a witness set records which variables stay at their factual values while
+\ourapproach varies a candidate cause, so causal paths inactive in the factual world stay
 blocked rather than re-activating under intervention, delivering the
 context-sensitivity that ATE and CATE forgo.
 
@@ -168,8 +185,8 @@ Prior work anticipates pieces of this. Halpern's own account already averages ov
 exogenous noise when computing probabilities of causation
 \citep{actualCausalityHalpern}. \citet{Beckers2015CombiningPC} weights alternative
 replacement values by how probable they are, rather than treating every departure
-from the factual as equally good. And both aggregate, rather than existentially
-quantify, over witness sets in restricted settings
+from the factual as equally good. And both aggregate over witness sets in
+restricted settings
 \citep{Beckers2015CombiningPC, actualCausalityHalpern}. No prior construction
 combines all three into a single estimator that scales to arbitrary variable domains.
 Every quantity entering the \Ourapproach definition is a standard
@@ -177,11 +194,11 @@ interventional or counterfactual quantity; the estimands built from them, the
 expectations that give \Ourapproach its score, are already approximated automatically
 by causal probabilistic-programming systems such as ChiRho%
 \footnote{\url{https://basisresearch.github.io/chirho/explainable_sir.html}}
-for a broad class of probabilistic causal models, so \Ourapproach can be computed
-without bespoke per-model derivation.
+so a supported PPL computes \Ourapproach for any expressible model without
+bespoke per-model derivation.
 
-\ourapproach presumes access to a trained probabilistic causal model from which
-counterfactual outcomes can be sampled, a stronger requirement than methods that
+\ourapproach presumes access to a trained probabilistic causal model that supports
+sampling counterfactual outcomes, a stronger requirement than methods that
 work from observational data and a causal graph alone (e.g., the probability-of-necessity/sufficiency (PN/PS/PNS) bounds of
 \citet{muellerpearl2022causes}, which return \emph{intervals} on the probability of
 causation where \ourapproach, given a fully specified model, returns a full posterior
@@ -199,18 +216,20 @@ counterfactual quantities available to an explicitly specified structural model.
 does not by itself resolve non-identification: many mechanisms can fit the same
 observed data equally well, and no amount of representational flexibility changes
 that. We instead operate \ourapproach in a Bayesian setting that presumes access to a
-well-calibrated posterior induced by the trained model. With that in hand,
+well-calibrated posterior induced by the trained model, itself a nontrivial
+requirement for complex neural or Gaussian-process mechanisms that we do not solve
+here; the earlier claim of no strong restrictions concerns the model's functional
+form, not the difficulty of obtaining this calibration. With that in hand,
 non-identification manifests as posterior-predictive uncertainty, informed only by
 the prior where the data are silent. \ourapproach is
 an expectation over the counterfactual distribution the model induces, so it is
 well-defined even where the data do not constrain parts of that
-distribution, which then simply reflect the prior.
+distribution, which then reflect the prior.
 
-With this breadth of application, and a measure that exposes its design choices
-(the variable selection distribution, the alternative-value distribution, and the
-causal impact function) as explicit user-facing components instead of buried
-defaults, \ourapproach can serve causal attribution and explanation needs for a
-wide array of users and applications.
+\ourapproach's breadth of application comes with a measure that exposes its design
+choices, the variable selection distribution, the alternative-value distribution,
+and the causal impact function, as explicit user-facing components rather than
+buried defaults.
 
 \paragraph{Paper structure.}
 The paper proceeds in five phases, laid out in Figure~\ref{fig:roadmap_inspirations},
@@ -263,7 +282,7 @@ probability of actual causation: on the canonical desert-traveller example
 \ourapproach recovers Pearl's within-scenario ranking with graded magnitudes, and
 a weak-poison variant reveals two further responsibility intuitions
 (path-reliability and cross-scenario reliability) that Pearl's binary indicator
-don't express but \ourapproach's expectation does.
+does not express but \ourapproach's expectation does.
 
 \cref{sec:discussion} closes the fifth phase with discussion. We engage related
 work where it bears on the argument. The broader literature on
@@ -283,15 +302,15 @@ discussion.
   the empirical and comparative payoff (\cref{sec:evaluation}), positions it against
   SHAP, Causal SHAP, PNS, actual causality, and the probability of actual causation
   (\cref{sec:shap_examples,sec:relation_with_ac,sub:pearl_actual_cause_prob}), and
-  closes with discussion; the running-example computations and benchmark protocols
-  are deferred to the appendices, to which the preview points.}
+  closes with discussion; we defer the running-example computations and benchmark
+  protocols to the appendices, to which the preview points.}
   \label{fig:roadmap_inspirations}
 \end{figure}
 
 \paragraph{Reproducibility.}
-Every quantitative claim in this paper (the worked-example numbers, the
-benchmark tables, and the figures) is reproduced in a set of companion
-notebooks, rendered with their full outputs at
+A set of companion notebooks reproduces every quantitative claim in this paper
+(the worked-example numbers, the benchmark tables, and the figures), rendered
+with their full outputs at
 \url{https://rfl-urbaniak.github.io/explainable_paper/}. Throughout, we point to
 the relevant notebook by name (for example \nb{obcb\_computations}); each name
 links to its page on that site.
