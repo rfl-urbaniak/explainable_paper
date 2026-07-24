@@ -673,22 +673,31 @@ $\Gamma$ separately for each world (the independent-product case; see the same
 remark) before taking this expectation over $\Delta\otimes P_{\mathbf{U}}$
 (Definition~\ref{def:causalimpact}); the two agree here because $ci$ is additively
 separable. The strip grounds the schematic in the
-OBCB running example. \textbf{(b)} The impact kernel on the
-$(Y^n,Y^s)$ plane, shown for the Absolute Difference score
-$ci=|y^n-y^\star|-|y^s-y^\star|$, \emph{one} admissible choice of kernel
-(the PNS binary score and necessity-only variants are others). The factual
-reference lines $Y^n=y^\star$ (necessity) and $Y^s=y^\star$ (sufficiency) cross
-at the factual outcome; $ci$ is largest at the ``ideal cause'' corner where the
-alternative drives the outcome far from $y^\star$ while restoring the cause
-sustains it. Sampled draws and their mean $\mathbb{E}[ci]$ illustrate the
-Monte-Carlo estimate.}
+OBCB running example. \textbf{(b)} The impact kernel on the \emph{signed} plane
+$(Y^n-y^\star,\,Y^s-y^\star)$, shown for the Absolute Difference score
+$ci=|y^n-y^\star|-|y^s-y^\star|$, \emph{one} admissible choice of kernel (the
+PNS binary score and necessity-only variants are others), before either
+deviation is folded by $|\cdot|$. Because $ci$ depends only on the two
+absolute deviations, the field is symmetric under an independent sign flip of
+either axis: four qualitatively different outcomes, necessity and sufficiency
+each landing above or below the factual value, collapse onto the same score
+whenever the magnitudes match. The faint cloud is a sample of $(Y^n,Y^s)$
+draws (shared with panel~(c)); the four gold points are actual draws, one per
+quadrant, with closely matched $|Y^n-y^\star|,|Y^s-y^\star|$, so their nearly
+equal $ci$ is a property of the sampled data, not a constructed coincidence.
+\textbf{(c)} The same draws' $ci$ values, histogrammed and coloured by sign;
+the gold line marks their mean, $\mathbb{E}[ci]$, the \ourapproach{} score for
+this variable. This replaces a single scatter-and-mean with the full
+distribution the Monte-Carlo estimate is drawn from.}
 \label{fig:pci-mechanism}
 \end{figure*}
 
 \medskip\noindent Informally, $ci$ is a user-defined scoring rule that translates
 the joint sufficiency--necessity measure into a single scalar
 (Figure~\ref{fig:pci-mechanism} summarises the whole construction: the two
-counterfactual worlds in panel~(a), the kernel that scores them in panel~(b)). The choice is not arbitrary:
+counterfactual worlds in panel~(a), the kernel that scores them in panel~(b),
+and the resulting score as a summary of many such draws in panel~(c)). The
+choice is not arbitrary:
 the Absolute Difference example below is an instance of L$_1$ distance between outcomes, the
 same metric underlying Average Treatment Effect,
  Conditional Average Treatment Effect, and SHAP.

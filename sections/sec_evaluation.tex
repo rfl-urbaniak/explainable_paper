@@ -1,15 +1,15 @@
 \section{Empirical and Comparative Evaluation}\label{sec:evaluation}
 
-Having established what \ourapproach is (Section~\ref{sec:causal_impact}) and that
-it agrees with actual causality and Pearl's probability of causation where those
-are defined (Section~\ref{sec:relation_with_ac},
-Section~\ref{sub:pearl_actual_cause_prob}), we now ask how it behaves empirically:
-against the dominant feature-attribution baselines, against a causal-effect
-attribution method, and as the model grows from textbook size to a deployed
-system. This section reads each result at a glance (one claim, one figure, the
-headline number) and points to the appendix that carries
-the full protocol. A reader can follow the comparative and empirical story here
-without descending into those appendices.
+With \ourapproach now defined (Section~\ref{sec:causal_impact}), this section gives
+the essence of what the rest of the paper establishes: how \ourapproach compares
+against the dominant feature-attribution baselines, against actual causality and
+Pearl's probability of causation, against a causal-effect attribution method, and how
+it behaves as the model grows from textbook size to a deployed system. Each result is
+given at a glance, one claim, one figure, the headline number, with a pointer to
+where it is developed in full: the formal comparisons in
+Sections~\ref{sec:shap_examples}--\ref{sub:pearl_actual_cause_prob}, and the complete
+protocols in the appendices. A reader who wants the shape of the argument can stop
+here; a reader who wants the mechanics can follow either pointer.
 
 \subsection{\ourapproach matches actual-causality verdicts on canonical archetypes}
 \label{sec:eval_verdicts}
@@ -42,8 +42,9 @@ estimator, and per-row analysis in Appendix~\ref{sub:synthetic}.}
 
 \subsection{SHAP and Causal SHAP}
 \label{sec:eval_shap}
-The worked comparisons of Section~\ref{sec:shap_examples} (OBCB and the
-signal-with-mediation chain) are the substance here, with the formal SHAP and Causal SHAP definitions in Appendix~\ref{app:signal}; we recall only the verdict.
+Section~\ref{sec:shap_examples} works through this in full on two worked examples
+(OBCB and the signal-with-mediation chain), with the formal SHAP and Causal SHAP
+definitions in Appendix~\ref{app:signal}; here is the verdict it reaches.
 Both plain and Causal SHAP \emph{assign attribution backward}, against the arrows of
 the causal graph (they do not satisfy the zero desiderata D-YX/D-YM/D-MX, with Causal
 SHAP's interventional correction recovering only D-YX), and both \emph{tie} the
@@ -130,4 +131,4 @@ Full pipeline and anonymized structure in Appendix~\ref{sec:avm}.}
 \label{fig:eval_avm}
 \end{figure}
 
-\medskip\noindent Across these settings \ourapproach matches actual-causality verdicts on canonical archetypes and extends past them where they do not apply, at a cost that stays feasible from textbook models to a deployed system; the full protocols, derivations, and additional figures are collected in Appendices~\ref{app:obcb}--\ref{sec:avm}. \cref{sec:discussion} draws out the implications.
+\medskip\noindent Across these settings \ourapproach matches actual-causality verdicts on canonical archetypes and extends past them where they do not apply, at a cost that stays feasible from textbook models to a deployed system; the full protocols, derivations, and additional figures are collected in Appendices~\ref{app:obcb}--\ref{sec:avm}. Sections~\ref{sec:shap_examples}--\ref{sub:pearl_actual_cause_prob} develop the comparative claims above in full before \cref{sec:discussion} draws out the implications.
