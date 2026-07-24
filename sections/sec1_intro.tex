@@ -1,21 +1,52 @@
 \section{Introduction}
 \label{sec:intro}
 
-Causal attribution, determining which factors brought about a given outcome and to
-what degree, is a central reasoning task in many important problems, such as
-gauging the efficacy of medical treatments \citep{Shepherd2024}, pinpointing drivers
-of economic growth \citep{CheshireMagrini2009}, root cause analysis in automated
-systems \citep{Papageorgiou2022}, or assessing the impact of public policy
-\citep{HeckmanPinto2022CausalPolicyAnalysis}. We may want to understand why an
-adverse outcome occurred so as to prevent recurrence, or how a predicted positive
-outcome could be brought about.
+Causal attribution --- figuring out which factors brought about an outcome, and to
+what degree --- matters wherever we act on a model's predictions: in lending,
+healthcare, or automated decision systems, knowing \emph{why} something happened is
+often as important as the prediction itself
+\citep{Shepherd2024,CheshireMagrini2009,Papageorgiou2022,HeckmanPinto2022CausalPolicyAnalysis}.
+The tools most machine learning practitioners reach for by default, though, can get
+this wrong in a way that matters.
 
-In the absence of scalable, formal causal attribution tools, analysts often resort to
-strong correlation, historical comparison, domain expertise, or principled but
-non-causal attribution methods such as Granger causality \citep{Granger1969} and SHAP
-\citep{lundberg2017unified}. Causal attribution is subtle enough, and large models complex enough, that even researchers with an advanced command of statistical and experimental methods benefit from scalable automation \citep{Shepherd2024}.
-Here we present a tool for accurate and tractable causal attribution applicable to a
-wide array of causal, probabilistic, machine-learned models.
+Consider the Old Boys' Club Bank (OBCB), whose policy is to check an applicant's
+credit score only if they are male; everyone else is rejected outright. Alice, a
+woman with bad credit, applies and is denied. Was she denied for her gender, or her credit? Intuitively the answer is
+clear: the bank never even looked at her credit score, so it played no role in her
+denial. Feature-attribution tools such as SHAP \citep{lundberg2017unified}, however,
+tend to split responsibility between gender and credit roughly evenly, because they
+reason from correlation and are blind to which causal pathway was actually active for
+Alice specifically. Treatment-effect quantities such as the average treatment effect
+do little better: they ask what would happen if we changed one variable and let
+everything downstream recompute, which for Alice means asking about a world where her
+credit score \emph{would have been} checked, not the one she was actually in.
+
+\emph{Actual causality}, a line of work spanning philosophy and AI
+\citep{actualCausalityHalpern}, gets this case right: it asks whether the outcome
+would have changed under an alternative, while holding fixed exactly the parts of the
+story that did not change, for Alice, the fact that her credit was never checked.
+This correctly names her gender, not her credit, as the cause of her denial. But
+existing formalisations of actual causality are all-or-nothing --- a variable either
+is or is not a cause, with no notion of degree --- computationally intractable beyond
+toy examples, and defined only for deterministic models.
+
+This paper introduces \emph{probabilistic causal impacts} (\Ourapproach), an
+attribution method that gets Alice's case right and extends to the settings where
+actual causality cannot. It returns a
+graded score rather than a yes/no verdict; it scales to large stochastic models
+without exhaustive search; and it applies directly to the
+machine-learned causal models, neural, Gaussian-process, or otherwise probabilistic,
+that practitioners actually build. At a high level, \ourapproach asks two
+counterfactual questions per candidate cause: would the outcome have persisted had we
+changed nothing? would it have changed had we intervened? \ourapproach restricts both
+questions to the causal pathways that were genuinely active, and averages both over
+the reasonable ways of specifying which pathways those are, rather than betting
+everything on one. Because every quantity involved is a standard counterfactual
+query, the score is estimable by sampling from the same probabilistic-programming
+machinery already used to build the underlying model.
+
+The rest of this section makes this precise, positions \ourapproach{} against
+existing methods, and introduces its central technical move.
 
 What would a satisfactory causal attribution method look like? At minimum, it
 should be (i) \textit{causally grounded}, tracking genuine counterfactual
@@ -49,26 +80,22 @@ Section~\ref{sec:ac_benchmark} reports empirical scaling; Section~\ref{sec:discu
 returns to this and other limitations.}
 A further, stronger demand (which we flag but do not treat as a minimum bar) is a graded notion of causal explanation, developed in full in Section~\ref{sec:causal_impact}.
 
-Existing methods each forfeit one or more of these. Actual causality
-\citep{actualCausalityHalpern} is grounded (i) and context-sensitive (ii), but neither
-broadly applicable (iii) nor tractable in general (iv), with no clear approximation
-\citep{eiterComplexityResultsStructurebased2002}. Methods that \textit{do}
-scale either give up causal grounding (i) or are restricted in scope (iii). SHAP
-\citep{lundberg2017unified} grounds attribution in observational correlations,
-so a feature can receive high attribution merely for being correlated with a
-true cause; \citet{janzing2020feature} make essentially this point, and Causal
-SHAP \citep{heskes2020causal} addresses it to some extent, though its attributions still conflict with the causal structure in important cases (Section~\ref{sec:shap_examples}).
-\citet{butler2022differential}'s Differential Causal Effect (DCE) is causally
-grounded (i) but local: it relies on gradients, so requires differentiability and
-does not capture effects from non-infinitesimal changes in potential causes.%
-\footnote{DCE is, fairly, not designed for responsibility attribution:
-\citeauthor{butler2022differential} target rates of change of treatment.}
-Standard treatment-effect quantities — the average treatment effect (ATE) and conditional average treatment effect (CATE) — are causally grounded (i) and
-often tractable (iv) but lack context-sensitivity (ii): they hold neither the context
-nor the intermediate outcomes fixed while varying the candidate cause, so an
+Existing methods each forfeit at least one of these. Actual causality
+\citep{actualCausalityHalpern} gets Alice's case right but is intractable beyond toy
+examples and defined only for deterministic models, with no clear approximation
+\citep{eiterComplexityResultsStructurebased2002}. Methods that do scale give up
+causal grounding or context-sensitivity instead: SHAP \citep{lundberg2017unified}
+attributes by correlation, so a feature can score highly merely for correlating with
+a true cause \citep{janzing2020feature}; Causal SHAP \citep{heskes2020causal}
+improves on this but still conflicts with the causal structure in cases we return to
+(Section~\ref{sec:shap_examples}). The Differential Causal Effect
+\citep{butler2022differential} is causally grounded but local, relying on gradients
+and missing non-infinitesimal changes. The average and conditional treatment effect
+(ATE/CATE) are grounded and often tractable but not context-sensitive: they let an
 intervention's effects propagate downstream through the structural equations rather
-than respecting which causal paths were active in that instance
-(Section~\ref{sec:motivations}).
+than respecting which causal paths were active in the specific instance
+(Section~\ref{sec:motivations}). Table~\ref{tab:method_comparison} summarises the
+tradeoffs.
 
 \begin{table}[htbp]
 \centering
@@ -87,18 +114,16 @@ than respecting which causal paths were active in that instance
 \label{tab:method_comparison}
 \end{table}
 
-Concretely: in a stochastic Old Boys' Club Bank (OBCB) that checks credit scores only
-for male applicants, Alice, a woman with bad credit, is denied a loan without her
-credit ever being evaluated. Actual causality, using its witness mechanism to hold
-the (never-triggered) credit check fixed, correctly names her gender as the cause of
-the denial; Pearl's PN/PS/PNS, lacking any witness mechanism, instead assigns her
-credit comparable responsibility, despite it never having been checked.
+Table~\ref{tab:method_comparison}'s row (ii) is exactly Alice's case: actual
+causality names her gender as the cause because its witness mechanism holds the
+untriggered credit check fixed, while Pearl's PN/PS/PNS, lacking any such mechanism,
+assigns her credit comparable responsibility despite it never being checked.
 Section~\ref{sec:motivations} works through this example, and its stochastic
 counterpart, in full.
 
-To overcome these tradeoffs, we introduce \emph{probabilistic causal impacts} (\Ourapproach), an attribution
-framework that combines the context-sensitivity of actual causality with the
-scalability of probability-of-causation methods. \Ourapproach generalises Pearl's
+To overcome these tradeoffs, \Ourapproach combines the context-sensitivity of actual
+causality with the scalability of probability-of-causation methods. \Ourapproach
+generalises Pearl's
 probability of necessary and sufficient causation \citep{pearl2022probabilities} from
 binary to arbitrary variable domains,%
 \footnote{\citet{kawakammi_2024_poc_for_cont_and_vec} independently extend PNS to
@@ -140,7 +165,7 @@ probabilities \citep{Beckers2015CombiningPC}, and aggregation over witness sets
 \citep{Beckers2015CombiningPC, actualCausalityHalpern}), but no prior construction
 combines these components into a single tractable estimator
 handling arbitrary variable domains.
-Crucially, every quantity entering the \Ourapproach definition is a standard
+Every quantity entering the \Ourapproach definition is a standard
 interventional or counterfactual quantity; the estimands built from them, the
 expectations that give \Ourapproach its score, are already approximated automatically
 by causal probabilistic-programming systems such as ChiRho%
