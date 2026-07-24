@@ -467,7 +467,12 @@ for some $\mathbf{u}$, $\mathbf{C}^\dagger\in\Xi^{\max}$.
 \begin{proof}
 Consider a model with two binary parents $A,B$ uniformly distributed and a binary
 child $Y=A\vee B$. Take $\varphi:\,Y=1$ and the suspect set $\mathbf{S}=\{A,B\}$ with
-$\mathbf{W}=\emptyset$. Compare $\mathbf{C}^\dagger=\{A,B\}$ at noise $\mathbf{u}_{11}$
+$\mathbf{W}=\emptyset$, and take $\Delta$ to be the deterministic bit-flip
+distribution on $\{0,1\}$ (the single-point alternative used throughout the
+binary examples of this paper, e.g.\ Algorithm~\ref{alg:pci_thin_search}): for
+active suspect set $\mathbf{C}$, $\Delta_{\mathbf{C}}(\mathbf{s}^\star)$ places
+all its mass on the coordinatewise complement of $\mathbf{s}^\star\!\mid_{\mathbf{C}}$.
+Compare $\mathbf{C}^\dagger=\{A,B\}$ at noise $\mathbf{u}_{11}$
 ($A=B=1$) and $\mathbf{C}^\sharp=\{A\}$ at noise $\mathbf{u}_{10}$ ($A=1,B=0$).
 \begin{itemize}
 \item In $\mathbf{u}_{11}$, $\mathbf{C}^\dagger$ is an actual cause: setting both
@@ -475,19 +480,34 @@ parents to $0$ yields $Y=0$, no proper subset achieves this, and the indicators 
 $\Phi$ are $1$. With $\Gamma_w$ uniform on $2^{\emptyset}$ (a single configuration of
 weight $1$) and a strictly cardinality-decreasing $\Gamma_s$,
 $\Phi_{\mathbf{u}_{11}}(\mathbf{C}^\dagger,\emptyset)\propto p^{\Gamma_s}(\{A,B\})$.
+At the other two noise settings with $Y=1$, the bit-flip alternative for
+$\mathbf{C}^\dagger$ does not flip $Y$: at $\mathbf{u}_{10}$ it sends $(A,B)$ to
+$(0,1)$, and at $\mathbf{u}_{01}$ to $(1,0)$, both of which keep $Y=1$. So only
+$\mathbf{u}_{11}$ contributes to $\mathbf{C}^\dagger$.
 \item In $\mathbf{u}_{10}$, $\mathbf{C}^\sharp$ is an actual cause:
-intervening to $A=0$ flips $Y$ to $0$, the singleton is minimal, and again the
+intervening to $A=0$ (with $B$ left at its factual value $0$, since $B\notin\mathbf{C}$) flips $Y$ to $0$, the singleton is minimal, and again the
 indicators are $1$. So $\Phi_{\mathbf{u}_{10}}(\mathbf{C}^\sharp,\emptyset)\propto p^{\Gamma_s}(\{A\})$.
+At $\mathbf{u}_{11}$, by contrast, the bit-flip alternative for $\mathbf{C}^\sharp$
+sends $A$ to $0$ while $B$ remains at its factual value $1$ (again $B\notin\mathbf{C}$
+is not intervened), so $Y=0\vee 1=1$ does not flip: the necessity integral, and
+hence $\Phi_{\mathbf{u}_{11}}(\mathbf{C}^\sharp,\emptyset)$, is $0$. At
+$\mathbf{u}_{01}$ the same computation with $A$ flipped to $1$ also leaves $Y=1$.
+So only $\mathbf{u}_{10}$ contributes to $\mathbf{C}^\sharp$.
 \end{itemize}
 Integrating uniformly over the four noise realisations $\{\mathbf{u}_{ij}\}$,
-$P(\mathbf{C}^\dagger\!\rightsquigarrow\!\varphi)\propto p^{\Gamma_s}(\{A,B\})$ (only
-$\mathbf{u}_{11}$ contributes) while
-$P(\mathbf{C}^\sharp\!\rightsquigarrow\!\varphi)\propto 2\,p^{\Gamma_s}(\{A\})$
-($\mathbf{u}_{10}$ and $\mathbf{u}_{11}$ both contribute). Whether $\mathbf{C}^\dagger$
-or $\mathbf{C}^\sharp$ ends up in $\Xi^{\max}$ depends on the precise shape of
-$\Gamma_s$: under sharply decreasing $\Gamma_s$, $\mathbf{C}^\sharp$ wins; under
-shallow decrease, $\mathbf{C}^\dagger$ may. Both cannot belong to $\Xi^{\max}$
-simultaneously in general, so some actual causes are dropped.
+$P(\mathbf{C}^\dagger\!\rightsquigarrow\!\varphi)\propto p^{\Gamma_s}(\{A,B\})$ and
+$P(\mathbf{C}^\sharp\!\rightsquigarrow\!\varphi)\propto p^{\Gamma_s}(\{A\})$, each
+with exactly one contributing noise realisation. Since $\Gamma_s$ is
+cardinality-decreasing, $p^{\Gamma_s}(\{A\})>p^{\Gamma_s}(\{A,B\})$ for every such
+$\Gamma_s$, so $\mathbf{C}^\sharp$ strictly outscores $\mathbf{C}^\dagger$
+regardless of the precise shape of $\Gamma_s$: $\mathbf{C}^\dagger\notin\Xi^{\max}$
+even though it is an actual cause at $\mathbf{u}_{11}$, so some actual causes are
+dropped. (Under a different $\Delta$ that spreads positive density over every
+joint alternative rather than concentrating it on the bit flip, both $A$'s and
+$B$'s complements would separately admit nonzero necessity mass at
+$\mathbf{u}_{10}$ and $\mathbf{u}_{01}$, changing the counts above; the
+conclusion that some actual cause is excluded from $\Xi^{\max}$ is not
+sensitive to this choice, but the specific proportionality constants are.)
 \end{proof}
 
 The reason is structural: actual cause sets may be subset-minimal without being

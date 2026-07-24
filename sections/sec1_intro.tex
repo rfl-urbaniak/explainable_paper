@@ -170,16 +170,26 @@ $\Gamma$-mass on witness sets that do not reveal a dependency can swamp a single
 witness set that does, or sampling can simply miss it if it is rare enough --- in the
 worst case, as expensive to find as enumeration itself (Section~\ref{sec:discussion}).
 Two facts limit the damage. Proposition~\ref{prop:filter} shows existence survives the
-move exactly: the suspects with positive score are precisely Halpern's actual causes,
-for any \emph{regular} $\Gamma$ (one that rules nothing out, assigning positive
-weight to every legal suspect-witness pairing); $\Gamma$ only sets the score's
+move exactly, at the level of a single fixed noise realisation: applying a
+subset-minimality filter to the suspect sets with positive per-noise kernel value
+$\Phi_{\mathbf{u}}$ recovers precisely Halpern's actual causes, for any
+\emph{regular} $\Gamma$ (one that rules nothing out, assigning positive
+weight to every legal suspect-witness pairing) together with the closure and
+full-support conditions of Theorem~\ref{th:ac-exp}; positive score by itself, without
+the minimality filter, is not enough, and naively maximising the noise-integrated
+probability in place of filtering can drop genuine actual causes
+(Observation~\ref{obs:misalignment}). $\Gamma$ only sets the surviving causes'
 \emph{magnitude}. And that
 magnitude is a different kind of quantity than a normality ranking: Halpern's own
 graded extension \citep{Halpern2015-HALGCA} grades which alternative value is
 typical, while $\Gamma$ grades which suspect-witness explanation is worth asking
 about --- a parsimony prior over candidate explanations, not a typicality ranking
 over outcomes. Since $\Gamma$ only sets magnitude, we read \ourapproach scores
-comparatively throughout.
+comparatively throughout --- across suspects, this comparison is itself only
+meaningful when $\Gamma$ treats the compared suspects symmetrically (or scores are
+normalised per suspect first; see the remark after
+Definition~\ref{def:jointnecsuf}), which holds for the uniform and
+cardinality-constrained $\Gamma$'s used in every worked example below.
 
 Prior work anticipates pieces of this. Halpern's own account already averages over
 exogenous noise when computing probabilities of causation

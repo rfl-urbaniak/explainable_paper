@@ -72,11 +72,13 @@ example.
 \medskip\noindent
 At the level of subset weighting alone, \ourapproach{} (with $J=1$, $K=|\mathbf{S}|$) and
 SHAP are not distinguishable: $\Gamma$'s subset weights match the Shapley kernel. The
-distinction lies in the integrand. SHAP averages marginal contributions using the
-observational conditional
-$\mathbb{E}[f(\mathbf{X}_{\mathcal{S}} = \mathbf{x}_{\mathcal{S}}, \mathbf{X}_{\bar{\mathcal{S}}})]$, marginalising over the
-empirical distribution of non-coalition features; a feature merely correlated with a true
-cause can therefore receive positive attribution. \ourapproach{} evaluates counterfactual
+distinction lies in the integrand. Plain SHAP (in the conditional reading of
+Eq.~\eqref{eq:plain_shap_value}, which is what we use throughout except where
+noted) averages marginal contributions using the observational conditional
+$\mathbb{E}[f(\mathbf{X}) \mid \mathbf{X}_{\mathcal{S}} = \mathbf{x}_{\mathcal{S}}]$, drawing the
+non-coalition features from their distribution given the coalition; a feature merely
+correlated with a true cause can therefore receive positive attribution. \ourapproach{}
+evaluates counterfactual
 outcomes
 $P(Y \in A \mid \mathbf{u},\, \mathrm{do}(\mathbf{C}=\mathbf{c}',\,\mathbf{T}=\mathbf{t}^\star))$
 computed via the structural model, so attribution flows only along genuine causal paths.
@@ -272,7 +274,11 @@ observational data to condition on. We leave $\tilde f$ undefined on this cell.
 Both methods need a value function $v(\mathcal{S})$: the expected value of $\tilde f$
 when the features in $\mathcal{S}$ are held at their factual values $x_{\mathcal{S}}^\star$ and the
 remaining features are averaged out. The methods differ in how that average
-is taken. Plain SHAP averages over each dropped feature using its own
+is taken. Here plain SHAP switches to the \emph{marginal-independent} reading
+flagged after Eq.~\eqref{eq:plain_shap_value} (rather than the conditional
+reading used elsewhere in this section), because it is this reading, not the
+conditional one, that produces the impossible-cell pathology below: it
+averages over each dropped feature using its own
 observational marginal $P(X_i)$, with the dropped features treated as
 independent of one another. Causal SHAP averages over the joint distribution
 the PSCM produces under the intervention $do(X_{\mathcal{S}} = x_{\mathcal{S}}^\star)$, so the dropped

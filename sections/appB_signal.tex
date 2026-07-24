@@ -29,8 +29,8 @@ is the \emph{characteristic function} mapping each subset
 value $v(N) - v(\emptyset)$, and is the unique attribution satisfying four axioms:
 \begin{enumerate}
 \item \textbf{Efficiency}: $\sum_i \phi_i = v(N) - v(\emptyset)$
-\item \textbf{Symmetry}: If $v(\mathcal{S} \cup \{i\}) = v(\mathcal{S} \cup \{j\})$ for all $\mathcal{S}$, then
-      $\phi_i = \phi_j$
+\item \textbf{Symmetry}: If $v(\mathcal{S} \cup \{i\}) = v(\mathcal{S} \cup \{j\})$ for all
+      $\mathcal{S} \subseteq N \setminus \{i,j\}$, then $\phi_i = \phi_j$
 \item \textbf{Dummy}: If $v(\mathcal{S} \cup \{i\}) = v(\mathcal{S})$ for all $\mathcal{S}$, then $\phi_i = 0$
 \item \textbf{Linearity}: For two games $v_1, v_2$: $\phi_i(\alpha_1 v_1 + \alpha_2 v_2)
       = \alpha_1 \phi_i(v_1) + \alpha_2 \phi_i(v_2)$
@@ -47,12 +47,26 @@ random ordering of all players, exactly the members of $\mathcal{S}$ precede $i$
 $\phi_i$ is the average marginal contribution of $i$ across all orderings.
 \citet{lundberg2017unified} apply Shapley values to explain model predictions by taking
 players to be input features, and the characteristic function to be the expected model
-output given a subset of features:
+output given a subset of features held at their factual values:
 \begin{equation}
-v(\mathcal{S}) = \mathbb{E}_{X_{\bar{\mathcal{S}}}}\bigl[f(X_{\mathcal{S}} = x_{\mathcal{S}},\, X_{\bar{\mathcal{S}}})\bigr]
+v(\mathcal{S}) = \mathbb{E}\bigl[f(X) \,\big\vert\, X_{\mathcal{S}} = x_{\mathcal{S}}\bigr]
+\label{eq:plain_shap_value}
 \end{equation}
-\noindent where $\bar{\mathcal{S}} = N \setminus \mathcal{S}$ and missing features are marginalized over
-their marginal distribution.
+\noindent where $\bar{\mathcal{S}} = N \setminus \mathcal{S}$ and the missing features
+$X_{\bar{\mathcal{S}}}$ are drawn from their distribution \emph{conditional} on
+$X_{\mathcal{S}} = x_{\mathcal{S}}$, as in \citeauthor{lundberg2017unified}'s original
+formulation. This is not the only reading in use: \citet{janzing2020feature} single
+out exactly this choice as contested, and a common alternative --- also called
+``plain'' or ``interventional'' SHAP in parts of the literature --- instead averages
+each dropped feature over its own \emph{marginal} distribution $P(X_i)$, treating the
+dropped features as mutually independent and independent of $X_{\mathcal{S}}$. The two
+coincide whenever $X_{\mathcal{S}}$ and $X_{\bar{\mathcal{S}}}$ are independent, but
+differ in general. Throughout this paper, ``plain SHAP'' denotes the conditional form
+of Eq.~\eqref{eq:plain_shap_value} unless stated otherwise; the one exception is
+\S\ref{sec:obcb_shap}'s Option~B analysis, which switches explicitly to the
+marginal-independent form to expose a separate failure mode (undefined values on
+coalitions whose marginal average places positive weight on a structurally impossible
+combination of feature values), and says so at the point of use.
 \end{definition}
 
 \begin{definition}[Causal SHAP]\label{def:causalshap}

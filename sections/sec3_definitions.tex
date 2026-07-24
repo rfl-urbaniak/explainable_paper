@@ -40,12 +40,16 @@ A probabilistic structural causal model is a tuple
 M = \langle \mathbf{U}, \mathbf{V}, \mathbf{F}, P_{\mathbf{U}} \rangle,
 \]
 where \(\mathbf{V} = \{V_1,\dots,V_n\}\) is a finite set of endogenous variables,
-\(\mathbf{U} = \{U_1,\dots,U_n\}\) is a set of exogenous variables,
+\(\mathbf{U} = \{U_1,\dots,U_m\}\) is a set of exogenous variables (not
+necessarily one per endogenous variable: a deterministic mechanism, $f_i$
+depending only on $\mathbf{Pa}_i$, needs no $U_i$ of its own),
 and \(\mathbf{F} = \{f_1,\dots,f_n\}\) is a set of structural assignments
 \[
 V_i := f_i(\mathbf{Pa}_i, U_i), \qquad i = 1,\dots,n,
 \]
-with \(\mathbf{Pa}_i \subseteq \mathbf{V}\setminus\{V_i\}\) denoting the parents of \(V_i\).
+with \(\mathbf{Pa}_i \subseteq \mathbf{V}\setminus\{V_i\}\) denoting the parents of \(V_i\), and
+$U_i\in\mathbf{U}\cup\{\varnothing\}$ its own exogenous input, if any (a purely
+deterministic $f_i$ takes $U_i=\varnothing$ and depends on $\mathbf{Pa}_i$ alone).
 The distribution \(P_{\mathbf{U}}\) is a probability measure on $\dom(\mathbf{U})$,
 and the assignments in \(\mathbf{F}\) are assumed to be acyclic and to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).\footnote{Working within the PSCM framework commits the practitioner to fully specified structural assignments $\mathbf{F}$ and an exogenous distribution $P_{\mathbf{U}}$, analogous to how Bayesian inference requires a likelihood and a prior. This is what enables \ourapproach to yield individual-level counterfactual attributions rather than population-level bounds, and once $\mathbf{F}$ and $P_{\mathbf{U}}$ are specified, sampling from $P_{\mathbf{U}}$ is a routine probabilistic inference operation.}
 \end{definition}
@@ -224,10 +228,22 @@ about which variables are more likely to interact, or could be learned from data
 \noindent In particular, we will be using variable selection distributions for the powerset of causal suspects $\mathbf{S}$ and for the powerset of witnesses $\mathbf{W}$. One simple pattern of suspect and witness selection can be derived by setting size limits on the number of activated suspects or witnesses, and sampling uniformly otherwise.
 
 \begin{example}[Cardinality-Constrained Uniform Selection]
-Let $\mathbf{X}$ be a candidate set of random variables and let $k \sim \mathrm{Unif}\{J, \dots K\}$ with $1 \leq J \leq K \leq |\mathbf{X}|$. A variable selection $\mathbf{Y} \sim \Gamma(2^\mathbf{X})$ is sampled from a cardinality-constrained uniform selection distribution $\Gamma(2^\mathbf{X})$ with probability mass function
+Let $\mathbf{X}$ be a candidate set of random variables. Sample a target size
+$k \sim \mathrm{Unif}\{J, \dots, K\}$ with $1 \leq J \leq K \leq |\mathbf{X}|$, then
+sample $\mathbf{Y}$ uniformly among subsets of that size, i.e.\ from the
+\emph{conditional} probability mass function
 \[
-p^\Gamma(\mathbf{Y}) \propto \mathbb{I}[|\mathbf{Y}| = k].
+p^\Gamma(\mathbf{Y} \mid k) \propto \mathbb{I}[|\mathbf{Y}| = k].
 \]
+Marginalising $k$ out gives the unconditional pmf actually used to define
+$\Gamma(2^\mathbf{X})$,
+\[
+p^\Gamma(\mathbf{Y}) = \frac{1}{K-J+1}\binom{|\mathbf{X}|}{|\mathbf{Y}|}^{-1},
+\qquad J \leq |\mathbf{Y}| \leq K,
+\]
+which is \emph{not} proportional to $\mathbb{I}[J\leq|\mathbf{Y}|\leq K]$: sizes are
+weighted uniformly, but within a size, larger coalitions (of which there are more) are
+individually rarer.
 
 The parameters $J$ and $K$ determine the cardinality range of the search; specific
 choices connect \ourapproach to existing methods and enable efficient Monte Carlo
@@ -316,7 +332,7 @@ Causal attribution hinges on questions such as ``if $X$ had, contrary to fact, b
 % Consider a set of random variables $\mathbf{X}$ and event $\mathbf{X}=\mathbf{x}\in dom(\mathbf{X})$. An alternative value $\mathbf{x}' \sim \Delta(\mathbf{x})$ is sampled from the alternative value distribution $\Delta(\mathbf{x})$, where $\mathbf{x}' \in dom (\mathbf{X})$ and $p_\Delta(\mathbf{x}') = \mathbb{P}(\mathbf{X}'=\mathbf{x'})$ with $dom(\mathbf{X}) = dom(\mathbf{X}')$.
 % \end{definition}
 
-\begin{definition}[Alternative Value Distribution]
+\begin{definition}[Alternative Value Distribution]\label{def:alt_value_dist}
 Let $\mathbf{X}$ be a set of random variables with domain $\dom(\mathbf{X})$ and
 let $\mathbf{X}=\mathbf{x}\in\dom(\mathbf{X})$ be a factual event.
 An \emph{alternative value distribution} $\Delta(\mathbf{x})$ is a probability
@@ -376,7 +392,15 @@ where $B_\epsilon(\mathbf{x})$ denotes the $\epsilon$-ball centered at $\mathbf{
 The support is therefore
 $\operatorname{supp}(\Delta_\epsilon(\mathbf{x})) = \operatorname{supp}(p) \setminus B_\epsilon(\mathbf{x})$:
 not just the factual point $\mathbf{x}$ but its entire
-$\epsilon$-neighbourhood is excluded.
+$\epsilon$-neighbourhood is excluded. This requires $p$ to place positive mass
+outside $B_\epsilon(\mathbf{x})$; if $\operatorname{supp}(p)\subseteq B_\epsilon(\mathbf{x})$
+(a sharply concentrated posterior, or an overly generous $\epsilon$), the
+normalising constant is zero and $\Delta_\epsilon(\mathbf{x})$ is undefined. The
+same degeneracy affects the discrete case: a variable whose posterior is a point
+mass admits no alternative-value distribution with the support condition of
+Definition~\ref{def:alt_value_dist} at all. A practical implementation should
+detect this case explicitly and either signal an error, shrink $\epsilon$, or fall
+back to a non-degenerate default such as the unconditional marginal.
 \end{example}
 
 \medskip\noindent With plausibility, outcome-independence, and context-sensitivity as
@@ -977,11 +1001,18 @@ binary scores: the probability of necessity
 $\mathrm{PN} = P(Y_{x'} = y' \mid X = x^\star, Y = y^\star)$, the probability of sufficiency
 $\mathrm{PS} = P(Y_{x^\star} = y^\star \mid X = x', Y = y')$, and their joint
 $\mathrm{PNS} = P(Y_{x^\star} = y^\star, Y_{x'} = y')$. The first two are conditional
-probabilities; $\mathrm{PNS}$ is unconditional, and the three satisfy
+probabilities; $\mathrm{PNS}$ is unconditional, and, \emph{when the cause variable
+$X$ is exogenous} (as for the root variables gender and credit in OBCB, so that
+$P(Y_{x^\star}=y^\star)=P(X=x^\star,Y=y^\star)$), the three satisfy
 $\mathrm{PNS} = \mathrm{PN}\cdot P(Y_{x^\star}=y^\star) = \mathrm{PS}\cdot P(Y_{x'}=y')$ rather
-than $\mathrm{PNS} = \mathrm{PN}\cdot\mathrm{PS}$ (which would require
+than $\mathrm{PNS} = \mathrm{PN}\cdot\mathrm{PS}$ (which would additionally require
 $Y_{x^\star}\perp Y_{x'}$, an assumption typically violated since the two potential
-outcomes share exogenous noise). PCI admits a related split: with
+outcomes share exogenous noise). Without exogeneity, $P(Y_{x^\star}=y^\star)$ and
+$P(X=x^\star,Y=y^\star)$ can differ and the displayed identity need not hold; the fully
+general relation between $\mathrm{PNS}$, $\mathrm{PN}$, and $\mathrm{PS}$ is Pearl's
+weighted-sum decomposition (\citealp[Lemma 9.2.6]{causalityPearl}),
+$\mathrm{PNS} = P(x^\star,y^\star)\,\mathrm{PN} + P(x',y\neq y^\star)\,\mathrm{PS}$.
+PCI admits a related split: with
 $ci = \mathbb{I}\{y^n \neq y^\star\}\,\mathbb{I}\{y^s = y^\star\}$,
 \[
 \mathbb{E}[ci(Y^s, Y^n, y^\star)]
