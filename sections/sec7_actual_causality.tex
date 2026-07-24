@@ -97,18 +97,18 @@ define
 \begin{align}
 \Phi_{\mathbf{u}}(\mathbf{C},\mathbf{T})
 &\;:=\;
-p^\Gamma(\mathbf{C},\mathbf{T})
+\underbrace{p^\Gamma(\mathbf{C},\mathbf{T})}_\text{selection weight}
 \;\cdot\;
-\mathbb{I}\!\left[(M,\mathbf{u})\vDash
+\underbrace{\mathbb{I}\!\left[(M,\mathbf{u})\vDash
 [\mathbf{C}\!\leftarrow\!\mathbf{s}^\star\!\mid_{\mathbf{C}},\,
- \mathbf{T}\!\leftarrow\!\mathbf{w}^\star\!\mid_{\mathbf{T}}]\,\varphi\right]
+ \mathbf{T}\!\leftarrow\!\mathbf{w}^\star\!\mid_{\mathbf{T}}]\,\varphi\right]}_\text{sufficiency indicator}
 \nonumber \\
 &\quad\;\cdot\;
-\int
+\underbrace{\int
 \mathbb{I}\!\left[(M,\mathbf{u})\vDash
 [\mathbf{C}\!\leftarrow\!\mathbf{c}',\,
  \mathbf{T}\!\leftarrow\!\mathbf{w}^\star\!\mid_{\mathbf{T}}]\,\neg\varphi\right]
-\Delta_{\mathbf{C}}(\mathbf{s}^\star)(d\mathbf{c}').
+\Delta_{\mathbf{C}}(\mathbf{s}^\star)(d\mathbf{c}')}_\text{necessity integral}.
 \label{eq:ackernel}
 \end{align}
 \end{definition}
@@ -273,7 +273,7 @@ witnesses $\mathbf{T}^\sharp,\mathbf{T}^\dagger$ disjoint from the corresponding
 suspect set.
 \end{definition}
 
-The first is that there is a simplified setting in which a positive value of $\Phi$,
+The first observation is that there is a simplified setting in which a positive value of $\Phi$,
 under factivity, entails minimality with respect to the same parameters. Three
 conditions suffice:
 \begin{itemize}

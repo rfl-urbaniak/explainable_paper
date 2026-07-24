@@ -3,7 +3,7 @@
 The central difficulty in causal attribution is not computing counterfactuals --- it is knowing which counterfactuals to compute, and recognising when a cause is merely blocked by context while still genuinely present.
 Here a cause is \emph{blocked by context} when it is a genuine cause in general (it does produce the outcome in other situations) yet its causal path was inactive in the particular case at hand, so it made no difference to what actually happened.
 This is the distinction between \emph{type} causation (does $X$ tend to cause $Y$?) and \emph{token}, or actual, causation (was $X$'s contribution live in the specific situation we are explaining?); methods built for the former routinely miss the latter, which is the gap the running example below makes concrete.
-There are principled probabilistic theories of type-level causal strength --- \citet{sprenger2018foundations}, for instance, derives a difference-making measure $p^*(E \mid C) - p^*(E \mid \neg C)$ axiomatically --- but they deliberately bracket the token-level question of which cause was live in the case at hand, and amalgamate over mediators just where the context-sensitivity we are after requires tracking them.
+There are principled probabilistic theories of type-level causal strength --- \citet{sprenger2018foundations}, for instance, derives a difference-making measure $p^*(E \mid C) - p^*(E \mid \neg C)$ axiomatically --- but they deliberately bracket the token-level question of which cause was live in the case at hand, and amalgamate mediators just where the context-sensitivity we are after requires tracking them.
 The closest predecessors of this approach, none individually achieve all of this: actual causality handles context sensitivity but is computationally intractable and not general enough;
 the probability of necessity and sufficiency scales well, but lacks context sensitivity.
 This section builds intuition for both limitations through a running example, setting up the design choices that motivate \ourapproach in Section~\ref{sec:causal_impact}.
@@ -275,7 +275,7 @@ The following definitions allow for probabilistic models, but assume that all va
  allowing for continuous variables).
 Pearl considers two ways that a cause may relate to an effect: it may be necessary or sufficient for the effect.
 A cause is necessary if, counterfactually absent the cause, the effect is unlikely to occur; it is sufficient
-if the effect is counterfactually likely in the presence of the cause.
+if the effect is likely when the cause counterfactually occurs.
 We now formalize these ideas and discuss them in the context of the running example.
 
 \begin{definition}[Probability of Necessity]
@@ -400,7 +400,7 @@ We will not consider this use of conditioning further, and this observation moti
 opposed to condition) mediating variables that provide important context, which is what the witness mechanism provides.
 
 \paragraph{ATE and CATE share the same limitation.}
-The two most familiar causal quantities in the ML and policy literature are the average treatment effect
+The two most familiar causal quantities in the ML and statistics literature are the average treatment effect
 $\mathrm{ATE}(T) = \mathbb{E}[Y \mid do(T{=}1)] - \mathbb{E}[Y \mid do(T{=}0)]$
 and the conditional version
 $\mathrm{CATE}(T \mid X{=}x) = \mathbb{E}[Y \mid do(T{=}1), X{=}x] - \mathbb{E}[Y \mid do(T{=}0), X{=}x]$.
