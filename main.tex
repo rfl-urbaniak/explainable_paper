@@ -72,9 +72,23 @@
 \definecolor{petroil2} {RGB} {36, 165, 175}
 \definecolor{gold2} {RGB} {255, 130, 0}
 
+% Method-comparison table (Table~\ref{tab:method_comparison} in the intro)
+\usepackage{pifont}
+\usepackage{makecell}
+\definecolor{pcihl}{RGB}{230,241,251}
+\definecolor{okgreen}{RGB}{29,126,88}
+\definecolor{nogray}{RGB}{150,148,140}
+\definecolor{partialamber}{RGB}{186,117,23}
+\definecolor{pciblue}{RGB}{24,95,165}
+\newcommand{\yes}{\textcolor{okgreen}{\ding{51}}}
+\newcommand{\no}{\textcolor{nogray}{\ding{55}}}
+\newcommand{\partialm}{\textcolor{partialamber}{$\sim$}}
+\newcommand{\na}{\textcolor{nogray}{--}}
+\newcommand{\pciyes}{\textcolor{pciblue}{\ding{51}}}
+
 % # CODE SNIPPET STYLE (settings borrowed from Edward ICLR paper)
 \usepackage{listings}
-\usepackage[dvipsnames]{xcolor}
+\usepackage[dvipsnames,table]{xcolor}
 
 \definecolor{strings}{rgb}{.624,.251,.259}
 \definecolor{keywords}{rgb}{.224,.451,.686}

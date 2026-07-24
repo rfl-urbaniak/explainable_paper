@@ -11,21 +11,37 @@ adverse outcome occurred so as to prevent recurrence, or how a predicted positiv
 outcome could be brought about.
 
 In the absence of scalable, formal causal attribution tools, analysts often resort to
-ad-hoc methods: strong correlation, historical comparison, domain expertise, or to
-non-causal attribution like Granger causality \citep{Granger1969} and SHAP
-\citep{lundberg2017unified}. Causal attribution is subtle enough that even researchers with an advanced command of statistical and experimental methods benefit from scalable automation \citep{Shepherd2024}.
+strong correlation, historical comparison, domain expertise, or principled but
+non-causal attribution methods such as Granger causality \citep{Granger1969} and SHAP
+\citep{lundberg2017unified}. Causal attribution is subtle enough, and large models complex enough, that even researchers with an advanced command of statistical and experimental methods benefit from scalable automation \citep{Shepherd2024}.
 Here we present a tool for accurate and tractable causal attribution applicable to a
 wide array of causal, probabilistic, machine-learned models.
 
 What would a satisfactory causal attribution method look like? At minimum, it
 should be (i) \textit{causally grounded}, tracking genuine counterfactual
-dependence; (ii) \textit{context-sensitive}, distinguishing
-causes whose path was active in the factual world from those whose path was
-blocked; (iii) \textit{broadly applicable}, handling stochastic models,
+dependence; (ii) \textit{context-sensitive},%
+\footnote{We use \emph{context-sensitive} in Halpern's sense: sensitivity to which
+\emph{endogenous} mediators are held fixed at their factual values during a
+counterfactual evaluation, the witness mechanism formalised in
+Section~\ref{sec:causal_impact}. This is not the same as sensitivity to the exogenous
+noise realisation $\mathbf{u}$ itself. Halpern's literature calls $\mathbf{u}$ a
+\emph{context} only because his models are deterministic, so fixing $\mathbf{u}$
+fixes every endogenous value outright and ``the context'' and ``the factual world''
+coincide; once mechanisms are stochastic, as throughout this paper, that
+coincidence breaks, and noise-realisation sensitivity becomes a separate,
+comparatively uninteresting axis on which every counterfactual or actual-cause
+query, ours included, trivially qualifies while a population-level interventional
+query does not. What actually distinguishes \ourapproach{} and actual causality
+from interventional measures is context sensitivity in the mediator-holding sense:
+even a ``vanilla'' structural counterfactual, which recomputes every mediator
+downstream of an intervention rather than holding any of them fixed, is not
+context-sensitive in this sense.}
+distinguishing
+active and inactive causes in particular instances; (iii) \textit{broadly applicable}, handling stochastic models,
 discrete and continuous variables, and finite (not just infinitesimal)
 counterfactual changes; and (iv) \textit{tractable}, estimable from samples
 without combinatorial enumeration over witness sets and alternatives.
-A further, stronger demand --- which we flag but do not treat as a minimum bar --- is \textit{gradedness under preemption}: ranking active causes above preempted would-be-sufficient ones, and those above truly irrelevant factors, rather than collapsing the latter two as actual causality does.
+A further, stronger demand (which we flag but do not treat as a minimum bar) is a graded notion of causal explanation, developed in full in Section~\ref{sec:causal_impact}.
 
 Existing methods each forfeit one or more of these. Actual causality
 \citep{actualCausalityHalpern} is grounded (i) and context-sensitive (ii), but neither
@@ -42,16 +58,51 @@ does not capture effects from non-infinitesimal changes in potential causes.%
 \footnote{DCE is, fairly, not designed for responsibility attribution:
 \citeauthor{butler2022differential} target rates of change of treatment.}
 Standard treatment-effect quantities — the average treatment effect (ATE) and conditional average treatment effect (CATE) — are causally grounded (i) and
-often tractable (iv) but lack context-sensitivity (ii): every intervention propagates downstream
-through the structural equations, overriding the mediator values that mark which
-causal paths were active in the factual world
+often tractable (iv) but lack context-sensitivity (ii): they hold neither the context
+nor the intermediate outcomes fixed while varying the candidate cause, so an
+intervention's effects propagate downstream through the structural equations rather
+than respecting which causal paths were active in that instance
 (Section~\ref{sec:motivations}).
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.45}
+\begin{tabular}{@{}l c c c c c c >{\columncolor{pcihl}}c @{}}
+\toprule
+ & \makecell{Actual\\causality} & SHAP & \makecell{Causal\\SHAP} & \makecell{PN/PS\\/PNS} & DCE & \makecell{ATE/\\CATE} & \textcolor{pciblue}{\textbf{\ourapproach}} \\
+\midrule
+(i) causally grounded    & \yes & \no  & \partialm & \yes & \yes & \yes & \pciyes \\
+(ii) context-sensitive   & \yes & \no  & \no       & \no  & \na  & \no  & \pciyes \\
+(iii) broadly applicable & \no  & \yes & \yes      & \no  & \no  & \yes & \pciyes \\
+(iv) tractable           & \no  & \yes & \yes      & \yes & \yes & \yes & \pciyes \\
+\bottomrule
+\end{tabular}
+\caption{Which of the four desiderata each attribution method satisfies. \partialm\ = partial; \na\ = not addressed by design.}
+\label{tab:method_comparison}
+\end{table}
+
+Concretely: in a stochastic Old Boys' Club Bank (OBCB) that checks credit scores only
+for male applicants, Alice, a woman with bad credit, is denied a loan without her
+credit ever being evaluated. Actual causality, using its witness mechanism to hold
+the (never-triggered) credit check fixed, correctly names her gender as the cause of
+the denial; Pearl's PN/PS/PNS, lacking any witness mechanism, instead assigns her
+credit comparable responsibility, despite it never having been checked.
+Section~\ref{sec:motivations} works through this example, and its stochastic
+counterpart, in full.
 
 To overcome these tradeoffs, we introduce \emph{probabilistic causal impacts} (\Ourapproach), an attribution
 framework that combines the context-sensitivity of actual causality with the
 scalability of probability-of-causation methods. \Ourapproach generalises Pearl's
 probability of necessary and sufficient causation \citep{pearl2022probabilities} from
-binary to arbitrary variable domains, and incorporates the \emph{witness} mechanism
+binary to arbitrary variable domains,%
+\footnote{\citet{kawakammi_2024_poc_for_cont_and_vec} independently extend PNS to
+continuous outcomes, but via a different route: a monotonicity assumption on the
+structural mechanism yields point identification from observational conditional
+distributions alone. \ourapproach instead works from a fitted causal model via
+simulation, requires neither monotonicity nor point identification, and adds the
+context-sensitivity that the witness mechanism below provides; we return to this
+contrast in Section~\ref{sec:other-prob-ac}.}
+and incorporates the \emph{witness} mechanism
 from actual causality \citep{actualCausalityHalpern} via integration over a
 distribution of witness sets rather than existential quantification.
 Intuitively, a witness set records the variables held at their factual values while a
@@ -68,12 +119,13 @@ probabilities \citep{Beckers2015CombiningPC}, and aggregation over witness sets
 \citep{Beckers2015CombiningPC, actualCausalityHalpern}), but no prior construction
 combines these components into a single tractable estimator
 handling arbitrary variable domains.
-Crucially, every quantity in the \Ourapproach definition is a standard interventional
-or counterfactual expectation that causal probabilistic-programming systems such as
-ChiRho%
+Crucially, every quantity entering the \Ourapproach definition is a standard
+interventional or counterfactual quantity; the estimands built from them, the
+expectations that give \Ourapproach its score, are already approximated automatically
+by causal probabilistic-programming systems such as ChiRho%
 \footnote{\url{https://basisresearch.github.io/chirho/explainable_sir.html}}
-already evaluate automatically for a broad class of probabilistic causal models, so
-\Ourapproach can be computed without bespoke per-model derivation.
+for a broad class of probabilistic causal models, so \Ourapproach can be computed
+without bespoke per-model derivation.
 
 \ourapproach presumes access to a trained probabilistic causal model from which
 counterfactual outcomes can be sampled, a stronger requirement than methods that
@@ -83,16 +135,22 @@ causation where \ourapproach, given a fully specified model, returns a posterior
 Causal SHAP). Within that requirement, however, we place no strong restrictions on the form
 of the model, distributions, or types of variables.
 Such models can comprise standard machine learning components such as neural
-network parametrized distributions or Gaussian processes.
-Allowing neural components makes this far less restrictive than it first appears:
-\citet{xia2022neural} show that neural causal models, being universal approximators,
-are expressive enough to recover nonparametric counterfactual-identification results,
-so a sufficiently flexible trained model forfeits no identification power available to
-an explicitly specified structural model.
-Nor do we require that counterfactual outcomes be point-identified: \ourapproach is an
-expectation over the counterfactual distribution the model induces, so it is
-well-defined whenever the model captures the relevant causal uncertainty, whether or
-not that distribution is uniquely pinned down from data.
+network parametrized distributions or Gaussian processes; a feed-forward
+probabilistic program of this kind is still a structural causal model, just one whose
+structural equations happen to be parametrized by a neural network rather than
+specified by hand.
+\citet{xia2022neural} show that such neural causal models, being universal
+approximators, are expressive enough to represent the same nonparametric
+counterfactual quantities available to an explicitly specified structural model. This
+does not by itself resolve non-identification: many mechanisms can fit the same
+observed data equally well, and no amount of representational flexibility changes
+that. We instead operate \ourapproach in a Bayesian setting that presumes access to a
+well-calibrated posterior induced by the trained model. With that in hand,
+non-identification manifests as posterior-predictive uncertainty, informed only by
+the prior where the data are silent. \ourapproach is
+an expectation over the counterfactual distribution the model induces, so it is
+well-defined even where the data do not constrain parts of that
+distribution, which then simply reflect the prior.
 
 With this breadth of application, and a measure that exposes its design choices ---
 the variable selection distribution, the alternative-value distribution, and the

@@ -165,12 +165,12 @@ def fig_obcb(ax):
     P["credit"] = draw_node(ax, 3.4, 4.2, "credit", "suspect")
     P["check"] = draw_node(ax, 0.0, 2.7, "check", "intermediate")
     P["cf"] = draw_node(ax, 2.0, 1.45, "check\nfailed", "witness", "bottleneck", "right")
-    P["lic"] = draw_node(ax, 0.3, 0.1, "loan if\nchecked", "intermediate")
+    P["lic"] = draw_node(ax, -0.6, 0.1, "loan if\nchecked", "intermediate")
     P["loan"] = draw_node(ax, 2.7, -1.2, "loan", "outcome", "denied", "right")
     draw_noise(ax, P["gender"], -1.35, 4.2, "g")
     draw_noise(ax, P["credit"], 4.75, 4.2, "c")
     draw_noise(ax, P["check"], -1.55, 2.7, r"\mathrm{ch}")
-    draw_noise(ax, P["lic"], -1.25, 0.1, "\\ell")
+    draw_noise(ax, P["lic"], -2.15, 0.1, "\\ell")
     E = [("gender", "check", 0.0), ("gender", "lic", -0.30),
          ("credit", "cf", 0.16), ("check", "cf", 0.0),
          ("check", "loan", -0.28), ("cf", "lic", 0.0), ("lic", "loan", 0.0)]

@@ -1,10 +1,8 @@
 \section{Causal Impact: Motivations}\label{sec:motivations}
 
-The central difficulty in causal attribution is not computing counterfactuals --- it is knowing which counterfactuals to compute, and recognising when a cause is merely blocked by context while still genuinely present.
-Here a cause is \emph{blocked by context} when it is a genuine cause in general (it does produce the outcome in other situations) yet its causal path was inactive in the particular case at hand, so it made no difference to what actually happened.
-This is the distinction between \emph{type} causation (does $X$ tend to cause $Y$?) and \emph{token}, or actual, causation (was $X$'s contribution live in the specific situation we are explaining?); methods built for the former routinely miss the latter, which is the gap the running example below makes concrete.
+The central difficulty in causal attribution is not computing counterfactuals --- it is knowing which counterfactuals to compute. For example, consider two questions: the \emph{type} question (does $X$ tend to cause $Y$?) and the \emph{token}, or actual-causation, question (was $X$'s contribution live in the specific situation we are explaining?). Methods built to answer the former routinely miss the latter: a cause can be genuine in general, in that it does produce the outcome in other situations, yet have had its causal path inactive in the particular case at hand, so that it made no difference to what actually happened. This is the gap the running example below makes concrete.
 There are principled probabilistic theories of type-level causal strength --- \citet{sprenger2018foundations}, for instance, derives a difference-making measure $p^*(E \mid C) - p^*(E \mid \neg C)$ axiomatically --- but they deliberately bracket the token-level question of which cause was live in the case at hand, and amalgamate mediators just where the context-sensitivity we are after requires tracking them.
-The closest predecessors of this approach, none individually achieve all of this: actual causality handles context sensitivity but is computationally intractable and not general enough;
+Among the closest predecessors of this approach, none individually achieves all of this: actual causality handles context sensitivity but is computationally intractable and not general enough;
 the probability of necessity and sufficiency scales well, but lacks context sensitivity.
 This section builds intuition for both limitations through a running example, setting up the design choices that motivate \ourapproach in Section~\ref{sec:causal_impact}.
 We first revisit Halpern's actual-cause
@@ -84,7 +82,7 @@ We could say that the whole set bears responsibility but individual features do 
 Both approaches have issues, as they imply the features are equally responsible.
 This conflicts with our intuition: OBCB did not evaluate Alice’s credit score, so her denial was caused by her gender.
 This verdict does not rest on counterfactual reasoning alone. Tracing the model on Alice's inputs, her denial is produced through the $\varname{gender}$ term of the $\varname{loan}$ equation, while $\varname{credit}$ enters only through $\varname{check\text{-}failed}$, which is false and never propagates to the outcome, so on a production (causal-process) view of causation \citep{hall2004two}, credit transmits no influence to Alice's denial at all.
-The counterfactual and production traditions thus converge on this assessment, so the attribution is not an artifact of one chosen formalism.
+Actual causality's witness-based counterfactual test, developed below, recovers exactly this production-tradition verdict, so the diagnosis that gender alone is responsible is not an artifact of one chosen formalism.
 
 The structural pattern is what the actual-causality literature calls
 \emph{preemption} (sometimes \emph{undercutting})~\citep{lewis1973causation,
@@ -401,7 +399,8 @@ opposed to condition) mediating variables that provide important context, which 
 
 \paragraph{ATE and CATE share the same limitation.}
 The two most familiar causal quantities in the ML and statistics literature are the average treatment effect
-$\mathrm{ATE}(T) = \mathbb{E}[Y \mid do(T{=}1)] - \mathbb{E}[Y \mid do(T{=}0)]$
+$\mathrm{ATE}(T) = \mathbb{E}[Y \mid do(T{=}1)] - \mathbb{E}[Y \mid do(T{=}0)]$, where $do(\cdot)$ denotes
+Pearl's intervention operator \citep{causalityPearl},
 and the conditional version
 $\mathrm{CATE}(T \mid X{=}x) = \mathbb{E}[Y \mid do(T{=}1), X{=}x] - \mathbb{E}[Y \mid do(T{=}0), X{=}x]$.
 Computed on our stochastic OBCB, population ATE ranks credit ($0.518$) above gender ($0.383$),
@@ -444,7 +443,7 @@ We revisit the example in full once the method is defined (Section~\ref{sec:caus
 Two features distinguish \ourapproach{} from both predecessors.
 Unlike actual causality, it does not ask whether \emph{some} witness set validates a counterfactual dependency; it integrates over a distribution of witness sets, weighting each by its probability.
 This replaces combinatorial enumeration with statistical estimation.
-The gain is also conceptual. Existential quantification certifies a cause as soon as \emph{some} witness set validates the dependence, a sensitivity that graded and normality-based accounts were introduced in part to address; integration instead weights each witness set by its probability, so a variable is responsible to the degree that \emph{typical} contexts render it efficacious.
+The gain is also conceptual. Existential quantification certifies a cause as soon as \emph{some} witness set validates the dependence, a sensitivity that graded and normality-based accounts were introduced in part to address; integration instead weights each witness set by its probability, so a variable is responsible to the degree that \emph{typical witness sets} render it efficacious.
 The witness still does the essential work of holding context fixed --- \ourapproach{} simply declines to privilege one hand-picked set, letting the structural facts decide which witnesses carry the mass (for Alice, those pinning $\varname{check\text{-}failed}$ favour gender; almost none favour credit).
 As a by-product, actual causality's binary verdict becomes a graded magnitude.
 Unlike PN/PS/PNS, it inherits the context-sensitivity of actual causality through this integration: causally inert variables are downweighted automatically, because almost every witness set leaves them disconnected from the outcome, while variables that drive the outcome are upweighted, because almost every witness set leaves them connected.
