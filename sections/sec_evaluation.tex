@@ -16,8 +16,8 @@ are defined (Section~\ref{sec:relation_with_ac},
 Section~\ref{sub:pearl_actual_cause_prob}), we now ask how it behaves empirically:
 against the dominant feature-attribution baselines, against a causal-effect
 attribution method, and as the model grows from textbook size to a deployed
-system. This section reads each result at a glance --- one claim, one figure, the
-headline number --- and points to the appendix that carries
+system. This section reads each result at a glance (one claim, one figure, the
+headline number) and points to the appendix that carries
 the full protocol. A reader can follow the comparative and empirical story here
 without descending into those appendices.
 
@@ -26,13 +26,13 @@ without descending into those appendices.
 On the discrete structural models where actual-causality verdicts are available, \ourapproach should
 reproduce its verdicts; on the canonical overdetermination and undercutting
 patterns it should separate a genuine cause from a preempted one. We test this on a
-synthetic structural model carrying three archetypes at once --- linear
-necessary-and-sufficient, overdetermined, and preempted (gated) --- together with an
+synthetic structural model carrying three archetypes at once, linear
+necessary-and-sufficient, overdetermined, and preempted (gated), together with an
 irrelevance control, with an analytic ground truth throughout
 (Appendix~\ref{sub:synthetic}). Across two contrasting factual cases, all ten
 archetype desiderata hold: \ourapproach scores the active cause above the
-preempted one, keeps the irrelevant control at the noise floor, and --- unlike the
-binary actual-cause verdict --- does so with graded magnitudes that extend to
+preempted one, keeps the irrelevant control at the noise floor, and, unlike the
+binary actual-cause verdict, does so with graded magnitudes that extend to
 continuous variables. The same agreement holds on Pearl's desert-traveller, where
 \ourapproach reproduces his within-scenario ranking
 (Section~\ref{sub:pearl_actual_cause_prob}, Appendix~\ref{app:desert}).
@@ -90,9 +90,9 @@ several orders of magnitude fewer cause--witness configurations.
 \hfill
 \includegraphics[width=0.49\linewidth]{docs/source/ac_benchmark/plot3_accuracy.png}
 \caption{\textbf{\ourapproach stays tractable where exact actual causality does
-not.} Left: wall-clock vs.\ problem size --- exact subset enumeration times out
+not.} Left: wall-clock vs.\ problem size: exact subset enumeration times out
 near $17$ variables; the \ourapproach estimator continues to $\sim$$73$--$145$.
-Right: correct-attribution rate --- witness-enabled configurations stay above
+Right: correct-attribution rate: witness-enabled configurations stay above
 $0.85$ well past the exact cut-off, degrading gradually with problem size. Full
 benchmark protocol in Appendix~\ref{sec:ac_benchmark}.}
 \label{fig:eval_scaling}
@@ -105,7 +105,7 @@ interact through a dynamical system. On a Bayesian SIR model with two
 non-pharmaceutical policies and a threshold (peak-overshoot) outcome
 (Appendix~\ref{sec:sir_benchmark}), but-for analysis cannot separate the two
 policies, whereas \ourapproach assigns lockdown roughly twice the responsibility
-of masking --- with the gap driven by the necessity term under witness pinning.
+of masking, with the gap driven by the necessity term under witness pinning.
 
 \begin{figure}[htbp]
 \centering
@@ -121,8 +121,8 @@ Appendix~\ref{sec:sir_benchmark}.}
 \subsection{A real-world deployed model}
 \label{sec:eval_avm}
 Finally, \ourapproach runs on a deployed automated valuation model (AVM) with
-machine-learned components trained on millions of points --- a regime where actual
-causality is intractable and SHAP is the practical default
+machine-learned components trained on millions of points (a regime where actual
+causality is intractable and SHAP is the practical default)
 (Appendix~\ref{sec:avm}). \ourapproach returns a structured, context-sensitive
 attribution across the model's internal variables, whereas SHAP concentrates
 almost all responsibility on a few downstream variables and places little weight

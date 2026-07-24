@@ -53,11 +53,10 @@ candidate set $\mathbf{C}$ to factual values, holds the witnesses $\mathbf{T}$ f
 and checks that the outcome persists, so that where NESS returns set membership,
 the joint measure returns a $\Gamma$-weighted degree, with the witness set supplying
 the held-fixed context that NESS sufficient sets leave implicit. That substantive
-sufficiency component, together with the $ci_S$ term in \cref{sub:synthetic}, is
-exercised in the synthetic overdetermination and undercutting evaluation
-(\cref{sub:synthetic}), the differential causal effect comparison (\cref{sec:DCE}),
-and the SIR benchmark (\cref{sec:sir_benchmark}), settings where AC cannot
-adjudicate. The correspondence below is thus the AC-facing (necessity) half of a
+sufficiency component, together with the $ci_S$ term in \cref{sub:synthetic}, appears
+in the synthetic overdetermination and undercutting evaluation (\cref{sub:synthetic}),
+the differential causal effect comparison (\cref{sec:DCE}), and the SIR benchmark
+(\cref{sec:sir_benchmark}), settings where AC cannot adjudicate. The correspondence below is thus the AC-facing (necessity) half of a
 construction whose sufficiency half answers to Beckers' program rather than
 Halpern's; the narrowness of this section's correspondence reflects what AC itself
 permits, not a limitation of \ourapproach{}.
@@ -327,9 +326,12 @@ with $\Phi(\mathbf{C}^\dagger,\mathbf{T}^\dagger)>0$, that factivity is satisfie
 $\mathbf{C}^\dagger$ (as in Definition~\ref{def:ac}), and that no element of
 $\mathbf{S}$ is a deterministic function under $M$ of the others. Let
 $\Gamma_w$ be uniform on $2^{\mathbf{W}}$ and let $\Gamma_s$ be strictly
-cardinality-decreasing, and assume that $(M,\Delta)$ satisfies necessity dilution on
-$\mathbf{S}$. Then $\mathbf{C}^\dagger$ is an actual cause of $\varphi$ according to
-Definition~\ref{def:ac}.
+cardinality-decreasing, assume that $(M,\Delta)$ satisfies necessity dilution on
+$\mathbf{S}$, and assume $\Delta$ satisfies the positive-density hypothesis of
+Theorem~\ref{th:ac-exp} (together with hypotheses (i)--(ii) there, in the continuous
+case); this is what lets the proof below invoke Theorem~\ref{th:ac-exp} on
+$\mathbf{C}^\sharp$. Then $\mathbf{C}^\dagger$ is an actual cause of $\varphi$
+according to Definition~\ref{def:ac}.
 \end{theorem}
 
 \begin{proof}
@@ -398,8 +400,10 @@ $\mathbf{T}\cap\mathbf{C}=\emptyset$.
 
 Suppose for contradiction that minimality fails for $\mathbf{C}^\dagger$: there is
 $\mathbf{C}^\sharp\subsetneq\mathbf{C}^\dagger$ satisfying factivity and
-context-sensitive necessity with some witness $\mathbf{T}^\sharp$, so
-$\Phi(\mathbf{C}^\sharp,\mathbf{T}^\sharp)>0$ by Theorem~\ref{th:ac-exp}. For every
+context-sensitive necessity with some witness $\mathbf{T}^\sharp$ (not necessarily
+minimality itself). By Theorem~\ref{th:ac-exp}, whose proof requires only factivity
+and necessity, not minimality (as already noted in the proof of
+Theorem~\ref{th:local_max_to_ac}), $\Phi(\mathbf{C}^\sharp,\mathbf{T}^\sharp)>0$. For every
 $\mathbf{T}$ with $\mathbf{T}\cap\mathbf{C}^\dagger=\emptyset$ (hence also
 $\mathbf{T}\cap\mathbf{C}^\sharp=\emptyset$, since $\mathbf{C}^\sharp\subsetneq\mathbf{C}^\dagger$),
 necessity dilution gives $N(\mathbf{C}^\sharp,\mathbf{T})\geq N(\mathbf{C}^\dagger,\mathbf{T})$

@@ -40,7 +40,13 @@ distinguishing
 active and inactive causes in particular instances; (iii) \textit{broadly applicable}, handling stochastic models,
 discrete and continuous variables, and finite (not just infinitesimal)
 counterfactual changes; and (iv) \textit{tractable}, estimable from samples
-without combinatorial enumeration over witness sets and alternatives.
+without exhaustive enumeration over witness sets and alternatives.%
+\footnote{This trades enumeration for Monte Carlo sampling, not for a lower
+asymptotic cost: achieving a fixed estimator variance still requires a sample count
+that scales with the cardinalities of the suspect and witness sets, and we do not
+have a general way to know in advance when fewer samples suffice.
+Section~\ref{sec:ac_benchmark} reports empirical scaling; Section~\ref{sec:discussion}
+returns to this and other limitations.}
 A further, stronger demand (which we flag but do not treat as a minimum bar) is a graded notion of causal explanation, developed in full in Section~\ref{sec:causal_impact}.
 
 Existing methods each forfeit one or more of these. Actual causality
@@ -102,17 +108,32 @@ distributions alone. \ourapproach instead works from a fitted causal model via
 simulation, requires neither monotonicity nor point identification, and adds the
 context-sensitivity that the witness mechanism below provides; we return to this
 contrast in Section~\ref{sec:other-prob-ac}.}
-and incorporates the \emph{witness} mechanism
-from actual causality \citep{actualCausalityHalpern} via integration over a
-distribution of witness sets rather than existential quantification.
+and incorporates the \emph{witness} mechanism from actual causality
+\citep{actualCausalityHalpern}, but changes its logical form: Halpern's account asks
+whether \emph{some} witness set, out of exponentially many, reveals the dependency;
+\ourapproach instead asks how much of a $\Gamma$-weighted distribution over witness
+sets reveals it, replacing an existential quantifier with an expectation.
 Intuitively, a witness set records the variables held at their factual values while a
 candidate cause is varied, so that causal paths inactive in the factual world stay
-blocked rather than re-activating under intervention --- delivering the
-context-sensitivity that ATE and CATE forgo. The effect is to
-read actual causation, otherwise an all-or-nothing verdict graded only
-comparatively by the relative normality of the witnessing contingency
-\citep{Halpern2015-HALGCA}, as a cardinal probabilistic magnitude on the same
-structural information.
+blocked rather than re-activating under intervention, delivering the
+context-sensitivity that ATE and CATE forgo.
+
+This one move is what makes \ourapproach tractable, and also where its main risk
+sits. Existential search over witness sets forces AC's brute-force enumeration; an
+expectation admits Monte Carlo sampling from $\Gamma$ instead. The cost:
+$\Gamma$-mass on witness sets that do not reveal a dependency can swamp a single
+witness set that does, or sampling can simply miss it if it is rare enough --- in the
+worst case, as expensive to find as enumeration itself (Section~\ref{sec:discussion}).
+Two facts limit the damage. Proposition~\ref{prop:filter} shows existence survives the
+move exactly: the suspects with positive score are precisely Halpern's actual causes,
+for any regular $\Gamma$; $\Gamma$ only sets the score's \emph{magnitude}. And that
+magnitude is a different kind of quantity than a normality ranking: Halpern's own
+graded extension \citep{Halpern2015-HALGCA} grades which alternative value is
+typical, while $\Gamma$ grades which suspect-witness explanation is worth asking
+about --- a parsimony prior over candidate explanations, not a typicality ranking
+over outcomes. Since $\Gamma$ only sets magnitude, we read \ourapproach scores
+comparatively throughout.
+
 Several components have precedents (expectations over
 exogenous noise \citep{actualCausalityHalpern}, weighting by alternative-value
 probabilities \citep{Beckers2015CombiningPC}, and aggregation over witness sets
@@ -152,9 +173,9 @@ an expectation over the counterfactual distribution the model induces, so it is
 well-defined even where the data do not constrain parts of that
 distribution, which then simply reflect the prior.
 
-With this breadth of application, and a measure that exposes its design choices ---
-the variable selection distribution, the alternative-value distribution, and the
-causal impact function --- as explicit user-facing components instead of buried
+With this breadth of application, and a measure that exposes its design choices
+(the variable selection distribution, the alternative-value distribution, and the
+causal impact function) as explicit user-facing components instead of buried
 defaults, \ourapproach can serve causal attribution and explanation needs for a
 wide array of users and applications.
 
@@ -176,8 +197,8 @@ function.
 
 The second phase positions \ourapproach against existing attribution methods.
 \cref{sec:shap_examples} compares \ourapproach with SHAP, Causal SHAP, ATE, and
-CATE on two worked examples --- OBCB, with two binary features, and a
-signal-with-mediation model --- tabulating which desiderata each satisfies or
+CATE on two worked examples (OBCB, with two binary features, and a
+signal-with-mediation model), tabulating which desiderata each satisfies or
 fails, including cases where SHAP and even Causal SHAP track correlation rather than
 counterfactual dependence.
 
@@ -209,16 +230,16 @@ concentrates attribution on a few downstream variables while \ourapproach spread
 it across the upstream causal structure (\cref{sec:avm}).
 \cref{sec:discussion} closes with discussion. We engage related work where it
 bears on the argument. The broader literature on actual-causality-based
-attribution and responsibility scores --- probabilities of causation, degree of
+attribution and responsibility scores (probabilities of causation, degree of
 blame and harm, and score-based explanations in databases and machine learning,
-surveyed by \citet{bertossiAttributionScores2023} --- comes up mainly in
+surveyed by \citet{bertossiAttributionScores2023}) comes up mainly in
 \cref{sec:relation_with_ac,sub:pearl_actual_cause_prob} and the discussion.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/structure_map_01_motivations.pdf}
   \caption{\textbf{Roadmap of the paper.} An overview of the argument, here at its
-  starting point. \ourapproach builds on two ideas --- \emph{actual causality} and the
+  starting point. \ourapproach builds on two ideas: \emph{actual causality} and the
   \emph{probability of necessity and sufficiency} (top tier, highlighted as the current
   stage). From there the paper develops the motivations (\cref{sec:motivations}),
   defines \ourapproach (\cref{sec:causal_impact}), positions it against SHAP, Causal
@@ -231,8 +252,8 @@ surveyed by \citet{bertossiAttributionScores2023} --- comes up mainly in
 \end{figure}
 
 \paragraph{Reproducibility.}
-Every quantitative claim in this paper --- the worked-example numbers, the
-benchmark tables, and the figures --- is reproduced in a set of companion
+Every quantitative claim in this paper (the worked-example numbers, the
+benchmark tables, and the figures) is reproduced in a set of companion
 notebooks, rendered with their full outputs at
 \url{https://rfl-urbaniak.github.io/explainable_paper/}. Throughout, we point to
 the relevant notebook by name (for example \nb{obcb\_computations}); each name

@@ -1,7 +1,7 @@
 \section{Causal Impact: Motivations}\label{sec:motivations}
 
-The central difficulty in causal attribution is not computing counterfactuals --- it is knowing which counterfactuals to compute. For example, consider two questions: the \emph{type} question (does $X$ tend to cause $Y$?) and the \emph{token}, or actual-causation, question (was $X$'s contribution live in the specific situation we are explaining?). Methods built to answer the former routinely miss the latter: a cause can be genuine in general, in that it does produce the outcome in other situations, yet have had its causal path inactive in the particular case at hand, so that it made no difference to what actually happened. This is the gap the running example below makes concrete.
-There are principled probabilistic theories of type-level causal strength --- \citet{sprenger2018foundations}, for instance, derives a difference-making measure $p^*(E \mid C) - p^*(E \mid \neg C)$ axiomatically --- but they deliberately bracket the token-level question of which cause was live in the case at hand, and amalgamate mediators just where the context-sensitivity we are after requires tracking them.
+The central difficulty in causal attribution is not computing counterfactuals: it is knowing which counterfactuals to compute. For example, consider two questions: the \emph{type} question (does $X$ tend to cause $Y$?) and the \emph{token}, or actual-causation, question (was $X$'s contribution live in the specific situation we are explaining?). Methods built to answer the former routinely miss the latter: a cause can be genuine in general, in that it does produce the outcome in other situations, yet have had its causal path inactive in the particular case at hand, so that it made no difference to what actually happened. This is the gap the running example below makes concrete.
+There are principled probabilistic theories of type-level causal strength (\citet{sprenger2018foundations}, for instance, derives a difference-making measure $p^*(E \mid C) - p^*(E \mid \neg C)$ axiomatically), but they deliberately bracket the token-level question of which cause was live in the case at hand, and amalgamate mediators just where the context-sensitivity we are after requires tracking them.
 Among the closest predecessors of this approach, none individually achieves all of this: actual causality handles context sensitivity but is computationally intractable and not general enough;
 the probability of necessity and sufficiency scales well, but lacks context sensitivity.
 This section builds intuition for both limitations through a running example, setting up the design choices that motivate \ourapproach in Section~\ref{sec:causal_impact}.
@@ -175,7 +175,7 @@ asymmetric, and \citet{beckersSufficiency2021,beckersNESS2021} ground it in NESS
 sets, where a cause is a necessary element of a set that suffices for the outcome; and
 \citet{beckers2025nondeterministic} most recently extends it to nondeterministic
 structural models. We build on the
-same witnessed-necessity core, but --- anticipating the probabilistic turn below --- read its two
+same witnessed-necessity core, but, anticipating the probabilistic turn below, read its two
 halves, necessity under intervention and sufficiency of the held-fixed configuration, as graded
 quantities, not a single binary verdict.
 
@@ -192,8 +192,8 @@ constructions of Chockler, Halpern, and Beckers
 \citep{chocklerResponsibilityBlameStructuralModel2004, beckersHarm2022,
 beckersQuantifyingHarm2023}.
 The result is a probabilistic envelope around the same binary kernel, with the same computational demands.
-This construction --- Pearl's \emph{probability of actual causation}
-\citep[Def.~10.3.5]{causalityPearl} --- is also the closest neighbour of \ourapproach{}
+This construction (Pearl's \emph{probability of actual causation}
+\citep[Def.~10.3.5]{causalityPearl}) is also the closest neighbour of \ourapproach{}
 and agrees with it in simple cases, so we defer a precise side-by-side comparison to
 Section~\ref{sub:pearl_actual_cause_prob}. This is one of the reasons we
 turn next to a different family of attribution tools.
@@ -208,8 +208,8 @@ discretion. This is the natural setting for Pearl's probabilities of necessity,
 sufficiency, and their conjunction (PN, PS, PNS)
 \citep{pearl1999probabilities,tian2000probabilities},\footnote{Probabilities of
 causation have also been put to work outside token-level attribution:
-\citet{wangJordanDesiderata2021} formalize representation-learning desiderata ---
-non-spuriousness, efficiency, and disentanglement --- as computable criteria built
+\citet{wangJordanDesiderata2021} formalize representation-learning desiderata
+(non-spuriousness, efficiency, and disentanglement) as computable criteria built
 from probabilities of causation, paralleling our use of the same primitives for
 feature attribution.} which we introduce in this
 subsection. As we will see, these scale gracefully into the stochastic regime
@@ -252,7 +252,7 @@ Formally, the model, using 1 for male and 1 for good credit, is:
 \emph{candidate causes} \varname{gender} and \varname{credit} (teal boxes), the
 \emph{witness} \varname{check-failed} (gold hexagon), and the \emph{outcome}
 \varname{loan} (purple double box); intermediate variables are grey. Dashed circles
-are the exogenous noise $U_V$ feeding each \emph{stochastic} mechanism---the
+are the exogenous noise $U_V$ feeding each \emph{stochastic} mechanism; the
 deterministic nodes \varname{check-failed} and \varname{loan} carry none. Note that
 \varname{check} reaches \varname{loan} along two routes: through the
 \varname{check-failed} bottleneck and directly as the screening gate
@@ -264,8 +264,8 @@ the bottleneck witness fixed to keep these two routes distinct.}
 \noindent The witness mechanism works well for deterministic models, but actual causality
 in its standard form offers no straightforward way to handle probabilistic ones. Before
 extending the witness idea to the stochastic setting, it is instructive to examine a
-probabilistic approach that scales more naturally --- Pearl's probabilities of necessity
-and sufficiency \citep{pearl2022probabilities} --- and to ask what it would miss without
+probabilistic approach that scales more naturally, Pearl's probabilities of necessity
+and sufficiency \citep{pearl2022probabilities}, and to ask what it would miss without
 witnesses. This will let us identify what probabilistic machinery is needed, and what
 context-sensitivity is lost when witnesses are absent, motivating the synthesis that
 \ourapproach provides.
@@ -280,7 +280,7 @@ We now formalize these ideas and discuss them in the context of the running exam
 Let the probability of necessity \citep{pearl1999probabilities} be the probability that the outcome $Y=y$ would not have occurred in the absence of  $C = c^\star$, given that both occurred: \[\pn(C = c^\star, Y = y^\star) = P\!\left(Y_{c'} \neq y^\star \;\middle|\; C = c^\star, Y = y^\star\right),\] where $Y_{c'}$ is the value of $Y$ after intervening on $C$ with $c'\neq c^\star$.\footnote{Read in twin-network fashion \citep{balke1994probabilistic, causalityPearl}: one draws an exogenous noise $\mathbf{u}\sim P_{\mathbf{U}}$, computes the factual $Y$ under the unintervened structural equations and the counterfactual $Y_{c'}$ under the intervened equations, and conditions on the joint event $\{C=c^\star,Y=y^\star\}$. Both $Y$ and $Y_{c'}$ live on the same probability space and share the same $\mathbf{u}$.}
 \end{definition}
 
-Strictly speaking, the probability of necessity is less specific to a particular situation than the actual-cause test above: as written, it conditions only on the cause--outcome pair, so it asks whether being male causes \emph{someone} to be denied, not whether it caused \emph{Bob} --- whose bad credit we already know --- to be denied.
+Strictly speaking, the probability of necessity is less specific to a particular situation than the actual-cause test above: as written, it conditions only on the cause--outcome pair, so it asks whether being male causes \emph{someone} to be denied, not whether it caused \emph{Bob} (whose bad credit we already know) to be denied.
 We therefore report two readings.
 The \emph{population-level} value conditions only on the cause and outcome, exactly as the definition prescribes.
 The \emph{individual-level} value additionally conditions on the subject's other observed features (for Bob, on $\varname{credit}=\text{bad}$), specializing the query to that person.
@@ -435,26 +435,26 @@ Any replacement therefore needs intervention-based context-sensitivity, holding 
 \ourapproach{} delivers exactly this, combining three ingredients into a single estimator.
 From actual causality it takes the \emph{witness mechanism}: it holds relevant context fixed by intervention, so the structural information about which causal paths were active survives the counterfactual evaluation.
 From PN/PS/PNS it takes a \emph{probabilistic vocabulary}: it expresses counterfactuals as expectations under the noise distribution, so the attribution lives on the same probability space as the model and extends naturally to continuous variables.
-And in place of brute-force enumeration over witness sets, it \emph{integrates} over a distribution of them --- an integral estimable from samples even when the witness pool is large or the variables continuous.
+And in place of brute-force enumeration over witness sets, it \emph{integrates} over a distribution of them, an integral estimable from samples even when the witness pool is large or the variables continuous.
 
-Returning to Alice, \ourapproach{} recovers the intuitive verdict that her denial turns on gender rather than credit --- reversing the ranking $\pns$ produced (Table~\ref{tab:pn_ps_pns}).
+Returning to Alice, \ourapproach{} recovers the intuitive verdict that her denial turns on gender rather than credit, reversing the ranking $\pns$ produced (Table~\ref{tab:pn_ps_pns}).
 We revisit the example in full once the method is defined (Section~\ref{sec:causal_impact}, with the complete computation in Appendix~\ref{app:obcb}).
 
 Two features distinguish \ourapproach{} from both predecessors.
 Unlike actual causality, it does not ask whether \emph{some} witness set validates a counterfactual dependency; it integrates over a distribution of witness sets, weighting each by its probability.
 This replaces combinatorial enumeration with statistical estimation.
 The gain is also conceptual. Existential quantification certifies a cause as soon as \emph{some} witness set validates the dependence, a sensitivity that graded and normality-based accounts were introduced in part to address; integration instead weights each witness set by its probability, so a variable is responsible to the degree that \emph{typical witness sets} render it efficacious.
-The witness still does the essential work of holding context fixed --- \ourapproach{} simply declines to privilege one hand-picked set, letting the structural facts decide which witnesses carry the mass (for Alice, those pinning $\varname{check\text{-}failed}$ favour gender; almost none favour credit).
+The witness still does the essential work of holding context fixed. \ourapproach{} simply declines to privilege one hand-picked set, letting the structural facts decide which witnesses carry the mass (for Alice, those pinning $\varname{check\text{-}failed}$ favour gender; almost none favour credit).
 As a by-product, actual causality's binary verdict becomes a graded magnitude.
 Unlike PN/PS/PNS, it inherits the context-sensitivity of actual causality through this integration: causally inert variables are downweighted automatically, because almost every witness set leaves them disconnected from the outcome, while variables that drive the outcome are upweighted, because almost every witness set leaves them connected.
 The formal definitions in Section~\ref{sec:causal_impact} make this expectation precise.
 
 \medskip\noindent With the limitations of both predecessors in mind, we turn
 in Section~\ref{sec:causal_impact} to the formal development. The next section
-introduces \ourapproach piece by piece --- PSCM scaffolding, the variable
+introduces \ourapproach piece by piece (PSCM scaffolding, the variable
 selection distribution $\Gamma$, the alternative-value distribution $\Delta$, the
 joint necessity-sufficiency measure, and the user-chosen causal impact function
-$ci$ --- and verifies on the same Alice/Bob example that the resulting attribution
+$ci$) and verifies on the same Alice/Bob example that the resulting attribution
 satisfies all seven desiderata stated at the start of that section.
 
 

@@ -92,8 +92,20 @@ probabilistic causal model from which counterfactual outcomes can be sampled, a
 stronger requirement than methods that work from observational data and a causal graph
 alone. The Monte Carlo variance of the estimator grows with model size and with the
 cardinalities of suspect and witness sets; \cref{sec:ac_benchmark} reports
-empirical scaling and an ablation that isolates the contribution of witness pinning, but
-sample-efficient estimators for high-cardinality settings remain an open direction.
+empirical scaling and an ablation that isolates the contribution of witness pinning.
+In the worst case, a single revealing witness set among $2^{|\mathbf{W}|}$ candidates
+under uniform $\Gamma_w$ costs as many samples in expectation as exhaustive
+enumeration would. The escape is that pinning a variable that is causally inert under
+the tested intervention is a no-op, so revealing witness sets come in neighbourhoods
+of size $2^m$ for $m$ such inert candidates, giving revealing mass at least
+$2^{m-|\mathbf{W}|}$ rather than $2^{-|\mathbf{W}|}$. Whether this rescues sampling
+generically, or only in graphs sparse relative to the tested intervention, is a
+sharper open question than we have characterised here. A $\Gamma$ built from the
+graph, weighting witness candidates by their relevance to the tested intervention
+rather than uniformly, would exploit exactly this sparsity, but building it requires
+the graph's relevance structure to be legible in the first place, which trades away
+desideratum (iii)'s reach into grey-box models where structural facts are not
+cheaply available.
 Finally, the AVM case study is deliberately limited in disclosure: the apples-to-apples
 SHAP-vs-PCI comparison rests on the synthetic benchmark of \cref{sub:synthetic},
 with the production model serving as a feasibility witness, not as quantitative
@@ -109,10 +121,10 @@ actual-causality computations, characterised its qualitative behaviour on synthe
 models with known ground truth and on canonical SHAP failure cases, and showed its
 computational feasibility on a production-grade model.
 
-Prior efforts to mechanise actual-causality reasoning in software --- notably the Actual
+Prior efforts to mechanise actual-causality reasoning in software (notably the Actual
 Causality Canvas of \citet{ibrahimCanvas2020} and the SAT- and optimization-based
 computations of \citet{ibrahimChecking2020}, which operationalise the Halpern--Pearl
-definition for forensic investigation, fault diagnosis, and explainable AI --- are built
+definition for forensic investigation, fault diagnosis, and explainable AI) are built
 for \emph{discrete} (typically binary) structural models, where the actual cause is
 recovered by combinatorial search over candidate sets. The complementary regime of large,
 continuous-valued models has received less attention, and it is there that the exact

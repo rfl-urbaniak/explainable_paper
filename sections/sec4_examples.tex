@@ -108,8 +108,8 @@ to OBCB we must specify both a feature set $N$ and a function $f$ on the joint
 feature space; the value functions and Shapley sums are derived from these.
 The natural choice for $f$ is the conditional expectation of the outcome,
 $f(x_N)=\mathbb{E}[\varname{loan}\mid X_N=x_N]$. But the OBCB PSCM has five
-variables --- $\varname{gender}$, $\varname{credit}$, $\varname{check}$,
-$\varname{check\text{-}failed}$, $\varname{loan\_if\_checked}$ --- so the
+variables ($\varname{gender}$, $\varname{credit}$, $\varname{check}$,
+$\varname{check\text{-}failed}$, $\varname{loan\_if\_checked}$), so the
 choice of $N$ is non-trivial. Two options are natural:
 \begin{itemize}
 \item \textbf{Option A: two upstream roots.}
@@ -213,14 +213,14 @@ for Alice and Bob.
 The individual treatment effect (ITE) is the natural endpoint of this ladder:
 where ATE marginalises all exogenous noise and CATE conditions only on observed
 covariates, the ITE abducts the unit's noise from its \emph{full} factual record
---- covariates \emph{and} the observed denial --- and then takes the
+(covariates \emph{and} the observed denial) and then takes the
 counterfactual contrast holding that abducted noise fixed, the
 abduction--action--prediction reading already used for $\pn$ in
 Section~\ref{sec:motivations}. This buys back exactly the information CATE
 discards. The ITE separates the two applicants on \textbf{D-comp} where CATE
 cannot: $\mathrm{ITE}(\varname{gender}\mid\text{Alice}) = 0.045$ but
 $\mathrm{ITE}(\varname{gender}\mid\text{Bob}) = 0$, because abduction places Bob
-in the checked-and-failed branch, where being male is not what blocked him ---
+in the checked-and-failed branch, where being male is not what blocked him:
 flipping him to female (still bad credit) leaves him denied with certainty.
 The ITE is also a genuine counterfactual rather than an intervention: because it
 conditions on the outcome, $\mathrm{ITE}(\varname{credit}\mid\text{Bob}) = 0.895$
@@ -228,7 +228,7 @@ rather than the interventional $P(\varname{loan}{=}1\mid do(\varname{credit}{=}\
 as conditioning on Bob's denial shifts posterior mass toward the unchecked branch.
 But the ITE does \emph{not} fix \textbf{D-A-rank}: for Alice it still returns
 $0.180$ for credit against $0.045$ for gender, the same inversion as $\pns_c$ and
-CATE. Abduction pins the \emph{noise} but not the \emph{mechanism} --- the
+CATE. Abduction pins the \emph{noise} but not the \emph{mechanism}: the
 counterfactual still routes through a hypothetical credit check in the $20\%$ of
 Alice's posterior in which she was checked, so credit retains spurious
 responsibility. Recovering the correct ranking requires \ourapproach's witness
@@ -378,7 +378,7 @@ intervening on $\varname{check\text{-}failed}$ overrides the structural equation
 normally determine it
 from credit and check, but does not alter the marginal distributions of the
 upstream features. Two of the four summands evaluate $\tilde f$ at
-$(g, c{=}1, cf{=}1)$ --- the impossible cell --- with weight $\tfrac{1}{4}$
+$(g, c{=}1, cf{=}1)$ (the impossible cell) with weight $\tfrac{1}{4}$
 each. So $v_\mathrm{causal}(\{cf\})$ is undefined, and so is
 $v_\mathrm{causal}(\{g, cf\})$ for the same reason. These two coalitions
 appear in the Shapley sum for every feature, so all three of Bob's Causal
@@ -477,7 +477,7 @@ the cause closer to the outcome:
 \begin{align*}
 \textbf{D-MXY} \quad & |R(M \rightsquigarrow Y)| > |R(X \rightsquigarrow Y)|
 \end{align*}
-\noindent The direction of the inequality is a convention rather than a law of responsibility; what matters is that the method separates the direct from the indirect path at all. A method that assigns the larger score to the more distal cause would be equally principled --- we adopt the direction stated here for consistency.
+\noindent The direction of the inequality is a convention rather than a law of responsibility; what matters is that the method separates the direct from the indirect path at all. A method that assigns the larger score to the more distal cause would be equally principled; we adopt the direction stated here for consistency.
 
 \noindent The key \textbf{distributional facts} we will use are:
 \begin{align}
@@ -696,8 +696,8 @@ D-MXY & \multicolumn{2}{c}{$0.000=0.000$~$\times$} & \multicolumn{2}{c}{$0.189>0
 \end{tabular}
 \caption{Desiderata at the baseline instance $X^\star=M^\star=Y^\star=0.5$.
 SHAP collapses to zero on every cell, assigning zero to the
-non-causal triples --- though here that zero reflects the vanishing attribution
-budget rather than a detected absence of a causal path --- while offering no
+non-causal triples (though here that zero reflects the vanishing attribution
+budget rather than a detected absence of a causal path) while offering no
 signal on the causal ones. PCI reports the same structural verdicts as at $X^\star=M^\star=Y^\star=1$.}
 \label{tab:signal_desid_baseline}
 \end{table}
@@ -755,9 +755,9 @@ which appears already in the witness-free single game and is amplified into a
 robust margin under a witness rule.
 
 The two examples here are small enough to inspect
-every desideratum individually; the broader empirical comparison --- a synthetic
+every desideratum individually; the broader empirical comparison (a synthetic
 archetype catalogue and a contrast with gradient-based Differential Causal Effect
-attribution --- is summarised in \cref{sec:evaluation} and detailed in
+attribution) is summarised in \cref{sec:evaluation} and detailed in
 Appendices~\ref{sub:synthetic} and~\ref{sec:DCE}. We turn first, in
 \cref{sec:relation_with_ac}, to the formal relationship between \ourapproach and
 actual causality.

@@ -21,9 +21,9 @@ that capture overdetermination via preemption: $B_i$ contributes only if $A_i$ d
 not. The outcome is the conjunction $Y = \bigwedge_{i=1}^{n} (W^a_i \lor W^b_i)$, and
 the model size grows as $4n+1$ variables. Ground-truth responsibility at site $i$ is
 read off during the forward pass: $A_i$ is responsible if $W^a_i=1$, $B_i$ is
-responsible if $W^b_i=1$. The structure scales the canonical example without softening it ---
-overdetermination, undercutting, and witness-mediated symmetry-breaking are present
-at every site --- while keeping a closed-form ground truth available for evaluation.
+responsible if $W^b_i=1$. The structure scales the canonical example without softening it: overdetermination,
+undercutting, and witness-mediated symmetry-breaking are present at every site,
+while keeping a closed-form ground truth available for evaluation.
 
 The variable partition takes the roots $\{A_i,B_i\}_i$ as suspects and the
 deterministic mediators $\{W^a_i,W^b_i\}_i$ as witnesses, with no suspect a
@@ -55,8 +55,8 @@ explicit procedure used to produce the curves in
 Figure~\ref{fig:eval_scaling} and Figure~\ref{fig:ac_search_space}.
 In words: for each of $N$ draws it picks a random small set of suspects to flip and a
 random set of witnesses to pin at their factual values, then runs the model twice under the
-\emph{same} noise --- once with the suspects restored to factual (the sufficiency world) and
-once with them flipped to their alternatives (the necessity world) --- and records whether
+\emph{same} noise, once with the suspects restored to factual (the sufficiency world) and
+once with them flipped to their alternatives (the necessity world), and records whether
 the flip changed the outcome. Each suspect's score is the fraction of its draws in which
 flipping it changed the outcome, and at each site the higher-scoring of the two rivals
 $A_i, B_i$ is returned as the cause. The procedure transcribes the \texttt{ThinSearchSampler}

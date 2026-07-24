@@ -2,7 +2,7 @@
   \centering
   \includegraphics[width=\textwidth]{figures/structure_map_02_definitions.pdf}
   \caption{\textbf{Roadmap: defining \ourapproach} (current stage). With the
-  motivations in place, the next section introduces the framework --- the variable
+  motivations in place, the next section introduces the framework: the variable
   selection distribution $\Gamma$, the alternative-value distribution $\Delta$, and the
   causal impact function $ci$. It then positions \ourapproach against the
   SHAP family (\cref{sec:shap_examples}), against actual causality and its
@@ -55,13 +55,13 @@ magnitudes $|R(\cdot)|$, allowing for directionality:
 
 \noindent \textbf{D-A1} and \textbf{D-A2} both require non-zero attribution for Alice because two
 distinct causal routes were available. Gender filtered her out at the checking stage. Credit is not
-causally inert either: the check is only \emph{probabilistic} --- women are still checked with positive
-probability ($\gamma_F=0.2$ in the model below) --- so conditioning on Alice's denial leaves nonzero
+causally inert either: the check is only \emph{probabilistic} (women are still checked with positive
+probability, $\gamma_F=0.2$ in the model below), so conditioning on Alice's denial leaves nonzero
 probability that she was in fact checked, in which case her bad credit was the operative cause. The
 broader principle is a graded ordering of three roles. An \emph{active} cause, on the path that actually
 produced the outcome, carries the most responsibility. A \emph{preempted} cause is not discarded but
-retains a \emph{residual} share --- strictly positive, yet strictly below the active cause (exactly what
-\textbf{D-A-rank} demands) --- here governed by the probability that the preemption fails to fire,
+retains a \emph{residual} share, strictly positive yet strictly below the active cause (exactly what
+\textbf{D-A-rank} demands), here governed by the probability that the preemption fails to fire,
 leaving the credit route live. An \emph{irrelevant} variable, with no active path to the outcome under
 any context, receives the least of all, approaching zero. This is a deliberate departure from the binary
 Halpern--Pearl/Beckers treatment of preemption, which collapses the first two roles by zeroing a fully
@@ -78,8 +78,8 @@ This indirect causal role is non-zero; a method returning exactly zero fails to 
 \textbf{D-B-rank} corresponds to the intuition that credit is the proximate cause.
 \textbf{D-comp} captures the cross-individual asymmetry that is hardest for naive methods to
 express: gender is more causally responsible for Alice's rejection than for Bob's, because for
-Alice \varname{gender}=female was sufficient on its own to produce the rejection --- no
-evaluation took place, so credit was never a factor --- while for Bob \varname{gender}=male
+Alice \varname{gender}=female was sufficient on its own to produce the rejection (no
+evaluation took place, so credit was never a factor), while for Bob \varname{gender}=male
 merely opened the evaluation that \varname{credit}=bad then caused.
 We will verify at the end of this section that \ourapproach satisfies all seven desiderata,
 while PN, PS, PNS fail some of them. Later, we will also revisit this example and its
@@ -397,7 +397,7 @@ conditioned on upstream factual values, optionally excised near the factual valu
 \medskip\noindent Upstream-only conditioning operationalises the intuition shared with
 the descriptive-normality literature \citep{Halpern2015-HALGCA,
 icardNormalityActualCausal2017, hitchcock2009cause}: factual upstream values play the role of the
-\emph{default} against which counterfactual alternatives are graded --- the same role a
+\emph{default} against which counterfactual alternatives are graded, the same role a
 stipulated baseline plays in causal analyses of harm \citep{beckersHarm2022}, where a
 default contract fixes what counts as a departure from the expected course of events.
 \ourapproach does not aim to resolve the specific counterexamples motivating that
@@ -428,8 +428,8 @@ p(\mathbf{x}'), & \text{otherwise},
 \]
 where $B_\epsilon(\mathbf{x})$ denotes the $\epsilon$-ball centered at $\mathbf{x}$.
 The support is therefore
-$\operatorname{supp}(\Delta_\epsilon(\mathbf{x})) = \operatorname{supp}(p) \setminus B_\epsilon(\mathbf{x})$
---- not just the factual point $\mathbf{x}$ but its entire
+$\operatorname{supp}(\Delta_\epsilon(\mathbf{x})) = \operatorname{supp}(p) \setminus B_\epsilon(\mathbf{x})$:
+not just the factual point $\mathbf{x}$ but its entire
 $\epsilon$-neighbourhood is excluded.
 \end{example}
 
@@ -451,8 +451,8 @@ to what counts as a meaningfully different value.
 
 \paragraph{Why $\epsilon$-excision?}
 Any method that asks ``what would happen if $\mathbf{X}$ had been different'' must
-operationalise what \emph{different} means. The observational marginal $p(\mathbf{x}')$ --- as in kernel SHAP
-\citep{lundberg2017unified} --- places mass near the factual value $\mathbf{x}$,
+operationalise what \emph{different} means. The observational marginal $p(\mathbf{x}')$ (as in kernel SHAP
+\citep{lundberg2017unified}) places mass near the factual value $\mathbf{x}$,
 conflating the necessity question (``what if $\mathbf{x}$ had genuinely differed?'')
 with evaluating essentially the same setting. The fully conditional posterior
 $p(x_k' \mid \mathbf{x}_{-k})$ conditions on all other observed features, potentially
@@ -603,7 +603,47 @@ hypothetical worlds, so $Y^s$ and $Y^n$ are conditionally independent given
 $\mathbf{u}$, and
 $P(Y^s\in A,\,Y^n\in B\mid\mathbf{u})=P_k^s(A\mid\mathbf{u})\,P_k^n(B\mid\mathbf{u})$.
 
-With the necessity-sufficiency measure fully defined, we are ready to characterize the causal impact of an event $X_k$. In particular, we will proceed by defining an arbitrary \emph{causal impact function} $ci$ --- the \emph{impact kernel} --- whose expectation over the necessity-sufficiency measure determines the causal impact. We first proceed with a formal definition of the causal impact measure, followed by several intuitive candidates for the impact kernel.
+\medskip\noindent\textit{A more general family.} Independence holds at the level of
+$\mathbf{u}$ only by construction; nothing forces the configuration $(\mathbf{C},\mathbf{T})$
+underlying $Y^s$ to coincide with the one underlying $Y^n$, since each of
+$P_k^s(\cdot\mid\mathbf{u})$ and $P_k^n(\cdot\mid\mathbf{u})$ marginalises its own
+copy of $\Gamma$ before the product is taken. This is one instance of a broader
+construction: replace the single $\Gamma$ with a joint variable-selection
+distribution $\Gamma^{s,n}$ on pairs
+$((\mathbf{C}_s,\mathbf{T}_s),(\mathbf{C}_n,\mathbf{T}_n))\in(2^{\mathbf{S}}\times2^{\mathbf{W}})^2$
+(each marginal recovering $\Gamma$), and weight the product of world-outcomes by
+$p^{\Gamma^{s,n}}$ before integrating over $\mathbf{u}$, rather than marginalising each
+world's configuration separately first. Definition~\ref{def:jointnecsuf} is the
+independent-product case, $\Gamma^{s,n}=\Gamma\otimes\Gamma$. The \emph{diagonal} case,
+$\Gamma^{s,n}$ supported on $\{((\mathbf{C},\mathbf{T}),(\mathbf{C},\mathbf{T}))\}$,
+instead couples the two worlds to a single shared configuration; this is the reading
+used informally in Figure~\ref{fig:pci-mechanism} and realised exactly by the
+per-configuration kernel $\Phi$ of Section~\ref{sec:relation_with_ac}. The two cases
+coincide whenever $ci$ is additively separable in $y^s$ and $y^n$, as in the Absolute
+Difference score (Example~\ref{ex:absolute_score}): linearity of expectation then lets
+each world's marginal be computed on its own, independent of any coupling. They can
+differ when $ci$ is not separable, as in the PNS binary score
+(Example~\ref{ex:pns_binary}), where the score depends on the covariance, under
+$\Gamma^{s,n}$, between sufficiency-favouring and necessity-favouring configurations.
+\Ourapproach{} adopts the independent-product case as its default because it supports
+tractable Monte Carlo estimation without tracking paired configurations; a user who
+wants the two worlds to share an explanation can instantiate the diagonal case
+instead.
+
+A second, orthogonal relaxation is available within a single world's own $\Gamma$:
+nothing in Definition~\ref{def:jointnecsuf} requires $p^\Gamma(\mathbf{C},\mathbf{T})$
+to factor as $p^{\Gamma_s}(\mathbf{C})p^{\Gamma_w}(\mathbf{T})$, as we do from
+Section~\ref{sec:relation_with_ac} onward for tractability of those results. A user who
+wants witnesses selected structurally instead, e.g.\ pruned to the graph-theoretic
+mediators lying on active paths from the sampled $\mathbf{C}$ to $Y$, can substitute a
+$\mathbf{T}\mid\mathbf{C}$-dependent $\Gamma$ directly into
+Definition~\ref{def:jointnecsuf} and Definition~\ref{def:causalimpact} unchanged, since
+both are stated for a general joint mass function $p^\Gamma$ on
+$2^{\mathbf{S}}\times2^{\mathbf{W}}$; only the later results that specifically assume
+$\Gamma_w$-uniformity (Theorem~\ref{th:local_max_to_ac} and
+Corollary~\ref{cor:marginalize}) would need re-derivation for such a $\Gamma$.
+
+With the necessity-sufficiency measure fully defined, we are ready to characterize the causal impact of an event $X_k$. In particular, we will proceed by defining an arbitrary \emph{causal impact function} $ci$, the \emph{impact kernel}, whose expectation over the necessity-sufficiency measure determines the causal impact. We first proceed with a formal definition of the causal impact measure, followed by several intuitive candidates for the impact kernel.
 
 \begin{definition}[Causal Impact Function and Its Expectation]  \label{def:causalimpact}
 Let $y^\star\in\dom(Y)$ denote the factual outcome value, and let $Y^s, Y^n \sim P_k^{s,n}$.
@@ -636,14 +676,18 @@ $\Gamma$ and an alternative value $\mathbf{c}'$ from $\Delta$ defines two
 counterfactual worlds on the \emph{same} noise: a \emph{necessity world}
 ($\mathrm{do}(\mathbf{C}=\mathbf{c}')$, witnesses held) giving $Y^n$, and a
 \emph{sufficiency world} ($\mathrm{do}(\mathbf{C}=\mathbf{c}^\star)$, witnesses
-held) giving $Y^s$. Conditional on $\mathbf{u}$ the two worlds are independent
-(the product structure of Definition~\ref{def:jointnecsuf}); the impact kernel
-$ci$ scores the pair, and its expectation over $\Gamma\otimes\Delta\otimes
-P_{\mathbf{U}}$ is the \ourapproach{} score
-(Definition~\ref{def:causalimpact}). The strip grounds the schematic in the
+held) giving $Y^s$, both drawn against the \emph{same} $(\mathbf{C},\mathbf{T})$
+for illustration (the diagonal case of the remark following
+Definition~\ref{def:jointnecsuf}). Conditional on $\mathbf{u}$ the two worlds are
+independent (the product structure of Definition~\ref{def:jointnecsuf}); the impact
+kernel $ci$ scores the pair. \Ourapproach{}'s realised score instead marginalises
+$\Gamma$ separately for each world (the independent-product case; see the same
+remark) before taking this expectation over $\Delta\otimes P_{\mathbf{U}}$
+(Definition~\ref{def:causalimpact}); the two agree here because $ci$ is additively
+separable. The strip grounds the schematic in the
 OBCB running example. \textbf{(b)} The impact kernel on the
 $(Y^n,Y^s)$ plane, shown for the Absolute Difference score
-$ci=|y^n-y^\star|-|y^s-y^\star|$ --- \emph{one} admissible choice of kernel
+$ci=|y^n-y^\star|-|y^s-y^\star|$, \emph{one} admissible choice of kernel
 (the PNS binary score and necessity-only variants are others). The factual
 reference lines $Y^n=y^\star$ (necessity) and $Y^s=y^\star$ (sufficiency) cross
 at the factual outcome; $ci$ is largest at the ``ideal cause'' corner where the
@@ -672,7 +716,7 @@ For the OBCB analysis we instantiate $ci$ as the PNS binary score defined in the
 following example, with $y^\star = \varname{loan} = 0$. This is the choice that produces
 the values in Table~\ref{tab:pci_decomp}.
 
-\begin{example}[PNS for Binary Outcomes]
+\begin{example}[PNS for Binary Outcomes]\label{ex:pns_binary}
 Assume the outcome $Y$ is binary with $\dom(Y)=\{0,1\}$, and let $y^\star=1$ denote
 the factual outcome. Let $Y^s$ and $Y^n$ denote the sufficiency and necessity
 outcome variables. Define the causal impact score
@@ -704,9 +748,9 @@ the exogenous noise $U_\text{check}$ falls into three regions:
 \end{itemize}
 In all regions, restoring Alice's factual values always yields a denial, so
 $P_k^s(\{0\}\mid\mathbf{u})=\tfrac{2}{3}$ everywhere (four suspect-containing
-$(\mathbf{C},\mathbf{T})$ combinations each with $p^\Gamma(\mathbf{C},\mathbf{T})=\tfrac{1}{3}\cdot\tfrac{1}{2}=\tfrac{1}{6}$
---- since $\mathbf{S}\cap\mathbf{W}=\emptyset$ here, rejection is vacuous and
-$\Gamma$ is just the product of marginals --- each contributing probability~1).
+$(\mathbf{C},\mathbf{T})$ combinations each with $p^\Gamma(\mathbf{C},\mathbf{T})=\tfrac{1}{3}\cdot\tfrac{1}{2}=\tfrac{1}{6}$,
+since $\mathbf{S}\cap\mathbf{W}=\emptyset$ here, rejection is vacuous and
+$\Gamma$ is just the product of marginals, each contributing probability~1).
 The necessity measure varies.
 
 In $u_1$, the witness holds $\varname{check\text{-}failed}=1$.
@@ -880,8 +924,8 @@ necessity-only $ci_N$ and a sufficiency-only $ci_S$ (\cref{sub:synthetic}), whos
 returns the absolute-difference $ci$ above. Each is a choice of $ci$ in the sense of
 Definition~\ref{def:causalimpact}.
 
-With the full machinery in place --- structural model, variable selection, alternative
-value distribution, joint necessity-sufficiency measure, and causal impact function ---
+With the full machinery in place (structural model, variable selection, alternative
+value distribution, joint necessity-sufficiency measure, and causal impact function),
 \ourapproach delivers the following properties.
 \begin{enumerate}[label=(\roman*)]
 \item \textbf{Generalisation of PN/PS/PNS.} When $\mathbf{S}=\{X_k\}$,
