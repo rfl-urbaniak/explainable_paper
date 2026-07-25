@@ -1,4 +1,4 @@
-\section{Synthetic Evaluation with Overdetermination and Undercutting}
+\section{Synthetic Evaluation Across Linear, Overdetermined, and Undercutting Archetypes}
 \label{sub:synthetic}
 
 This appendix gives the full model, estimator, and per-row analysis behind the synthetic-archetype result summarised in \cref{sec:evaluation}.
@@ -15,7 +15,9 @@ variable that plays no role.
 
 To evaluate \ourapproach in a setting that exhibits multiple distinct causal patterns
 simultaneously, we construct a synthetic structural causal model carrying three archetypes,
-linear necessary-and-sufficient, overdetermined-not-necessary, and preempted (gated),
+linear necessary-and-sufficient, overdetermined-not-necessary, and preempted
+(the undercutting archetype named in the section title, implemented here via a
+gate),
 together with an irrelevance control.\footnote{The classical motivating example is
 Sally and Billy throwing stones at a bottle: Sally's stone arrives first and shatters it;
 Billy's would have done the same had Sally's not preempted it. The case is canonical in
@@ -32,7 +34,7 @@ L_1, L_2 &\sim \mathcal{N}(0, 1), \quad O_1, O_2 \sim \mathcal{N}(1, 1), \quad
   P, D \sim \mathcal{N}(0, 1), \\
 \mathrm{lin}      &= 5 L_1 + 10 L_2, \\
 \mathrm{od}       &= \max(5 O_1,\, 5 O_2), \\
-\mathrm{gate}     &= \mathbb{1}\{\lvert L_2 \rvert \le \tau\}, \\
+\mathrm{gate}     &= \mathbbm{1}\{\lvert L_2 \rvert \le \tau\}, \\
 \mathrm{p\_branch}&= 5 P \cdot \mathrm{gate}, \\
 E &= \mathrm{lin} + \mathrm{od} + \mathrm{p\_branch}.
 \end{align*}
@@ -87,7 +89,7 @@ observations to read all archetypes off.
 
 \textit{Case 1 (preempted, contestable $O$ pair).} Filter:
 $\lvert L_2 \rvert > \tau$ (gate off, so $\mathrm{p\_branch} = 0$ regardless of $P$) and
-$\lvert O_1 - O_2 \rvert < \delta$ with $\delta = 1$ (the two overdetermined contributors
+$\lvert O_1 - O_2 \rvert < \kappa$ with $\kappa = 1$ (the two overdetermined contributors
 are close: the winner is barely the winner; we call such a pair \emph{contestable},
 since a small perturbation to either contributor could flip which one wins
 $\max(5O_1, 5O_2)$). Linear N+S on the $L$s, between-variable
@@ -96,7 +98,7 @@ should all be readable from this single observation.
 
 \textit{Case 2 (unpreempted, dominant $O$ winner).} Filter:
 $\lvert L_2 \rvert \le \tau$ (gate on, $P$ branch active) and
-$\lvert O_1 - O_2 \rvert > \delta$. The dominant winner is what makes the
+$\lvert O_1 - O_2 \rvert > \kappa$. The dominant winner is what makes the
 within-variable $S$-not-$N$ gap visible: the winner is large enough that alternatives
 rarely beat it (high $\Delta_S$), and the loser provides a partial floor when the winner
 is intervened (reduced $\Delta_N$). A contestable pair cannot show this within-variable

@@ -11,7 +11,7 @@ import pandas as pd
 from matplotlib.patches import Patch, Rectangle
 
 CACHE = Path("/tmp/archetypes_samples_20k.pkl")
-FIG_DIR = Path("/home/rafal/s76projects/explainable_paper/figures")
+FIG_DIR = Path(__file__).resolve().parent / "figures"
 N_BOOT = 4000
 SEED_BOOT = 0
 

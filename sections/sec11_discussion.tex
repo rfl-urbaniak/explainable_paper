@@ -114,6 +114,35 @@ Exposing $\Gamma$, $\Delta$, and $ci$ as user-facing choices is also a burden:
 a practitioner with no strong prior view on which suspect sets or alternative values are plausible has nothing
 principled to fall back on, and a bad choice can silently shift which variables
 the score favours, with no signal in the output that anything went wrong.
+
+\paragraph{Choosing $\mathbf{S}$ and $\mathbf{W}$ in practice.} Every worked
+example in this paper hand-picks the suspect and witness pools with full
+knowledge of the model's structure, which is not available to a practitioner
+starting from a large learned PSCM. Our default recommendation: take
+$\mathbf{S}$ to be whichever variables are under live consideration as
+candidate causes for the question at hand (the same choice a practitioner
+would have to make for but-for testing or SHAP alike), and take $\mathbf{W}$
+to be all remaining endogenous non-outcome variables not already in
+$\mathbf{S}$, i.e.\ every variable Definition~\ref{def:ac_intuitive}'s witness
+pool could legally contain. This costs the most sampling (\cref{sec:ac_benchmark}
+quantifies the resulting variance), but it never silently suppresses a genuine
+cause by omitting a witness that would have revealed it, since the joint
+$\Gamma$ marginalises over which subset of $\mathbf{W}$ is actually pinned on
+each draw rather than committing to one witness set up front. The failure
+mode to watch for is the opposite direction: if $\mathbf{S}$ itself omits a
+variable that mediates between two included suspects, PCI cannot detect that
+mediation (it can only witness against it), so a practitioner who suspects
+an omitted mediator should move it into $\mathbf{S}$, not $\mathbf{W}$, and
+compare the two runs directly, exactly as \cref{sec:obcb_shap}'s Option~B does
+for \varname{check-failed}. When sampling cost makes the full-$\mathbf{W}$
+default impractical, restricting $\mathbf{W}$ to variables structurally
+downstream of $\mathbf{S}$ and upstream of $Y$ (candidate mediators and
+confounding paths) is the next-cheapest defensible choice, since variables
+off every $\mathbf{S}\to Y$ path are causally inert witnesses whose pinning
+or freeing cannot change any counterfactual outcome (\cref{sec:discussion}'s
+sampling-cost discussion above formalises why inert witnesses are cheap to
+average over rather than enumerate).
+
 Finally, we deliberately limited what the AVM case study discloses: the apples-to-apples
 SHAP-vs-PCI comparison rests on the synthetic benchmark of \cref{sub:synthetic},
 with the production model serving as a feasibility witness, not as quantitative

@@ -61,7 +61,7 @@ We first recall Halpern's definition.
     \(\mathbf{C} = \mathbf{c}\) is an actual cause of \(\varphi\) in the causal setting \((M, \mathbf{u})\) if the following three conditions hold:
     \begin{itemize}
         \item \textbf{Factivity}: \((M, \mathbf{u}) \vDash (\mathbf{C} = \mathbf{c}\,)\) and \((M, \mathbf{u}) \vDash \varphi\),
-        \item \textbf{Context-sensitive Necessity}: There is a set of variables \(\mathbf{T} \subseteq \mathbf{V}\) and an alternative setting \(\mathbf{c'}\) of variables in \(\mathbf{C}\) such that if \((M, \mathbf{u}) \vDash \mathbf{T} = \mathbf{t^\star}\), then
+        \item \textbf{Context-sensitive Necessity}: There is a set of variables \(\mathbf{T} \subseteq \mathbf{V}\) and an alternative setting \(\mathbf{c'}\) of variables in \(\mathbf{C}\) such that, writing $\mathbf{t^\star}$ for the factual value of $\mathbf{T}$ in $(M,\mathbf{u})$,
             \[(M, \mathbf{u}) \vDash [\mathbf{C} \leftarrow \mathbf{c'}, \mathbf{T} \leftarrow \mathbf{t^\star}] \neg \varphi,\]
         \item \textbf{Minimality}: \(\mathbf{C}\) is minimal; there is no strict subset \(\mathbf{C_{sub}} \subset \mathbf{C}\) such that \(\mathbf{C_{sub}} = \mathbf{c_{sub}}\) satisfies the above two conditions where $\mathbf{c_{sub}}$ is the restriction of \(\mathbf{c}\) to the variables in \(\mathbf{C_{sub}}\).
         \end{itemize}
@@ -148,8 +148,12 @@ as zero.
     \begin{itemize}
     \item[(i)] the structural equations of $M$ downstream of $\mathbf{C}$ are continuous in
     $\mathbf{c}'$ under fixed $\mathbf{u}$;
-    \item[(ii)] $\neg\varphi$ is open in $\dom(Y)$ (or, more weakly, the boundary of
-    $\neg\varphi$ has measure zero under the pushforward of $Y$).
+    \item[(ii)] either $\neg\varphi$ is open in $\dom(Y)$, or, more weakly, the
+    boundary of $\neg\varphi$ has measure zero under the pushforward of $Y$
+    \emph{and} the witnessing alternative $\mathbf{c}'$ from context-sensitive
+    necessity satisfies $Y(\mathbf{c}')\in\operatorname{int}(\neg\varphi)$ (i.e.\
+    the witnessed outcome lies strictly inside $\neg\varphi$, not exactly on its
+    boundary).
     \end{itemize}
     Then
     \begin{align}
@@ -192,7 +196,9 @@ $\Delta_{\mathbf{C}}(\mathbf{s}^\star)$. We treat the two cases separately.
 $\Delta_{\mathbf{C}}(\{\mathbf{c}'\})>0$ by hypothesis, so the integral is at least
 $\Delta_{\mathbf{C}}(\{\mathbf{c}'\})>0$. \emph{Continuous case}: hypothesis~(i) gives
 continuity of the intervention map $\mathbf{c}'\mapsto Y$ at fixed $\mathbf{u}$;
-hypothesis~(ii) places $Y(\mathbf{c}')$ in the interior of $\neg\varphi$; pulling back
+hypothesis~(ii) places $Y(\mathbf{c}')$ in the interior of $\neg\varphi$ --- directly
+if $\neg\varphi$ is open (every point of an open set is interior), and by the added
+clause otherwise. Pulling back
 an open neighbourhood within $\neg\varphi$ yields an open neighbourhood of
 $\mathbf{c}'$ on which the indicator equals $1$, and this neighbourhood has positive
 Lebesgue measure and hence positive $\Delta_{\mathbf{C}}$-mass by the
@@ -213,9 +219,14 @@ a fact we will use in Proposition~\ref{prop:filter}.
 
 \medskip\noindent In settings with continuous outcomes and a threshold event such as
 $\varphi=\{Y>y_0\}$ (for instance the SIR overshoot benchmark of
-\cref{sec:sir_benchmark}), both hypotheses are satisfied, via the weaker clause of
-(ii): $\neg\varphi=\{Y\le y_0\}$ is closed rather than open, but its boundary is the
-single point $y_0$, which has measure zero under any continuous pushforward of $Y$.
+\cref{sec:sir_benchmark}), both hypotheses are typically satisfied via the weaker
+clause of (ii): $\neg\varphi=\{Y\le y_0\}$ is closed rather than open, but its
+boundary is the single point $y_0$, which has measure zero under any continuous
+pushforward of $Y$; the surviving requirement is that the specific witnessing
+alternative satisfies $Y(\mathbf{c}')<y_0$ strictly rather than $Y(\mathbf{c}')=y_0$
+exactly --- generic under a continuous pushforward, but not automatic, so a witness
+that lands exactly on the threshold needs a separate (measure-zero, hence
+non-generic) argument.
 (Literal openness of $\neg\varphi$ instead requires the strict inequality on the
 $\neg\varphi$ side, i.e.\ $\varphi=\{Y\ge y_0\}$, $\neg\varphi=\{Y<y_0\}$.)
 Binary-output models, where $Y$ takes values in $\{0,1\}$, satisfy
@@ -432,7 +443,20 @@ contradicting $\mathbf{C}^\dagger\in\mathcal{O}^\Sigma$. So minimality holds, an
 $\mathbf{C}^\dagger$ is an actual cause of $\varphi$.
 \end{proof}
 
-\medskip\noindent Necessity dilution is a property of $(M,\Delta)$ alone, not of $\Gamma$; we write $N(\mathbf{C})$ for $N(\mathbf{C},\mathbf{T})$ when the witness argument plays no role. The condition requires that the $\Delta$-mass of alternatives that flip the outcome does not grow as the candidate cause expands. Three settings make it automatic. \emph{(i) Single-pivot models}: one variable $X^\star\in\mathbf{S}$
+\medskip\noindent Necessity dilution is a property of $(M,\Delta)$ alone, not of
+$\Gamma$. Definition~\ref{def:necessity-dilution} is deliberately strong: it compares
+$N$ across \emph{every} pair of independently-chosen witness sets
+$\mathbf{T}^\sharp,\mathbf{T}^\dagger$, not merely at a shared witness set. That
+strength is exactly what licenses comparing $\mathbf{T}^\sharp$ against the optimal
+$\mathbf{T}^\dagger$ directly in the proof of Theorem~\ref{th:local_max_to_ac} above
+(Corollary~\ref{cor:marginalize}'s proof needs only the weaker same-$\mathbf{T}$
+special case, $N(\mathbf{C}^\sharp,\mathbf{T})\geq N(\mathbf{C}^\dagger,\mathbf{T})$
+for each shared $\mathbf{T}$, which the strong version implies). We write
+$N(\mathbf{C})$ for $N(\mathbf{C},\mathbf{T})$ where this does not depend on
+$\mathbf{T}$ at all --- i.e.\ pinning any admissible witness set at its factual
+values leaves the necessity integral for $\mathbf{C}$ unchanged, which is a
+structural property of $(M,\Delta,\mathbf{C})$ that should be checked case by case,
+not assumed from the notation. The condition requires that the $\Delta$-mass of alternatives that flip the outcome does not grow as the candidate cause expands. Three settings make it automatic, and satisfy the witness-independence just described. \emph{(i) Single-pivot models}: one variable $X^\star\in\mathbf{S}$
 is pivotal under $(M,\mathbf{u})$ and the others are structurally idle, so $N$ peaks at
 $\{X^\star\}$ and falls off as more suspects are added. \emph{(ii) Factored $\Delta$
 without Boolean-OR redundancy}: $\Delta_{\mathbf{C}}$ is a product of marginals

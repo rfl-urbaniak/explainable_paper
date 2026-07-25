@@ -144,11 +144,11 @@ of randomness ($\Gamma$, $\Delta$, $P_{\mathbf{U}}$, and the SCM-driven
 non-cause suspect):
 \begin{equation}\label{eq:nsj}
 \begin{aligned}
-N_C &= \mathbb{E}\bigl[\,\mathbb{1}\{Y^n \neq y^\star\}\,\bigr]
+N_C &= \mathbb{E}\bigl[\,\mathbbm{1}\{Y^n \neq y^\star\}\,\bigr]
        &&\text{(necessity: removal flips $Y$)},\\
-S_C &= \mathbb{E}\bigl[\,\mathbb{1}\{Y^s = y^\star\}\,\bigr]
+S_C &= \mathbb{E}\bigl[\,\mathbbm{1}\{Y^s = y^\star\}\,\bigr]
        &&\text{(sufficiency: holding at factual sustains $Y$)},\\
-J_C &= \mathbb{E}\bigl[\,\mathbb{1}\{Y^n \neq y^\star\}\,\mathbb{1}\{Y^s = y^\star\}\,\bigr]
+J_C &= \mathbb{E}\bigl[\,\mathbbm{1}\{Y^n \neq y^\star\}\,\mathbbm{1}\{Y^s = y^\star\}\,\bigr]
        &&\text{(joint PNS-style)}.
 \end{aligned}
 \end{equation}
@@ -174,7 +174,12 @@ $e_B$: $u=1$ (dehydration) & shooter   & $1/3$ & $1$     & $\mathbf{1/3}$ & $\ma
 \caption{PCI and Pearl on the basic desert traveller, under the scenario's
 forensic posterior. PCI's joint score $J$ ranks the same cause Pearl's
 $P(\text{caused})$ does in each scenario; PCI returns a graded reading where
-Pearl returns the binary $\{0, 1\}$.}
+Pearl returns the binary $\{0, 1\}$. The cells use the independent-product
+coupling of Definition~\ref{def:jointnecsuf} (Figure~\ref{fig:pci-mechanism}):
+$Y^s$ and $Y^n$ share only the noise realisation $u$ and are otherwise
+independent. A tighter coupling of the two worlds would rescale these cells
+(e.g.\ $1/6$ rather than $5/24$ for the dormant-cause row), so readers
+hand-verifying the table should match this coupling exactly.}
 \label{tab:pci-basic-dt}
 \end{table}
 
@@ -495,6 +500,22 @@ just drawn: it remains necessity-only, with no sufficiency check, and it fixes t
 contingency rather than averaging over it. The application is nonetheless evidence that
 tractable probabilistic actual causation is in demand in exactly the ML-driven settings
 \ourapproach targets.
+
+\paragraph{Necessity and sufficiency as an XAI method.}
+Closer to the ML audience's likely prior exposure, \citet{watson2021necessity} adapt
+Pearl's PN/PS directly into a local explanation method for black-box classifiers:
+given a specified causal structure over input features, they define probabilistic
+necessity and sufficiency scores for a feature (or feature subset) with respect to a
+model's prediction, and use them to generate minimal sufficient explanations and
+necessary-feature rankings, benchmarked against LIME, Anchors, and SHAP-style
+attributions. The relation to \ourapproach is close in spirit to the relation with
+Fenton-Glynn and Fang drawn above: both build directly on Pearl's PN/PS rather than
+Halpern--Pearl's witnessed-necessity machinery, and neither packages the witness set
+as a user-facing, $\Gamma$-sampled search dimension the way \ourapproach does; unlike
+\ourapproach, \citeauthor{watson2021necessity}'s method targets model explanation
+specifically (attributing a classifier's prediction) rather than causal responsibility
+attribution for a realized outcome in a structural model, the distinction drawn in
+Section~\ref{sec:causal_impact}'s discussion of SHAP and Causal SHAP.
 
 \paragraph{Continuous and vector-valued PNS.}
 \citet{kawakammi_2024_poc_for_cont_and_vec} extend Tian and Pearl's binary PNS, PN, and

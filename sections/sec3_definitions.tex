@@ -33,6 +33,28 @@ Definition~\ref{def:causalimpact}, but the desiderata themselves are method-agno
 Here $V$ ranges over the candidate variables; in the general development
 it is the variable of interest $X_k$.
 
+\paragraph{Notation across sections.} The necessity/sufficiency pair and the
+overall score are renamed several times as later sections specialise them to
+new settings; Table~\ref{tab:notation} is a standing reference back to this
+section's canonical symbols.
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{p{2.9cm} p{3.1cm} p{6.4cm}}
+\toprule
+Canonical symbol (here) & Meaning & Aliases used later \\
+\midrule
+$P_k^s,\,P_k^n$ (Def.~\ref{def:jointnecsuf}) & sufficiency/necessity sub-probability measures for $X_k$ & $Y^s,\,Y^n$ as realised random variables (\cref{sec:eval_sir,sub:pearl_actual_cause_prob}); $y_{\mathrm{suff}},\,y_{\mathrm{nec}}$ (\cref{sec:sir_benchmark}) \\
+$ci$ (Def.~\ref{def:causalimpact}) & user-chosen causal impact function & $ci_N,\,ci_S$, its necessity/sufficiency components (\cref{sub:synthetic}) \\
+$\mathrm{PCI}_{X_k}=\mathbb{E}[ci]$ (Def.~\ref{def:causalimpact}) & the \ourapproach score of $X_k$ & $R(V\rightsquigarrow Y\mid\text{person})$, the pre-formal placeholder (\cref{sec:motivations}); ``\Ourapproach{} total score'' / ``mean total score'' (\cref{sec:sir_benchmark}) \\
+$\Delta_N(V),\,\Delta_S(V)$ (\cref{sub:synthetic}) & $ci_N,ci_S$ excess over an irrelevance-control variable $D$ & --- (introduced there; not reused elsewhere) \\
+$N(\mathbf{C},\mathbf{T})$ (Eq.~\eqref{eq:ackernel}) & necessity integral inside the AC-aligned kernel $\Phi$ & $N_C,\,S_C,\,J_C$, the necessity/sufficiency/joint indicators of the desert-traveller kernel (\cref{sub:pci-basic-dt}) \\
+\bottomrule
+\end{tabular}
+\caption{Standing reference for necessity/sufficiency notation renamed across sections. Each row's ``here'' column is this section's canonical symbol; later sections rename it for local readability, as flagged at first use.}
+\label{tab:notation}
+\end{table}
+
 We work within the context of probabilistic structural causal models \citep{causalityPearl}.
 \begin{definition}[Probabilistic Structural Causal Model (PSCM)]
 A probabilistic structural causal model is a tuple
@@ -214,7 +236,7 @@ the bottleneck explicit and manipulable.
 In the general framework we search for causes by intervening on subsets of suspects
 and holding fixed subsets of witnesses. To make this search tractable, we need a way to prioritize which subsets to consider.
 
-\begin{definition}[Variable Selection Distribution]
+\begin{definition}[Variable Selection Distribution]\label{def:variableselection}
 Let $\mathbf{X}$ be a finite set of random variables. A \emph{variable selection distribution} $\Gamma$ is a probability distribution on $2^\mathbf{X}$. We write $\mathbf{Y}\sim\Gamma$ to mean $\mathbf{Y}$ is a random subset of $\mathbf{X}$ drawn from $\Gamma$, with $p^\Gamma(\mathbf{y})$ denoting the probability assigned to $\mathbf{y}\subseteq\mathbf{X}$.
 \end{definition}
 
@@ -269,7 +291,9 @@ SHAP, and Causal SHAP on concrete examples is given in
 Section~\ref{sec:shap_examples}.}
 \end{example}
 
-In \ourapproach the variable selection distribution $\Gamma$ is a probability
+In \ourapproach the variable selection distribution $\Gamma$ generalises
+Definition~\ref{def:variableselection} (stated there for a single powerset
+$2^{\mathbf{X}}$) to a joint object: it is a probability
 mass function on $2^{\mathbf{S}} \times 2^{\mathbf{W}}$, governing the joint
 choice of an active suspect set $\mathbf{C} \subseteq \mathbf{S}$ and an active
 witness set $\mathbf{T} \subseteq \mathbf{W}$. The recommended construction
@@ -568,7 +592,18 @@ weights each configuration by its $\Gamma$-mass: more focused interventions
 receive whatever weight the practitioner assigns them; configurations with
 $X_k\notin\mathbf{C}$ would contribute $0$ to the attribution and are absent
 from the sum, so $P_k^s$ and $P_k^n$ are sub-probability measures with total
-mass $\Pr_\Gamma[X_k\in\mathbf{C}]\le 1$ rather than renormalized expectations. In the OBCB example,
+mass $\Pr_\Gamma[X_k\in\mathbf{C}]\le 1$ rather than renormalized expectations. A
+consequence worth flagging: because this total mass scales with how often $\Gamma$
+includes $X_k$ at all, comparing raw (unnormalised) scores \emph{across suspects}
+is $\Gamma$-invariant only when $\Gamma$ assigns every compared suspect the same
+inclusion probability $\Pr_\Gamma[X_k\in\mathbf{C}]$ --- as it does under the
+uniform and cardinality-constrained $\Gamma$'s used throughout this paper's
+examples, since those treat all suspects symmetrically. A non-uniform, asymmetric
+$\Gamma$ (e.g.\ one preferring some suspects over others, as when $\Gamma$ is
+learned from data) can make a suspect's score larger purely because $\Gamma$ visits
+it more often, not because it is a stronger cause; cross-suspect rankings under such
+a $\Gamma$ should instead compare each suspect's score after dividing by its own
+$\Pr_\Gamma[X_k\in\mathbf{C}]$. In the OBCB example,
 for $X_k=\varname{gender}$ under a noise realization in which Alice is credit-checked:
 the sufficiency world restores $\varname{gender}=\text{female}$ while holding
 $\varname{check\text{-}failed}$ fixed; the necessity world substitutes
@@ -625,7 +660,9 @@ Corollary~\ref{cor:marginalize}) would need re-derivation for such a $\Gamma$.
 With the necessity-sufficiency measure fully defined, we are ready to characterize the causal impact of an event $X_k$. We do so by defining an arbitrary \emph{causal impact function} $ci$, the \emph{impact kernel}, whose expectation over the necessity-sufficiency measure determines the causal impact. Below we first give the formal definition, then several intuitive candidates for the impact kernel.
 
 \begin{definition}[Causal Impact Function and Its Expectation]  \label{def:causalimpact}
-Let $y^\star\in\dom(Y)$ denote the factual outcome value, and let $Y^s, Y^n \sim P_k^{s,n}$.
+Let $y^\star\in\dom(Y)$ denote the factual outcome value, and let $(Y^s,Y^n)$ be
+distributed according to the sub-probability law $P_k^{s,n}$ (not a proper
+probability measure in general; see below).
 For any measurable function $ci: \dom(Y)^3\to\mathbb{R}$, the
 \emph{(expected) causal impact} of $X_k$, written $\mathrm{PCI}_{X_k}$, is defined as
 \begin{equation}\label{eq:causal-impact}
@@ -644,6 +681,43 @@ $X_k\notin\mathbf{C}$ contribute zero mass to $P_k^s$ and $P_k^n$ (and hence to
 $P_k^{s,n}$), correctly capturing that those configurations make no claim on $X_k$'s
 attribution.
 \end{definition}
+
+\medskip\noindent\textit{PCI in pseudocode.} Definitions~\ref{def:jointnecsuf}
+and~\ref{def:causalimpact} are stated measure-theoretically because \ourapproach must
+cover continuous, discrete, and mixed-type variables uniformly, and because that
+generality is what Theorem~\ref{th:ac-exp} needs. Operationally, under the
+independent-product default of the remark below, the score they define reduces to a
+short Monte Carlo loop:
+
+\begin{algorithm}[htbp]
+\caption{Monte Carlo estimator for $\mathbb{E}[ci]$ (independent-product default)}
+\label{alg:pci_generic}
+\begin{algorithmic}[1]
+\Require PSCM $M$; variable of interest $X_k$; factual event $(\mathbf{s}^\star,\mathbf{w}^\star,y^\star)$;
+$\Gamma$ on suspect/witness pairs; alternative-value distribution $\Delta$; impact function $ci$; sample budget $N$
+\Ensure Monte Carlo estimate of $\mathbb{E}[ci(Y^s,Y^n,y^\star)]$
+\For{$j=1,\dots,N$}
+  \State draw $\mathbf{u}_j\sim P_{\mathbf{U}}$
+  \State draw $(\mathbf{C}^s_j,\mathbf{T}^s_j)\sim\Gamma$ and, independently,
+         $(\mathbf{C}^n_j,\mathbf{T}^n_j)\sim\Gamma$, both conditioned on
+         $X_k$ being in the drawn suspect set \Comment{independent copy of
+         $\Gamma$ per world, as in the remark after Def.~\ref{def:jointnecsuf}}
+  \State draw $\mathbf{c}'_j\sim\Delta_{\mathbf{C}^n_j}(\mathbf{s}^\star)$
+  \State $y^s_j \gets M.\mathrm{run}\bigl(\mathbf{u}_j,\ \mathrm{do}(\mathbf{C}^s_j=\mathbf{s}^\star\!\mid_{\mathbf{C}^s_j},\ \mathbf{T}^s_j=\mathbf{w}^\star\!\mid_{\mathbf{T}^s_j})\bigr)$ \Comment{sufficiency world}
+  \State $y^n_j \gets M.\mathrm{run}\bigl(\mathbf{u}_j,\ \mathrm{do}(\mathbf{C}^n_j=\mathbf{c}'_j,\ \mathbf{T}^n_j=\mathbf{w}^\star\!\mid_{\mathbf{T}^n_j})\bigr)$ \Comment{necessity world, same $\mathbf{u}_j$}
+  \State $ci_j \gets ci(y^s_j, y^n_j, y^\star)$
+\EndFor
+\State \Return $\Pr_\Gamma[X_k\in\mathbf{C}]^2\cdot\frac{1}{N}\sum_j ci_j$
+\Comment{rescales the conditional mean back to $\mathbb{E}[ci]$'s sub-probability normalisation}
+\end{algorithmic}
+\end{algorithm}
+
+\noindent In words: draw noise $\mathbf{u}$; draw a suspect/witness configuration
+containing $X_k$ for each of the two worlds (independently); run the model twice under
+the \emph{same} $\mathbf{u}$, once restoring the suspects to factual (sufficiency) and
+once setting them to a fresh alternative (necessity); score the pair with $ci$; average.
+Appendix~\ref{sec:ac_benchmark} (Algorithm~\ref{alg:pci_thin_search}) specialises this
+to the necessity-only, per-suspect estimator used in the actual-causality benchmark.
 
 \begin{figure*}[t]
 \centering
@@ -726,7 +800,14 @@ We now illustrate the full computation for Alice's gender attribution using this
 With $\mathbf{S}=\{\varname{gender},\varname{credit}\}$,
 $\mathbf{W}=\{\varname{check\text{-}failed}\}$, $\Gamma_s$ and $\Gamma_w$ uniform,
 $\Delta$ a point mass on the alternative binary value, and $y^\star=\varname{loan}=0$,
-the exogenous noise $U_\text{check}$ falls into three regions:
+the exogenous noise $U_\text{check}$ falls into three regions. (Definition~\ref{def:interlaw}
+makes the interventional law a point mass given the \emph{full} noise vector
+$\mathbf{u}$; below we coarsen $\mathbf{u}$ to these three $U_\text{check}$ regions and
+marginalise the remaining noise, in particular $U_{\text{loan-if-checked}}$, inside
+each region --- by iterated expectation this equals the full integral over
+$P_{\mathbf{U}}$, and is what lets a value like ``$P(\varname{loan}=1)=0.05$'' appear
+below despite Definition~\ref{def:interlaw}'s pointwise law being deterministic.)
+The three regions are:
 \begin{itemize}
 \item $u_1$ (prob.\ 0.2): Alice is checked regardless of gender;
   $\varname{check\text{-}failed}=1$ factually.

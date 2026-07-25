@@ -85,8 +85,11 @@ This verdict does not rest on counterfactual reasoning alone. Tracing the model 
 Actual causality's witness-based counterfactual test, developed below, recovers exactly this production-tradition verdict, so the diagnosis that gender alone is responsible is not an artifact of one chosen formalism.
 
 The structural pattern is what the actual-causality literature calls
-\emph{preemption} (sometimes \emph{undercutting})~\citep{lewis1973causation,
-actualCausalityHalpern}: two distinct causal routes
+\emph{preemption}, also called \emph{undercutting}~\citep{lewis1973causation,
+actualCausalityHalpern} --- the term we use from
+Section~\ref{sec:causal_impact} onward, paired with \emph{overdetermination} as
+the two archetypes the synthetic evaluation (\cref{sub:synthetic}) targets: two
+distinct causal routes
 might each have been sufficient to produce the outcome, but only one is actually
 engaged, with the other prevented from operating.
 Alice's gender preempted her credit by preventing the check from happening, so
@@ -148,7 +151,17 @@ disjoint from $\mathbf{C}$ such that:
     \item \textbf{Witnessed necessity.} Holding $\mathbf{T}$ at its factual
     setting $\mathbf{t}^\star$ while intervening on the cause overturns the
     outcome, for some alternative $\mathbf{c}'$ distinct everywhere from
-    $\mathbf{c}^\star$:
+    $\mathbf{c}^\star$\footnote{Halpern's original clause (restated without
+    this normalization as Definition~\ref{def:ac} in
+    Section~\ref{sec:relation_with_ac}) only requires $\mathbf{c}'\neq\mathbf{c}^\star$,
+    not a coordinatewise difference on every variable in $\mathbf{C}$; the two
+    are equivalent given minimality, since if $\mathbf{c}'$ agrees with
+    $\mathbf{c}^\star$ on some coordinate, dropping that coordinate from
+    $\mathbf{C}$ yields a smaller set that already witnesses necessity, so a
+    minimal $\mathbf{C}$ can always be witnessed by a fully-distinct
+    $\mathbf{c}'$. We state the fully-distinct version here for a cleaner
+    search procedure; Section~\ref{sec:relation_with_ac} uses Halpern's
+    original statement to keep the correspondence proofs literal.}:
     \[ (M,\mathbf{u})\bigl[\mathbf{C}\leftarrow\mathbf{c}',\;
                             \mathbf{T}\leftarrow\mathbf{t}^\star\bigr]
         \not\vDash Y=y^\star. \]
@@ -340,7 +353,7 @@ if the effect is likely when the cause counterfactually occurs.
 We now formalize these ideas and discuss them in the context of the running example.
 
 \begin{definition}[Probability of Necessity]
-Let the probability of necessity \citep{pearl1999probabilities} be the probability that the outcome $Y=y$ would not have occurred in the absence of  $C = c^\star$, given that both occurred: \[\pn(C = c^\star, Y = y^\star) = P\!\left(Y_{c'} \neq y^\star \;\middle|\; C = c^\star, Y = y^\star\right),\] where $Y_{c'}$ is the value of $Y$ after intervening on $C$ with $c'\neq c^\star$.\footnote{Read in twin-network fashion \citep{balke1994probabilistic, causalityPearl}: one draws an exogenous noise $\mathbf{u}\sim P_{\mathbf{U}}$, computes the factual $Y$ under the unintervened structural equations and the counterfactual $Y_{c'}$ under the intervened equations, and conditions on the joint event $\{C=c^\star,Y=y^\star\}$. Both $Y$ and $Y_{c'}$ live on the same probability space and share the same $\mathbf{u}$.}
+Let the probability of necessity \citep{pearl1999probabilities} be the probability that the outcome $Y=y$ would not have occurred in the absence of  $C = c^\star$, given that both occurred: \[\pn(C = c^\star, Y = y^\star) = P\!\left(Y_{c'} \neq y^\star \;\middle|\; C = c^\star, Y = y^\star\right),\] where $Y_{c'}$ is the value of $Y$ after intervening on $C$ with $c'\neq c^\star$.\footnote{\label{fn:twin-network}Read in twin-network fashion \citep{balke1994probabilistic, causalityPearl}: one draws an exogenous noise $\mathbf{u}\sim P_{\mathbf{U}}$, computes the factual $Y$ under the unintervened structural equations and the counterfactual $Y_{c'}$ under the intervened equations, and conditions on the joint event $\{C=c^\star,Y=y^\star\}$. Both $Y$ and $Y_{c'}$ live on the same probability space and share the same $\mathbf{u}$.}
 \end{definition}
 
 Strictly speaking, the probability of necessity is less specific to a particular situation than the actual-cause test above: as written, it conditions only on the cause--outcome pair, so it asks whether being male causes \emph{someone} to be denied, not whether it caused \emph{Bob} (whose bad credit we already know) to be denied.

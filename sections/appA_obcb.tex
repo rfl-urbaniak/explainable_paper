@@ -42,7 +42,17 @@ intervene to restore $\varname{gender}=\text{female}$ and ask whether the loan i
 again denied:
 \begin{itemize}
 \item With $\varname{gender}=\text{female}$ and $\varname{credit}=\text{bad}$,
-$\varname{check}\sim\mathrm{Bern}(0.2)$.
+$\varname{check}\sim\mathrm{Bern}(0.2)$ \emph{unconditionally}; but PS conditions on
+$\varname{gender}=\text{male}, \varname{loan}=T$, which (since $\varname{loan}=T$
+forces $\varname{check}=1$) restricts $U_{\varname{check}}$ to the region
+compatible with $\varname{check}=1$ under $\varname{gender}=\text{male}$, measure
+$0.9$. Under the twin-network coupling of Footnote~\ref{fn:twin-network} (both
+worlds share $U_{\varname{check}}$, so $\varname{check}=1$ iff
+$U_{\varname{check}}<\gamma_M=0.9$ for men and $U_{\varname{check}}<\gamma_F=0.2$
+for women), restoring $\varname{gender}=\text{female}$ on this restricted
+$U_{\varname{check}}$ gives $\varname{check}=1$ with probability
+$0.2/0.9=2/9$, not the unconditional $0.2$; this does not change the answer below,
+since both branches deny the loan regardless of the exact branch probability.
 \item If checked, $\varname{check\text{-}failed}=1$, and from the loan-probability table
 $P(\varname{loan\text{-}if\text{-}checked}=1\mid\varname{gender}=\text{female},\varname{check\text{-}failed}=1)=0$.
 \item If not checked, $\varname{loan}=0$ deterministically.

@@ -28,21 +28,29 @@ clamped sum, capped at $0.95$. Lockdown is enacted at $t=1$, masking at
 $t=1.5$. The outcome is the \emph{overshoot}, the peak-to-final $S$ gap
 of the simulated trajectory, and the undesirable event is
 $\mathrm{os\_too\_high}=\mathbbm{1}[\mathrm{overshoot}>24]$ on a $100$-person
-population.
+population. Note that a policy can \emph{raise} this probability relative to
+no intervention at all: suppressing or flattening the infectious peak leaves
+more susceptibles unspent at the peak, so they are drawn down more slowly
+afterward, which can widen the peak-to-final gap that overshoot measures even
+though the intervention is clearly the safer outcome in absolute infection
+terms. A high $\Pr(\mathrm{overshoot}>24)$ under intervention is therefore not
+a sign error; it is a property of this particular summary statistic.
 
 \medskip\noindent\textit{But-for analysis gives a symmetric verdict.}
 Conditioning on each pair of policy decisions and drawing $100$ predictives
-yields $\Pr(\mathrm{overshoot}>24) \approx 0.07$ with no intervention, $0.67$
-with both policies, but $0.82$ with lockdown only and $0.87$ with mask only;
-so, since a higher overshoot probability marks a \emph{weaker} policy, mask-only
-is the weakest of the three intervention regimes.
+yields $\Pr(\mathrm{overshoot}>24) \approx 0.07$ with no intervention, $0.76$
+with both policies, $0.84$ with lockdown only, and $0.81$ with mask only ---
+the two single-policy regimes are statistically indistinguishable by
+but-for probability alone at this sample budget (a $0.03$ gap on $100$
+predictive draws is well within Monte Carlo noise), which is exactly the
+symmetry \ourapproach is designed to break.
 The mechanism is the asymmetric joint efficiency: combining the two policies
 caps the transmission reduction at $0.95$, but neither policy alone reaches
-that cap, and mask-only is comparatively weak unless lockdown is absent (which
-shifts mask efficiency from $0.1$ to $0.45$). But-for cannot disentangle this
-context dependence: it treats each policy as a binary cause and reports an
-aggregate effect, with no way to express that lockdown's causal contribution
-depends on whether masking is in force. Figure~\ref{fig:sir_trajectories}
+that cap, and mask's efficiency itself depends on whether lockdown is also
+active (falling from $0.45$ alone to $0.1$ under lockdown). But-for cannot
+disentangle this context dependence: it treats each policy as a binary cause
+and reports an aggregate effect, with no way to express that lockdown's
+causal contribution depends on whether masking is in force. Figure~\ref{fig:sir_trajectories}
 visualises the four interventional regimes: the trajectory bands collapse
 toward the unintervened baseline only under both policies, while either
 policy on its own leaves the infectious peak essentially intact, mirroring
@@ -83,13 +91,13 @@ actual-cause probabilities. We state them here so the comparison that follows
 does not depend on consulting that tutorial.
 
 \medskip\noindent\textit{\ourapproach thin-search procedure.}
-The suspects are $\{\mathrm{lockdown},\mathrm{mask}\}$. On each draw, the
-sampler draws witnesses from the policy efficiencies
+The suspects are $\{\mathrm{lockdown},\mathrm{mask}\}$. The witnesses are
+drawn from the policy efficiencies
 $\{\mathrm{lockdown\_efficiency}, \mathrm{mask\_efficiency},
-\mathrm{joint\_efficiency}\}$, excluding the suspect itself from the
-witness set. The factual world fixes both policies on
-($\mathrm{lockdown}=1, \mathrm{mask}=1$), so the sampler reads the factual
-outcome $y^\star=\mathrm{overshoot}$ from the same trajectory. For each
+\mathrm{joint\_efficiency}\}$, with the suspect itself excluded from the
+witness set on each draw. The factual world fixes both policies on
+($\mathrm{lockdown}=1, \mathrm{mask}=1$), so the factual outcome
+$y^\star=\mathrm{overshoot}$ is read from the same trajectory. For each
 suspect the sampler draws $2{,}500$ regimes, scoring each with the
 $|y^\star-y_{\mathrm{nec}}| - |y^\star-y_{\mathrm{suff}}|$ statistic and
 averaging across regimes. The $\mathrm{nec}$ term rewards regimes where
@@ -121,7 +129,7 @@ axis than along the sufficiency axis}: necessity pulls the outcome away from
 factual (evidence the suspect was needed), while sufficiency keeps it close
 (evidence the suspect alone sustains the outcome). A cause therefore shows up as
 a cloud displaced toward smaller $y_{\mathrm{nec}}$ at fixed $y_{\mathrm{suff}}$
-(the \emph{cause signature} on this geometry), whereas a non-cause hugs the
+--- the \emph{cause signature} on this geometry --- whereas a non-cause hugs the
 diagonal. Reading the two panels this way, the lockdown cloud is clearly
 displaced below the diagonal toward smaller $y_{\mathrm{nec}}$, while the mask
 cloud sits closer to it: the visual form of the verdict the next paragraph
@@ -150,7 +158,7 @@ $7.43$ in mean absolute distance), while the sufficiency terms agree to
 within $0.1$. This is consistent with the but-for finding that either
 policy \emph{alone} is roughly equally bad. What distinguishes the suspects
 is that lockdown's removal \emph{under context} (with witnesses pinned to
-factual) pulls the world further from $y^\star$ than mask's removal does:
+factual) pulls the world further from $y^\star$ than mask's removal does ---
 the lockdown cloud's displacement below the diagonal toward smaller
 $y_{\mathrm{nec}}$ in Figure~\ref{fig:eval_sir}, against the mask cloud's
 near-diagonal position.
@@ -163,22 +171,22 @@ worlds; the verdict is not an artifact of the chosen factual.
 
 \medskip\noindent\textit{Effect of context.}
 The ChiRho tutorial isolates one downstream variable at a time, asking
-whether the verdict survives holding that variable fixed at factual versus
-leaving it free. We replicate the experiment by partitioning the
-\ourapproach regimes by whether the sampler drew the partner-policy
-efficiency variable into the witness set
+whether the verdict survives when that variable is held fixed at factual
+versus left free. We replicate the experiment by partitioning the
+\ourapproach regimes by whether the partner-policy efficiency variable was
+sampled into the witness set
 (Figure~\ref{fig:sir_contexts}). For lockdown, with
 $\mathrm{mask\_efficiency}$ \emph{fixed} as a witness the score is $0.81$;
 \emph{free}, it rises to $2.67$. For mask, with $\mathrm{lockdown\_efficiency}$
 \emph{fixed} the score is $-0.48$ (mask fails to register as a cause at
 all under that context regime) and \emph{free} it rises to $2.72$.
 This experiment partitions the regimes differently from the single hand-set
-world reported earlier, so we do not expect the fixed/free scores to average
+world reported earlier, so the fixed/free scores are not expected to average
 to that world's totals (lockdown $1.54$, mask $0.76$).
 Lockdown therefore registers as a cause in both context regimes, while
 mask's status as a cause is contingent on its partner being allowed to
-adapt. \ourapproach thus expresses both \emph{which} policy is the
-dominant cause and \emph{how robustly} that causal claim holds across
+adapt. \ourapproach thus expresses not just \emph{which} policy is the
+dominant cause but \emph{how robustly} that causal claim holds across
 counterfactual contexts: a finer-grained verdict than the binary
 ``actual cause / not'' that classical AC produces.
 
@@ -186,8 +194,8 @@ counterfactual contexts: a finer-grained verdict than the binary
 \centering
 \includegraphics[width=0.92\linewidth]{docs/source/sir_benchmark/sir_contexts.png}
 \caption{Different-contexts experiment. Bars compare PCI total score (left)
-and $\Pr(\mathrm{overshoot}>24\mid\mathrm{necessity})$ (right) when we fix
-the partner-policy efficiency variable as a witness versus leave it free.
+and $\Pr(\mathrm{overshoot}>24\mid\mathrm{necessity})$ (right) when the
+partner-policy efficiency variable is fixed as a witness versus left free.
 Lockdown's score is positive in both regimes; mask's score flips sign
 across regimes, indicating that mask is a context-sensitive rather than a
 robust cause.}
@@ -196,9 +204,9 @@ robust cause.}
 
 \medskip\noindent\textit{Takeaway.}
 On the dynamical SIR setting, \ourapproach recovers both intuitions set out
-at the start of this appendix (lockdown is the proximate cause of excessive
+at the start of this appendix --- lockdown is the proximate cause of excessive
 overshoot and masking only a context-sensitive one, despite both policies
-appearing similar under but-for analysis) and expresses them on a
+appearing similar under but-for analysis --- and expresses them on a
 continuous, decomposable scale. The
 necessity-vs-sufficiency decomposition distinguishes suspects whose
 isolation effects are similar but whose removal-under-context effects
