@@ -1,4 +1,4 @@
-\section{Synthetic Evaluation with Overdetermination and Undercutting}
+\section{Synthetic Evaluation Across Linear, Overdetermined, and Undercutting Archetypes}
 \label{sub:synthetic}
 
 This appendix gives the full model, estimator, and per-row analysis behind the synthetic-archetype result summarised in \cref{sec:evaluation}.
@@ -14,9 +14,11 @@ contributions on a single structural model, and stays at the noise floor on a
 variable that plays no role.
 
 To evaluate \ourapproach in a setting that exhibits multiple distinct causal patterns
-simultaneously, we construct a synthetic structural causal model carrying three archetypes
---- linear necessary-and-sufficient, overdetermined-not-necessary, and preempted (gated)
---- together with an irrelevance control.\footnote{The classical motivating example is
+simultaneously, we construct a synthetic structural causal model carrying three archetypes,
+linear necessary-and-sufficient, overdetermined-not-necessary, and preempted
+(the undercutting archetype named in the section title, implemented here via a
+gate),
+together with an irrelevance control.\footnote{The classical motivating example is
 Sally and Billy throwing stones at a bottle: Sally's stone arrives first and shatters it;
 Billy's would have done the same had Sally's not preempted it. The case is canonical in
 the actual-causality literature \citep{actualCausalityHalpern} and motivates the preempted
@@ -32,7 +34,7 @@ L_1, L_2 &\sim \mathcal{N}(0, 1), \quad O_1, O_2 \sim \mathcal{N}(1, 1), \quad
   P, D \sim \mathcal{N}(0, 1), \\
 \mathrm{lin}      &= 5 L_1 + 10 L_2, \\
 \mathrm{od}       &= \max(5 O_1,\, 5 O_2), \\
-\mathrm{gate}     &= \mathbb{1}\{\lvert L_2 \rvert \le \tau\}, \\
+\mathrm{gate}     &= \mathbbm{1}\{\lvert L_2 \rvert \le \tau\}, \\
 \mathrm{p\_branch}&= 5 P \cdot \mathrm{gate}, \\
 E &= \mathrm{lin} + \mathrm{od} + \mathrm{p\_branch}.
 \end{align*}
@@ -87,7 +89,7 @@ observations to read all archetypes off.
 
 \textit{Case 1 (preempted, contestable $O$ pair).} Filter:
 $\lvert L_2 \rvert > \tau$ (gate off, so $\mathrm{p\_branch} = 0$ regardless of $P$) and
-$\lvert O_1 - O_2 \rvert < \delta$ with $\delta = 1$ (the two overdetermined contributors
+$\lvert O_1 - O_2 \rvert < \kappa$ with $\kappa = 1$ (the two overdetermined contributors
 are close: the winner is barely the winner; we call such a pair \emph{contestable},
 since a small perturbation to either contributor could flip which one wins
 $\max(5O_1, 5O_2)$). Linear N+S on the $L$s, between-variable
@@ -96,7 +98,7 @@ should all be readable from this single observation.
 
 \textit{Case 2 (unpreempted, dominant $O$ winner).} Filter:
 $\lvert L_2 \rvert \le \tau$ (gate on, $P$ branch active) and
-$\lvert O_1 - O_2 \rvert > \delta$. The dominant winner is what makes the
+$\lvert O_1 - O_2 \rvert > \kappa$. The dominant winner is what makes the
 within-variable $S$-not-$N$ gap visible: the winner is large enough that alternatives
 rarely beat it (high $\Delta_S$), and the loser provides a partial floor when the winner
 is intervened (reduced $\Delta_N$). A contestable pair cannot show this within-variable
@@ -189,8 +191,8 @@ claim given $\epsilon$. The pass region depends on the claim type: $\Delta > \ep
 claims pass to the right of $\epsilon$; $\lvert \Delta \rvert < \epsilon$ closeness
 claims pass inside the strip $(-\epsilon, +\epsilon)$; rank claims (\#1 and \#2) pass
 to the right of $0$, since they compare $\Delta_N(L_2)$ against the largest competing
-suspect. A row is counted confirmed when the point estimate lies in its green band; the
-CI is shown separately so the reader can see when a measurement is statistically tight
+suspect. We count a row as confirmed when the point estimate lies in its green band; we show the
+CI separately so the reader can see when a measurement is statistically tight
 and when its CI crosses the pass boundary. All ten dots fall inside their pass bands.
 The tightest row is \#10 ($\Delta_N(P) > \epsilon$ in Case~2, gate on): the point
 estimate $+0.250$ clears $\epsilon \approx 0.151$ by roughly one $\sigma$, with its CI
@@ -199,11 +201,11 @@ lower edge at $+0.079$ still inside the band on the right side of zero.
 
 \paragraph{Diagnostics that do not survive the bootstrap-derived threshold.}
 Two further claims about the preempted variable $P$
-fail at this threshold and are reported as diagnostics rather than numbered
+fail at this threshold; we report them as diagnostics rather than as numbered
 desiderata. (D1) The cross-regime flip
 $\Delta_N(P,\text{Case~2}) - \Delta_N(P,\text{Case~1})$ measures $+0.139$ with CI
-$[-0.081, +0.365]$: the CI straddles zero, so $P$'s rise across regimes is not, on
-its own, statistically resolved at the production budget. The qualitative content of
+$[-0.081, +0.365]$: the CI straddles zero, so we cannot statistically resolve $P$'s
+rise across regimes on its own at the production budget. The qualitative content of
 this claim is already carried by desiderata \#8 (P at the noise floor in Case~1) and
 \#10 (P above $\epsilon$ in Case~2): if both pass, the regime flip is a corollary, not
 an independent claim. (D2) The quantitative match

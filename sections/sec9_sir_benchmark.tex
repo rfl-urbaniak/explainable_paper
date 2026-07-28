@@ -28,21 +28,29 @@ clamped sum, capped at $0.95$. Lockdown is enacted at $t=1$, masking at
 $t=1.5$. The outcome is the \emph{overshoot}, the peak-to-final $S$ gap
 of the simulated trajectory, and the undesirable event is
 $\mathrm{os\_too\_high}=\mathbbm{1}[\mathrm{overshoot}>24]$ on a $100$-person
-population.
+population. Note that a policy can \emph{raise} this probability relative to
+no intervention at all: suppressing or flattening the infectious peak leaves
+more susceptibles unspent at the peak, so they are drawn down more slowly
+afterward, which can widen the peak-to-final gap that overshoot measures even
+though the intervention is clearly the safer outcome in absolute infection
+terms. A high $\Pr(\mathrm{overshoot}>24)$ under intervention is therefore not
+a sign error; it is a property of this particular summary statistic.
 
 \medskip\noindent\textit{But-for analysis gives a symmetric verdict.}
 Conditioning on each pair of policy decisions and drawing $100$ predictives
-yields $\Pr(\mathrm{overshoot}>24) \approx 0.07$ with no intervention, $0.67$
-with both policies, but $0.82$ with lockdown only and $0.87$ with mask only ---
-so, since a higher overshoot probability marks a \emph{weaker} policy, mask-only
-is the weakest of the three intervention regimes.
+yields $\Pr(\mathrm{overshoot}>24) \approx 0.07$ with no intervention, $0.76$
+with both policies, $0.84$ with lockdown only, and $0.81$ with mask only ---
+the two single-policy regimes are statistically indistinguishable by
+but-for probability alone at this sample budget (a $0.03$ gap on $100$
+predictive draws is well within Monte Carlo noise), which is exactly the
+symmetry \ourapproach is designed to break.
 The mechanism is the asymmetric joint efficiency: combining the two policies
 caps the transmission reduction at $0.95$, but neither policy alone reaches
-that cap, and mask-only is comparatively weak unless lockdown is absent (which
-shifts mask efficiency from $0.1$ to $0.45$). But-for cannot disentangle this
-context dependence: it treats each policy as a binary cause and reports an
-aggregate effect, with no way to express that lockdown's causal contribution
-depends on whether masking is in force. Figure~\ref{fig:sir_trajectories}
+that cap, and mask's efficiency itself depends on whether lockdown is also
+active (falling from $0.45$ alone to $0.1$ under lockdown). But-for cannot
+disentangle this context dependence: it treats each policy as a binary cause
+and reports an aggregate effect, with no way to express that lockdown's
+causal contribution depends on whether masking is in force. Figure~\ref{fig:sir_trajectories}
 visualises the four interventional regimes: the trajectory bands collapse
 toward the unintervened baseline only under both policies, while either
 policy on its own leaves the infectious peak essentially intact, mirroring
