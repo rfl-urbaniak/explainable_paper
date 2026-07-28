@@ -32,9 +32,10 @@ This correctly names her gender, not her credit, as the cause of her denial. But
 existing formalisations of actual causality have three limitations: they are
 all-or-nothing, treating a variable as either a cause or not with no notion of
 degree; they are computationally intractable beyond toy examples, because
-verifying that \emph{some} witness set, out of exponentially many, satisfies the
-definition requires an exhaustive search; and they were developed primarily for
-deterministic models.
+verifying that \emph{some} witness set --- a selection of variables held fixed at
+their actual values, our formal stand-in for a context --- satisfies the
+definition requires an exhaustive search over exponentially many candidates;
+and they were developed primarily for deterministic models.
 
 This paper introduces \emph{probabilistic causal impact} (\Ourapproach), an
 attribution method that returns a
@@ -168,44 +169,56 @@ It also incorporates the \emph{witness} mechanism from actual causality
 whether \emph{some} witness set, out of exponentially many, reveals the dependency;
 \ourapproach instead asks how much of a $\Gamma$-weighted distribution over
 candidate-cause and witness sets reveals it, replacing an existential quantifier
-with an expectation.
+with an expectation.%
+\footnote{That context should be weighted is intuitive. Suppose someone drops
+a lit match near a gas station and a fire results. In one scenario they are
+standing right next to the fuel pump when they drop it. In another they are
+two hundred feet away, far from anything flammable, but as they drop it a
+squirrel happens to be running past, and the match grazes its tail, setting
+it alight. Panicked, the squirrel runs toward the gas station, and its
+burning tail starts the fire there. A purely existential account of actual
+causality treats both scenarios the same: some witness set makes the
+match-drop a cause of the fire in each case, so both get an identical
+verdict. But the second scenario's causal chain runs through an improbable
+fluke, and intuitively the match-dropper bears less responsibility for it
+than in the first. Weighting witness sets gives \ourapproach a natural place
+to encode this: a $\Gamma$ that assigns little mass to freak contingencies
+like the squirrel's detour lets the score track how ordinary the enabling
+context was.}
 A witness set records which variables stay at their factual values while
 \ourapproach varies a candidate cause, so causal paths inactive in the factual world stay
 blocked even under intervention, delivering the
 context-sensitivity that ATE and CATE lack.
 
 This move makes \ourapproach tractable, but it is also the source of its main risk. Existential search over witness sets forces AC's brute-force enumeration; an
-expectation admits Monte Carlo sampling from $\Gamma$ instead, at a cost:
+expectation admits Monte Carlo sampling from $\Gamma$ instead, at a cost ---
 $\Gamma$-mass on witness sets that do not reveal a dependency can swamp a single
-witness set that does, or sampling can simply miss it if it is rare enough --- in the
-worst case, as expensive to find as enumeration itself (Section~\ref{sec:discussion}).
+witness set that does, or sampling can simply miss it if it is rare enough, in the
+worst case as expensive to find as enumeration itself (Section~\ref{sec:discussion}).
 
-Three considerations limit the damage. The first is practical: when a model
-carries structural regularities, sampling can be far cheaper than the worst
-case above suggests. In the actual-cause benchmark (Section~\ref{sec:ac_benchmark}),
+Three considerations limit the damage. The first is practical: models with
+structural regularities let sampling run far cheaper than the worst case above
+suggests. In the actual-cause benchmark (Section~\ref{sec:ac_benchmark}),
 for instance, any superset of a witness set witnesses the same attribution, so
 restricting the search to small witness sets costs little accuracy even though
 it never visits the larger sets a wider search would check. \ourapproach's
 definition assumes no such regularity, but when a model has it, the sampling
 budget can be spent narrowly without losing coverage.
 
-The second is formal: switching from existential search to an expectation does
+The second is formal --- switching from existential search to an expectation does
 not make \ourapproach blind to real actual causes. \cref{sec:relation_with_ac}
 proves, under conditions given there, that a candidate's \ourapproach score is
 positive exactly when it is an actual cause in Halpern's sense.
 
-The third is interpretive: $\Gamma$ decides how large a genuine cause's score
-is; a different $\Gamma$ would give the same cause a different score, so the
-size of a single score means nothing without reference to the $\Gamma$ used to
-compute it. What is meaningful is comparing two scores computed under the same
-$\Gamma$: the larger one marks the bigger contributor. Every worked example
-below sticks to simple, natural choices of $\Gamma$ for this reason --- either
-weighting all witness sets equally, or just capping how large a witness set
-may be --- so that comparisons across suspects stay fair. That is why we read
-\ourapproach scores by comparing them to each other throughout, rather than
-treating any one score as an absolute measurement.
+The third is more general. Missing a rare event under finite sampling is a
+familiar tradeoff, not a weakness specific to \ourapproach; every Monte Carlo
+procedure faces it. Here, though, the tradeoff is explicit: the sample budget
+and the witness-cardinality bound are choices the analyst makes, and
+Section~\ref{sec:ac_benchmark} reports how correct-attribution rate changes as
+each is loosened or tightened, so increasing either reduces the chance that
+sampling misses a rare witness set.
 
-Prior work anticipates pieces of this. Halpern's own account already averages over
+Prior work anticipates pieces of \ourapproach's construction. Halpern's own account already averages over
 exogenous noise when computing probabilities of causation
 \citep{actualCausalityHalpern}. \citet{Beckers2015CombiningPC} weights alternative
 replacement values by how probable they are. And both aggregate over witness sets in
@@ -243,27 +256,22 @@ model. This expressiveness does not by itself resolve non-identification,
 though: many mechanisms can fit the same observed data equally well, and no
 amount of representational flexibility changes that.
 
-We instead operate \ourapproach in a Bayesian setting that presumes access to
-a well-calibrated posterior induced by the trained model, itself a nontrivial
-requirement for complex neural or Gaussian-process mechanisms that we do not
-solve here. The earlier claim of no strong restrictions concerns only the
-model's functional form; obtaining this calibration remains a separate
-difficulty.
+Instead, \ourapproach operates in a Bayesian setting: its score is the
+expectation of the counterfactual outcome under the posterior over mechanisms
+that the trained model induces. The earlier claim of no strong restrictions is
+about the model's functional form only; obtaining a posterior that reflects
+the data well is a separate, nontrivial problem for complex neural or
+Gaussian-process mechanisms, and we do not attempt to solve it here.
 
-Non-identification typically forecloses estimation: when the causal graph and
-data cannot pin down a single mechanism, point-identification approaches have
-no answer to give. \ourapproach does not require identification, because its
-score is not a point estimate of one true mechanism's effect but an
-expectation over every mechanism the posterior finds plausible, much as
+When the causal graph and data cannot pin down a single mechanism,
+point-identification methods have no answer to give. \ourapproach's score
+works differently: it averages the counterfactual outcome over the full
+posterior the trained model induces, spanning both mechanisms and their
+parameters, without committing to a single specification first, much as
 Bayesian model averaging marginalizes over which of several candidate models
-generated the data. Wherever the data are silent about a mechanism, that
-marginalization reduces to the prior, so \ourapproach still returns a score
-where point-identification methods would have nothing to report.
-
-\ourapproach's breadth of application comes with a measure that exposes its design
-choices, the variable selection distribution, the alternative-value distribution,
-and the causal impact function, as explicit user-facing components rather than
-buried defaults.
+generated the data. It therefore returns a score where point-identification
+methods would have nothing to report, provided the posterior itself is
+reasonable.
 
 \paragraph{Paper structure.}
 The paper proceeds in five phases, laid out in Figure~\ref{fig:roadmap_inspirations},
@@ -315,8 +323,8 @@ approximate AC verdicts can be read off the kernel without enumerating witnesses
 probability of actual causation: on the canonical desert-traveller example
 \ourapproach recovers Pearl's within-scenario ranking with graded magnitudes, and
 a weak-poison variant reveals two further responsibility intuitions
-(path-reliability and cross-scenario reliability) that Pearl's binary indicator
-does not express but \ourapproach's expectation does.
+(path-reliability and cross-scenario reliability) that \ourapproach's expectation
+captures and Pearl's binary indicator cannot express.
 
 \cref{sec:discussion} closes the fifth phase with discussion. We engage related
 work where it bears on the argument. The broader literature on

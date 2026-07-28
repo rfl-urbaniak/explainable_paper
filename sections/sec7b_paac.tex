@@ -164,22 +164,20 @@ Under the spec above (computation in the companion notebook), the results are:
 \toprule
 Forensic posterior & Cause & $N$ & $S$ & $J$ & Pearl $P(\text{caused})$ \\
 \midrule
-$e_A$: $u=0$ (cyanide) & shooter   & $1/4$ & $11/12$ & $5/24$ & $0$ \\
+$e_A$: $u=0$ (cyanide) & shooter   & $1/4$ & $11/12$ & $1/6$ & $0$ \\
                        & poisoner  & $1/3$ & $1$     & $\mathbf{1/3}$ & $\mathbf{1}$ \\
 \addlinespace
 $e_B$: $u=1$ (dehydration) & shooter   & $1/3$ & $1$     & $\mathbf{1/3}$ & $\mathbf{1}$ \\
-                           & poisoner  & $1/4$ & $11/12$ & $5/24$ & $0$ \\
+                           & poisoner  & $1/4$ & $11/12$ & $1/6$ & $0$ \\
 \bottomrule
 \end{tabular}
 \caption{PCI and Pearl on the basic desert traveller, under the scenario's
 forensic posterior. PCI's joint score $J$ ranks the same cause Pearl's
 $P(\text{caused})$ does in each scenario; PCI returns a graded reading where
-Pearl returns the binary $\{0, 1\}$. The cells use the independent-product
-coupling of Definition~\ref{def:jointnecsuf} (Figure~\ref{fig:pci-mechanism}):
-$Y^s$ and $Y^n$ share only the noise realisation $u$ and are otherwise
-independent. A tighter coupling of the two worlds would rescale these cells
-(e.g.\ $1/6$ rather than $5/24$ for the dormant-cause row), so readers
-hand-verifying the table should match this coupling exactly.}
+Pearl returns the binary $\{0, 1\}$. The cells use the diagonal coupling of
+Definition~\ref{def:jointnecsuf} (Figure~\ref{fig:pci-mechanism}): $Y^s$ and
+$Y^n$ share both the noise realisation $u$ and the non-cause suspect's value,
+and are otherwise independent.}
 \label{tab:pci-basic-dt}
 \end{table}
 
@@ -199,8 +197,8 @@ cardinality-uniform average over the witness subsets (weights
 $\tfrac13,\tfrac16,\tfrac16,\tfrac13$ over $\emptyset,\{c\},\{d\},\{c,d\}$)
 brings the average down to $1/3$; the per-subset breakdown is in the companion notebook.
 
-\textbf{(3) The dormant cause is not at zero.} PCI assigns $5/24 \approx
-0.21$ to the dormant cause. This is not noise: in some witness configurations
+\textbf{(3) The dormant cause is not at zero.} PCI assigns $1/6 \approx
+0.17$ to the dormant cause. This is not noise: in some witness configurations
 the dormant cause's removal does flip $Y$, because averaging marginalises the
 non-cause suspect and PCI does not artificially pin the model to ``this
 scenario'' beyond the noise realisation itself. Pearl's binary indicator
@@ -344,18 +342,20 @@ enumeration matching the framework verifies them.
 \toprule
 Forensic posterior & Cause & $N$ & $S$ & $J$ & Pearl $P(\text{caused})$ \\
 \midrule
-$e_A$: $u=0, \xi=1$ (cyanide killed) & shooter   & $\approx 0.167$ & $\approx 0.958$ & $\approx 0.146$ & $0$ \\
-                                      & poisoner  & $\approx 0.208$ & $1$             & $\mathbf{\approx 0.208}$ & $\mathbf{1}$ \\
+$e_A$: $u=0, \xi=1$ (cyanide killed) & shooter   & $1/6$ & $23/24$ & $1/8$ & $0$ \\
+                                      & poisoner  & $5/24$ & $1$             & $\mathbf{5/24}$ & $\mathbf{1}$ \\
 \addlinespace
 $e_B$: $u=1$ (dehydration killed)    & shooter   & $1/2$           & $1$             & $\mathbf{1/2}$  & $\mathbf{1}$ \\
-                                      & poisoner  & $1/4$           & $\approx 0.750$ & $\approx 0.125$ & $0$ \\
+                                      & poisoner  & $1/4$           & $3/4$ & $0$ & $0$ \\
 \bottomrule
 \end{tabular}
 \caption{PCI and Pearl on the weak-poison desert traveller, under the
 scenario's forensic posterior. PCI's $J$ ranks the same cause Pearl's
 binary verdict does in each scenario; the magnitudes also reflect the
 asymmetry between the deterministic dehydration path and the stochastic
-cyanide path.}
+cyanide path. As in Table~\ref{tab:pci-basic-dt}, cells use the diagonal
+coupling of Definition~\ref{def:jointnecsuf}: $Y^s$ and $Y^n$ share both the
+noise realisation and the non-cause suspect's value.}
 \label{tab:pci-weak-dt}
 \end{table}
 
@@ -363,7 +363,7 @@ The three intuitions are all captured by $J$.
 
 \textbf{(1) Adding noise lowers the noisy cause's responsibility.} The
 poisoner in Scenario~A drops from $J = 1/3$ in the basic version
-(Table~\ref{tab:pci-basic-dt}) to $J \approx 0.208$ in the weak version
+(Table~\ref{tab:pci-basic-dt}) to $J = 5/24$ in the weak version
 (Table~\ref{tab:pci-weak-dt}). The drop comes through the sufficiency
 factor: when we hold $P$ at its factual value, the witness mechanism averages
 over configurations where $v_C$ is not pinned and the cyanide step's $\xi$
@@ -371,13 +371,16 @@ coin still acts. Even at $\xi = 1$ in the forensic posterior, the witness
 integration sees the fragility, and $J$ falls.
 
 \textbf{(2) Within a scenario, the operative cause still wins.} In
-Scenario~A, $J_{\text{poisoner}} \approx 0.208 > J_{\text{shooter}} \approx
-0.146$. Cyanide was the operative path, and PCI tracks that. In Scenario~B,
-$J_{\text{shooter}} = 1/2 > J_{\text{poisoner}} \approx 0.125$.
+Scenario~A, $J_{\text{poisoner}} = 5/24 > J_{\text{shooter}} = 1/8$. Cyanide
+was the operative path, and PCI tracks that. In Scenario~B,
+$J_{\text{shooter}} = 1/2 > J_{\text{poisoner}} = 0$: at $u=1$ the structural
+equation for $d$ reduces to $d = X$ regardless of $P$, so no witness
+configuration or alternative value lets the poisoner affect the outcome. PCI
+reports this as an exact zero rather than a small residual.
 
 \textbf{(3) Reliable beats unreliable, across scenarios.} The shooter in
-Scenario~B ($J = 1/2$) outranks the poisoner in Scenario~A ($J \approx
-0.208$). The dehydration path is deterministic; conditional on $u=1$,
+Scenario~B ($J = 1/2$) outranks the poisoner in Scenario~A ($J = 5/24$). The
+dehydration path is deterministic; conditional on $u=1$,
 holding $X$ at factual sustains $Y$ with probability $1$ regardless of the
 witness regime, so the shooter is a textbook responsible cause. The cyanide
 path is fragile; conditional on $u=0, \xi=1$, the sufficiency factor still

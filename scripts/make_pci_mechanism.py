@@ -17,11 +17,6 @@ the factual) collapse onto the same score whenever the magnitudes match. Four
 marked points at matching |x|,|y| in each quadrant make that many-to-one
 collapse concrete before any absolute value is taken.
 
-Panel (c) -- SUMMARY: a histogram of sampled ci draws across many
-(u, Gamma, Delta) configurations, coloured by sign (teal >= 0, tan < 0), with
-the mean marked and labelled as the PCI score -- a clearer view of "the score
-is an expectation over draws" than a scatter cloud with a single marker.
-
 Palette + redundant role encoding shared with make_example_dags.py so the figure
 reads as one family. Colour is never the sole channel.
 """
@@ -37,6 +32,7 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 from matplotlib.patches import FancyArrowPatch
+from matplotlib.lines import Line2D
 
 # ---------- palette (shared with make_example_dags.py) ----------
 TEAL = "#1F9AA6"
@@ -232,9 +228,7 @@ def panel_fork(ax):
 
 
 # ============================================================
-# Shared draws: panels (b) and (c) read the SAME sample, so the "four
-# quadrants" example in (b) is literally a subset of the distribution
-# summarised in (c), not two disconnected illustrations.
+# Shared draws feeding panel (b), seeded for a reproducible cloud.
 # ============================================================
 def sample_draws(seed=7, n=2500):
     rng = np.random.default_rng(seed)
@@ -307,7 +301,7 @@ def panel_quadrants(ax, X, Y, CI):
                 bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="none",
                           alpha=0.85))
 
-    # the full sampled cloud (same draws panel (c) histograms), faint
+    # the full sampled cloud, faint
     ax.scatter(X, Y, s=5, facecolor=INK, edgecolor="none", alpha=0.16,
                zorder=5)
 
@@ -320,14 +314,24 @@ def panel_quadrants(ax, X, Y, CI):
                    linewidths=1.3, zorder=9)
         cis = CI[idx]
         ax.text(-d * 0.95, d * 0.90,
-                f"4 sampled draws, one per quadrant,\nmatched on "
-                r"$|Y^n{-}y^\star|,|Y^s{-}y^\star|$:"
-                f"\n$ci\\in[{cis.min():.2f},{cis.max():.2f}]$ despite four "
-                "different directions",
+                r"$ci\in[$" f"{cis.min():.2f}, {cis.max():.2f}"
+                r"$]$ despite four different directions",
                 fontsize=6.6, color=INK, ha="left", va="top", zorder=9,
                 linespacing=1.35,
                 bbox=dict(boxstyle="round,pad=0.28", fc="white", ec=GOLD,
                           lw=1.1, alpha=0.95))
+
+    legend_elements = [
+        Line2D([0], [0], marker="o", color="none", markerfacecolor=INK,
+               markeredgecolor="none", alpha=0.6, markersize=5,
+               label="all sampled draws"),
+        Line2D([0], [0], marker="o", color="none", markerfacecolor=GOLD,
+               markeredgecolor="white", markeredgewidth=1.0, markersize=8,
+               label="one draw per quadrant, magnitude-matched"),
+    ]
+    ax.legend(handles=legend_elements, loc="lower right", fontsize=6.5,
+              frameon=True, framealpha=0.9, edgecolor="#cad2d8",
+              handletextpad=0.5, borderpad=0.5)
 
     ax.set_xlim(-d, d); ax.set_ylim(-d, d)
     ax.set_xlabel(r"necessity deviation  $Y^n - y^\star$", fontsize=9.0, color=INK)
@@ -335,59 +339,17 @@ def panel_quadrants(ax, X, Y, CI):
     ax.tick_params(labelsize=7.5, colors=CAP_COL)
     for s in ax.spines.values():
         s.set_color("#cad2d8")
-    ax.set_title(r"(b)  Same score, four quadrants",
-                 loc="left", fontsize=9.8, fontweight="bold", color=INK, pad=8)
-
-
-# ============================================================
-# Panel (c): summary -- the score is a mean over sampled draws
-# ============================================================
-def panel_summary(ax, CI):
-    score = CI.mean()
-
-    bins = np.linspace(-0.5, 1.0, 31)
-    counts, edges = np.histogram(CI, bins=bins)
-    centers = 0.5 * (edges[:-1] + edges[1:])
-    widths = edges[1:] - edges[:-1]
-    colors = [TEAL if c >= 0 else "#caa46a" for c in centers]
-    ax.bar(centers, counts, width=widths * 0.92, color=colors,
-           edgecolor="white", linewidth=0.4, zorder=3)
-
-    ax.axvline(0.0, color=OUT_EDGE, lw=1.3, ls=(0, (3, 2)), zorder=4)
-    ax.axvline(score, color=GOLD, lw=2.2, zorder=6)
-    ymax = counts.max() * 1.22
-    ax.set_ylim(0, ymax)
-    ax.annotate(rf"PCI score $=\mathbb{{E}}[ci]={score:.2f}$",
-                xy=(score, ymax * 0.90), xytext=(score + 0.14, ymax * 0.90),
-                fontsize=8.0, fontweight="bold", color=GOLD, ha="left",
-                va="center", zorder=7,
-                arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=1.2),
-                bbox=dict(boxstyle="round,pad=0.18", fc="white", ec=GOLD,
-                          lw=1.0, alpha=0.95))
-    ax.text(0.02, 0.97,
-            "each bar: draws from\none $(\\mathbf{u},\\mathbf{C},\\mathbf{T},\\mathbf{c}')$ sample\n"
-            "teal $ci{\\geq}0$, tan $ci{<}0$;\nsame draws as panel (b)",
-            transform=ax.transAxes, fontsize=6.6, color=CAP_COL, ha="left",
-            va="top", linespacing=1.3)
-
-    ax.set_xlim(-0.5, 1.0)
-    ax.set_xlabel(r"sampled $ci$ value", fontsize=9.0, color=INK)
-    ax.set_ylabel("draws", fontsize=9.0, color=INK)
-    ax.tick_params(labelsize=7.5, colors=CAP_COL)
-    for s in ax.spines.values():
-        s.set_color("#cad2d8")
-    ax.set_title(r"(c)  Summary: score = mean of sampled draws",
+    ax.set_title(r"(b)  The impact kernel on the signed deviation plane",
                  loc="left", fontsize=9.8, fontweight="bold", color=INK, pad=8)
 
 
 def emit(outdir):
-    fig, (ax1, ax2, ax3) = plt.subplots(
-        1, 3, figsize=(17.5, 5.4),
-        gridspec_kw=dict(width_ratios=[1.25, 1.0, 0.95], wspace=0.30))
+    fig, (ax1, ax2) = plt.subplots(
+        1, 2, figsize=(12.5, 5.6),
+        gridspec_kw=dict(width_ratios=[1.25, 1.0], wspace=0.30))
     panel_fork(ax1)
     X, Y, CI = sample_draws()
     panel_quadrants(ax2, X, Y, CI)
-    panel_summary(ax3, CI)
     fig.tight_layout()
     # Vector PDF for the paper (text/lines/patches stay vector; only the ci
     # heatmap is raster, embedded at high dpi); PNG is a quick preview.

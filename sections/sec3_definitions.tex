@@ -557,18 +557,30 @@ P\!\left(Y\in A \mid \mathbf{u},
 
 \textbf{(iii) Joint necessity-sufficiency measure.} On product rectangles
 $A\times B\subseteq\dom(Y)\times\dom(Y)$, set
-\begin{equation}
+\begin{align}
 P_k^{s,n}(A\times B)
 \;:=\;
 \int
-P_k^{s}(A\mid\mathbf{u})\,
-P_k^{n}(B\mid\mathbf{u})\,
-P_{\mathbf{U}}(d\mathbf{u}).
-\end{equation}
-This rectangle-by-rectangle specification extends uniquely (by Carath\'eodory's
-extension theorem) to a sub-probability measure on the product $\sigma$-algebra
-of $\dom(Y)\times\dom(Y)$, with total mass
-$\Pr_\Gamma[X_k\in\mathbf{C}]^2 \leq 1$.
+\sum_{\substack{(\mathbf{C},\mathbf{T})\\X_k\in\mathbf{C}}}
+&P\!\left(Y\in A \mid \mathbf{u},
+\mathrm{do}\!\left(\mathbf{C}=\mathbf{s}^\star\!\mid_{\mathbf{C}},
+\mathbf{T}=\mathbf{w}^\star\!\mid_{\mathbf{T}}\right)\right)
+\nonumber\\
+&\cdot\left[\int
+P\!\left(Y\in B \mid \mathbf{u},
+\mathrm{do}\!\left(\mathbf{C}=\mathbf{c}',\mathbf{T}=\mathbf{w}^\star\!\mid_{\mathbf{T}}\right)\right)
+\Delta_{\mathbf{C}}(\mathbf{s}^\star)(d\mathbf{c}')\right]
+p^\Gamma(\mathbf{C},\mathbf{T})
+\;P_{\mathbf{U}}(d\mathbf{u}).
+\end{align}
+Both terms are evaluated at the \emph{same} drawn $(\mathbf{C},\mathbf{T})$: one
+suspect/witness configuration is selected per noise realisation, and both the
+sufficiency and necessity worlds are built from it. This rectangle-by-rectangle
+specification extends uniquely (by Carath\'eodory's extension theorem) to a
+sub-probability measure on the product $\sigma$-algebra of
+$\dom(Y)\times\dom(Y)$, with total mass $\Pr_\Gamma[X_k\in\mathbf{C}] \leq 1$:
+integrating out $B$ or $A$ collapses the bracketed term to $1$, leaving exactly
+the single $\Gamma$-inclusion probability, not its square.
 \end{definition}
 
 \medskip\noindent
@@ -609,39 +621,45 @@ the sufficiency world restores $\varname{gender}=\text{female}$ while holding
 $\varname{check\text{-}failed}$ fixed; the necessity world substitutes
 $\varname{gender}=\text{male}$ under the same noise.
 
-The product decomposition in $P_k^{s,n}$ is legitimate because, conditional on
-$\mathbf{u}$, the sufficiency and necessity interventions operate in separate
-counterfactual regimes with no causal connection: $\mathrm{do}(\mathbf{C}=\mathbf{c}^\star)$
-and $\mathrm{do}(\mathbf{C}=\mathbf{c}')$ act on the same noise but in distinct
-hypothetical worlds, so $Y^s$ and $Y^n$ are conditionally independent given
-$\mathbf{u}$, and
-$P(Y^s\in A,\,Y^n\in B\mid\mathbf{u})=P_k^s(A\mid\mathbf{u})\,P_k^n(B\mid\mathbf{u})$.
+For a fixed $(\mathbf{C},\mathbf{T})$ and $\mathbf{u}$, the bracketed product inside
+$P_k^{s,n}$ is legitimate because the sufficiency and necessity interventions operate
+in separate counterfactual regimes with no causal connection:
+$\mathrm{do}(\mathbf{C}=\mathbf{c}^\star)$ and $\mathrm{do}(\mathbf{C}=\mathbf{c}')$ act
+on the same noise and the same held witnesses but in distinct hypothetical worlds, so
+$Y^s$ and $Y^n$ are conditionally independent given $\mathbf{u}$ and the shared
+$(\mathbf{C},\mathbf{T})$:
+$P(Y^s\in A,\,Y^n\in B\mid\mathbf{u},\mathbf{C},\mathbf{T})=
+P(Y^s\in A\mid\mathbf{u},\mathbf{C},\mathbf{T})\,
+P(Y^n\in B\mid\mathbf{u},\mathbf{C},\mathbf{T})$.
+This conditional independence is exploited configuration-by-configuration, before
+summing over $(\mathbf{C},\mathbf{T})$, rather than after each side has already been
+marginalised over its own copy of $\Gamma$.
 
-\medskip\noindent\textit{A more general family.} Independence holds at the level of
-$\mathbf{u}$ only by construction; nothing forces the configuration $(\mathbf{C},\mathbf{T})$
-underlying $Y^s$ to coincide with the one underlying $Y^n$, since each of
-$P_k^s(\cdot\mid\mathbf{u})$ and $P_k^n(\cdot\mid\mathbf{u})$ marginalises its own
-copy of $\Gamma$ before the product is taken. This is one instance of a broader
-construction: replace the single $\Gamma$ with a joint variable-selection
-distribution $\Gamma^{s,n}$ on pairs
+\medskip\noindent\textit{A more general family.} Nothing forces the configuration
+$(\mathbf{C},\mathbf{T})$ underlying $Y^s$ to coincide with the one underlying $Y^n$;
+Definition~\ref{def:jointnecsuf} is one instance of a broader construction: replace
+the single $\Gamma$ with a joint variable-selection distribution $\Gamma^{s,n}$ on
+pairs
 $((\mathbf{C}_s,\mathbf{T}_s),(\mathbf{C}_n,\mathbf{T}_n))\in(2^{\mathbf{S}}\times2^{\mathbf{W}})^2$
 (each marginal recovering $\Gamma$), and weight the product of world-outcomes by
-$p^{\Gamma^{s,n}}$ before integrating over $\mathbf{u}$, rather than marginalising each
-world's configuration separately first. Definition~\ref{def:jointnecsuf} is the
-independent-product case, $\Gamma^{s,n}=\Gamma\otimes\Gamma$. The \emph{diagonal} case,
-$\Gamma^{s,n}$ supported on $\{((\mathbf{C},\mathbf{T}),(\mathbf{C},\mathbf{T}))\}$,
-instead couples the two worlds to a single shared configuration; this is the reading
-used informally in Figure~\ref{fig:pci-mechanism} and realised exactly by the
-per-configuration kernel $\Phi$ of Section~\ref{sec:relation_with_ac}. The two cases
-coincide whenever $ci$ is additively separable in $y^s$ and $y^n$, as in the Absolute
-Difference score (Example~\ref{ex:absolute_score}): linearity of expectation then lets
-each world's marginal be computed on its own, independent of any coupling. They can
-differ when $ci$ is not separable, as in the PNS binary score
-(Example~\ref{ex:pns_binary}), where the score depends on the covariance, under
-$\Gamma^{s,n}$, between sufficiency-favouring and necessity-favouring configurations.
-\Ourapproach{} adopts the independent-product case as its default because it supports
-tractable Monte Carlo estimation without tracking paired configurations; a user who
-wants the two worlds to share an explanation can instantiate the diagonal case
+$p^{\Gamma^{s,n}}$ before integrating over $\mathbf{u}$. Definition~\ref{def:jointnecsuf}
+is the \emph{diagonal} case, $\Gamma^{s,n}$ supported on
+$\{((\mathbf{C},\mathbf{T}),(\mathbf{C},\mathbf{T}))\}$: both worlds share one drawn
+configuration. This is the reading illustrated in Figure~\ref{fig:pci-mechanism} and
+realised exactly by the per-configuration kernel $\Phi$ of
+Section~\ref{sec:relation_with_ac}. The \emph{independent-product} case,
+$\Gamma^{s,n}=\Gamma\otimes\Gamma$, instead marginalises each world's configuration
+separately before taking the product; the two cases coincide whenever $ci$ is
+additively separable in $y^s$ and $y^n$, as in the Absolute Difference score
+(Example~\ref{ex:absolute_score}): linearity of expectation then lets each world's
+marginal be computed on its own, independent of any coupling. They can differ when
+$ci$ is not separable, as in the PNS binary score (Example~\ref{ex:pns_binary}), where
+the score depends on the covariance, under $\Gamma^{s,n}$, between
+sufficiency-favouring and necessity-favouring configurations. \Ourapproach{} adopts
+the diagonal case as its default: it needs only one $\Gamma$-draw per Monte Carlo
+sample, and it is what every estimator in this paper
+(Algorithm~\ref{alg:pci_generic} and its specialisations) implements. A user who wants
+the two worlds explained independently can instantiate the independent-product case
 instead.
 
 A second, orthogonal relaxation is available within a single world's own $\Gamma$:
@@ -686,11 +704,11 @@ attribution.
 and~\ref{def:causalimpact} are stated measure-theoretically because \ourapproach must
 cover continuous, discrete, and mixed-type variables uniformly, and because that
 generality is what Theorem~\ref{th:ac-exp} needs. Operationally, under the
-independent-product default of the remark below, the score they define reduces to a
+diagonal default of the remark above, the score they define reduces to a
 short Monte Carlo loop:
 
 \begin{algorithm}[htbp]
-\caption{Monte Carlo estimator for $\mathbb{E}[ci]$ (independent-product default)}
+\caption{Monte Carlo estimator for $\mathbb{E}[ci]$ (diagonal default)}
 \label{alg:pci_generic}
 \begin{algorithmic}[1]
 \Require PSCM $M$; variable of interest $X_k$; factual event $(\mathbf{s}^\star,\mathbf{w}^\star,y^\star)$;
@@ -698,24 +716,24 @@ $\Gamma$ on suspect/witness pairs; alternative-value distribution $\Delta$; impa
 \Ensure Monte Carlo estimate of $\mathbb{E}[ci(Y^s,Y^n,y^\star)]$
 \For{$j=1,\dots,N$}
   \State draw $\mathbf{u}_j\sim P_{\mathbf{U}}$
-  \State draw $(\mathbf{C}^s_j,\mathbf{T}^s_j)\sim\Gamma$ and, independently,
-         $(\mathbf{C}^n_j,\mathbf{T}^n_j)\sim\Gamma$, both conditioned on
-         $X_k$ being in the drawn suspect set \Comment{independent copy of
-         $\Gamma$ per world, as in the remark after Def.~\ref{def:jointnecsuf}}
-  \State draw $\mathbf{c}'_j\sim\Delta_{\mathbf{C}^n_j}(\mathbf{s}^\star)$
-  \State $y^s_j \gets M.\mathrm{run}\bigl(\mathbf{u}_j,\ \mathrm{do}(\mathbf{C}^s_j=\mathbf{s}^\star\!\mid_{\mathbf{C}^s_j},\ \mathbf{T}^s_j=\mathbf{w}^\star\!\mid_{\mathbf{T}^s_j})\bigr)$ \Comment{sufficiency world}
-  \State $y^n_j \gets M.\mathrm{run}\bigl(\mathbf{u}_j,\ \mathrm{do}(\mathbf{C}^n_j=\mathbf{c}'_j,\ \mathbf{T}^n_j=\mathbf{w}^\star\!\mid_{\mathbf{T}^n_j})\bigr)$ \Comment{necessity world, same $\mathbf{u}_j$}
+  \State draw $(\mathbf{C}_j,\mathbf{T}_j)\sim\Gamma$, conditioned on
+         $X_k$ being in the drawn suspect set \Comment{one shared configuration
+         for both worlds, as in the remark after Def.~\ref{def:jointnecsuf}}
+  \State draw $\mathbf{c}'_j\sim\Delta_{\mathbf{C}_j}(\mathbf{s}^\star)$
+  \State $y^s_j \gets M.\mathrm{run}\bigl(\mathbf{u}_j,\ \mathrm{do}(\mathbf{C}_j=\mathbf{s}^\star\!\mid_{\mathbf{C}_j},\ \mathbf{T}_j=\mathbf{w}^\star\!\mid_{\mathbf{T}_j})\bigr)$ \Comment{sufficiency world}
+  \State $y^n_j \gets M.\mathrm{run}\bigl(\mathbf{u}_j,\ \mathrm{do}(\mathbf{C}_j=\mathbf{c}'_j,\ \mathbf{T}_j=\mathbf{w}^\star\!\mid_{\mathbf{T}_j})\bigr)$ \Comment{necessity world, same $\mathbf{u}_j$ and $(\mathbf{C}_j,\mathbf{T}_j)$}
   \State $ci_j \gets ci(y^s_j, y^n_j, y^\star)$
 \EndFor
-\State \Return $\Pr_\Gamma[X_k\in\mathbf{C}]^2\cdot\frac{1}{N}\sum_j ci_j$
+\State \Return $\Pr_\Gamma[X_k\in\mathbf{C}]\cdot\frac{1}{N}\sum_j ci_j$
 \Comment{rescales the conditional mean back to $\mathbb{E}[ci]$'s sub-probability normalisation}
 \end{algorithmic}
 \end{algorithm}
 
-\noindent In words: draw noise $\mathbf{u}$; draw a suspect/witness configuration
-containing $X_k$ for each of the two worlds (independently); run the model twice under
-the \emph{same} $\mathbf{u}$, once restoring the suspects to factual (sufficiency) and
-once setting them to a fresh alternative (necessity); score the pair with $ci$; average.
+\noindent In words: draw noise $\mathbf{u}$; draw one suspect/witness configuration
+containing $X_k$, shared by both worlds; run the model twice under
+the \emph{same} $\mathbf{u}$ and the \emph{same} configuration, once restoring the
+suspects to factual (sufficiency) and once setting them to a fresh alternative
+(necessity); score the pair with $ci$; average.
 Appendix~\ref{sec:ac_benchmark} (Algorithm~\ref{alg:pci_thin_search}) specialises this
 to the necessity-only, per-suspect estimator used in the actual-causality benchmark.
 
@@ -726,19 +744,15 @@ to the necessity-only, per-suspect estimator used in the actual-causality benchm
 $X_k$, a single exogenous draw $\mathbf{u}\sim P_{\mathbf{U}}$ together with a
 candidate cause set $\mathbf{C}\ni X_k$ and witness set $\mathbf{T}$ from
 $\Gamma$ and an alternative value $\mathbf{c}'$ from $\Delta$ defines two
-counterfactual worlds on the \emph{same} noise: a \emph{necessity world}
+counterfactual worlds on the \emph{same} noise and the \emph{same}
+$(\mathbf{C},\mathbf{T})$: a \emph{necessity world}
 ($\mathrm{do}(\mathbf{C}=\mathbf{c}')$, witnesses held) giving $Y^n$, and a
 \emph{sufficiency world} ($\mathrm{do}(\mathbf{C}=\mathbf{c}^\star)$, witnesses
-held) giving $Y^s$, both drawn against the \emph{same} $(\mathbf{C},\mathbf{T})$
-for illustration (the diagonal case of the remark following
-Definition~\ref{def:jointnecsuf}). Conditional on $\mathbf{u}$ the two worlds are
-independent (the product structure of Definition~\ref{def:jointnecsuf}); the impact
-kernel $ci$ scores the pair. \Ourapproach{}'s realised score instead marginalises
-$\Gamma$ separately for each world (the independent-product case; see the same
-remark) before taking this expectation over $\Delta\otimes P_{\mathbf{U}}$
-(Definition~\ref{def:causalimpact}); the two agree here because $ci$ is additively
-separable. The strip grounds the schematic in the
-OBCB running example. \textbf{(b)} The impact kernel on the \emph{signed} plane
+held) giving $Y^s$. Conditional on $\mathbf{u}$ and $(\mathbf{C},\mathbf{T})$ the
+two worlds are independent (Definition~\ref{def:jointnecsuf}); the impact kernel
+$ci$ scores the pair, and its expectation over $\Gamma\otimes\Delta\otimes
+P_{\mathbf{U}}$ (Definition~\ref{def:causalimpact}) is \ourapproach{}'s realised
+score. The strip grounds the schematic in the OBCB running example. \textbf{(b)} The impact kernel on the \emph{signed} plane
 $(Y^n-y^\star,\,Y^s-y^\star)$, shown for the Absolute Difference score
 $ci=|y^n-y^\star|-|y^s-y^\star|$, \emph{one} admissible choice of kernel (the
 PNS binary score and necessity-only variants are others), before either
@@ -747,22 +761,17 @@ absolute deviations, the field is symmetric under an independent sign flip of
 either axis: four qualitatively different outcomes, necessity and sufficiency
 each landing above or below the factual value, collapse onto the same score
 whenever the magnitudes match. The faint cloud is a sample of $(Y^n,Y^s)$
-draws (shared with panel~(c)); the four gold points are actual draws, one per
+draws; the four gold points are actual draws, one per
 quadrant, with closely matched $|Y^n-y^\star|,|Y^s-y^\star|$, so their nearly
-equal $ci$ is a property of the sampled data, not a constructed coincidence.
-\textbf{(c)} The same draws' $ci$ values, histogrammed and coloured by sign;
-the gold line marks their mean, $\mathbb{E}[ci]$, the \ourapproach{} score for
-this variable. This replaces a single scatter-and-mean with the full
-distribution the Monte-Carlo estimate is drawn from.}
+equal $ci$ is a property of the sampled data, not a constructed coincidence.}
 \label{fig:pci-mechanism}
 \end{figure*}
 
 \medskip\noindent Informally, $ci$ is a user-defined scoring rule that translates
 the joint sufficiency--necessity measure into a single scalar
-(Figure~\ref{fig:pci-mechanism} summarises the whole construction: the two
-counterfactual worlds in panel~(a), the kernel that scores them in panel~(b),
-and the resulting score as a summary of many such draws in panel~(c)). The
-choice is not arbitrary:
+(Figure~\ref{fig:pci-mechanism} summarises the construction: the two
+counterfactual worlds in panel~(a), the kernel that scores them in
+panel~(b)). The choice is not arbitrary:
 the Absolute Difference example below is an instance of L$_1$ distance between outcomes, the
 same metric underlying Average Treatment Effect,
  Conditional Average Treatment Effect, and SHAP.
