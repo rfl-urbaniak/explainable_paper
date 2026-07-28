@@ -128,36 +128,22 @@ Time of application  & $68.61$  & $66.51$  & $117.97$ & $118.42$ \\
 \end{table}
 
 \paragraph{PCI vs.\ DCE across the input grid.}
-Figure~\ref{fig:contrast} contrasts the two methods on the same grid of factual
-values (age-$30$ prior, hours); the other three settings give qualitatively the
-same picture. The top panel plots the difference between the \ourapproach scores
-for age and for time of application: it is positive everywhere, so age is
-consistently the more responsible variable, with the gap largest near the steep
-region of the age-limit sigmoid and growing for ages further from the prior
-mean. The bottom panels show the DCE for the two inputs, and two differences
-with \ourapproach stand out. First, on the hour scale the DCE for time of
-application exceeds the DCE for age over most of the grid and traces a visible
-sine wave, whereas \ourapproach reports age as the more responsible variable
-everywhere. Second, switching the time unit from hours to minutes flattens the
-time DCE by roughly a factor of $60$, making the unit sensitivity explicit. Both
-are direct consequences of DCE's role as a rate-of-change estimator rather than
-a responsibility score, and both make it harder to compare across features and
+Figure~\ref{fig:eval_dce} (\cref{sec:evaluation}) contrasts the two methods on
+the same grid of factual values (age-$30$ prior); the other three settings
+give qualitatively the same picture. Panel (a) plots the difference between
+the \ourapproach scores for age and for time of application: it is positive
+everywhere, so age is consistently the more responsible variable. Panels (b)
+and (c) plot the corresponding difference in DCE magnitudes, on the hours and
+minutes scales respectively, and two differences with \ourapproach stand out.
+First, on the hour scale the DCE for time of application exceeds the DCE for
+age over most of the grid, the opposite of \ourapproach's verdict; only a
+narrow band near the sigmoid's inflection point favours age, and only because
+the gradient spikes sharply at that single point. Second, switching the time
+unit from hours to minutes flattens the time DCE by roughly a factor of $60$,
+collapsing almost all of panel (b)'s time-favouring region to near zero in
+panel (c) and making the unit sensitivity explicit. Both are direct
+consequences of DCE's role as a rate-of-change estimator rather than a
+responsibility score, and both make it harder to compare across features and
 across reparameterisations.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.62\linewidth]{figures/contour_diff_hours_age_1.png}\\[6pt]
-    \includegraphics[width=\linewidth]{figures/dce_age_time_hours_minutes.png}
-    \caption{\textbf{PCI vs.\ DCE on the credit-limit grid} (age-$30$ prior,
-    hours). \emph{Top:} difference between the \ourapproach scores for age and
-    for time of application; positive everywhere, largest near the steep region
-    of the age-limit sigmoid and for ages far from the prior mean, so age is
-    always the more responsible variable. \emph{Bottom:} DCE for age (left) and
-    time of application (right) on both unit scales. Age has the larger absolute
-    DCE only inside the narrow steep region of the sigmoid; elsewhere time of
-    application dominates on the hour scale and goes comparatively flat on the
-    minute scale, illustrating DCE's shape and unit sensitivity.}
-    \label{fig:contrast}
-\end{figure}
 
 \FloatBarrier  % keep the DCE figures within this appendix, not the next

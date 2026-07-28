@@ -33,28 +33,6 @@ Definition~\ref{def:causalimpact}, but the desiderata themselves are method-agno
 Here $V$ ranges over the candidate variables; in the general development
 it is the variable of interest $X_k$.
 
-\paragraph{Notation across sections.} The necessity/sufficiency pair and the
-overall score are renamed several times as later sections specialise them to
-new settings; Table~\ref{tab:notation} is a standing reference back to this
-section's canonical symbols.
-\begin{table}[h]
-\centering
-\footnotesize
-\begin{tabular}{p{2.9cm} p{3.1cm} p{6.4cm}}
-\toprule
-Canonical symbol (here) & Meaning & Aliases used later \\
-\midrule
-$P_k^s,\,P_k^n$ (Def.~\ref{def:jointnecsuf}) & sufficiency/necessity sub-probability measures for $X_k$ & $Y^s,\,Y^n$ as realised random variables (\cref{sec:eval_sir,sub:pearl_actual_cause_prob}); $y_{\mathrm{suff}},\,y_{\mathrm{nec}}$ (\cref{sec:sir_benchmark}) \\
-$ci$ (Def.~\ref{def:causalimpact}) & user-chosen causal impact function & $ci_N,\,ci_S$, its necessity/sufficiency components (\cref{sub:synthetic}) \\
-$\mathrm{PCI}_{X_k}=\mathbb{E}[ci]$ (Def.~\ref{def:causalimpact}) & the \ourapproach score of $X_k$ & $R(V\rightsquigarrow Y\mid\text{person})$, the pre-formal placeholder (\cref{sec:motivations}); ``\Ourapproach{} total score'' / ``mean total score'' (\cref{sec:sir_benchmark}) \\
-$\Delta_N(V),\,\Delta_S(V)$ (\cref{sub:synthetic}) & $ci_N,ci_S$ excess over an irrelevance-control variable $D$ & --- (introduced there; not reused elsewhere) \\
-$N(\mathbf{C},\mathbf{T})$ (Eq.~\eqref{eq:ackernel}) & necessity integral inside the AC-aligned kernel $\Phi$ & $N_C,\,S_C,\,J_C$, the necessity/sufficiency/joint indicators of the desert-traveller kernel (\cref{sub:pci-basic-dt}) \\
-\bottomrule
-\end{tabular}
-\caption{Standing reference for necessity/sufficiency notation renamed across sections. Each row's ``here'' column is this section's canonical symbol; later sections rename it for local readability, as flagged at first use.}
-\label{tab:notation}
-\end{table}
-
 We work within the context of probabilistic structural causal models \citep{causalityPearl}.
 \begin{definition}[Probabilistic Structural Causal Model (PSCM)]
 A probabilistic structural causal model is a tuple
@@ -744,7 +722,7 @@ to the necessity-only, per-suspect estimator used in the actual-causality benchm
 $X_k$, a single exogenous draw $\mathbf{u}\sim P_{\mathbf{U}}$ together with a
 candidate cause set $\mathbf{C}\ni X_k$ and witness set $\mathbf{T}$ from
 $\Gamma$ and an alternative value $\mathbf{c}'$ from $\Delta$ defines two
-counterfactual worlds on the \emph{same} noise and the \emph{same}
+counterfactual worlds on the same noise and the same
 $(\mathbf{C},\mathbf{T})$: a \emph{necessity world}
 ($\mathrm{do}(\mathbf{C}=\mathbf{c}')$, witnesses held) giving $Y^n$, and a
 \emph{sufficiency world} ($\mathrm{do}(\mathbf{C}=\mathbf{c}^\star)$, witnesses
@@ -754,7 +732,7 @@ $ci$ scores the pair, and its expectation over $\Gamma\otimes\Delta\otimes
 P_{\mathbf{U}}$ (Definition~\ref{def:causalimpact}) is \ourapproach{}'s realised
 score. The strip grounds the schematic in the OBCB running example. \textbf{(b)} The impact kernel on the \emph{signed} plane
 $(Y^n-y^\star,\,Y^s-y^\star)$, shown for the Absolute Difference score
-$ci=|y^n-y^\star|-|y^s-y^\star|$, \emph{one} admissible choice of kernel (the
+$ci=|y^n-y^\star|-|y^s-y^\star|$, one admissible choice of kernel (the
 PNS binary score and necessity-only variants are others), before either
 deviation is folded by $|\cdot|$. Because $ci$ depends only on the two
 absolute deviations, the field is symmetric under an independent sign flip of
@@ -763,7 +741,7 @@ each landing above or below the factual value, collapse onto the same score
 whenever the magnitudes match. The faint cloud is a sample of $(Y^n,Y^s)$
 draws; the four gold points are actual draws, one per
 quadrant, with closely matched $|Y^n-y^\star|,|Y^s-y^\star|$, so their nearly
-equal $ci$ is a property of the sampled data, not a constructed coincidence.}
+equal $ci$ values arise from the sampled data itself.}
 \label{fig:pci-mechanism}
 \end{figure*}
 

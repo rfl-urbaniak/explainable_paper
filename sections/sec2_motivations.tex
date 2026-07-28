@@ -1,6 +1,6 @@
 \section{Causal Impact: Motivations}\label{sec:motivations}
 
-The central difficulty in causal attribution is not computing counterfactuals: it is knowing which counterfactuals to compute. For example, consider two questions: the \emph{type} question (does $X$ tend to cause $Y$?) and the \emph{token}, or actual-causation, question (was $X$'s contribution live in the specific situation we are explaining?). Methods built to answer the former routinely miss the latter: a cause can be genuine in general, in that it does produce the outcome in other situations, yet have had its causal path inactive in the particular case at hand, so that it made no difference to what actually happened. This is the gap the running example below makes concrete.
+The central difficulty in causal attribution is not computing counterfactuals: it is knowing which counterfactuals to compute. Consider two questions: the \emph{type} question (does $X$ tend to cause $Y$?) and the \emph{token}, or actual-causation, question (was $X$'s contribution live in the specific situation we are explaining?). Methods built to answer the former routinely miss the latter, as Section~\ref{sec:intro}'s Alice already showed: a cause can be genuine in general yet causally inactive in one particular case, making no difference to what actually happened. The running example below makes this precise.
 There are principled probabilistic theories of type-level causal strength (\citet{sprenger2018foundations}, for instance, derives a difference-making measure $p^*(E \mid C) - p^*(E \mid \neg C)$ axiomatically), but they deliberately bracket the token-level question of which cause was live in the case at hand, and amalgamate mediators just where the context-sensitivity we are after requires tracking them.
 Among the closest predecessors of this approach, none individually achieves all of this: actual causality handles context sensitivity but is computationally intractable and not general enough;
 the probability of necessity and sufficiency scales well, but lacks context sensitivity.
@@ -27,8 +27,7 @@ The OBCB policy requires applicants to pass a credit score check, but it only pe
 \end{align*}
 \end{example}
 
-\noindent Why was Bob’s loan application denied?
-An intuitive explanation is that his credit was bad: had it been good, the outcome would have been different.
+\noindent An intuitive explanation for Bob's denial is that his credit was bad: had it been good, the outcome would have been different.
 In contrast, his gender does not appear to be responsible for the rejection: had it been different,
 his application still would have been denied (albeit this time due to $\varname{check}=F$).
 
@@ -60,8 +59,7 @@ However, this cause test is too coarse. Consider another case:
 Alice is a woman with bad credit.
 She applies for a loan with OBCB and is rejected.
 \end{example}
-\noindent Why was Alice denied the loan?
-Under the but-for clause for single cause candidates, neither her gender nor her credit score is responsible.
+\noindent Yet under the but-for clause for single cause candidates, neither her gender nor her credit score is responsible for Alice's denial.
 No matter how high her credit score, her application would still have been denied because the bank does not, effectively, loan to women.
 Had her gender been different, she would still have been denied for having bad credit.
 
@@ -77,8 +75,7 @@ $(M, \mathbf{u}) \vDash \mathbf{C} = \mathbf{c}^\star, Y = y^\star$ and $(M, \ma
 Under this generalization, the set  $\mathbf{c}^\star = \{\varname{gender}=\text{female}, \varname{credit}=\text{bad}\}$
  is jointly responsible for Alice's application being denied because 
  there exists $\mathbf{c}' = \{\varname{gender}=\text{male}, \varname{credit}=\text{good}\}$ that would change the decision
-and $\mathbf{c}^\star$ is minimal; neither gender nor credit alone would have changed the decision. But what can we say about the individual features? 
-We could say that the whole set bears responsibility but individual features do not, or that any feature in a cause set is partially and equally accountable.
+and $\mathbf{c}^\star$ is minimal; neither gender nor credit alone would have changed the decision. On individual features, we could say that the whole set bears responsibility but individual features do not, or that any feature in a cause set is partially and equally accountable.
 Neither is satisfying: the first denies that any single feature is responsible, and the second spreads responsibility evenly between them regardless of context.
 This conflicts with our intuition: OBCB did not evaluate Alice’s credit score, so her denial was caused by her gender.
 This verdict does not rest on counterfactual reasoning alone. Tracing the model on Alice's inputs, her denial is produced through the $\varname{gender}$ term of the $\varname{loan}$ equation, while $\varname{credit}$ enters only through $\varname{check\text{-}failed}$, which is false and never propagates to the outcome. So on a production (causal-process) view of causation \citep{hall2004two}, credit transmits no influence to Alice's denial at all.
@@ -188,9 +185,9 @@ asymmetric, and \citet{beckersSufficiency2021,beckersNESS2021} ground it in NESS
 sets, where a cause is a necessary element of a set that suffices for the outcome; and
 \citet{beckers2025nondeterministic} most recently extends it to nondeterministic
 structural models. We build on the
-same witnessed-necessity core, but, anticipating the probabilistic turn below, read its two
-halves, necessity under intervention and sufficiency of the held-fixed configuration, as graded
-quantities, not a single binary verdict.
+same witnessed-necessity core. It has two halves: necessity under intervention, and
+sufficiency of the held-fixed configuration. We treat both as graded quantities,
+anticipating the probabilistic turn below.
 
 Putting computational difficulties aside, the deeper limitation of the
 construction so far is that it lives entirely in deterministic models.
@@ -279,15 +276,16 @@ With this stochastic model in hand, we can state seven \emph{desiderata} that an
 responsibility attribution for Alice and Bob should satisfy, giving every construction
 in the rest of the paper an explicit target.
 Let $R(V \rightsquigarrow \varname{loan} \mid \text{person})$ denote the causal responsibility of variable $V$
-for the loan outcome at the individual level ($R$ is a placeholder for any attribution score and
-should not be identified with a specific formal quantity; \ourapproach interprets $R$ as the
-PCI score $\mathrm{PCI}_{X_k}$ of Definition~\ref{def:causalimpact}, but the desiderata are
+for the loan outcome at the individual level. $R$ is a placeholder for any attribution score, not a
+specific formal quantity; \ourapproach interprets $R$ as the
+PCI score $\mathrm{PCI}_{X_k}$ of Definition~\ref{def:causalimpact}.
+The desiderata themselves are
 method-agnostic: they encode the graded active/preempted/irrelevant ordering and the
 cross-individual asymmetry that the actual-causality and preemption literature
-already distinguishes \citep{lewis1973causation,hall2004two,actualCausalityHalpern},
-not properties reverse-engineered to flatter \ourapproach{}, so PN, PS, PNS, SHAP,
-and Causal SHAP are held to the same independently motivated standard below and in
-Section~\ref{sec:shap_examples}). Here $V$ ranges over the candidate variables; in the general development
+already distinguishes \citep{lewis1973causation,hall2004two,actualCausalityHalpern}.
+PN, PS, PNS, SHAP,
+and Causal SHAP are held to this same independently motivated standard below and in
+Section~\ref{sec:shap_examples}. Here $V$ ranges over the candidate variables; in the general development
 it is the variable of interest $X_k$.
 Attribution methods may produce signed values; the desiderata are stated in terms of absolute
 magnitudes $|R(\cdot)|$, allowing for directionality:

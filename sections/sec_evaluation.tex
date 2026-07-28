@@ -1,15 +1,12 @@
-\section{Empirical and Comparative Evaluation}\label{sec:evaluation}
+\section{Empirical and Comparative Evaluation: Overview}\label{sec:evaluation}
 
-With \ourapproach now defined (Section~\ref{sec:causal_impact}), this section
-previews what the rest of the paper establishes: how \ourapproach compares against
-the dominant feature-attribution baselines, against actual causality and Pearl's
-probability of causation, against a causal-effect attribution method, and how it
-behaves as the model grows from textbook size to a deployed system. Each result
-appears here at a glance --- one claim, one figure, one headline number --- with a
-pointer to where it is developed in full: the formal comparisons in
+With \ourapproach now defined, we preview how it performs against the dominant
+feature-attribution baselines, actual causality and Pearl's probability of
+causation, a causal-effect attribution method, and problem sizes ranging from
+textbook examples to a deployed system. Each subsection states one comparative
+claim and points to the full treatment: the formal comparisons in
 Sections~\ref{sec:shap_examples}--\ref{sub:pearl_actual_cause_prob}, and the complete
-protocols in the appendices. A reader who wants the shape of the argument can stop
-here; a reader who wants the mechanics can follow either pointer.
+protocols in the appendices.
 
 \subsection{\ourapproach matches actual-causality verdicts on canonical archetypes}
 \label{sec:eval_verdicts}
@@ -44,29 +41,72 @@ estimator, and per-row analysis in Appendix~\ref{sub:synthetic}.}
 
 \subsection{SHAP and Causal SHAP}
 \label{sec:eval_shap}
-\ourapproach separates direct and indirect causal contributions where SHAP-based
-attribution cannot. Both plain and Causal SHAP decompose a prediction's departure
-from a population mean rather than the realized outcome, which produces two failures
-at once. First, they assign attribution backward, against the arrows of the causal
-graph, failing desiderata D-YX, D-YM, and D-MX; Causal SHAP's interventional
-correction repairs only D-YX. Second, they tie the direct and indirect causes of an
-outcome (D-MXY). \ourapproach{}'s realized-outcome reference and witness mechanism
-break both symmetries, separating the direct cause from the indirect one at every
-instance. Section~\ref{sec:shap_examples} works through this in full on two worked
+\ourapproach separates direct and indirect causal contributions; SHAP-based
+attribution collapses them into one number. Both plain and Causal SHAP decompose a prediction's departure
+from a population mean. Because that mean is not the realized outcome, this choice
+produces two failures at once. First, they assign attribution backward, against the
+arrows of the causal graph; Causal SHAP's interventional correction fixes only part
+of this. Second, they tie together the direct and indirect causes of an outcome
+that a context-sensitive method should keep separate. \ourapproach{}'s
+realized-outcome reference and witness mechanism fix both problems, separating the
+direct cause from the indirect one at every instance, as
+Table~\ref{tab:eval_shap_desiderata} summarizes on the signal-with-mediation
+example ($X \to M \to Y$).
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Desideratum & Plain SHAP & Causal SHAP & \ourapproach \\
+\midrule
+D-XY: $X$ genuinely causes $Y$ & \checkmark & \checkmark & \checkmark \\
+D-MY: $M$ genuinely causes $Y$ & \checkmark & \checkmark & \checkmark \\
+D-XM: $X$ genuinely causes $M$ & \checkmark & \checkmark & \checkmark \\
+D-YX: no backward attribution from $Y$ to $X$ & \texttimes & \checkmark & \checkmark \\
+D-YM: no backward attribution from $Y$ to $M$ & \texttimes & \texttimes & \checkmark \\
+D-MX: no backward attribution from $M$ to $X$ & \texttimes & \texttimes & \checkmark \\
+D-MXY: the direct cause $M$ outranks the indirect cause $X$ & \texttimes & \texttimes & \checkmark \\
+\bottomrule
+\end{tabular}
+\caption{Desiderata satisfied (\checkmark) or violated (\texttimes) by plain SHAP,
+Causal SHAP, and \ourapproach on the signal-with-mediation example. Causal SHAP's
+interventional correction repairs only D-YX. Full numeric values and witness-set
+variants in Table~\ref{tab:signal_desid}.}
+\label{tab:eval_shap_desiderata}
+\end{table}
+
+Section~\ref{sec:shap_examples}
+states these failures as formal desiderata and works through both in full on two worked
 examples (OBCB and the signal-with-mediation chain), with the formal SHAP and Causal
 SHAP definitions in Appendix~\ref{app:signal}.
 
 \subsection{The Differential Causal Effect}
 \label{sec:eval_dce}
-The paper's next comparison targets a causal-effect attribution method: the
+The next comparison targets a causal-effect attribution method: the
 Differential Causal Effect (DCE) attributes an outcome change to features via local
 derivatives of the structural map. On a model with a non-monotone internal response,
 DCE and \ourapproach can disagree on sign and magnitude where the local gradient is
 unrepresentative of the counterfactual contrast \ourapproach integrates over:
-tracking the realized-outcome contrast rather than a point derivative keeps
-\ourapproach's attribution aligned with each feature's structural role.
-Appendix~\ref{sec:DCE} shows the full contrast over a credit-limit grid
-(Figure~\ref{fig:contrast}).
+tracking the realized-outcome contrast keeps
+\ourapproach's attribution aligned with each feature's structural role, without
+depending on a single local derivative.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/dce_contrast_overview.pdf}
+\caption{\textbf{\ourapproach stays consistent where DCE does not.} \textbf{(a)}
+\ourapproach ranks age above time of application everywhere on the credit-limit
+grid; the gap is somewhat denser around the age of rapid change (the sigmoid's
+steep region) but stays positive throughout. \textbf{(b), (c)} The same contrast for DCE, on the hours and minutes
+time scales: DCE favours time of application over most of the grid (the
+opposite of \ourapproach's verdict), except in a narrow band where its
+gradient spikes at the sigmoid's inflection point, and that pattern itself
+depends on which time unit is used. Full discussion in Appendix~\ref{sec:DCE}.}
+\label{fig:eval_dce}
+\end{figure}
+
+Appendix~\ref{sec:DCE} shows the full contrast over a credit-limit grid.
 
 \subsection{Scaling past exact actual causality}
 \label{sec:eval_scaling}
@@ -84,10 +124,11 @@ several orders of magnitude fewer cause--witness configurations.
 \includegraphics[width=0.49\linewidth]{docs/source/ac_benchmark/plot1_runtime.png}
 \hfill
 \includegraphics[width=0.49\linewidth]{docs/source/ac_benchmark/plot3_accuracy.png}
-\caption{\textbf{\ourapproach stays tractable where exact actual causality does
-not.} Left: wall-clock vs.\ problem size: exact subset enumeration times out
-near $17$ variables; the \ourapproach estimator continues to $\sim$$73$--$145$.
-Right: correct-attribution rate: witness-enabled configurations stay above
+\caption{\textbf{\ourapproach's estimator continues to work well past the point
+where exact actual-cause enumeration gives out.} Left, wall-clock vs.\ problem
+size: exact subset enumeration times out near $17$ variables, while the
+\ourapproach estimator continues to roughly $73$--$145$. Right,
+correct-attribution rate: witness-enabled configurations stay above
 $0.85$ well past the exact cut-off, degrading gradually with problem size. Full
 benchmark protocol in Appendix~\ref{sec:ac_benchmark}.}
 \label{fig:eval_scaling}
@@ -136,9 +177,13 @@ case demonstrates feasibility; it does not independently confirm correctness
 \hfill
 \includegraphics[width=0.49\linewidth]{figures/shap_figure.png}
 \caption{\textbf{\ourapproach vs.\ SHAP on a deployed automated valuation model.}
-Left: \ourapproach's context-sensitive attribution across the AVM's internal
-variables. Right: SHAP concentrates responsibility on a few downstream variables.
-Full pipeline and anonymized structure in Appendix~\ref{sec:avm}.}
+Both panels show a selection of the model's internal variables; real variable
+names are withheld under an NDA with the model's operator, and the two panels
+rank their own top variables independently, so a given position in one panel
+does not correspond to the same variable in the other. Left: \ourapproach's
+context-sensitive attribution across the AVM's internal variables. Right: SHAP
+concentrates responsibility on a few downstream variables. Full pipeline and
+anonymized structure in Appendix~\ref{sec:avm}.}
 \label{fig:eval_avm}
 \end{figure}
 
