@@ -19,7 +19,7 @@
 
 \usepackage[font=small]{caption}
 \captionsetup[table]{skip=14pt}
-\usepackage{float}  % [H] for the recurring roadmap maps, pinned at section ends
+\usepackage{float}  % [H] for the paper-structure roadmap figure in the intro
 \usepackage{placeins}  % \FloatBarrier to keep figures inside their section
 \raggedbottom  % don't stretch under-full pages (section-opening figures leave slack)
 
@@ -72,9 +72,23 @@
 \definecolor{petroil2} {RGB} {36, 165, 175}
 \definecolor{gold2} {RGB} {255, 130, 0}
 
+% Method-comparison table (Table~\ref{tab:method_comparison} in the intro)
+\usepackage{pifont}
+\usepackage{makecell}
+\definecolor{pcihl}{RGB}{230,241,251}
+\definecolor{okgreen}{RGB}{29,126,88}
+\definecolor{nogray}{RGB}{150,148,140}
+\definecolor{partialamber}{RGB}{186,117,23}
+\definecolor{pciblue}{RGB}{24,95,165}
+\newcommand{\yes}{\textcolor{okgreen}{\ding{51}}}
+\newcommand{\no}{\textcolor{nogray}{\ding{55}}}
+\newcommand{\partialm}{\textcolor{partialamber}{$\sim$}}
+\newcommand{\na}{\textcolor{nogray}{--}}
+\newcommand{\pciyes}{\textcolor{pciblue}{\ding{51}}}
+
 % # CODE SNIPPET STYLE (settings borrowed from Edward ICLR paper)
 \usepackage{listings}
-\usepackage[dvipsnames]{xcolor}
+\usepackage[dvipsnames,table]{xcolor}
 
 \definecolor{strings}{rgb}{.624,.251,.259}
 \definecolor{keywords}{rgb}{.224,.451,.686}
@@ -194,8 +208,8 @@
   Existing tools split into two camps. The Halpern--Pearl theory of
   \emph{actual causality} gives principled verdicts, but only for toy-sized
   models, because computing them requires enumerating counterfactual scenarios.
-  Scalable attribution methods like SHAP and LIME ignore the causal structure
-  that generated the data, and can give answers that conflict with a careful
+  Scalable attribution methods like SHAP (or even causal SHAP) at least partially 
+  ignore the causal structure that generated the data, and can give answers that conflict with a careful
   causal analysis. We close this gap with Probabilistic Causal Impact
   (\Ourapproach).
 
@@ -203,17 +217,16 @@
   of necessity and sufficiency, but recasts the question ``which variables
   explain this outcome?'' as an estimation problem on a probabilistic causal
   model that one can solve by approximate methods, such as MC. To compute a \ourapproach
-  score, the analyst specifies three ingredients: a distribution $\Gamma$ over
-  which subsets of variables to consider as candidate explanations, a
+  score, the analyst specifies three ingredients: a joint distribution $\Gamma$ over
+  which subsets of variables to consider as candidate explanations and which
+  further variables to hold fixed at their factual values, a
   distribution $\Delta$ over the counterfactual values to which those variables
   might be changed, and a function $ci$ that measures how much such a change
-  shifts the outcome. The result is a tractable, causally grounded explanation
-  procedure that applies to large models. A correspondence theorem shows that
-  \ourapproach agrees with actual causality on the small models where AC is
-  well-defined; against Pearl's probability of actual causation, \ourapproach
-  recovers Pearl's within-scenario ranking and additionally captures
-  path-reliability and cross-scenario reliability, intuitions Pearl's binary
-  indicator cannot capture.
+  shifts the outcome. The result is a tractable, causally grounded, graded
+  explanation procedure that applies to large models and, for natural choices
+  of $\Gamma$ and $\Delta$, provably agrees with
+  actual causality and Pearl's probability of causation wherever those are
+  defined.
 
   We evaluate \ourapproach in four increasingly demanding settings: a synthetic
   structural model with redundant and preempting causes, where \ourapproach
@@ -239,10 +252,10 @@
 \input{sections/sec1_intro}
 \input{sections/sec2_motivations}
 \input{sections/sec3_definitions}
+\input{sections/sec_evaluation}
 \input{sections/sec4_examples}
 \input{sections/sec7_actual_causality}
 \input{sections/sec7b_paac}
-\input{sections/sec_evaluation}
 \input{sections/sec11_discussion}
 
 \bibliographystyle{plainnat}

@@ -15,13 +15,13 @@ accuracy comparison on this system, so the quantitative validation of
 report (i) that \ourapproach{} is computationally feasible at production scale on a
 model with millions of training points, and (ii) that the qualitative SHAP-vs-PCI
 divergence observed in \cref{sec:shap_examples} persists when the model is a real
-trained one --- the shape of the two attribution distributions and where
+trained one: the shape of the two attribution distributions and where
 attribution mass lands, not the substantive content of the features they assign to.
 
 \paragraph{Setting.}
 The unit of analysis is a residential property transaction. \ourapproach is run
-against the full country-level production AVM; what we show here,
-however, is an illustrative prototype based on the state of New York rather than
+against the full country-level production AVM; what we show here is an
+illustrative prototype based on the state of New York rather than
 the full national model structure, which we cannot disclose in detail. The NY
 prototype shares the architecture and the causal-kernel construction described
 below with the full system but is smaller in scope and DAG complexity. The
@@ -35,8 +35,8 @@ standardized-truncated, or standardized.} $x_{con} = x_{k+1}, \dots, x_n$.
 
 \paragraph{Causal model.}
 A causal DAG $\mathcal{G}$ expresses our causal assumptions about the relationships between
-variables. It was written manually in collaboration with domain experts and refined by
-adding edges to break implied conditional independencies that are not upheld by the
+variables. We wrote it manually in collaboration with domain experts, then refined it by
+adding edges to break implied conditional independencies not upheld by the
 data. The simplified NY-prototype DAG has 25 nodes and 99 edges; topology with anonymised node
 labels is shown in Figure~\ref{fig:avm_dag}; the full national DAG is larger and is
 not shown. As demonstrated in \cref{sec:ac_benchmark}, even the prototype is
@@ -47,11 +47,11 @@ Variables $x_i$ are drawn from distributions $\mathrm{Dist}_i$ parameterized by 
 $f_i(\mathrm{pa}_i, \varphi_i)$ of the parent variables
 $\mathrm{pa}_i$\footnote{For root nodes, $\mathrm{pa}_i$ is empty.}:
 $x_i \sim \mathrm{Dist}_i(f_i(\mathrm{pa}_i, \varphi_i))$. We call these distributions
-\emph{causal kernels}. The distributions are either (truncated) normal or categorical,
-chosen based on the domain of the variable that they model. The functions $f_i$ are deep
-neural networks with parameters $\varphi_i$. The parameters $\varphi_i$ are optimized
-using cross-entropy loss for categorical distributions and average negative log
-likelihood for continuous distributions. The outcome is modeled by a sparse variational
+\emph{causal kernels}. The distributions are either (truncated) normal or categorical; we choose the
+family based on the domain of the variable it models. The functions $f_i$ are deep
+neural networks with parameters $\varphi_i$, which we optimize using cross-entropy
+loss for categorical distributions and average negative log likelihood for
+continuous distributions. The outcome is modeled by a sparse variational
 Gaussian Process (SVGP; \citealp{titsias2009variational,hensman2013gaussian}),
 $x_{gp} = (x_{con}, \eta(x_{cat}, \varphi_{cat}))$,
 $y \sim \mathcal{SVGP}\!\left(\mu(x_{gp}, \varphi_\mu), \kappa(x_{gp}, \varphi_\kappa)\right)$,
@@ -77,8 +77,8 @@ Example~\ref{ex:absolute_score}. We draw Monte Carlo samples from the expanded m
 Conditioning on a given suspect $X_i$ being active gives us a sample of the scores
 corresponding to that feature, which we use to estimate the expected value thereof. The
 estimation converges at around \num{25000} samples; for a batch of 50 data points this
-takes around 60 minutes on commodity hardware. Sampling needs to be performed only once;
-the samples can then be reused to compute the attribution score of any suspect. This
+takes around 60 minutes on commodity hardware. We need to sample only once; we can then reuse the samples to compute the
+attribution score of any suspect. This
 establishes that the method is computationally tractable at production scale, not a
 foregone conclusion, since the expanded-model construction in
 Section~\ref{sec:causal_impact} introduces additional latent dimensions per suspect and
@@ -94,7 +94,9 @@ Section~\ref{sec:shap_examples} establishes on controlled examples: SHAP's obser
 marginalisation allocates weight differently from intervention-and-witness-based PCI
 scores, and on a deep DAG this difference manifests as concentration on
 summary-statistic-like nodes. Figure~\ref{fig:eval_avm} shows the two attribution
-distributions with anonymised feature labels; what is reportable here is the shape of
-the two distributions, not which features they assign to.
+distributions with real feature identities withheld under NDA; the two panels
+rank their own top variables independently, so only the shape of each
+distribution is comparable, not which specific features receive attribution in
+one panel versus the other.
 
 
