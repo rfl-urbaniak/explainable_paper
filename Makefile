@@ -27,12 +27,14 @@ notebooks-smoke: FORCE
 serve-docs: FORCE
 	$(MAKE) -C docs serve
 
-# Trigger the automated GitHub Pages deploy (.github/workflows/docs.yml).
-# Deployment normally happens automatically on `git push origin main`; this is
-# just a manual kick that runs the same workflow. (Pages can only be published
-# from CI, so there is no local deploy.)
+# Trigger the automated GitHub Pages deploy (.github/workflows/docs.yml),
+# building and publishing from whichever branch you're currently on. This
+# bypasses the main-only auto-deploy gate: whatever's on the current branch
+# goes live immediately, merged or not, so use with care. The branch must
+# already be pushed to origin (Actions builds from the remote, not local
+# state). (Pages can only be published from CI, so there is no local deploy.)
 deploy: FORCE
-	gh workflow run docs.yml
+	gh workflow run docs.yml --ref $$(git branch --show-current)
 
 # ---- Overleaf sync (see scripts/sync-overleaf.sh) ---------------------------
 pull-from-overleaf: FORCE
