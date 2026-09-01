@@ -10,7 +10,7 @@ with the component choices listed here; a parallel hand-rolled enumeration match
 value within Monte Carlo noise (companion notebook
 \nb{desert\_traveler}).
 
-\subsection{Structural model (basic variant)}\label{app:desert_model}
+\subsection{Structural model}\label{app:desert_model}
 
 To compare directly with Pearl, we run PCI under the same forensic
 conditioning: one structural model per scenario, with $u$ pinned at the
@@ -33,10 +33,10 @@ The PCI components, all specified in advance:
         $\mathbf{T} \subseteq \mathbf{W}$, weighted by $\Gamma$
         cardinality-uniform (uniform on $|\mathbf{T}|$, then uniform within
         each cardinality class).
-    \item Non-cause suspect (the one not in $\mathbf{C}$) is \emph{not}
-        intervened on or hard-coded; it follows the SCM under the noise
+    \item We do \emph{not} intervene on or hard-code the non-cause suspect
+        (the one not in $\mathbf{C}$); it follows the SCM under the noise
         prior on its own coin, consistent with the formal definition's
-        requirement that only $\mathbf{C}$ and $\mathbf{T}$ are intervened
+        requirement that we intervene only on $\mathbf{C}$ and $\mathbf{T}$
         (Definition~\ref{def:jointnecsuf}).
     \item Alternative-value distribution $\Delta$ deterministically flips
         $1 \to 0$.

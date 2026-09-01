@@ -1,20 +1,24 @@
-\section{Synthetic Evaluation with Overdetermination and Undercutting}
+\section{Synthetic Evaluation Across Linear, Overdetermined, and Undercutting Archetypes}
 \label{sub:synthetic}
+
+This appendix gives the full model, estimator, and per-row analysis behind the synthetic-archetype result summarised in \cref{sec:evaluation}.
 
 Section~\ref{sec:shap_examples} has compared \ourapproach
 with SHAP and Causal SHAP on two small examples and shown where the SHAP
 framework's desiderata fail. Those examples cover only two causal patterns:
 overdetermination through a gating mediator (OBCB) and correlated mediation
-(signal). This section stress-tests \ourapproach across a wider catalogue of
+(signal). This appendix stress-tests \ourapproach across a wider catalogue of
 patterns, with an analytic ground truth available throughout: the question is
 whether \ourapproach correctly separates linear, overdetermined, and preempted
 contributions on a single structural model, and stays at the noise floor on a
 variable that plays no role.
 
 To evaluate \ourapproach in a setting that exhibits multiple distinct causal patterns
-simultaneously, we construct a synthetic structural causal model carrying three archetypes
---- linear necessary-and-sufficient, overdetermined-not-necessary, and preempted (gated)
---- together with an irrelevance control.\footnote{The classical motivating example is
+simultaneously, we construct a synthetic structural causal model carrying three archetypes,
+linear necessary-and-sufficient, overdetermined-not-necessary, and preempted
+(the undercutting archetype named in the section title, implemented here via a
+gate),
+together with an irrelevance control.\footnote{The classical motivating example is
 Sally and Billy throwing stones at a bottle: Sally's stone arrives first and shatters it;
 Billy's would have done the same had Sally's not preempted it. The case is canonical in
 the actual-causality literature \citep{actualCausalityHalpern} and motivates the preempted
@@ -30,7 +34,7 @@ L_1, L_2 &\sim \mathcal{N}(0, 1), \quad O_1, O_2 \sim \mathcal{N}(1, 1), \quad
   P, D \sim \mathcal{N}(0, 1), \\
 \mathrm{lin}      &= 5 L_1 + 10 L_2, \\
 \mathrm{od}       &= \max(5 O_1,\, 5 O_2), \\
-\mathrm{gate}     &= \mathbb{1}\{\lvert L_2 \rvert \le \tau\}, \\
+\mathrm{gate}     &= \mathbbm{1}\{\lvert L_2 \rvert \le \tau\}, \\
 \mathrm{p\_branch}&= 5 P \cdot \mathrm{gate}, \\
 E &= \mathrm{lin} + \mathrm{od} + \mathrm{p\_branch}.
 \end{align*}
@@ -85,7 +89,7 @@ observations to read all archetypes off.
 
 \textit{Case 1 (preempted, contestable $O$ pair).} Filter:
 $\lvert L_2 \rvert > \tau$ (gate off, so $\mathrm{p\_branch} = 0$ regardless of $P$) and
-$\lvert O_1 - O_2 \rvert < \delta$ with $\delta = 1$ (the two overdetermined contributors
+$\lvert O_1 - O_2 \rvert < \kappa$ with $\kappa = 1$ (the two overdetermined contributors
 are close: the winner is barely the winner; we call such a pair \emph{contestable},
 since a small perturbation to either contributor could flip which one wins
 $\max(5O_1, 5O_2)$). Linear N+S on the $L$s, between-variable
@@ -94,7 +98,7 @@ should all be readable from this single observation.
 
 \textit{Case 2 (unpreempted, dominant $O$ winner).} Filter:
 $\lvert L_2 \rvert \le \tau$ (gate on, $P$ branch active) and
-$\lvert O_1 - O_2 \rvert > \delta$. The dominant winner is what makes the
+$\lvert O_1 - O_2 \rvert > \kappa$. The dominant winner is what makes the
 within-variable $S$-not-$N$ gap visible: the winner is large enough that alternatives
 rarely beat it (high $\Delta_S$), and the loser provides a partial floor when the winner
 is intervened (reduced $\Delta_N$). A contestable pair cannot show this within-variable
@@ -118,7 +122,7 @@ read off stably regardless of $D$'s absolute drift.
 
 \paragraph{The threshold comes from the data.}
 The directional desiderata of the form $\Delta > \epsilon$ or $\lvert \Delta \rvert <
-\epsilon$ all depend on a single tolerance $\epsilon$. Rather than hand-pick it, we
+\epsilon$ all depend on a single tolerance $\epsilon$. We do not hand-pick it; we
 derive it from the Monte Carlo budget. For every $\Delta$ score appearing in any
 desideratum we bootstrap a standard error $\sigma_V$ and take
 \[
@@ -133,15 +137,15 @@ chatter at the chosen budget. At $N = 20\,000$ samples we measure $\sigma_{\max}
 0.092$, giving $\epsilon \approx 0.151$. Smaller budgets give a noisier $\epsilon$ that
 defeats the point (e.g.\ at $N = 5\,000$, $\sigma_{\max} \approx 0.18$ would push
 $\epsilon$ into the signal range); this fixes the production sample size for the
-section. Ten of the twelve desiderata listed in earlier drafts survive this honest
+section. Ten of the twelve desiderata we considered survive this
 threshold; the two that do not (cross-regime $P$ flip, and quantitative match of
 $\Delta_N(P)$ to $\Delta_N(L_1)$ in Case~2) are discussed below as diagnostics.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \footnotesize
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{r p{8.2cm} r r r}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{r p{7.5cm} r r r}
 \toprule
 \# & Formal desideratum & Measured & 95\% CI & Result \\
 \midrule
@@ -178,7 +182,7 @@ underlying numerical computations are listed in the companion notebook
 \label{tab:archetypes_desiderata}
 \end{table}
 
-Figure~\ref{fig:archetypes_threshold_forest} visualises the same ten claims as a forest
+Figure~\ref{fig:eval_archetypes} visualises the same ten claims as a forest
 plot: each row carries a plain-language statement of the structural expectation; the
 dot is the point estimate of the relevant $\Delta$ score (or difference of $\Delta$
 scores); the horizontal bar is its bootstrap $95\%$ CI; and the green band is the row's
@@ -187,48 +191,35 @@ claim given $\epsilon$. The pass region depends on the claim type: $\Delta > \ep
 claims pass to the right of $\epsilon$; $\lvert \Delta \rvert < \epsilon$ closeness
 claims pass inside the strip $(-\epsilon, +\epsilon)$; rank claims (\#1 and \#2) pass
 to the right of $0$, since they compare $\Delta_N(L_2)$ against the largest competing
-suspect. A row is counted confirmed when the point estimate lies in its green band; the
-CI is shown separately so the reader can see when a measurement is statistically tight
+suspect. We count a row as confirmed when the point estimate lies in its green band; we show the
+CI separately so the reader can see when a measurement is statistically tight
 and when its CI crosses the pass boundary. All ten dots fall inside their pass bands.
 The tightest row is \#10 ($\Delta_N(P) > \epsilon$ in Case~2, gate on): the point
 estimate $+0.250$ clears $\epsilon \approx 0.151$ by roughly one $\sigma$, with its CI
 lower edge at $+0.079$ still inside the band on the right side of zero.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\linewidth]{figures/archetypes_threshold_forest.png}
-\caption{Forest plot of the ten numbered archetype desiderata. Each row carries a
-plain-language statement of the structural expectation (the case label C1 / C2 marks
-the factual observation it applies to); the dot is the bootstrap point estimate of the
-relevant $\Delta$ score, the horizontal bar is its $95\%$ CI, and the green band is
-the row's \emph{pass region}, the set of $\Delta$ values that would confirm that
-row's claim given the bootstrap-derived threshold $\epsilon \approx 0.151$. The
-right-hand column annotates the formula and its point estimate. All ten dots fall
-inside their pass bands. Underlying numerical computations are in the companion
-notebook \nb{responsibility\_archetypes}.}
-\label{fig:archetypes_threshold_forest}
-\end{figure}
 
 \paragraph{Diagnostics that do not survive the bootstrap-derived threshold.}
-Two claims from earlier drafts of this section, both about the preempted variable $P$,
-fail at the honest threshold and are reported as diagnostics rather than numbered
+Two further claims about the preempted variable $P$
+fail at this threshold; we report them as diagnostics rather than as numbered
 desiderata. (D1) The cross-regime flip
 $\Delta_N(P,\text{Case~2}) - \Delta_N(P,\text{Case~1})$ measures $+0.139$ with CI
-$[-0.081, +0.365]$: the CI straddles zero, so $P$'s rise across regimes is not, on
-its own, statistically resolved at the production budget. The qualitative content of
+$[-0.081, +0.365]$: the CI straddles zero, so we cannot statistically resolve $P$'s
+rise across regimes on its own at the production budget. The qualitative content of
 this claim is already carried by desiderata \#8 (P at the noise floor in Case~1) and
 \#10 (P above $\epsilon$ in Case~2): if both pass, the regime flip is a corollary, not
 an independent claim. (D2) The quantitative match
 $\lvert \Delta_N(P) - \Delta_N(L_1) \rvert < \epsilon$ in Case~2: the signed gap
 $\Delta_N(P) - \Delta_N(L_1)$ measures $-0.267$ with
-CI $[-0.441, -0.106]$, whose magnitude $0.267$ is well above $\epsilon$. At this sample budget,
+CI $[-0.441, -0.106]$; the point estimate's magnitude $0.267$ lies above $\epsilon$, though
+the interval's near edge ($0.106$) dips below it. At this sample budget,
 gated $P$ does not quantitatively mirror ungated $L_1$; what we can claim is the
 weaker, qualitative statement that both clear the noise floor in Case~2, which is
 exactly desideratum \#10 for $P$ and built into Case~2 by construction for $L_1$.
 
-\paragraph{Where we go next.} The archetype evaluation establishes that \ourapproach
+The archetype evaluation establishes that \ourapproach
 recovers the right qualitative pattern on every standard causal motif against an
-analytic ground truth. Section~\ref{sec:DCE} now turns to a complementary
+analytic ground truth. \cref{sec:DCE} now turns to a complementary
 continuous-input comparison: how does \ourapproach behave next to gradient-based
 attribution (Differential Causal Effect of \citealp{butler2022differential}) when
 the same continuous cause is rescaled or moved out of the steep region of the

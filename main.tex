@@ -19,6 +19,9 @@
 
 \usepackage[font=small]{caption}
 \captionsetup[table]{skip=14pt}
+\usepackage{float}  % [H] for the paper-structure roadmap figure in the intro
+\usepackage{placeins}  % \FloatBarrier to keep figures inside their section
+\raggedbottom  % don't stretch under-full pages (section-opening figures leave slack)
 
 \usepackage{tikz}
 \usetikzlibrary{bayesnet}
@@ -69,9 +72,23 @@
 \definecolor{petroil2} {RGB} {36, 165, 175}
 \definecolor{gold2} {RGB} {255, 130, 0}
 
+% Method-comparison table (Table~\ref{tab:method_comparison} in the intro)
+\usepackage{pifont}
+\usepackage{makecell}
+\definecolor{pcihl}{RGB}{230,241,251}
+\definecolor{okgreen}{RGB}{29,126,88}
+\definecolor{nogray}{RGB}{150,148,140}
+\definecolor{partialamber}{RGB}{186,117,23}
+\definecolor{pciblue}{RGB}{24,95,165}
+\newcommand{\yes}{\textcolor{okgreen}{\ding{51}}}
+\newcommand{\no}{\textcolor{nogray}{\ding{55}}}
+\newcommand{\partialm}{\textcolor{partialamber}{$\sim$}}
+\newcommand{\na}{\textcolor{nogray}{--}}
+\newcommand{\pciyes}{\textcolor{pciblue}{\ding{51}}}
+
 % # CODE SNIPPET STYLE (settings borrowed from Edward ICLR paper)
 \usepackage{listings}
-\usepackage[dvipsnames]{xcolor}
+\usepackage[dvipsnames,table]{xcolor}
 
 \definecolor{strings}{rgb}{.624,.251,.259}
 \definecolor{keywords}{rgb}{.224,.451,.686}
@@ -151,28 +168,35 @@
 \newcommand{\nbsite}{https://rfl-urbaniak.github.io/explainable\_paper}
 \newcommand{\nb}[1]{\href{\nbsite/#1.html}{\texttt{#1}}}
 
-\title{A Computationally Feasible Framework for Causal Probabilistic Explanation}
+\title{A Computationally Feasible Framework for Causal Probabilistic Explanation\thanks{Code and companion notebooks are available at \url{https://rfl-urbaniak.github.io/explainable_paper/}. Correspondence to \texttt{rafal@basis.ai}.}}
 
 \author{%
-  Rafal Urbaniak\thanks{\texttt{rafal@basis.ai}} \\
+  Rafal Urbaniak \\
   Basis Research Institute
   \And
-  Eli Bingham\thanks{\texttt{eli@basis.ai}} \\
+  Eli Bingham \\
   Basis Research Institute
   \And
   Sam Witty \\
+  Sorbus AI
   ~
   \And
-  Poorva Garg\thanks{\texttt{poorvagarg@cs.ucla.edu}} \\
+  Daniel Waxman \\
+  Basis Research Institute \\
+  Massachusetts Institute of Technology
+  \And
+  Poorva Garg \\
   University of California, Los Angeles
   \And
-  Jack Feser\thanks{\texttt{jack@basis.ai}} \\
+  Emily Bunnapradist \\
   Basis Research Institute
   \And
-  Daniel Waxman\thanks{\texttt{dan@basis.ai}} \\
+  Jack Feser \\
   Basis Research Institute
+  \And
+  Drew Lehe \\
+  HouseIQ
 }
-% TODO: add Andy, Sam, Drew (full names, emails, affiliations).
 
 \begin{document}
 
@@ -181,60 +205,38 @@
 \begin{abstract}%
   Explaining why a specific outcome occurred, and which inputs deserve the
   blame or credit, is central to philosophical, scientific, and policy analysis.
-  Existing tools split into two camps. The Halpern--Pearl theory of
-  \emph{actual causality} gives principled verdicts, but only for toy-sized
+  Existing tools split into two camps. The theory of
+  \emph{actual causality} (AC) gives principled verdicts, but only for toy-sized
   models, because computing them requires enumerating counterfactual scenarios.
-  Scalable attribution methods like SHAP and LIME ignore the causal structure
-  that generated the data, and can give answers that conflict with a careful
+  Scalable attribution methods like SHAP (or even causal SHAP) at least partially 
+  ignore the causal structure that generated the data, and can give answers that conflict with a careful
   causal analysis. We close this gap with Probabilistic Causal Impact
-  (\Ourapproach).
-
+  (\Ourapproach). 
+  
   \ourapproach builds on actual causality and on Pearl's notions of probability
-  of necessity and sufficiency, but recasts the question ``which variables
-  explain this outcome?'' as an estimation problem on a probabilistic causal
-  model that one can solve by approximate methods, such as MC. To compute a \ourapproach
-  score, the analyst specifies three ingredients: a distribution $\Gamma$ over
-  which subsets of variables to consider as candidate explanations, a
-  distribution $\Delta$ over the counterfactual values to which those variables
-  might be changed, and a function $ci$ that measures how much such a change
-  shifts the outcome. The result is a tractable, causally grounded explanation
-  procedure that applies to large models. A correspondence theorem shows that
-  \ourapproach agrees with actual causality on the small models where AC is
-  well-defined; against Pearl's probability of actual causation, \ourapproach
-  recovers Pearl's within-scenario ranking and additionally captures
-  path-reliability and cross-scenario reliability, intuitions Pearl's binary
-  indicator cannot capture.
+  of necessity and sufficiency, but recasts the question of explainability as an estimation problem on a probabilistic causal
+  model that is easily approximated via Monte Carlo. By specifying a distribution over ``candidate explanations,'' a distribution over counterfactaul values, and a scoring function, \ourapproach provides tractable, causally grounded, graded explanations, generalizing AC and Pearl's probability of causation as degenerate cases. 
 
-  We evaluate \ourapproach in four increasingly demanding settings: a synthetic
-  structural model with redundant and preempting causes, where \ourapproach
-  recovers the AC literature's verdicts and generalises them to continuous
-  variables; a scaling benchmark where \ourapproach remains tractable as AC
-  enumeration becomes infeasible; a dynamical (Bayesian, ODE) epidemiological model
-   with continuous outcomes and asymmetric causes, where AC offers no verdict; and a deployed
-  spatio-temporal model with deep ML components trained on millions of points,
-  where \ourapproach and SHAP attributions diverge in the same qualitative
-  ways as in the synthetic setting.
- 
-  
-  
+  We evaluate \ourapproach in synthetic and real-world examples, spanning consistency checks with AC, scaling experiments, complex continuous-valued dynamical systems, and a real-world deployed causal machine learning model trained on millions of datapoints.
 
-  \medskip\noindent\textbf{Keywords:} Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency.
+  \noindent\textbf{Keywords:} Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency.
 \end{abstract}
 
+% Compact single-page TOC: smaller font + tighter line spacing.
+\begingroup
+\renewcommand{\baselinestretch}{0.88}\small
+\setlength{\parskip}{0pt}
 \tableofcontents
+\endgroup
 \newpage
 
 \input{sections/sec1_intro}
 \input{sections/sec2_motivations}
 \input{sections/sec3_definitions}
+\input{sections/sec_evaluation}
 \input{sections/sec4_examples}
-\input{sections/sec5_synthetic}
-\input{sections/sec6_dce}
 \input{sections/sec7_actual_causality}
 \input{sections/sec7b_paac}
-\input{sections/sec8_ac_benchmark}
-\input{sections/sec9_sir_benchmark}
-\input{sections/sec10_avm}
 \input{sections/sec11_discussion}
 
 \bibliographystyle{plainnat}
@@ -244,5 +246,11 @@
 \input{sections/appA_obcb}
 \input{sections/appB_signal}
 \input{sections/appC_desert}
+% --- relocated to appendix (Phase 1 restructure): detailed protocols summarized in Sec~\ref{sec:evaluation} ---
+\input{sections/sec5_synthetic}
+\input{sections/sec6_dce}
+\input{sections/sec8_ac_benchmark}
+\input{sections/sec9_sir_benchmark}
+\input{sections/sec10_avm}
 
 \end{document}

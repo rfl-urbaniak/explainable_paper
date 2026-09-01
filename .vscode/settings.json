@@ -11,13 +11,20 @@
         "statusBar.background": "#b80afe",
         "statusBar.foreground": "#e7e7e7",
         "statusBarItem.hoverBackground": "#c73dfe",
-        "statusBarItem.remoteBackground": "#b80afe",
+        "statusBarItem.remoteBackground": "#de9f01",
         "statusBarItem.remoteForeground": "#e7e7e7",
         "titleBar.activeBackground": "#b80afe",
         "titleBar.activeForeground": "#e7e7e7",
         "titleBar.inactiveBackground": "#b80afe99",
-        "titleBar.inactiveForeground": "#e7e7e799"
+        "titleBar.inactiveForeground": "#e7e7e799",
+        "activityBarTop.activeBackground": "#c73dfe",
+        "activityBarTop.background": "#c73dfe",
+        "activityBarTop.foreground": "#e7e7e7",
+        "activityBarTop.inactiveForeground": "#e7e7e799",
+        "commandCenter.foreground": "#e7e7e7",
+        "statusBar.debuggingBackground": "#b80afe",
+        "statusBar.debuggingForeground": "#e7e7e7"
     },
     "peacock.color": "#b80afe",
-    "window.title": "${rootName}${separator}${activeRepositoryBranchName}${separator}[Branch: ru-docstrings]"
+    "window.title": "${rootName}${separator}${activeRepositoryBranchName}${separator}[Branch: main]"
 }

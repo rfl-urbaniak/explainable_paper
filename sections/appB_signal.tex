@@ -1,4 +1,4 @@
-\section{Computations for the Signal-with-Mediation Example}\label{app:signal}
+\section{SHAP and Causal SHAP: Definitions and Signal-with-Mediation Computations}\label{app:signal}
 
 This appendix collects the closed-form derivations for the
 signal-with-mediation example of Section~\ref{sec:signal}: the Gaussian chain
@@ -10,6 +10,85 @@ Example~\ref{ex:signal_mediation}, and the per-target SHAP and per-pair PCI
 computations summarised in Table~\ref{tab:signal_desid}, are derived here.
 Unless noted otherwise the factual instance is Instance~1,
 $X^\star=M^\star=Y^\star=1$.
+
+\subsection{SHAP and Causal SHAP}\label{sec:shap_defs}
+
+In this section $\mathcal{S} \subseteq N$ denotes a SHAP coalition (a subset of features held
+to their factual values during evaluation), playing the same role here that
+$\mathbf{C} \subseteq \mathbf{S}$ played in Section~\ref{sec:causal_impact}. We use the
+calligraphic $\mathcal{S}$ to keep the SHAP coalition typographically distinct from PCI's
+suspect set $\mathbf{S}$ on the printed page; the SHAP literature's plain $S$ is the same
+object.
+
+\begin{definition}[SHAP]
+A cooperative game is a pair $(N, v)$,
+where $N = \{1, \ldots, n\}$ is the set of players and $v: 2^N \to \mathbb{R}$
+is the \emph{characteristic function} mapping each subset
+(coalition) $\mathcal{S} \subseteq N$ to the value that coalition can produce. The Shapley value
+\citep{shapley1953} assigns each player $i$ a payoff $\phi_i$, its share of the total
+value $v(N) - v(\emptyset)$, and is the unique attribution satisfying four axioms:
+\begin{enumerate}
+\item \textbf{Efficiency}: $\sum_i \phi_i = v(N) - v(\emptyset)$
+\item \textbf{Symmetry}: If $v(\mathcal{S} \cup \{i\}) = v(\mathcal{S} \cup \{j\})$ for all
+      $\mathcal{S} \subseteq N \setminus \{i,j\}$, then $\phi_i = \phi_j$
+\item \textbf{Dummy}: If $v(\mathcal{S} \cup \{i\}) = v(\mathcal{S})$ for all $\mathcal{S}$, then $\phi_i = 0$
+\item \textbf{Linearity}: For two games $v_1, v_2$: $\phi_i(\alpha_1 v_1 + \alpha_2 v_2)
+      = \alpha_1 \phi_i(v_1) + \alpha_2 \phi_i(v_2)$
+\end{enumerate}
+The unique solution is:
+\begin{equation}
+\phi_i = \sum_{\mathcal{S} \subseteq N \setminus \{i\}}
+\frac{|\mathcal{S}|!\,(|N|-|\mathcal{S}|-1)!}{|N|!}
+\bigl[v(\mathcal{S} \cup \{i\}) - v(\mathcal{S})\bigr]
+\label{eq:shapley}
+\end{equation}
+The weight $\frac{|\mathcal{S}|!(|N|-|\mathcal{S}|-1)!}{|N|!}$ equals the probability that, in a uniformly
+random ordering of all players, exactly the members of $\mathcal{S}$ precede $i$. Equivalently,
+$\phi_i$ is the average marginal contribution of $i$ across all orderings.
+\citet{lundberg2017unified} apply Shapley values to explain model predictions by taking
+players to be input features, and the characteristic function to be the expected model
+output given a subset of features held at their factual values:
+\begin{equation}
+v(\mathcal{S}) = \mathbb{E}\bigl[f(X) \,\big\vert\, X_{\mathcal{S}} = x_{\mathcal{S}}\bigr]
+\label{eq:plain_shap_value}
+\end{equation}
+\noindent where $\bar{\mathcal{S}} = N \setminus \mathcal{S}$ and the missing features
+$X_{\bar{\mathcal{S}}}$ are drawn from their distribution \emph{conditional} on
+$X_{\mathcal{S}} = x_{\mathcal{S}}$, as in \citeauthor{lundberg2017unified}'s original
+formulation. This is not the only reading in use: \citet{janzing2020feature} single
+out exactly this choice as contested, and a common alternative --- also called
+``plain'' or ``interventional'' SHAP in parts of the literature --- instead averages
+each dropped feature over its own \emph{marginal} distribution $P(X_i)$, treating the
+dropped features as mutually independent and independent of $X_{\mathcal{S}}$. The two
+coincide whenever $X_{\mathcal{S}}$ and $X_{\bar{\mathcal{S}}}$ are independent, but
+differ in general. Throughout this paper, ``plain SHAP'' denotes the conditional form
+of Eq.~\eqref{eq:plain_shap_value} unless stated otherwise; the one exception is
+\S\ref{sec:obcb_shap}'s Option~B analysis, which switches explicitly to the
+marginal-independent form to expose a separate failure mode (undefined values on
+coalitions whose marginal average places positive weight on a structurally impossible
+combination of feature values), and says so at the point of use.
+\end{definition}
+
+\begin{definition}[Causal SHAP]\label{def:causalshap}
+Causal SHAP replaces the characteristic function with an interventional
+expectation \citep{heskes2020causal}:
+\begin{equation}
+v_{\text{causal}}(\mathcal{S}) = \mathbb{E}\bigl[f(X) \mid do(X_{\mathcal{S}} = x_{\mathcal{S}})\bigr]
+= \int P(X_{\bar{\mathcal{S}}} \mid do(X_{\mathcal{S}} = x_{\mathcal{S}}))\, f(X_{\bar{\mathcal{S}}}, x_{\mathcal{S}})\, dX_{\bar{\mathcal{S}}}
+\label{eq:causal_v}
+\end{equation}
+By the rules of do-calculus, intervening on $X_{\mathcal{S}}$ only affects the distribution of
+descendants of $X_{\mathcal{S}}$. For non-descendants, $P(X_j \mid do(X_{\mathcal{S}} = x_{\mathcal{S}})) = P(X_j)$.
+Writing $X_{\bar{\mathcal{S}},\,\mathrm{nd}}$ for the features in $\bar{\mathcal{S}}$ that are not
+descendants of any member of $\mathcal{S}$, and $X_{\bar{\mathcal{S}},\,\mathrm{d}}$ for those that are,
+equation~\eqref{eq:causal_v} is equivalent to:
+\begin{equation}
+v_{\text{causal}}(\mathcal{S}) = \mathbb{E}_{X_{\bar{\mathcal{S}},\,\mathrm{nd}} \sim P(\cdot),\;
+X_{\bar{\mathcal{S}},\,\mathrm{d}} \sim P(\cdot \mid do(X_{\mathcal{S}}=x_{\mathcal{S}}))}\bigl[f(X_{\bar{\mathcal{S}}}, x_{\mathcal{S}})\bigr]
+\end{equation}
+The Shapley formula~\eqref{eq:shapley} is otherwise unchanged. The method retains all
+four Shapley axioms.
+\end{definition}
 
 \subsection{Distributional facts}\label{app:signal_distfacts}
 
@@ -39,7 +118,7 @@ $X\!\to\!M\!\to\!Y$, so $\mathbb{E}[X\mid M,Y]=\mathbb{E}[X\mid M]
 =0.5+\tfrac{\mathrm{Cov}(X,M)}{\mathrm{Var}(M)}(M-0.5)
 =0.5+\tfrac{0.25}{0.35}(M-0.5)=0.5+\tfrac{5}{7}(M-0.5)$.
 
-\subsection{Plain SHAP at Instance 1}\label{app:signal_plain}
+\subsection{Plain SHAP}\label{app:signal_plain}
 
 \textit{Target $Y$, features $\{X, M\}$.} First, compute the coalition values:
 \begin{align}
@@ -75,7 +154,7 @@ $v(\{M,Y\})=\mathbb{E}[X\mid M{=}1]=0.857$ (since $X\perp Y\mid M$).
 \phi_Y &= \tfrac{1}{2}(0.778-0.5)+\tfrac{1}{2}(0.857-0.857)=0.139.
 \end{align}
 
-\subsection{Causal SHAP at Instance 1}\label{app:signal_causal}
+\subsection{Causal SHAP}\label{app:signal_causal}
 
 We apply Causal SHAP (Definition~\ref{def:causalshap}) and compare against
 plain SHAP.
@@ -117,7 +196,7 @@ $v_{\mathrm{causal}}(\{M,Y\})=0.857$.
 \phi_Y &= \tfrac{1}{2}(0.5-0.5)+\tfrac{1}{2}(0.857-0.857)=0.
 \end{align}
 
-\subsection{PCI at Instance 1}\label{app:signal_pci}
+\subsection{PCI}\label{app:signal_pci}
 
 We work at the factual instance $X^\star = M^\star = Y^\star = 1$ with the
 absolute-difference score (Example~\ref{ex:absolute_score}):
@@ -134,7 +213,7 @@ $\mathbf{S} = \{X, M\}$, $\mathbf{W} = \{M\}$, $w^\star = m^\star = 1$, and
 $X' \sim \mathcal{N}(0.5,\, 0.25)$. Three of the four accepted
 $(\mathbf{C}, \mathbf{T})$ pairs intervene on $X$, each with weight
 $\tfrac{1}{4}$; the fourth, $(\mathbf{C}{=}\{M\}, \mathbf{T}{=}\emptyset)$,
-does not touch $X$ and contributes nothing. The key observation is that the
+does not touch $X$ and contributes nothing. The
 witness pair $(\mathbf{C}{=}\{X\}, \mathbf{T}{=}\{M\})$ pins $M$ at $m^\star$
 in both worlds, which equalizes their distributions and zeros out $\bar c$;
 the other two pairs let $M$ propagate freely. Computing
