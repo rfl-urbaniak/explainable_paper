@@ -205,38 +205,19 @@
 \begin{abstract}%
   Explaining why a specific outcome occurred, and which inputs deserve the
   blame or credit, is central to philosophical, scientific, and policy analysis.
-  Existing tools split into two camps. The Halpern--Pearl theory of
-  \emph{actual causality} gives principled verdicts, but only for toy-sized
+  Existing tools split into two camps. The theory of
+  \emph{actual causality} (AC) gives principled verdicts, but only for toy-sized
   models, because computing them requires enumerating counterfactual scenarios.
   Scalable attribution methods like SHAP (or even causal SHAP) at least partially 
   ignore the causal structure that generated the data, and can give answers that conflict with a careful
   causal analysis. We close this gap with Probabilistic Causal Impact
-  (\Ourapproach).
-
+  (\Ourapproach). 
+  
   \ourapproach builds on actual causality and on Pearl's notions of probability
-  of necessity and sufficiency, but recasts the question ``which variables
-  explain this outcome?'' as an estimation problem on a probabilistic causal
-  model that one can solve by approximate methods, such as MC. To compute a \ourapproach
-  score, the analyst specifies three ingredients: a joint distribution $\Gamma$ over
-  which subsets of variables to consider as candidate explanations and which
-  further variables to hold fixed at their factual values, a
-  distribution $\Delta$ over the counterfactual values to which those variables
-  might be changed, and a function $ci$ that measures how much such a change
-  shifts the outcome. The result is a tractable, causally grounded, graded
-  explanation procedure that applies to large models and, for natural choices
-  of $\Gamma$ and $\Delta$, provably agrees with
-  actual causality and Pearl's probability of causation wherever those are
-  defined.
+  of necessity and sufficiency, but recasts the question of explainability as an estimation problem on a probabilistic causal
+  model that is easily approximated via Monte Carlo. By specifying a distribution over ``candidate explanations,'' a distribution over counterfactaul values, and a scoring function, \ourapproach provides tractable, causally grounded, graded explanations, generalizing AC and Pearl's probability of causation as degenerate cases. 
 
-  We evaluate \ourapproach in four increasingly demanding settings: a synthetic
-  structural model with redundant and preempting causes, where \ourapproach
-  recovers the AC literature's verdicts and generalises them to continuous
-  variables; a scaling benchmark where \ourapproach remains tractable as AC
-  enumeration becomes infeasible; a dynamical (Bayesian, ODE) epidemiological model
-   with continuous outcomes and asymmetric causes, where AC offers no verdict; and a deployed
-  spatio-temporal model with deep ML components trained on millions of points,
-  where \ourapproach and SHAP attributions diverge in the same qualitative
-  ways as in the synthetic setting.
+  We evaluate \ourapproach in synthetic and real-world examples, spanning consistency checks with AC, scaling experiments, complex continuous-valued dynamical systems, and a real-world deployed causal machine learning model trained on millions of datapoints.
 
   \noindent\textbf{Keywords:} Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency.
 \end{abstract}
