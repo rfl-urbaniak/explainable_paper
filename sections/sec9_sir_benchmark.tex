@@ -28,7 +28,7 @@ clamped sum, capped at $0.95$. Lockdown is enacted at $t=1$, masking at
 $t=1.5$. The outcome is the \emph{overshoot}, the peak-to-final $S$ gap
 of the simulated trajectory, and the undesirable event is
 $\mathrm{os\_too\_high}=\mathbbm{1}[\mathrm{overshoot}>24]$ on a $100$-person
-population. Note that a policy can \emph{raise} this probability relative to
+population. A policy can \emph{raise} this probability relative to
 no intervention at all: suppressing or flattening the infectious peak leaves
 more susceptibles unspent at the peak, so they are drawn down more slowly
 afterward, which can widen the peak-to-final gap that overshoot measures even
@@ -39,8 +39,7 @@ a sign error; it is a property of this particular summary statistic.
 \medskip\noindent\textit{But-for analysis gives a symmetric verdict.}
 Conditioning on each pair of policy decisions and drawing $100$ predictives
 yields $\Pr(\mathrm{overshoot}>24) \approx 0.07$ with no intervention, $0.76$
-with both policies, $0.84$ with lockdown only, and $0.81$ with mask only ---
-the two single-policy regimes are statistically indistinguishable by
+with both policies, $0.84$ with lockdown only, and $0.81$ with mask only; the two single-policy regimes are statistically indistinguishable by
 but-for probability alone at this sample budget (a $0.03$ gap on $100$
 predictive draws is well within Monte Carlo noise), which is exactly the
 symmetry \ourapproach is designed to break.
@@ -128,8 +127,7 @@ exactly when a point lies \emph{further from the cross-hair along the necessity
 axis than along the sufficiency axis}: necessity pulls the outcome away from
 factual (evidence the suspect was needed), while sufficiency keeps it close
 (evidence the suspect alone sustains the outcome). A cause therefore shows up as
-a cloud displaced toward smaller $y_{\mathrm{nec}}$ at fixed $y_{\mathrm{suff}}$
---- the \emph{cause signature} on this geometry --- whereas a non-cause hugs the
+a cloud displaced toward smaller $y_{\mathrm{nec}}$ at fixed $y_{\mathrm{suff}}$ (the \emph{cause signature} on this geometry), whereas a non-cause hugs the
 diagonal. Reading the two panels this way, the lockdown cloud is clearly
 displaced below the diagonal toward smaller $y_{\mathrm{nec}}$, while the mask
 cloud sits closer to it: the visual form of the verdict the next paragraph
@@ -158,8 +156,7 @@ $7.43$ in mean absolute distance), while the sufficiency terms agree to
 within $0.1$. This is consistent with the but-for finding that either
 policy \emph{alone} is roughly equally bad. What distinguishes the suspects
 is that lockdown's removal \emph{under context} (with witnesses pinned to
-factual) pulls the world further from $y^\star$ than mask's removal does ---
-the lockdown cloud's displacement below the diagonal toward smaller
+factual) pulls the world further from $y^\star$ than mask's removal does: the lockdown cloud's displacement below the diagonal toward smaller
 $y_{\mathrm{nec}}$ in Figure~\ref{fig:eval_sir}, against the mask cloud's
 near-diagonal position.
 
@@ -185,8 +182,7 @@ world reported earlier, so the fixed/free scores are not expected to average
 to that world's totals (lockdown $1.54$, mask $0.76$).
 Lockdown therefore registers as a cause in both context regimes, while
 mask's status as a cause is contingent on its partner being allowed to
-adapt. \ourapproach thus expresses not just \emph{which} policy is the
-dominant cause but \emph{how robustly} that causal claim holds across
+adapt. \ourapproach thus expresses both \emph{which} policy is the dominant cause and \emph{how robustly} that causal claim holds across
 counterfactual contexts: a finer-grained verdict than the binary
 ``actual cause / not'' that classical AC produces.
 
@@ -204,9 +200,7 @@ robust cause.}
 
 \medskip\noindent\textit{Takeaway.}
 On the dynamical SIR setting, \ourapproach recovers both intuitions set out
-at the start of this appendix --- lockdown is the proximate cause of excessive
-overshoot and masking only a context-sensitive one, despite both policies
-appearing similar under but-for analysis --- and expresses them on a
+at the start of this appendix (lockdown is the proximate cause of excessive overshoot and masking only a context-sensitive one, despite both policies appearing similar under but-for analysis), and expresses them on a
 continuous, decomposable scale. The
 necessity-vs-sufficiency decomposition distinguishes suspects whose
 isolation effects are similar but whose removal-under-context effects

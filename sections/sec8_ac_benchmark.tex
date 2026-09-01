@@ -155,8 +155,7 @@ decisive; (iii) cardinality bounds $n_s,n_w$, fixed at $4$ in the default runs
 linearly as $4n$ in the dynamic-set-size configuration (recovering the unrestricted
 subset search at the cost of higher variance). The cardinality bound is a tunable
 approximation knob, not a hidden assumption: the dynamic-set-size run measures the
-empirical cost of bounding $n_s,n_w$ at $4$ on this problem, and the gap between
-the two configurations is what the ablation measures. Section~\ref{sec:causal_impact} gives the conceptual case for
+empirical cost of bounding $n_s,n_w$ at $4$ on this problem, and the ablation measures the gap between the two configurations. Section~\ref{sec:causal_impact} gives the conceptual case for
 constraining cardinality at all: uniform sampling over the full powerset
 biases attributions toward large-coalition interventions, analogous to
 declining to enumerate all $n$-way regression interaction terms.
@@ -203,8 +202,7 @@ the cardinality-bounded sampling losing little to dynamic-set-sizes sampling on
 this problem. Two extensions are natural follow-ups. First, we defer a comparison
 against SHAP and causal SHAP on the same scaled-throwing problem to a
 companion benchmark (\cref{sec:shap_examples} gives the SHAP-vs-\ourapproach{}
-comparison on the smaller overdetermination and continuous-mediation examples); the sufficiency component
-of PCI is what distinguishes it from those baselines, and a clean head-to-head
+comparison on the smaller overdetermination and continuous-mediation examples); the sufficiency component of PCI distinguishes it from those baselines, and a clean head-to-head
 requires the joint kernel rather than the necessity-only restriction used here.
 Second, benchmarks that break each of the structural regularities above,
 particularly continuous-variable extensions where AC's mechanical enumeration is

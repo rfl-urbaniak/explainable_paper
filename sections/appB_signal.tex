@@ -56,8 +56,7 @@ v(\mathcal{S}) = \mathbb{E}\bigl[f(X) \,\big\vert\, X_{\mathcal{S}} = x_{\mathca
 $X_{\bar{\mathcal{S}}}$ are drawn from their distribution \emph{conditional} on
 $X_{\mathcal{S}} = x_{\mathcal{S}}$, as in \citeauthor{lundberg2017unified}'s original
 formulation. This is not the only reading in use: \citet{janzing2020feature} single
-out exactly this choice as contested, and a common alternative --- also called
-``plain'' or ``interventional'' SHAP in parts of the literature --- instead averages
+out exactly this choice as contested, and a common alternative (also called ``plain'' or ``interventional'' SHAP in parts of the literature) instead averages
 each dropped feature over its own \emph{marginal} distribution $P(X_i)$, treating the
 dropped features as mutually independent and independent of $X_{\mathcal{S}}$. The two
 coincide whenever $X_{\mathcal{S}}$ and $X_{\bar{\mathcal{S}}}$ are independent, but

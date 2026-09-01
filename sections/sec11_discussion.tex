@@ -21,7 +21,7 @@ confirms this at scales where AC enumeration is intractable.
 
 The main concept borrowed from Pearl's probability of necessity and sufficiency is the
 joint distribution over outcomes from two interventional regimes, pushed forward through
-a user-chosen causal impact function. The key difference is that we use witness sets to
+a user-chosen causal impact function. The difference is that we use witness sets to
 allow for context-sensitivity and to break symmetries present in otherwise pathological
 cases like overdetermination and undercutting. Section~\ref{sec:shap_examples} works
 through the binary instantiation in which the necessity and sufficiency components
@@ -72,9 +72,7 @@ $\mathbf{C}$ propagates to descendants by construction. \emph{Model-agnosticism}
 can wrap a black-box predictor, but at the cost of the causal sensitivity that
 motivates the framework in the first place.
 
-\emph{Actionability}, the requirement that explanations not recommend changes to
-features users cannot in practice change, is where we part company with the
-literature. The standard recommendation is to fold ease-of-change into the
+We part company with the literature on \emph{actionability}, the requirement that explanations not recommend changes to features users cannot in practice change. The standard recommendation is to fold ease-of-change into the
 cause-identification procedure itself, weighting features by mutability so that
 immutable ones are never returned as causes (\cite{verma2022recourses}; cf.\
 \cite{Karimi2021}, who shift the focus from explanations altogether to interventions).
