@@ -1,14 +1,4 @@
 """
-<<<<<<< HEAD
-Running paper-structure map (the recurring "you are here" figure placed near each
-core-section end). Layered design, chronological top->bottom, fill-width grid per tier,
-appendices as a 2-row grid with letter tags (A-H).
-
-ONE template, stamped out per stage: statuses are COMPUTED from a `current` pointer --
-everything before it = done, the pointer = current, everything after = ahead; the
-appendix tier is always the supporting register. Add/edit entries in STAGES to control
-which instances are produced.
-=======
 Paper-structure map: a single overview figure placed once, early in the paper (the
 intro), with no per-section "you are here" highlighting. Layered design, chronological
 top->bottom, fill-width grid per tier, appendices as a 2-row grid with letter tags
@@ -21,17 +11,11 @@ progress state. The underlying per-stage highlighting machinery
 (`current=("tier",T)` / `("card",T,C)` / `("cards",T,S)`) is still here in case a
 future revision wants it back, but STAGES below only produces the one overview image
 now.
->>>>>>> main
 
 Color-blind safe: each status is encoded redundantly by color + border line-style + symbol
 (verified in grayscale).
 
-<<<<<<< HEAD
-Run:  python3 scripts/make_structure_map.py                   -> writes one PNG per stage
-      python3 scripts/make_structure_map.py 03_examples_shap  -> just that stage
-=======
 Run:  python3 scripts/make_structure_map.py
->>>>>>> main
 Output: figures/structure_map_<slug>.png
 """
 import os, sys
@@ -53,20 +37,13 @@ plt.rcParams.update({"font.family":"DejaVu Sans","savefig.dpi":220,
                      "pdf.fonttype":42,"ps.fonttype":42})   # embed TrueType (no Type-3) for publishing
 
 SOLID="solid"; DOTTED=(0,(1.4,1.6)); DASHED=(0,(5,2.3))
-<<<<<<< HEAD
-=======
 FLAT_FILL="#f3f5f6"; FLAT_EDGE="#c3ccd2"
->>>>>>> main
 def st(s):
     return {"done":(DONE_FILL,DONE_EDGE,INK   ,1.9,SOLID),
             "cur" :(CUR_FILL ,CUR_EDGE ,INK   ,3.0,SOLID),
             "app" :(APP_FILL ,APP_EDGE ,APP_TXT,1.7,DASHED),
-<<<<<<< HEAD
-            "fut" :(FUT_FILL ,FUT_EDGE ,FUT_TXT,1.6,DOTTED)}[s]
-=======
             "fut" :(FUT_FILL ,FUT_EDGE ,FUT_TXT,1.6,DOTTED),
             "flat":(FLAT_FILL,FLAT_EDGE,INK   ,1.6,SOLID)}[s]
->>>>>>> main
 
 def badge(ax,x,y,status,s=170):
     f=max(6.0,(s**0.5)*0.6)
@@ -97,22 +74,14 @@ TIERS = [
      ("Alternative\nValue Dist.",None),
      ("Necessity &\nSufficiency\nMeasure",None),
      ("Causal Impact",None)]]),
-<<<<<<< HEAD
-=======
  ("Evaluation","Preview",
    [[("Preview of Empirical & Comparative Results",None)]]),
->>>>>>> main
  ("Positioning","",
    [[("vs SHAP",None),
      ("vs Causal\nSHAP",None),
      ("vs Prob. of\nNecessity &\nSufficiency",None),
      ("vs Actual\nCausality",None),
      ("vs Prob. of\nActual\nCausality",None)]]),
-<<<<<<< HEAD
- ("Evaluation","Overview",
-   [[("Overview of Further Benchmarking & Comparisons",None)]]),
-=======
->>>>>>> main
  ("Appendices","Supporting Detail",
    [[("Running-Example\nComputations","A–C"),
      ("Synthetic Eval,\nContinuous Variables","D"),
@@ -125,15 +94,10 @@ APP_TI = next(i for i,(n,*_) in enumerate(TIERS) if n=="Appendices")
 
 def status_of(ti, ci, current):
     """current is ('tier', T) -> whole tier highlighted; ('card', T, C) -> one card
-<<<<<<< HEAD
-    highlighted; ('cards', T, S) -> the cards whose indices are in the set/tuple S."""
-    if ti==APP_TI: return "app"
-=======
     highlighted; ('cards', T, S) -> the cards whose indices are in the set/tuple S;
     ('overview',) -> no highlighting, every non-appendix card rendered the same way."""
     if ti==APP_TI: return "app"
     if current[0]=="overview": return "flat"
->>>>>>> main
     if current[0]=="tier":
         T=current[1]
         return "done" if ti<T else ("cur" if ti==T else "fut")
@@ -168,11 +132,7 @@ def make_map(current, slug):
         ax.text(x+w/2,ty,title,ha="center",va="center",fontsize=fn,
                 fontweight="bold",color=tc,zorder=6,linespacing=1.08)
         if is_app: letter_tag(ax,x+0.10,y+CH-0.04,tag)
-<<<<<<< HEAD
-        else: badge(ax,x+0.07,y+CH-0.07,status,s=150)
-=======
         elif status!="flat": badge(ax,x+0.07,y+CH-0.07,status,s=150)
->>>>>>> main
 
     cur_y=0.0; band_box=[]
     for ti,(name,desc,rows) in enumerate(TIERS):
@@ -215,17 +175,6 @@ def make_map(current, slug):
                          arrowstyle="-|>",mutation_scale=16,color="#b7c1c8",lw=2.4,zorder=2))
 
     top=band_box[0][0]; HEADX=CX0-0.30
-<<<<<<< HEAD
-    ly=top+1.18; bw_,bh_=0.58,0.40; pitch=2.05
-    items=[("done","Done"),("cur","Current"),("fut","Ahead")]
-    for k,(status,lab) in enumerate(items):
-        bx=(CX1-(len(items)*pitch-(pitch-bw_-0.78)))+k*pitch
-        fc,ec,tc,lwd,ls=st(status)
-        ax.add_patch(FancyBboxPatch((bx,ly-bh_/2),bw_,bh_,boxstyle="round,pad=0.01,rounding_size=0.07",
-                     linewidth=min(lwd,2.2),edgecolor=ec,facecolor=fc,linestyle=ls,zorder=6))
-        badge(ax,bx+0.05,ly+bh_/2-0.05,status,s=95)
-        ax.text(bx+bw_+0.10,ly,lab,ha="left",va="center",fontsize=8.0,color="#5a6873")
-=======
     if current[0]!="overview":
         ly=top+1.18; bw_,bh_=0.58,0.40; pitch=2.05
         items=[("done","Done"),("cur","Current"),("fut","Ahead")]
@@ -236,7 +185,6 @@ def make_map(current, slug):
                          linewidth=min(lwd,2.2),edgecolor=ec,facecolor=fc,linestyle=ls,zorder=6))
             badge(ax,bx+0.05,ly+bh_/2-0.05,status,s=95)
             ax.text(bx+bw_+0.10,ly,lab,ha="left",va="center",fontsize=8.0,color="#5a6873")
->>>>>>> main
     # (narrative "Now: ..." line intentionally omitted -- it lives in the LaTeX caption)
 
     x0,x1=-0.1,CX1+0.4; y0,y1=band_box[-1][1]-0.45,top+1.5
@@ -249,20 +197,9 @@ def make_map(current, slug):
     plt.close(fig)
     return out
 
-<<<<<<< HEAD
-# ---------- the stages (one figure each) ----------
-STAGES = [
- dict(slug="01_motivations",      current=("tier",0)),
- dict(slug="02_definitions",      current=("tier",1)),
- dict(slug="03_examples_shap",    current=("cards",2,(0,1))),  # vs SHAP + vs Causal SHAP
- dict(slug="04_actual_causality", current=("card",2,3)),
- dict(slug="05_prob_ac",          current=("card",2,4)),
- dict(slug="06_evaluation",       current=("tier",3)),
-=======
 # ---------- the stages (one figure now: the overview) ----------
 STAGES = [
  dict(slug="00_overview", current=("overview",)),
->>>>>>> main
 ]
 
 if __name__=="__main__":
