@@ -8,12 +8,23 @@ Gamma (x) Delta (x) P_U is the PCI score. The fork *is* the product
 decomposition of Def. (jointnecsuf): given u, the two worlds are conditionally
 independent. A small OBCB inset grounds the schematic.
 
+<<<<<<< HEAD
 Panel (b) -- OUTCOME PLANE: the kernel ci lives on the (|Y^n - y*|, Y^s) plane.
 x = necessity strength (how far the alternative pushes Y from factual),
 y = the sufficiency-world outcome, with the factual y* baseline marked. The
 shaded field is a continuous ci; dashed lines are the binary N/S/J indicator
 boundaries, so the reader sees the continuous kernel subsumes the discrete
 PN/PS/PNS indicators. Each fork draw is a point; their mean is E[ci] = score.
+=======
+Panel (b) -- SIGNED QUADRANT PLANE: the kernel ci lives on the FULL signed plane
+(Y^n - y*, Y^s - y*), not the pre-folded |Y^n - y*| used previously. Because
+ci = |Y^n-y*| - |Y^s-y*| depends only on the two absolute deviations, the field
+is symmetric under an independent sign flip of either axis: four qualitatively
+different stories (which direction each counterfactual world moved relative to
+the factual) collapse onto the same score whenever the magnitudes match. Four
+marked points at matching |x|,|y| in each quadrant make that many-to-one
+collapse concrete before any absolute value is taken.
+>>>>>>> main
 
 Palette + redundant role encoding shared with make_example_dags.py so the figure
 reads as one family. Colour is never the sole channel.
@@ -29,8 +40,13 @@ import numpy as np
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
+<<<<<<< HEAD
 from matplotlib.lines import Line2D
 from matplotlib.patches import FancyArrowPatch
+=======
+from matplotlib.patches import FancyArrowPatch
+from matplotlib.lines import Line2D
+>>>>>>> main
 
 # ---------- palette (shared with make_example_dags.py) ----------
 TEAL = "#1F9AA6"
@@ -226,6 +242,7 @@ def panel_fork(ax):
 
 
 # ============================================================
+<<<<<<< HEAD
 # Panel (b): outcome plane + ci field
 # ============================================================
 def panel_plane(ax):
@@ -268,10 +285,82 @@ def panel_plane(ax):
     ax.annotate(r"factual $y^\star$", xy=(0.0, ystar), xytext=(0.14, ystar - 0.22),
                 fontsize=7.6, color=OUT_EDGE, fontweight="bold", ha="left",
                 va="center", zorder=8,
+=======
+# Shared draws feeding panel (b), seeded for a reproducible cloud.
+# ============================================================
+def sample_draws(seed=7, n=2500):
+    rng = np.random.default_rng(seed)
+    # X = Y^n - y*: necessity deviation, usually strongly positive (removing
+    # the candidate cause usually flips the outcome the same way) but with
+    # enough spread that noise occasionally pushes it negative.
+    X = rng.normal(0.35, 0.16, size=n)
+    # Y = Y^s - y*: sufficiency deviation, centred at 0 (restoring the cause
+    # usually reproduces the factual outcome) with symmetric noise, so both
+    # signs are common -- this is what actually populates all four quadrants.
+    Y = rng.normal(0.0, 0.13, size=n)
+    CI = np.abs(X) - np.abs(Y)
+    return X, Y, CI
+
+
+def pick_quadrant_examples(X, Y, target=(0.32, 0.14)):
+    """One real draw per quadrant, each close to the same |x|,|y| target --
+    a genuine near-coincidence in the sampled data, not four hand-placed
+    synthetic points."""
+    x0, y0 = target
+    picks = {}
+    for sx, sy in [(1, 1), (-1, 1), (-1, -1), (1, -1)]:
+        mask = (np.sign(X) == sx) & (np.sign(Y) == sy)
+        if not mask.any():
+            continue
+        idx = np.flatnonzero(mask)
+        d2 = (X[idx] - sx * x0) ** 2 + (Y[idx] - sy * y0) ** 2
+        picks[(sx, sy)] = idx[d2.argmin()]
+    return picks
+
+
+# ============================================================
+# Panel (b): signed quadrant plane -- same score, four stories
+# ============================================================
+def panel_quadrants(ax, X, Y, CI):
+    d = 0.75  # axis half-range; wide enough to hold the sampled cloud
+    gx = np.linspace(-d, d, 260)
+    gy = np.linspace(-d, d, 260)
+    GX, GY = np.meshgrid(gx, gy)
+    # impact kernel EXACTLY as defined (Absolute Difference score, sec3):
+    #   ci = |Y^n - y*| - |Y^s - y*|   (necessity gain minus sufficiency loss).
+    # Depends only on the two absolute deviations, so it is invariant under an
+    # independent sign flip of either axis -- the field is genuinely 4-fold
+    # symmetric, which is the point of drawing it unfolded like this.
+    FIELD = np.abs(GX) - np.abs(GY)
+
+    cmap = LinearSegmentedColormap.from_list(
+        "ci", ["#caa46a", "#ecdcc0", "#ffffff", "#bfe3e6", "#1F9AA6"])
+    norm = TwoSlopeNorm(vmin=-d, vcenter=0.0, vmax=d)
+    im = ax.imshow(FIELD, origin="lower", extent=[-d, d, -d, d], aspect="auto",
+                   cmap=cmap, norm=norm, zorder=1, alpha=0.9)
+    cs = ax.contour(GX, GY, FIELD, levels=[-0.4, -0.2, 0.0, 0.2, 0.4],
+                    colors="#6b7780", linewidths=0.6, alpha=0.5, zorder=2)
+    ax.clabel(cs, fmt="%.1f", fontsize=6.0, inline=True)
+
+    cb = ax.figure.colorbar(im, ax=ax, fraction=0.045, pad=0.02)
+    cb.set_label(r"$ci=|Y^n{-}y^\star|-|Y^s{-}y^\star|$", fontsize=7.4, color=INK)
+    cb.ax.tick_params(labelsize=6.5, colors=CAP_COL)
+    cb.outline.set_edgecolor("#cad2d8")
+
+    # quadrant dividers: both worlds exactly at their factual value
+    ax.axhline(0.0, color=OUT_EDGE, lw=1.4, zorder=4)
+    ax.axvline(0.0, color=OUT_EDGE, lw=1.4, zorder=4)
+    ax.plot([0.0], [0.0], marker="*", ms=15, color=OUT_EDGE,
+            markeredgecolor="white", markeredgewidth=1.0, zorder=7, clip_on=False)
+    ax.annotate(r"factual $y^\star$ (both worlds)", xy=(0.0, 0.0),
+                xytext=(0.05, 0.22), fontsize=6.8, color=OUT_EDGE,
+                fontweight="bold", ha="left", va="center", zorder=8,
+>>>>>>> main
                 arrowprops=dict(arrowstyle="-|>", color=OUT_EDGE, lw=1.0),
                 bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="none",
                           alpha=0.85))
 
+<<<<<<< HEAD
     # "ideal cause" corner annotation -> far-right end of the ridge (max ci);
     # curved so the arrow arcs over the draw cloud rather than through it
     ax.annotate("ideal cause\n(changes when removed,\nsustains when restored)",
@@ -331,6 +420,57 @@ def emit(outdir):
                                                     wspace=0.16))
     panel_fork(ax1)
     panel_plane(ax2)
+=======
+    # the full sampled cloud, faint
+    ax.scatter(X, Y, s=5, facecolor=INK, edgecolor="none", alpha=0.16,
+               zorder=5)
+
+    # one real draw per quadrant, matched on |x|,|y| -- an actual
+    # near-coincidence in the data, not a synthetic symmetric example
+    picks = pick_quadrant_examples(X, Y)
+    if picks:
+        idx = list(picks.values())
+        ax.scatter(X[idx], Y[idx], s=70, facecolor=GOLD, edgecolor="white",
+                   linewidths=1.3, zorder=9)
+        cis = CI[idx]
+        ax.text(-d * 0.95, d * 0.90,
+                r"$ci\in[$" f"{cis.min():.2f}, {cis.max():.2f}"
+                r"$]$ despite four different directions",
+                fontsize=6.6, color=INK, ha="left", va="top", zorder=9,
+                linespacing=1.35,
+                bbox=dict(boxstyle="round,pad=0.28", fc="white", ec=GOLD,
+                          lw=1.1, alpha=0.95))
+
+    legend_elements = [
+        Line2D([0], [0], marker="o", color="none", markerfacecolor=INK,
+               markeredgecolor="none", alpha=0.6, markersize=5,
+               label="all sampled draws"),
+        Line2D([0], [0], marker="o", color="none", markerfacecolor=GOLD,
+               markeredgecolor="white", markeredgewidth=1.0, markersize=8,
+               label="one draw per quadrant, magnitude-matched"),
+    ]
+    ax.legend(handles=legend_elements, loc="lower right", fontsize=6.5,
+              frameon=True, framealpha=0.9, edgecolor="#cad2d8",
+              handletextpad=0.5, borderpad=0.5)
+
+    ax.set_xlim(-d, d); ax.set_ylim(-d, d)
+    ax.set_xlabel(r"necessity deviation  $Y^n - y^\star$", fontsize=9.0, color=INK)
+    ax.set_ylabel(r"sufficiency deviation  $Y^s - y^\star$", fontsize=9.0, color=INK)
+    ax.tick_params(labelsize=7.5, colors=CAP_COL)
+    for s in ax.spines.values():
+        s.set_color("#cad2d8")
+    ax.set_title(r"(b)  The impact kernel on the signed deviation plane",
+                 loc="left", fontsize=9.8, fontweight="bold", color=INK, pad=8)
+
+
+def emit(outdir):
+    fig, (ax1, ax2) = plt.subplots(
+        1, 2, figsize=(12.5, 5.6),
+        gridspec_kw=dict(width_ratios=[1.25, 1.0], wspace=0.30))
+    panel_fork(ax1)
+    X, Y, CI = sample_draws()
+    panel_quadrants(ax2, X, Y, CI)
+>>>>>>> main
     fig.tight_layout()
     # Vector PDF for the paper (text/lines/patches stay vector; only the ci
     # heatmap is raster, embedded at high dpi); PNG is a quick preview.
