@@ -139,32 +139,65 @@ quantifies.
 mask:
 \begin{center}
 \small
-\begin{tabular}{lccc}
+\begin{tabular}{lccccc}
 \toprule
 suspect & $\overline{|y^\star\!-\!y_{\mathrm{nec}}|}$ &
           $-\overline{|y^\star\!-\!y_{\mathrm{suff}}|}$ &
-          total \\
+          $\overline{ci}$ & $q$ & \ourapproach $=q^2\,\overline{ci}$ \\
 \midrule
-lockdown & $8.12$ & $-6.58$ & $\mathbf{1.54}$ \\
-mask     & $7.43$ & $-6.67$ & $\mathbf{0.76}$ \\
+lockdown & $8.276$ & $-6.578$ & $1.698$ & $0.754$ & $\mathbf{0.965 \pm 0.091}$ \\
+mask     & $7.536$ & $-6.673$ & $0.863$ & $0.754$ & $\mathbf{0.491 \pm 0.079}$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-The gap is driven entirely by the necessity term: removing lockdown moves
-the overshoot further from $y^\star$ than removing mask does ($8.12$ vs
-$7.43$ in mean absolute distance), while the sufficiency terms agree to
-within $0.1$. This is consistent with the but-for finding that either
+Here $q = \Pr_\Gamma[X_k\in\mathbf{C}] = 0.754$ is the sub-probability mass of
+the suspect-containing regimes, so the reported score is the $q^2$-scaled
+expectation of Definition~\ref{def:causalimpact} rather than a renormalised
+conditional mean; the quarter of draws that leave the suspect out contribute
+zero and stay in the average. The gap is driven entirely by the necessity
+term: removing lockdown moves the overshoot further from $y^\star$ than
+removing mask does ($8.276$ vs $7.536$ in mean absolute distance), while the
+sufficiency terms agree to within $0.1$. This is consistent with the but-for finding that either
 policy \emph{alone} is roughly equally bad. What distinguishes the suspects
 is that lockdown's removal \emph{under context} (with witnesses pinned to
 factual) pulls the world further from $y^\star$ than mask's removal does: the lockdown cloud's displacement below the diagonal toward smaller
 $y_{\mathrm{nec}}$ in Figure~\ref{fig:eval_sir}, against the mask cloud's
 near-diagonal position.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{docs/source/sir_benchmark/sir_pci_distributions.png}
+\caption{Impact-kernel densities per suspect. Left: the necessity world
+(suspect removed) spreads the overshoot away from $y^\star$, while the
+sufficiency world (suspect held at factual) keeps it near $y^\star$; the
+printed means are the two columns of the table above. Right: the resulting
+per-draw impact kernel $|y^\star-y_{\mathrm{nec}}|-|y^\star-y_{\mathrm{suff}}|$,
+whose $q^2$-scaled mean is the \ourapproach score. The quarter of draws whose
+candidate set omits the suspect contribute zero and are excluded from the
+density.}
+\label{fig:sir_kernels}
+\end{figure}
+
 \medskip\noindent\textit{Robustness across factual worlds.}
-We replicate the analysis across $10$ factual worlds drawn from the prior
+We replicate the analysis across $20$ factual worlds drawn from the prior
 (rather than the single hand-set world above), running thin search on each
-and averaging. Lockdown's mean total exceeds mask's in the majority of
-worlds; the verdict is not an artifact of the chosen factual.
+with $200$ regimes per suspect. The draws span $\beta \in [0.0160, 0.0398]$
+and $\gamma \in [0.481, 0.525]$, giving factual overshoots from $9.86$ to
+$33.80$ people, $12$ of the $20$ above the threshold. Lockdown averages
+$+0.819$ against mask's $+0.118$, a mean gap of $+0.701$ with a standard
+error of $0.111$, and lockdown leads in $18$ of the $20$ worlds. The verdict
+is not an artifact of the chosen factual.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{docs/source/sir_benchmark/sir_many_worlds.png}
+\caption{The single-world verdict across $20$ factual worlds drawn from the
+prior. Left: \ourapproach score against the world's factual overshoot, for
+each suspect. Right: the per-world scores in draw order. Lockdown leads in
+$18$ of the $20$ worlds, with a mean gap of $+0.701$ (standard error
+$0.111$).}
+\label{fig:sir_many_worlds}
+\end{figure}
 
 \medskip\noindent\textit{Effect of context.}
 The ChiRho tutorial isolates one downstream variable at a time, asking
@@ -173,13 +206,13 @@ versus left free. We replicate the experiment by partitioning the
 \ourapproach regimes by whether the partner-policy efficiency variable was
 sampled into the witness set
 (Figure~\ref{fig:sir_contexts}). For lockdown, with
-$\mathrm{mask\_efficiency}$ \emph{fixed} as a witness the score is $0.81$;
-\emph{free}, it rises to $2.67$. For mask, with $\mathrm{lockdown\_efficiency}$
-\emph{fixed} the score is $-0.48$ (mask fails to register as a cause at
-all under that context regime) and \emph{free} it rises to $2.72$.
+$\mathrm{mask\_efficiency}$ \emph{fixed} as a witness the score is $0.494$;
+\emph{free}, it rises to $1.684$. For mask, with $\mathrm{lockdown\_efficiency}$
+\emph{fixed} the score is $-0.161$ (mask fails to register as a cause at
+all under that context regime) and \emph{free} it rises to $1.497$.
 This experiment partitions the regimes differently from the single hand-set
 world reported earlier, so the fixed/free scores are not expected to average
-to that world's totals (lockdown $1.54$, mask $0.76$).
+to that world's scores (lockdown $0.965$, mask $0.491$).
 Lockdown therefore registers as a cause in both context regimes, while
 mask's status as a cause is contingent on its partner being allowed to
 adapt. \ourapproach thus expresses both \emph{which} policy is the dominant cause and \emph{how robustly} that causal claim holds across

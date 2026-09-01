@@ -171,10 +171,12 @@ method visits the full powerset, while the approximate methods visit at most a f
 hundred unique configurations per problem size: the gap is several orders of
 magnitude and widens with $n$. Third, accuracy (Figure~\ref{fig:eval_scaling}): the
 exact method is correct by construction up to its early demise; the witness-using
-approximate methods stay above $0.85$ correct-attribution rate up to roughly $60$
+approximate methods stay above $0.85$ correct-attribution rate up to $73$--$89$
 variables and degrade gracefully beyond that, with the dynamic-set-size run
 sustaining among the highest accuracies at moderate problem sizes. Witness-free
-runs (dotted) underperform throughout, starting near $0.67$ already at $n=1$. The
+runs (dotted) underperform at nearly every problem size, starting near $0.67$
+already at $n=1$; at matched budget ($250$ samples, $\alpha{=}1$) the witness runs
+average $0.941$ against $0.861$ and lead at $22$ of the $26$ shared sizes. The
 ablation confirms a structural claim of Section~\ref{sec:causal_impact}: pinning
 factual witness values is doing real work.
 
