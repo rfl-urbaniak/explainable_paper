@@ -33,6 +33,9 @@ docs/build/
 .coverage
 tests/coverage/
 
+# Editor
+.vscode/settings.json
+
 # OS
 .DS_Store
 
