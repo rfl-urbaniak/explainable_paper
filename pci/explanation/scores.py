@@ -21,8 +21,8 @@ def abs_diff_score(
     :param suff_outcomes: model outputs under sufficiency conditions
     :param nec_outcomes: model outputs under necessity conditions
     :return: dictionary containing
-        - 'sufficiency': tensor of sufficiency scores
-        - 'necessity': tensor of necessity scores
+        - 'suff': tensor of sufficiency scores
+        - 'nec': tensor of necessity scores
         - 'total': tensor of combined scores (even-weighted sum)
     """
 

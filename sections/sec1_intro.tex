@@ -18,18 +18,16 @@ at her credit score, so it played no role in her denial.
 SHAP \citep{lundberg2017unified} and a range of other feature-attribution tools,
 however, tend to split responsibility between gender and credit roughly evenly, because they
 reason from correlation and ignore which causal pathway was actually active for
-Alice specifically. Treatment-effect quantities such as the average treatment effect
-do little better: they ask what would happen if we changed one variable and let
-everything downstream recompute, which for Alice means asking about a world where her
-credit score \emph{would have been} checked, a world she never occupied.
+Alice specifically. Even standard ``but for'' tests fail here: hypothetically, if Alice were male her low score would have been checked, but still rejected; likewise, had Alice's credit score been higher, she still would have been rejected due to that score not being considered. A naive assessment concludes that, since neither hypothetical changed the outcome, \textit{neither} gender nor credit score is a cause. %Treatment-effect quantities such as the average treatment effect
+%do little better: they ask what would happen if we changed one variable and let
+%everything downstream recompute, which for Alice means asking about a world where her
+%credit score \emph{would have been} checked, a world she never occupied.
 
 \emph{Actual causality} (AC), a line of work spanning philosophy and AI
-\citep{actualCausalityHalpern}, gets this case right: it asks whether
-\emph{some} choice of which unchanged parts of the story to hold fixed is such
-that the outcome would have changed under an alternative; for Alice, that role is
-played by the fact that her credit was never checked.
-This correctly names her gender, not her credit, as the cause of her denial. But
-existing formalisations of actual causality have three limitations: they are
+\citep{actualCausalityHalpern}, gets this case right: it varies candidate causes while holding fixed certain aspects of the causal story, and assesses changes in outcomes. For Alice's case, it hypothetially varies gender while holding fixed that Alice did not, in fact, fail a credit check (she never received one). Had she been a man who did not fail a credit check, Alice would have received a loan (Examples \ref{example:bobatobcb}, \ref{example:aliceatobcb}).
+This correctly names her gender, not her credit, as the \textit{actual} cause of her denial. 
+
+Existing formalisations of actual causality, however, involve some combination of the following three limitations: they are
 all-or-nothing, treating a variable as either a cause or not with no notion of
 degree; they are computationally intractable beyond toy examples, because
 verifying that \emph{some} witness set --- a selection of variables held fixed at
@@ -40,13 +38,13 @@ and they were developed primarily for deterministic models.
 This paper introduces \emph{probabilistic causal impact} (\Ourapproach), an
 attribution method that returns a
 graded score, scales to large stochastic models
-without exhaustive search, and applies directly to the
-machine-learned causal models, neural, Gaussian-process, or otherwise probabilistic,
+without exhaustive search, and applies directly to
+machine-learned causal models — neural, Gaussian-process, or otherwise probabilistic — 
 that practitioners actually build. It still gets Alice's case right. At a high level,
 \ourapproach asks two counterfactual questions per candidate cause, echoing Pearl's probabilities of necessity
 and sufficiency: a \emph{sufficiency} question (would the outcome have persisted had we
-changed nothing?) and a \emph{necessity} question (would it have changed had we
-intervened?). \ourapproach restricts both
+changed nothing about a given feature?) and a \emph{necessity} question (would it have changed had we
+intervened on it?). \ourapproach restricts both
 questions to the causal pathways that were genuinely active, averaging over
 the reasonable ways of specifying which pathways those are. Because every quantity involved is a standard counterfactual
 query, the analyst can estimate the score by sampling from the same probabilistic-programming
@@ -76,7 +74,7 @@ existing methods, and introduces its central technical move.
 
 At minimum, a satisfactory causal attribution method
 should be \phantomsection\label{des:grounded}(i) \textit{causally grounded},
-attributing responsibility based on whether intervening on a candidate cause
+attributing responsibility based on whether ``intervening on'' (manipulating) a candidate cause
 would change the outcome; \phantomsection\label{des:context}(ii) \textit{context-sensitive},
 distinguishing which causal pathways were active in a specific
 instance,\footnote{We use \emph{context-sensitive} in Halpern's sense: sensitivity to which
@@ -127,7 +125,7 @@ regardless of which causal paths were active in the specific instance
 (Section~\ref{sec:motivations}). Table~\ref{tab:method_comparison} summarises the
 tradeoffs.
 
-\begin{table}[htbp]
+\begin{table}[thbp]
 \centering
 \renewcommand{\arraystretch}{1.45}
 \begin{tabular}{@{}l c c c c c c >{\columncolor{pcihl}}c @{}}
@@ -193,8 +191,8 @@ context-sensitivity that ATE and CATE lack.
 This move makes \ourapproach tractable, but it is also the source of its main risk. Existential search over witness sets forces AC's brute-force enumeration; an
 expectation admits Monte Carlo sampling from $\Gamma$ instead, at a cost ---
 $\Gamma$-mass on witness sets that do not reveal a dependency can swamp a single
-witness set that does, or sampling can simply miss it if it is rare enough, in the
-worst case as expensive to find as enumeration itself (Section~\ref{sec:discussion}).
+witness set that does, or sampling can simply miss it if it is rare enough — in the
+worst case, rare dependencies can be as expensive to find with sampling as with enumeration (Section~\ref{sec:discussion}).
 
 Three considerations limit the damage. The first is practical: models with
 structural regularities let sampling run far cheaper than the worst case above

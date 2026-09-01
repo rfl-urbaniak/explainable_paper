@@ -1,0 +1,447 @@
+\begin{thebibliography}{61}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Alechina et~al.(2017)Alechina, Halpern, and
+  Logan]{alechinaTeamPlans2020}
+Natasha Alechina, Joseph~Y. Halpern, and Brian Logan.
+\newblock Causality, responsibility and blame in team plans.
+\newblock In \emph{Proceedings of the 16th International Conference on
+  Autonomous Agents and Multiagent Systems (AAMAS)}, pages 1091--1099, 2017.
+
+\bibitem[Balke and Pearl(1994)]{balke1994probabilistic}
+Alexander Balke and Judea Pearl.
+\newblock Probabilistic evaluation of counterfactual queries.
+\newblock In \emph{Proceedings of the Twelfth AAAI National Conference on
+  Artificial Intelligence (AAAI)}, pages 230--237, 1994.
+
+\bibitem[Beckers(2021{\natexlab{a}})]{beckersNESS2021}
+Sander Beckers.
+\newblock The counterfactual {NESS} definition of causation.
+\newblock In \emph{Proceedings of the AAAI Conference on Artificial
+  Intelligence}, volume~35, pages 6210--6217, 2021{\natexlab{a}}.
+\newblock \doi{10.1609/aaai.v35i7.16772}.
+
+\bibitem[Beckers(2021{\natexlab{b}})]{beckersSufficiency2021}
+Sander Beckers.
+\newblock Causal sufficiency and actual causation.
+\newblock \emph{Journal of Philosophical Logic}, 50:\penalty0 1341--1374,
+  2021{\natexlab{b}}.
+\newblock \doi{10.1007/s10992-021-09601-z}.
+
+\bibitem[Beckers(2022)]{beckersExplanationsXAI2022}
+Sander Beckers.
+\newblock Causal explanations and {XAI}.
+\newblock In \emph{Proceedings of the First Conference on Causal Learning and
+  Reasoning (CLeaR)}, volume 177 of \emph{PMLR}, pages 90--109, 2022.
+
+\bibitem[Beckers(2023)]{beckersMoralResponsibility2023}
+Sander Beckers.
+\newblock Moral responsibility for {AI} systems.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, volume~36, 2023.
+
+\bibitem[Beckers(2025)]{beckers2025nondeterministic}
+Sander Beckers.
+\newblock Actual causation and nondeterministic causal models.
+\newblock In \emph{Proceedings of the Fourth Conference on Causal Learning and
+  Reasoning (CLeaR)}, volume 275 of \emph{PMLR}, pages 514--532, 2025.
+
+\bibitem[Beckers and Vennekens(2015)]{Beckers2015CombiningPC}
+Sander Beckers and Joost Vennekens.
+\newblock Combining probabilistic, causal, and normative reasoning in
+  {{CP-logic}}.
+\newblock \emph{ArXiv}, abs/1503.01051, 2015.
+
+\bibitem[Beckers and Vennekens(2017)]{beckersTransitivity2017}
+Sander Beckers and Joost Vennekens.
+\newblock The transitivity and asymmetry of actual causation.
+\newblock \emph{Ergo}, 4\penalty0 (1):\penalty0 1--27, 2017.
+\newblock \doi{10.3998/ergo.12405314.0004.001}.
+
+\bibitem[Beckers and Vennekens(2018)]{beckersPrincipled2018}
+Sander Beckers and Joost Vennekens.
+\newblock A principled approach to defining actual causation.
+\newblock \emph{Synthese}, 195\penalty0 (2):\penalty0 835--862, 2018.
+\newblock \doi{10.1007/s11229-016-1247-1}.
+
+\bibitem[Beckers et~al.(2022)Beckers, Chockler, and Halpern]{beckersHarm2022}
+Sander Beckers, Hana Chockler, and Joseph~Y. Halpern.
+\newblock A causal analysis of harm.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, volume~35, 2022.
+
+\bibitem[Beckers et~al.(2023)Beckers, Chockler, and
+  Halpern]{beckersQuantifyingHarm2023}
+Sander Beckers, Hana Chockler, and Joseph~Y. Halpern.
+\newblock Quantifying harm.
+\newblock In \emph{Proceedings of the Thirty-Second International Joint
+  Conference on Artificial Intelligence (IJCAI)}, pages 363--371, 2023.
+\newblock \doi{10.24963/ijcai.2023/41}.
+
+\bibitem[Bertossi(2023)]{bertossiAttributionScores2023}
+Leopoldo Bertossi.
+\newblock Attribution-scores in data management and explainable machine
+  learning, 2023.
+\newblock Paper associated with a tutorial at ADBIS 2023.
+
+\bibitem[Butler et~al.(2022)Butler, Feng, and Djurić]{butler2022differential}
+K.~Butler, G.~Feng, and P.~M. Djurić.
+\newblock A differential measure of the strength of causation.
+\newblock \emph{IEEE Signal Processing Letters}, 29:\penalty0 2208--2212, 2022.
+
+\bibitem[Chen et~al.(2024)Chen, Cai, Huang, Zhu, Horwood, Hao, Li, and
+  Hern\'andez-Lobato]{chenFANS2024}
+Xuexin Chen, Ruichu Cai, Zhengting Huang, Yuxuan Zhu, Julien Horwood, Zhifeng
+  Hao, Zijian Li, and Jos\'e~Miguel Hern\'andez-Lobato.
+\newblock Feature attribution with necessity and sufficiency via dual-stage
+  perturbation test for causal explanation.
+\newblock In \emph{Proceedings of the 41st International Conference on Machine
+  Learning (ICML)}, volume 235 of \emph{Proceedings of Machine Learning
+  Research}. PMLR, 2024.
+
+\bibitem[Cheshire and Magrini(2009)]{CheshireMagrini2009}
+Paul Cheshire and Stefano Magrini.
+\newblock Growing urban gdp or attracting people? different causes, different
+  consequences.
+\newblock In Charlie Karlsson, A{\r{a}}ke~E. Andersson, Paul~C. Cheshire, and
+  Roger~R. Stough, editors, \emph{New Directions in Regional Economic
+  Development}, Advances in Spatial Science, pages 291--315. Springer, Berlin,
+  Heidelberg, 2009.
+\newblock ISBN 978-3-642-01016-3, 978-3-642-01017-0.
+\newblock \doi{10.1007/978-3-642-01017-0_16}.
+
+\bibitem[Chockler and
+  Halpern(2004)]{chocklerResponsibilityBlameStructuralModel2004}
+H.~Chockler and J.~Y. Halpern.
+\newblock Responsibility and {{Blame}}: {{A Structural-Model Approach}}.
+\newblock \emph{Journal of Artificial Intelligence Research}, 22:\penalty0
+  93--115, October 2004.
+\newblock ISSN 1076-9757.
+\newblock \doi{10.1613/jair.1391}.
+
+\bibitem[Cohen(1988)]{cohen1988statistical}
+Jacob Cohen.
+\newblock \emph{Statistical Power Analysis for the Behavioral Sciences}.
+\newblock Lawrence Erlbaum Associates, Hillsdale, NJ, 2nd edition, 1988.
+
+\bibitem[Eiter and Lukasiewicz(2002)]{eiterComplexityResultsStructurebased2002}
+Thomas Eiter and Thomas Lukasiewicz.
+\newblock Complexity results for structure-based causality.
+\newblock \emph{Artificial Intelligence}, 142\penalty0 (1):\penalty0 53--89,
+  November 2002.
+\newblock ISSN 00043702.
+\newblock \doi{10.1016/S0004-3702(02)00271-0}.
+
+\bibitem[Fang(2022)]{fang2022probabilistic}
+Jingzhi Fang.
+\newblock \emph{On probabilistic reasoning of actual causation}.
+\newblock Doctoral thesis, Lingnan University, Hong Kong, 2022.
+\newblock Retrieved from \url{https://commons.ln.edu.hk/otd/155/}.
+
+\bibitem[Fenton{-}Glynn(2017)]{Fenton-Glynn2017-FENAPP-2}
+Luke Fenton{-}Glynn.
+\newblock A proposed probabilistic extension of the halpern and pearl
+  definition of ?actual cause?
+\newblock \emph{British Journal for the Philosophy of Science}, 68\penalty0
+  (4):\penalty0 1061--1124, 2017.
+\newblock \doi{10.1093/bjps/axv056}.
+
+\bibitem[Friedenberg and Halpern(2019)]{friedenbergHalpernBlameworthiness2019}
+Meir Friedenberg and Joseph~Y. Halpern.
+\newblock Blameworthiness in multi-agent settings.
+\newblock In \emph{Proceedings of the Thirty-Third AAAI Conference on
+  Artificial Intelligence (AAAI)}, 2019.
+
+\bibitem[Galhotra et~al.(2021)Galhotra, Pradhan, and Salimi]{galhotraLewis2021}
+Sainyam Galhotra, Romila Pradhan, and Babak Salimi.
+\newblock Explaining black-box algorithms using probabilistic contrastive
+  counterfactuals.
+\newblock In \emph{Proceedings of the 2021 ACM SIGMOD International Conference
+  on Management of Data}, 2021.
+
+\bibitem[Gerstenberg and Lagnado(2010)]{gerstenbergSpreadingBlame2010}
+Tobias Gerstenberg and David~A. Lagnado.
+\newblock Spreading the blame: The allocation of responsibility amongst
+  multiple agents.
+\newblock \emph{Cognition}, 115\penalty0 (1):\penalty0 166--171, 2010.
+\newblock \doi{10.1016/j.cognition.2009.12.011}.
+
+\bibitem[Hall(2004)]{hall2004two}
+Ned Hall.
+\newblock Two concepts of causation.
+\newblock In John Collins, Ned Hall, and L.~A. Paul, editors, \emph{Causation
+  and Counterfactuals}, pages 225--276. MIT Press, 2004.
+
+\bibitem[Halpern(2015)]{halpern2015modification}
+Joseph~Y. Halpern.
+\newblock A modification of the {Halpern--Pearl} definition of causality.
+\newblock In \emph{Proceedings of the 24th International Joint Conference on
+  Artificial Intelligence (IJCAI)}, pages 3022--3033, 2015.
+
+\bibitem[Halpern(2016)]{actualCausalityHalpern}
+Joseph~Y. Halpern.
+\newblock \emph{Actual Causality}.
+\newblock The MIT Press, 2016.
+\newblock ISBN 9780262035026.
+\newblock URL \url{http://www.jstor.org/stable/j.ctt1f5g5p9}.
+
+\bibitem[Halpern and Hitchcock(2015)]{Halpern2015-HALGCA}
+Joseph~Y. Halpern and Christopher Hitchcock.
+\newblock Graded causation and defaults.
+\newblock \emph{British Journal for the Philosophy of Science}, 66\penalty0
+  (2):\penalty0 413--457, 2015.
+\newblock \doi{10.1093/bjps/axt050}.
+
+\bibitem[Halpern and
+  Kleiman-Weiner(2018)]{halpernKleimanWeinerBlameworthiness2018}
+Joseph~Y. Halpern and Max Kleiman-Weiner.
+\newblock Towards formal definitions of blameworthiness, intention, and moral
+  responsibility.
+\newblock In \emph{Proceedings of the Thirty-Second AAAI Conference on
+  Artificial Intelligence (AAAI)}, 2018.
+
+\bibitem[Heckman and Pinto(2022)]{HeckmanPinto2022CausalPolicyAnalysis}
+James~J. Heckman and Rodrigo Pinto.
+\newblock The econometric model for causal policy analysis.
+\newblock \emph{Annual Review of Economics}, 14\penalty0 (1):\penalty0
+  893--923, 2022.
+\newblock \doi{10.1146/annurev-economics-051520-015456}.
+\newblock URL \url{https://doi.org/10.1146/annurev-economics-051520-015456}.
+
+\bibitem[Hensman et~al.(2013)Hensman, Fusi, and Lawrence]{hensman2013gaussian}
+James Hensman, Nicol{\`o} Fusi, and Neil~D Lawrence.
+\newblock Gaussian processes for big data.
+\newblock In \emph{Proceedings of the Twenty-Ninth Conference on Uncertainty in
+  Artificial Intelligence}, pages 282--290, 2013.
+
+\bibitem[Heskes et~al.(2020)Heskes, Sijben, Bucur, and
+  Claassen]{heskes2020causal}
+Tom Heskes, Evi Sijben, Ioan~Gabriel Bucur, and Tom Claassen.
+\newblock Causal {Shapley} values: Exploiting causal knowledge to explain
+  individual predictions of complex models.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~33, pages 4778--4789, 2020.
+
+\bibitem[Hitchcock and Knobe(2009)]{hitchcock2009cause}
+Christopher Hitchcock and Joshua Knobe.
+\newblock Cause and norm.
+\newblock \emph{The Journal of Philosophy}, 106\penalty0 (11):\penalty0
+  587--612, 2009.
+\newblock \doi{10.5840/jphil20091061128}.
+
+\bibitem[Ibrahim and Pretschner(2020)]{ibrahimChecking2020}
+Amjad Ibrahim and Alexander Pretschner.
+\newblock From checking to inference: Actual causality computations as
+  optimization problems.
+\newblock In \emph{Automated Technology for Verification and Analysis (ATVA)},
+  volume 12302 of \emph{Lecture Notes in Computer Science}. Springer, 2020.
+
+\bibitem[Ibrahim et~al.(2020)Ibrahim, Klesel, Zibaei, Kacianka, and
+  Pretschner]{ibrahimCanvas2020}
+Amjad Ibrahim, Tobias Klesel, Ehsan Zibaei, Severin Kacianka, and Alexander
+  Pretschner.
+\newblock Actual causality canvas: A general framework for explanation-based
+  socio-technical constructs.
+\newblock In \emph{Proceedings of the 24th European Conference on Artificial
+  Intelligence (ECAI)}, volume 325 of \emph{Frontiers in Artificial
+  Intelligence and Applications}, pages 2978--2985. IOS Press, 2020.
+\newblock \doi{10.3233/FAIA200472}.
+
+\bibitem[Icard et~al.(2017)Icard, Kominsky, and
+  Knobe]{icardNormalityActualCausal2017}
+Thomas~F. Icard, Jonathan~F. Kominsky, and Joshua Knobe.
+\newblock Normality and actual causal strength.
+\newblock \emph{Cognition}, 161:\penalty0 80--93, April 2017.
+\newblock ISSN 00100277.
+\newblock \doi{10.1016/j.cognition.2017.01.010}.
+
+\bibitem[Janzing et~al.(2020)Janzing, Minorics, and
+  Bl{\"o}baum]{janzing2020feature}
+Dominik Janzing, Lenon Minorics, and Patrick Bl{\"o}baum.
+\newblock Feature relevance quantification in explainable {AI}: A causal
+  problem.
+\newblock In \emph{International Conference on Artificial Intelligence and
+  Statistics ({AISTATS})}, volume 108 of \emph{PMLR}, pages 2907--2916, 2020.
+
+\bibitem[Karimi et~al.(2021)Karimi, Sch\"{o}lkopf, and Valera]{Karimi2021}
+Amir-Hossein Karimi, Bernhard Sch\"{o}lkopf, and Isabel Valera.
+\newblock Algorithmic recourse: from counterfactual explanations to
+  interventions.
+\newblock In \emph{Proceedings of the 2021 ACM Conference on Fairness,
+  Accountability, and Transparency}, FAccT ’21, page 353–362. ACM, March
+  2021.
+\newblock \doi{10.1145/3442188.3445899}.
+\newblock URL \url{http://dx.doi.org/10.1145/3442188.3445899}.
+
+\bibitem[Kawakami et~al.(2024)Kawakami, Kuroki, and
+  Tian]{kawakammi_2024_poc_for_cont_and_vec}
+Yuta Kawakami, Manabu Kuroki, and Jin Tian.
+\newblock Probabilities of {{Causation}} for {{Continuous}} and {{Vector
+  Variables}}.
+\newblock In Negar Kiyavash and Joris~M. Mooij, editors, \emph{Proceedings of
+  the Fortieth Conference on Uncertainty in Artificial Intelligence}, volume
+  244 of \emph{Proceedings of Machine Learning Research}, pages 1901--1921.
+  PMLR, July 2024.
+
+\bibitem[Kruschke(2018)]{kruschke2018}
+John~K. Kruschke.
+\newblock Rejecting or accepting parameter values in {Bayesian} estimation.
+\newblock \emph{Advances in Methods and Practices in Psychological Science},
+  1\penalty0 (2):\penalty0 270--280, 2018.
+\newblock \doi{10.1177/2515245918771304}.
+
+\bibitem[Lewis(1973)]{lewis1973causation}
+David Lewis.
+\newblock Causation.
+\newblock \emph{The Journal of Philosophy}, 70\penalty0 (17):\penalty0
+  556--567, 1973.
+
+\bibitem[Lundberg and Lee(2017)]{lundberg2017unified}
+Scott~M Lundberg and Su-In Lee.
+\newblock A unified approach to interpreting model predictions.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~30, pages 4765--4774, 2017.
+
+\bibitem[Maldonado et~al.(2025)Maldonado, Krumme, Zetzsche, Didelez, and
+  Schill]{maldonado2025robot}
+Jaime Maldonado, Jonas Krumme, Christoph Zetzsche, Vanessa Didelez, and Kerstin
+  Schill.
+\newblock Robot pouring: Identifying causes of spillage and selecting
+  alternative action parameters using probabilistic actual causation.
+\newblock \emph{Frontiers in Cognition}, 4:\penalty0 1565059, 2025.
+\newblock \doi{10.3389/fcogn.2025.1565059}.
+
+\bibitem[Mueller et~al.(2022)Mueller, Li, and Pearl]{muellerpearl2022causes}
+Scott Mueller, Ang Li, and Judea Pearl.
+\newblock Causes of effects: Learning individual responses from population
+  data.
+\newblock In \emph{Proceedings of the Thirty-First International Joint
+  Conference on Artificial Intelligence (IJCAI)}, pages 2712--2718, 2022.
+\newblock \doi{10.24963/ijcai.2022/376}.
+
+\bibitem[Ness(2025)]{ness2025causal}
+Robert~Osazuwa Ness.
+\newblock \emph{Causal AI}.
+\newblock Manning Publications, 2025.
+
+\bibitem[Papageorgiou et~al.(2022)Papageorgiou, Theodosiou, Rapti,
+  Papageorgiou, Dimitriou, Tzovaras, and Margetis]{Papageorgiou2022}
+Konstantinos Papageorgiou, Theodosios Theodosiou, Aikaterini Rapti, Elpiniki~I.
+  Papageorgiou, Nikolaos Dimitriou, Dimitrios Tzovaras, and George Margetis.
+\newblock A systematic review on machine learning methods for root cause
+  analysis towards zero-defect manufacturing.
+\newblock \emph{Frontiers in Manufacturing Technology}, Volume 2 - 2022, 2022.
+\newblock ISSN 2813-0359.
+\newblock \doi{10.3389/fmtec.2022.972712}.
+\newblock URL
+  \url{https://www.frontiersin.org/journals/manufacturing-technology/articles/10.3389/fmtec.2022.972712}.
+
+\bibitem[Paul and Hall(2013)]{paulhall2013}
+L.~A. Paul and Ned Hall.
+\newblock \emph{Causation: A User's Guide}.
+\newblock Oxford University Press, 2013.
+
+\bibitem[Pearl(1999)]{pearl1999probabilities}
+Judea Pearl.
+\newblock Probabilities of causation: Three counterfactual interpretations and
+  their identification.
+\newblock \emph{Synthese}, 121\penalty0 (1--2):\penalty0 93--149, 1999.
+\newblock \doi{10.1023/A:1005233831499}.
+
+\bibitem[Pearl(2009)]{causalityPearl}
+Judea Pearl.
+\newblock \emph{Causality: Models, Reasoning and Inference}.
+\newblock Cambridge University Press, USA, 2nd edition, 2009.
+\newblock ISBN 052189560X.
+
+\bibitem[Pearl(2022)]{pearl2022probabilities}
+Judea Pearl.
+\newblock Probabilities of causation: three counterfactual interpretations and
+  their identification.
+\newblock In \emph{Probabilistic and Causal Inference: The Works of Judea
+  Pearl}, pages 317--372. 2022.
+
+\bibitem[Salimi et~al.(2016)Salimi, Bertossi, Suciu, and Van~den
+  Broeck]{salimiQuantifyingCausalEffects2016}
+Babak Salimi, Leopoldo Bertossi, Dan Suciu, and Guy Van~den Broeck.
+\newblock Quantifying causal effects on query answering in databases.
+\newblock In \emph{Proceedings of the 8th USENIX Workshop on the Theory and
+  Practice of Provenance (TaPP)}, 2016.
+
+\bibitem[Shapley(1953)]{shapley1953}
+Lloyd~S. Shapley.
+\newblock A value for $n$-person games.
+\newblock In Harold~W. Kuhn and Albert~W. Tucker, editors, \emph{Contributions
+  to the Theory of Games, Volume {II}}, volume~28 of \emph{Annals of
+  Mathematics Studies}, pages 307--317. Princeton University Press, Princeton,
+  1953.
+
+\bibitem[Sharma et~al.(2022)Sharma, Li, and Jiao]{sharma2022cfshapley}
+Amit Sharma, Hua Li, and Jian Jiao.
+\newblock The counterfactual-{S}hapley value: Attributing change in system
+  metrics.
+\newblock \emph{arXiv preprint arXiv:2208.08399}, 2022.
+
+\bibitem[Shepherd et~al.(2024)Shepherd, Amor, and
+  Moreno‐Betancur]{Shepherd2024}
+Daisy~A. Shepherd, David~J. Amor, and Margarita Moreno‐Betancur.
+\newblock Statistical analysis of observational studies in disability research.
+\newblock \emph{Developmental Medicine \& Child Neurology}, 66\penalty0
+  (11):\penalty0 1408--1418, 2024.
+\newblock \doi{10.1111/dmcn.15948}.
+
+\bibitem[Sprenger(2018)]{sprenger2018foundations}
+Jan Sprenger.
+\newblock Foundations of a probabilistic theory of causal strength.
+\newblock \emph{The Philosophical Review}, 127\penalty0 (3):\penalty0 371--398,
+  2018.
+\newblock \doi{10.1215/00318108-6718797}.
+
+\bibitem[Tian and Pearl(2000)]{tian2000probabilities}
+Jin Tian and Judea Pearl.
+\newblock Probabilities of causation: Bounds and identification.
+\newblock \emph{Annals of Mathematics and Artificial Intelligence}, 28\penalty0
+  (1--4):\penalty0 287--313, 2000.
+\newblock \doi{10.1023/A:1018912507879}.
+
+\bibitem[Titsias(2009)]{titsias2009variational}
+Michalis Titsias.
+\newblock Variational learning of inducing variables in sparse {G}aussian
+  processes.
+\newblock In \emph{Artificial Intelligence and Statistics}, pages 567--574.
+  PMLR, 2009.
+
+\bibitem[Verma et~al.(2024)Verma, Boonsanong, Hoang, Hines, Dickerson, and
+  Shah]{verma2022recourses}
+Sahil Verma, Varich Boonsanong, Minh Hoang, Keegan Hines, John Dickerson, and
+  Chirag Shah.
+\newblock Counterfactual explanations and algorithmic recourses for machine
+  learning: A review.
+\newblock \emph{ACM Computing Surveys}, 56\penalty0 (12):\penalty0 1--42, 2024.
+
+\bibitem[Wang and Jordan(2021)]{wangJordanDesiderata2021}
+Yixin Wang and Michael~I. Jordan.
+\newblock Desiderata for representation learning: A causal perspective, 2021.
+
+\bibitem[Watson et~al.(2021)Watson, Gultchin, Taly, and
+  Floridi]{watson2021necessity}
+David~S. Watson, Limor Gultchin, Ankur Taly, and Luciano Floridi.
+\newblock Local explanations via necessity and sufficiency: unifying theory and
+  practice.
+\newblock In \emph{Proceedings of the Thirty-Seventh Conference on Uncertainty
+  in Artificial Intelligence}, volume 161 of \emph{Proceedings of Machine
+  Learning Research}, pages 1382--1392. PMLR, 2021.
+
+\bibitem[Xia et~al.(2023)Xia, Pan, and Bareinboim]{xia2022neural}
+Kevin Xia, Yushu Pan, and Elias Bareinboim.
+\newblock Neural causal models for counterfactual identification and
+  estimation.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2023.
+\newblock arXiv:2210.00035.
+
+\end{thebibliography}

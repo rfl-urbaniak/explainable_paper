@@ -1,9 +1,9 @@
-PCI Paper — Computational Notebooks
+PCI Paper: Computational Notebooks
 =====================================
 
 Companion notebooks for the paper *Probabilistic Causal Impact (PCI)*.
-Each notebook reproduces a specific chunk of the paper's quantitative content
-— verifying the numbers, generating the figures, and stress-testing PCI
+Each notebook reproduces a specific chunk of the paper's quantitative content:
+it verifies the numbers, generates the figures, and stress-tests PCI
 against alternatives (PN/PS/PNS, marginal SHAP, causal SHAP, gradient-based
 attribution, classical actual-cause probabilities).
 
@@ -18,9 +18,8 @@ Requires `uv <https://docs.astral.sh/uv/>`_.
    make -C docs html       # build this HTML site
    make -C docs serve      # browse at http://localhost:8000
 
-The notebooks are intended to be **read here**, on the rendered HTML site —
-each one ships with its full publication-quality outputs (figures, tables,
-print statements). Raw ``.ipynb`` files live under ``docs/source/`` if you
+Read the notebooks here, on the rendered HTML site. Each one ships with its
+full publication-quality outputs (figures, tables, print statements). Raw ``.ipynb`` files live under ``docs/source/`` if you
 want to inspect or modify the source.
 
 The notebooks
@@ -33,24 +32,22 @@ that compare PCI to existing attribution and actual-cause machinery.
 **Closed-form verification.** Small, hand-checkable models where every number
 quoted in the paper can be recomputed analytically.
 
-:doc:`obcb_computations` — *Old Boys' Club Bank: PN, PS, PNS, PCI, SHAP.*
+:doc:`obcb_computations`: *Old Boys' Club Bank: PN, PS, PNS, PCI, SHAP.*
     Recomputes every number in Section 2 of the paper for the stochastic OBCB
     example. Population-level and individual (Alice, Bob) versions of Pearl's
     PN, PS, PNS; PCI with and without witnesses; plain SHAP and causal SHAP
     on both the 2-feature and 3-feature games. Closes with a four-method
     comparison table that drives the paper's "what each method picks up"
-    discussion. Closed-form throughout — no Monte Carlo, no fitting.
+    discussion. Closed-form throughout, with no Monte Carlo and no fitting.
 
-:doc:`signal_mediation_computations` — *Signal with mediation: chain
-X → M → Y.*
+:doc:`signal_mediation_computations`: *Signal with mediation: the chain X → M → Y.*
     Verifies the numerical content of Sections 4.4–4.6 on a linear Gaussian
     chain with additive noise. Computes plain SHAP, causal SHAP, and PCI
     (without and with the third variable as witness) on three factual
     instances, then assembles the full desiderata table. A Monte Carlo
     cross-check sits alongside each closed-form value.
 
-:doc:`responsibility_archetypes` — *Three causal archetypes plus an
-irrelevance control.*
+:doc:`responsibility_archetypes`: *Three causal archetypes plus an irrelevance control.*
     Synthetic SCM with linear-necessary-and-sufficient inputs, an
     overdetermined branch, a preempted branch, and a disconnected control.
     Runs PCI's necessity / sufficiency decomposition on two contrasting
@@ -60,7 +57,7 @@ irrelevance control.*
     number per feature; PCI returns two, and the two numbers carry distinct
     structural information.
 
-:doc:`desert_traveler` — *Pearl's desert traveler: PCI vs Definition 10.3.5.*
+:doc:`desert_traveler`: *Pearl's desert traveler: PCI vs Definition 10.3.5.*
     Walks through PCI's three responsibility factors (necessity, sufficiency,
     joint PNS) on Pearl's basic deterministic desert traveler, then on a
     weak-poison variant where the cyanide step is stochastic. Throughout we
@@ -76,23 +73,23 @@ irrelevance control.*
 **Empirical benchmarks.** Larger experiments that compare PCI to existing
 machinery on synthetic SCMs and a dynamical SIR model.
 
-:doc:`actual_causality_benchmark` — *PCI vs. classical actual causality.*
+:doc:`actual_causality_benchmark`: *PCI vs. classical actual causality.*
     Compares PCI against Halpern–Pearl-style actual-cause probabilities on
     the generalised throwing problem. Exact actual-cause computations (one
     pair, two pairs, scaling sweep) followed by approximate estimation via
     ``SearchForExplanation``. The runtime / search-space / accuracy plots in
     the paper come from this notebook.
 
-:doc:`sir_benchmark` — *PCI on a dynamical SIR model with policies.*
+:doc:`sir_benchmark`: *PCI on a dynamical SIR model with policies.*
     Applies PCI to a Bayesian SIR epidemiological model with two interacting
     non-pharmaceutical policies (lockdown, mask-wearing). Mirrors the chirho
     tutorial on explainable reasoning in dynamical systems but swaps the
     explanatory machinery for the PCI thin-search sampler. Recovers chirho's
-    qualitative finding — lockdown is the dominant cause of excessive
-    overshoot — while exposing the necessity / sufficiency decomposition
+    qualitative finding (lockdown is the dominant cause of excessive
+    overshoot) while exposing the necessity / sufficiency decomposition
     that classical actual causality collapses.
 
-:doc:`gradient_based_attribution` — *PCI vs. gradient-based attribution.*
+:doc:`gradient_based_attribution`: *PCI vs. gradient-based attribution.*
     Compares PCI's responsibility scores against gradient / sensitivity-based
     attribution methods on a controlled synthetic model. Probes invariance
     to feature scale, sensitivity to priors, and the differential causal

@@ -110,8 +110,13 @@ case "${1:-}" in
     git fetch "$OL" "$OL_BRANCH"
     git update-ref "refs/heads/$GH_BRANCH" "$OL/$OL_BRANCH"
     git push --force "$GH" "$GH_BRANCH"   # keep the GitHub mirror in step
-    echo ">> Staging prose (main.tex + sections/) from Overleaf onto '$cur' ..."
+    echo ">> Staging prose from Overleaf onto '$cur' ..."
+    # Bring back every text source `push` sends up. Checking out only
+    # main.tex + sections/ silently stranded Overleaf's references.bib edits.
     git checkout "$GH_BRANCH" -- main.tex sections
+    for f in references.bib neurips_2024.sty main.bbl; do
+      git cat-file -e "$GH_BRANCH:$f" 2>/dev/null && git checkout "$GH_BRANCH" -- "$f"
+    done
     echo ">> Done. Review with: git diff --cached ; then commit on '$cur'."
     ;;
 

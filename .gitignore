@@ -38,3 +38,6 @@ tests/coverage/
 
 # OS
 .DS_Store
+
+# Editor
+.vscode/
