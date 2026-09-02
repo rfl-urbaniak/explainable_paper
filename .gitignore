@@ -41,3 +41,7 @@ tests/coverage/
 
 # Editor
 .vscode/
+
+# arXiv submission tree (regenerate with `make arxiv`)
+arxiv/
+arxiv.tar.gz

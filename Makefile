@@ -51,4 +51,8 @@ main-clean: FORCE
 	latexmk -C main.tex
 	rm -f sections/*.aux
 
+# ---- arXiv submission (see scripts/make-arxiv.sh) ---------------------------
+arxiv: FORCE
+	./scripts/make-arxiv.sh
+
 FORCE:

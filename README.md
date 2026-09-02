@@ -161,3 +161,10 @@ tab → *docs* → *Run workflow*.
 3. `git clone` → `uv sync --group docs`.
 4. Prose lives on Overleaf; code and notebooks on `main`. Use
    `scripts/sync-overleaf.sh` to move paper edits between them.
+
+## License
+
+Apache License 2.0; see [LICENSE.md](LICENSE.md). The paper itself is covered by
+the license chosen at arXiv submission, and the LaTeX style files
+(`neurips_2024.sty`, `jmlr.cls`, `jmlrutils.sty`) keep the terms of their
+publishers.

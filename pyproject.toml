@@ -9,6 +9,8 @@ description = "Computational notebooks for the PCI paper."
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [{ name = "Rafal Urbaniak" }]
+license = "Apache-2.0"
+license-files = ["LICENSE.md"]
 dependencies = [
     "numpy",
     "pandas",
