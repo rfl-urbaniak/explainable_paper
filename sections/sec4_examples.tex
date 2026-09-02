@@ -53,9 +53,7 @@ $\mathbf{W}$ resolves on the OBCB and signal walkthroughs of this section.}
 Despite this repair, both methods share deeper limitations. First, both plain and
 Causal SHAP can assign non-zero responsibility to variables that play no causal role
 with respect to the target: attribution can run against the direction of the causal
-graph, a failure the interventional correction does not address. Second, both methods
-explain how a model's prediction departs from that model's population-average
-output, not the factual outcome an individual actually experienced. When the goal is \emph{causal responsibility
+graph, a failure the interventional correction does not address. Second, both methods explain a model's prediction as a departure from that model's population-average output, not from the factual outcome an individual actually experienced. When the goal is \emph{causal responsibility
 attribution} rather than prediction explanation, this mismatch in target produces
 further divergences, which we make explicit below. The first limitation will surface in our signal example as violations of
 D-YX, D-YM, and D-MX; the second will surface in OBCB as the D-A-rank overdetermination
@@ -73,8 +71,7 @@ example.
 At the level of subset weighting alone, \ourapproach{} (with $J=1$, $K=|\mathbf{S}|$) and
 SHAP are not distinguishable: $\Gamma$'s subset weights match the Shapley kernel. The
 distinction lies in the integrand. Plain SHAP (in the conditional reading of
-Eq.~\eqref{eq:plain_shap_value}, which is what we use throughout except where
-noted) averages marginal contributions using the observational conditional
+Eq.~\eqref{eq:plain_shap_value}, which we use throughout except where noted) averages marginal contributions using the observational conditional
 $\mathbb{E}[f(\mathbf{X}) \mid \mathbf{X}_{\mathcal{S}} = \mathbf{x}_{\mathcal{S}}]$, drawing the
 non-coalition features from their distribution given the coalition; a feature merely
 correlated with a true cause can therefore receive positive attribution. \ourapproach{}
@@ -438,8 +435,7 @@ and no approximations are required.
 reaches the outcome $Y$ (purple double box) \emph{only} through the mediator $M$
 (gold hexagon); the faded, crossed-out arc marks the \emph{absent} direct path
 $X\to Y$. Dashed circles are the independent Gaussian noises $U_X,U_M,U_Y$ of
-\crefrange{eq:X}{eq:Y}. That one missing edge is what desideratum \textbf{D-MXY}
-asks an attribution to register: $M$ acts on $Y$ directly, whereas $X$ acts only
+\crefrange{eq:X}{eq:Y}. Desideratum \textbf{D-MXY} asks an attribution to register that one missing edge: $M$ acts on $Y$ directly, whereas $X$ acts only
 at one remove.}
 \label{fig:dag_signal}
 \end{figure}
@@ -469,7 +465,7 @@ the cause closer to the outcome:
 \end{align*}
 \noindent The direction of the inequality is a convention rather than a law of responsibility; what matters is that the method separates the direct from the indirect path at all. A method that assigns the larger score to the more distal cause would be equally principled; we adopt the direction stated here for consistency.
 
-\noindent The key \textbf{distributional facts} we will use are:
+\noindent The \textbf{distributional facts} we will use are:
 \begin{align}
 \mathbb{E}[X] &= \mathbb{E}[M] = \mathbb{E}[Y] = 0.5, \\
 \bigl(\text{Var}(X),\, \text{Var}(M),\, \text{Var}(Y)\bigr) &= (0.25,\, 0.35,\, 0.45), \\
@@ -653,8 +649,7 @@ in which $M$ takes an alternative value; since $X$ does not appear in $Y$'s
 structural equation, pinning $X$ has no effect on $Y^n$ or $Y^s$, and all
 three cases contribute the same $0.425$.
 The gap widens from $0.034$ at $\mathbf{W}=\emptyset$ to
-$0.319-0.186=0.133$ at $\mathbf{W}=\{$third$\}$: the ordering is now
-\emph{robust} rather than marginal.
+$0.319-0.186=0.133$ at $\mathbf{W}=\{$third$\}$: the ordering is now \emph{robust}.
 The comparison relies on different witness sets for the two cells, so it
 remains illustrative rather than a single-game ranking.
 
