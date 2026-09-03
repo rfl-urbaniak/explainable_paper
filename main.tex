@@ -168,7 +168,7 @@
 \newcommand{\nbsite}{https://rfl-urbaniak.github.io/explainable\_paper}
 \newcommand{\nb}[1]{\href{\nbsite/#1.html}{\texttt{#1}}}
 
-\title{A Computationally Feasible Framework for Causal Probabilistic Explanation\thanks{Code and companion notebooks are available at \url{https://rfl-urbaniak.github.io/explainable_paper/}. Correspondence to \texttt{rfl.urbaniak@gmail.com}.}}
+\title{A Computationally Feasible Framework for Causal Probabilistic Explanation\thanks{Code and companion notebooks are available at \url{https://rfl-urbaniak.github.io/explainable_paper/}. Correspondence to \texttt{rfl.urbaniak@gmail.com} (\url{https://rfl-urbaniak.github.io/}).}}
 
 \author{%
   Rafal Urbaniak \\
@@ -229,10 +229,13 @@
   \noindent\textbf{Keywords:} Probabilistic Causal Models, Explanation, Responsibility, Actual Causality, Probability of Necessity and Sufficiency.
 \end{abstract}
 
-% Compact single-page TOC: smaller font + tighter line spacing.
+% Compact single-page TOC: own page, smaller font, tighter line spacing,
+% section-level only (subsections dropped so it fits on one page).
+\newpage
 \begingroup
 \renewcommand{\baselinestretch}{0.88}\small
 \setlength{\parskip}{0pt}
+\setcounter{tocdepth}{1}
 \tableofcontents
 \endgroup
 \newpage
