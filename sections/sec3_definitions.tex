@@ -51,7 +51,7 @@ with \(\mathbf{Pa}_i \subseteq \mathbf{V}\setminus\{V_i\}\) denoting the parents
 $U_i\in\mathbf{U}\cup\{\varnothing\}$ its own exogenous input, if any (a purely
 deterministic $f_i$ takes $U_i=\varnothing$ and depends on $\mathbf{Pa}_i$ alone).
 The distribution \(P_{\mathbf{U}}\) is a probability measure on $\dom(\mathbf{U})$,
-and the assignments in \(\mathbf{F}\) are assumed to be acyclic and to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).\footnote{Working within the PSCM framework commits the practitioner to fully specified structural assignments $\mathbf{F}$ and an exogenous distribution $P_{\mathbf{U}}$, analogous to how Bayesian inference requires a likelihood and a prior. This is what enables \ourapproach to yield individual-level counterfactual attributions rather than population-level bounds, and once $\mathbf{F}$ and $P_{\mathbf{U}}$ are specified, sampling from $P_{\mathbf{U}}$ is a routine probabilistic inference operation.}
+and the assignments in \(\mathbf{F}\) are assumed to be acyclic and to have a unique solution for \(\mathbf{V}\) given \(\mathbf{U}\).\footnote{Working within the PSCM framework commits the practitioner to fully specified structural assignments $\mathbf{F}$ and an exogenous distribution $P_{\mathbf{U}}$, analogous to how Bayesian inference requires a likelihood and a prior. This enables \ourapproach to yield individual-level counterfactual attributions rather than population-level bounds, and once $\mathbf{F}$ and $P_{\mathbf{U}}$ are specified, sampling from $P_{\mathbf{U}}$ is a routine probabilistic inference operation.}
 \end{definition}
 
 \medskip\noindent A PSCM encodes which variables influence which others, 
@@ -247,8 +247,7 @@ individually rarer.
 
 The parameters $J$ and $K$ determine the cardinality range of the search; specific
 choices connect \ourapproach to existing methods and enable efficient Monte Carlo
-approximation.\footnote{When $J=1$ and $K=|\mathbf{X}|$, this distribution coincides with the Shapley weighting kernel, which samples coalition size uniformly and then selects a coalition uniformly at that size \citep{shapley1953}. The parameters $J$ and $K$ allow the practitioner to restrict the search to cause sets of a specific cardinality range: setting $J=K=1$ confines attribution to individual variables, while $J=2, K=3$ focuses on small multi-variable interactions. Moreover, whereas exact Shapley computation requires summing over all $2^{|\mathbf{X}|}$ coalitions, \ourapproach treats $\Gamma$ as a generative model: approximation proceeds by sampling subsets from $\Gamma$ and outcomes from $P_{\mathbf{U}}$, making Monte Carlo estimation a native feature of the framework rather than an external
-algorithmic layer.
+approximation.\footnote{When $J=1$ and $K=|\mathbf{X}|$, this distribution coincides with the Shapley weighting kernel, which samples coalition size uniformly and then selects a coalition uniformly at that size \citep{shapley1953}. The parameters $J$ and $K$ allow the practitioner to restrict the search to cause sets of a specific cardinality range: setting $J=K=1$ confines attribution to individual variables, while $J=2, K=3$ focuses on small multi-variable interactions. Moreover, whereas exact Shapley computation requires summing over all $2^{|\mathbf{X}|}$ coalitions, \ourapproach treats $\Gamma$ as a generative model: approximation proceeds by sampling subsets from $\Gamma$ and outcomes from $P_{\mathbf{U}}$, making Monte Carlo estimation a native feature of the framework.
 We note that the weighting alone does not distinguish PCI from SHAP at $J=1$,
 $K=|\mathbf{X}|$: the subset weights are identical. The distinction lies in the
 integrand, and it matters for what is being evaluated and what results follow. SHAP
@@ -318,8 +317,7 @@ may amplify estimation noise rather than capturing genuine higher-order causal s
 For applications where attribution has serious consequences, we recommend a
 cardinality sensitivity analysis: if rankings are stable as $K$ increases from $1$ to
 $|\mathbf{S}|$, the simpler choice is supported; if they diverge, higher-order
-interactions are materially relevant and the full powerset should be used. The key
-advantage of \ourapproach is that this commitment is made transparently rather than
+interactions are materially relevant and the full powerset should be used. The advantage of \ourapproach is that this commitment is made transparently rather than
 absorbed into an implicit default.\footnote{SHAP faces an analogous decision without
 flagging it as one: by averaging over all $2^{|N|}$ feature coalitions, plain SHAP and
 Causal SHAP commit to the maximum interaction order $K=|N|$ as an unstated default,
@@ -393,8 +391,7 @@ p(\mathbf{x}'), & \text{otherwise},
 where $B_\epsilon(\mathbf{x})$ denotes the $\epsilon$-ball centered at $\mathbf{x}$.
 The support is therefore
 $\operatorname{supp}(\Delta_\epsilon(\mathbf{x})) = \operatorname{supp}(p) \setminus B_\epsilon(\mathbf{x})$:
-not just the factual point $\mathbf{x}$ but its entire
-$\epsilon$-neighbourhood is excluded. This requires $p$ to place positive mass
+the exclusion covers the entire $\epsilon$-neighbourhood of $\mathbf{x}$. This requires $p$ to place positive mass
 outside $B_\epsilon(\mathbf{x})$; if $\operatorname{supp}(p)\subseteq B_\epsilon(\mathbf{x})$
 (a sharply concentrated posterior, or an overly generous $\epsilon$), the
 normalising constant is zero and $\Delta_\epsilon(\mathbf{x})$ is undefined. The
@@ -418,7 +415,7 @@ $\varname{gender}=0$. Accordingly, $\Delta(\varname{gender}=0)$ is a point mass 
 $\varname{gender}=1$ and $\Delta(\varname{credit}=0)$ a point mass on
 $\varname{credit}=1$: no distributional choice is required. The binary case is exactly
 where $\Delta$ is unambiguous; it is for continuous suspects such as income or loan amount
-that the $\epsilon$-excised distribution becomes essential, forcing an explicit commitment
+that the $\epsilon$-excised distribution becomes necessary, forcing an explicit commitment
 to what counts as a meaningfully different value.
 
 \paragraph{Why $\epsilon$-excision?}
@@ -501,7 +498,7 @@ $2^{\mathbf{S}}_{k}:=\{\mathbf{C}\subseteq\mathbf{S}:X_k\in\mathbf{C}\}$,
 and for each $\mathbf{C}\subseteq\mathbf{S}$ let
 $\Delta_{\mathbf{C}}(\mathbf{s}^\star)$ denote the pushforward of
 $\Delta(\mathbf{s}^\star)$ under the restriction map
-$\mathbf{s}'\mapsto \mathbf{s}'\!\mid_{\mathbf{C}}$.\footnote{For an assignment $\mathbf{x}$ to a collection of variables $\mathbf{X}$ and any subset $\mathbf{Y}\subseteq\mathbf{X}$, the restriction $\mathbf{x}\!\mid_{\mathbf{Y}}$ denotes the sub-assignment of $\mathbf{x}$ to the variables in $\mathbf{Y}$. Note that the restricted marginal $\Delta_{\mathbf{C}}(\mathbf{s}^\star)$ may place positive mass on $\mathbf{s}^\star\!\mid_{\mathbf{C}}$ even though $\Delta(\mathbf{s}^\star)$ excludes the joint factual $\mathbf{s}^\star$; the genuine-departure guarantee is on the joint alternative, not on each restricted coordinate.}
+$\mathbf{s}'\mapsto \mathbf{s}'\!\mid_{\mathbf{C}}$.\footnote{For an assignment $\mathbf{x}$ to a collection of variables $\mathbf{X}$ and any subset $\mathbf{Y}\subseteq\mathbf{X}$, the restriction $\mathbf{x}\!\mid_{\mathbf{Y}}$ denotes the sub-assignment of $\mathbf{x}$ to the variables in $\mathbf{Y}$. The restricted marginal $\Delta_{\mathbf{C}}(\mathbf{s}^\star)$ may place positive mass on $\mathbf{s}^\star\!\mid_{\mathbf{C}}$ even though $\Delta(\mathbf{s}^\star)$ excludes the joint factual $\mathbf{s}^\star$; the genuine-departure guarantee is on the joint alternative, not on each restricted coordinate.}
 For any measurable $A\subseteq\dom(Y)$ and exogenous realization $\mathbf{u}$, define three
 sub-probability measures on $\dom(Y)$ (the first two) and $\dom(Y)\times\dom(Y)$ (the third).
 
@@ -586,8 +583,7 @@ mass $\Pr_\Gamma[X_k\in\mathbf{C}]\le 1$ rather than renormalized expectations. 
 consequence worth flagging: because this total mass scales with how often $\Gamma$
 includes $X_k$ at all, comparing raw (unnormalised) scores \emph{across suspects}
 is $\Gamma$-invariant only when $\Gamma$ assigns every compared suspect the same
-inclusion probability $\Pr_\Gamma[X_k\in\mathbf{C}]$ --- as it does under the
-uniform and cardinality-constrained $\Gamma$'s used throughout this paper's
+inclusion probability $\Pr_\Gamma[X_k\in\mathbf{C}]$, as it does under the uniform and cardinality-constrained $\Gamma$'s used throughout this paper's
 examples, since those treat all suspects symmetrically. A non-uniform, asymmetric
 $\Gamma$ (e.g.\ one preferring some suspects over others, as when $\Gamma$ is
 learned from data) can make a suspect's score larger purely because $\Gamma$ visits
@@ -635,8 +631,7 @@ $ci$ is not separable, as in the PNS binary score (Example~\ref{ex:pns_binary}),
 the score depends on the covariance, under $\Gamma^{s,n}$, between
 sufficiency-favouring and necessity-favouring configurations. \Ourapproach{} adopts
 the diagonal case as its default: it needs only one $\Gamma$-draw per Monte Carlo
-sample, and it is what every estimator in this paper
-(Algorithm~\ref{alg:pci_generic} and its specialisations) implements. A user who wants
+sample, and every estimator in this paper (Algorithm~\ref{alg:pci_generic} and its specialisations) implements it. A user who wants
 the two worlds explained independently can instantiate the independent-product case
 instead.
 
@@ -680,8 +675,7 @@ attribution.
 
 \medskip\noindent\textit{PCI in pseudocode.} Definitions~\ref{def:jointnecsuf}
 and~\ref{def:causalimpact} are stated measure-theoretically because \ourapproach must
-cover continuous, discrete, and mixed-type variables uniformly, and because that
-generality is what Theorem~\ref{th:ac-exp} needs. Operationally, under the
+cover continuous, discrete, and mixed-type variables uniformly, and because Theorem~\ref{th:ac-exp} needs that generality. Operationally, under the
 diagonal default of the remark above, the score they define reduces to a
 short Monte Carlo loop:
 
@@ -790,9 +784,8 @@ $\Delta$ a point mass on the alternative binary value, and $y^\star=\varname{loa
 the exogenous noise $U_\text{check}$ falls into three regions. (Definition~\ref{def:interlaw}
 makes the interventional law a point mass given the \emph{full} noise vector
 $\mathbf{u}$; below we coarsen $\mathbf{u}$ to these three $U_\text{check}$ regions and
-marginalise the remaining noise, in particular $U_{\text{loan-if-checked}}$, inside
-each region --- by iterated expectation this equals the full integral over
-$P_{\mathbf{U}}$, and is what lets a value like ``$P(\varname{loan}=1)=0.05$'' appear
+marginalise the remaining noise, in particular $U_{\text{loan-if-checked}}$, inside each region; by iterated expectation this equals the full integral over
+$P_{\mathbf{U}}$, and lets a value like ``$P(\varname{loan}=1)=0.05$'' appear
 below despite Definition~\ref{def:interlaw}'s pointwise law being deterministic.)
 The three regions are:
 \begin{itemize}

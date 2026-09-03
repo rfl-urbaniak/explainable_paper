@@ -3,8 +3,10 @@ Name: pci-paper
 Version: 0.1
 Summary: Computational notebooks for the PCI paper.
 Author: Rafal Urbaniak
+License-Expression: Apache-2.0
 Requires-Python: >=3.12
 Description-Content-Type: text/markdown
+License-File: LICENSE.md
 Requires-Dist: numpy
 Requires-Dist: pandas
 Requires-Dist: scipy
@@ -18,6 +20,7 @@ Requires-Dist: tqdm
 Requires-Dist: graphviz
 Requires-Dist: shap>=0.51.0
 Requires-Dist: loguru
+Dynamic: license-file
 
 # PCI Paper
 
@@ -182,3 +185,10 @@ tab → *docs* → *Run workflow*.
 3. `git clone` → `uv sync --group docs`.
 4. Prose lives on Overleaf; code and notebooks on `main`. Use
    `scripts/sync-overleaf.sh` to move paper edits between them.
+
+## License
+
+Apache License 2.0; see [LICENSE.md](LICENSE.md). The paper itself is covered by
+the license chosen at arXiv submission, and the LaTeX style files
+(`neurips_2024.sty`, `jmlr.cls`, `jmlrutils.sty`) keep the terms of their
+publishers.

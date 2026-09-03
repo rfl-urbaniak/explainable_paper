@@ -1,8 +1,7 @@
 \section{Introduction}
 \label{sec:intro}
 
-Causal attribution --- figuring out which factors brought about an outcome, and to
-what degree --- matters wherever we act on a model's predictions: in lending,
+Causal attribution, figuring out which factors brought about an outcome and to what degree, matters wherever we act on a model's predictions: in lending,
 healthcare, or automated decision systems, knowing \emph{why} something happened is
 often as important as the prediction itself
 \citep{Shepherd2024,CheshireMagrini2009,Papageorgiou2022,HeckmanPinto2022CausalPolicyAnalysis}.
@@ -30,17 +29,14 @@ This correctly names her gender, not her credit, as the \textit{actual} cause of
 Existing formalisations of actual causality, however, involve some combination of the following three limitations: they are
 all-or-nothing, treating a variable as either a cause or not with no notion of
 degree; they are computationally intractable beyond toy examples, because
-verifying that \emph{some} witness set --- a selection of variables held fixed at
-their actual values, our formal stand-in for a context --- satisfies the
-definition requires an exhaustive search over exponentially many candidates;
+verifying that \emph{some} witness set (a selection of variables held fixed at their actual values, our formal stand-in for a context) satisfies the definition requires an exhaustive search over exponentially many candidates;
 and they were developed primarily for deterministic models.
 
 This paper introduces \emph{probabilistic causal impact} (\Ourapproach), an
 attribution method that returns a
 graded score, scales to large stochastic models
 without exhaustive search, and applies directly to
-machine-learned causal models — neural, Gaussian-process, or otherwise probabilistic — 
-that practitioners actually build. It still gets Alice's case right. At a high level,
+machine-learned causal models (neural, Gaussian-process, or otherwise probabilistic) that practitioners actually build. It still gets Alice's case right. At a high level,
 \ourapproach asks two counterfactual questions per candidate cause, echoing Pearl's probabilities of necessity
 and sufficiency: a \emph{sufficiency} question (would the outcome have persisted had we
 changed nothing about a given feature?) and a \emph{necessity} question (would it have changed had we
@@ -156,12 +152,17 @@ causality with the scalability of probability-of-causation methods. \Ourapproach
 generalises Pearl's probability of necessary and sufficient causation
 \citep{pearl2022probabilities} from binary to arbitrary variable
 domains.\footnote{\citet{kawakammi_2024_poc_for_cont_and_vec} independently extend PNS to
-continuous outcomes via a different route: a monotonicity assumption on the
-structural mechanism yields point identification from observational conditional
-distributions alone. \ourapproach works from a fitted causal model via
-simulation, requiring neither monotonicity nor point identification, and adds the
-context-sensitivity that the witness mechanism below provides; we return to this
-contrast in Section~\ref{sec:other-prob-ac}.}
+continuous and vector-valued variables by a different route. Their
+Definition~3.1 fixes two treatment levels $x_0,x_1$ and an outcome threshold $y$,
+and reads necessity and sufficiency off the inequality $Y_{x_0} < y \le Y_{x_1}$;
+exogeneity and monotonicity then identify these quantities nonparametrically, from
+observational distributions alone. \Ourapproach substitutes an alternative-value
+distribution $\Delta$ for the fixed contrast and a user-chosen impact kernel $ci$
+for the fixed threshold. Monotonicity drops out because \ourapproach evaluates
+both counterfactual worlds inside a fitted causal model, which supplies the
+cross-world quantities by simulation. The identification burden moves onto that
+model (\cref{sec:discussion}). The witness mechanism then adds
+context-sensitivity; \cref{sec:other-prob-ac} returns to the contrast.}
 It also incorporates the \emph{witness} mechanism from actual causality
 \citep{actualCausalityHalpern}, but changes its logical form: Halpern's account asks
 whether \emph{some} witness set, out of exponentially many, reveals the dependency;
@@ -180,21 +181,34 @@ match-drop a cause of the fire in each case, so both get an identical
 verdict. But the second scenario's causal chain runs through an improbable
 fluke, and intuitively the match-dropper bears less responsibility for it
 than in the first. Weighting witness sets gives \ourapproach a natural place
-to encode this: a $\Gamma$ that assigns little mass to freak contingencies
+to encode this: a $\Gamma$ is  a distribution over how likely some features are to be a cause or 
+a witness - and a $\Gamma$ distribution that would  assign little mass to freak actual contingencies
 like the squirrel's detour lets the score track how ordinary the enabling
-context was.}
+context was (and similarly, weighting alternative values based on how likely they, as encoded in $\Delta$, are can play a role in such considerations too).}
 A witness set records which variables stay at their factual values while
 \ourapproach varies a candidate cause, so causal paths inactive in the factual world stay
 blocked even under intervention, delivering the
 context-sensitivity that ATE and CATE lack.
 
-This move makes \ourapproach tractable, but it is also the source of its main risk. Existential search over witness sets forces AC's brute-force enumeration; an
-expectation admits Monte Carlo sampling from $\Gamma$ instead, at a cost ---
-$\Gamma$-mass on witness sets that do not reveal a dependency can swamp a single
-witness set that does, or sampling can simply miss it if it is rare enough — in the
-worst case, rare dependencies can be as expensive to find with sampling as with enumeration (Section~\ref{sec:discussion}).
+The witness mechanism also decides how multiple, simultaneously active
+candidates rank against each other. A variable that merely correlates with the
+one that did the work, or is downstream of it, can outscore it. Holding the
+right variables fixed as witnesses reverses that. Without witnesses,
+\ourapproach makes the same mistake SHAP does, ranking Alice's credit above
+her gender. With them, gender outranks credit, the correct order
+(Section~\ref{sec:obcb_shap}). Witnesses turn a $0.034$ margin between a
+mediator and its upstream cause into a $0.133$ one (Section~\ref{sec:signal}).
+And they let \ourapproach separate a reliable cause from an unreliable one
+across forensic scenarios in the desert-traveller example
+(Section~\ref{sub:weak-poison}).
 
-Three considerations limit the damage. The first is practical: models with
+This move makes \ourapproach tractable, but it is also the source of its main risk. Existential search over witness sets forces AC's brute-force enumeration; an
+expectation admits Monte Carlo sampling from $\Gamma$ instead, at a cost: $\Gamma$-mass on witness sets that do not reveal a dependency can swamp a single witness set that does, or sampling can simply miss it if it is rare enough. In the worst case, rare dependencies can be as expensive to find with sampling as with enumeration (Section~\ref{sec:discussion}).
+
+Four considerations limit the damage. First, converting the search problem to a sampling problem 
+lets us study statistical estimation efficiency and provides a "computational effort" knobs (the number of samples, sampling method choice, etc.)
+that control success. That is, it lets us fix a computational budget and then study whether it will achieve the desired results. 
+The practical aspect of this is that models with
 structural regularities let sampling run far cheaper than the worst case above
 suggests. In the actual-cause benchmark (Section~\ref{sec:ac_benchmark}),
 for instance, any superset of a witness set witnesses the same attribution, so
@@ -203,7 +217,7 @@ it never visits the larger sets a wider search would check. \ourapproach's
 definition assumes no such regularity, but when a model has it, the sampling
 budget can be spent narrowly without losing coverage.
 
-The second is formal --- switching from existential search to an expectation does
+The second is formal: switching from existential search to an expectation does
 not make \ourapproach blind to real actual causes. \cref{sec:relation_with_ac}
 proves, under conditions given there, that a candidate's \ourapproach score is
 positive exactly when it is an actual cause in Halpern's sense.
@@ -216,36 +230,44 @@ Section~\ref{sec:ac_benchmark} reports how correct-attribution rate changes as
 each is loosened or tightened, so increasing either reduces the chance that
 sampling misses a rare witness set.
 
-Prior work anticipates pieces of \ourapproach's construction. Halpern's own account already averages over
-exogenous noise when computing probabilities of causation
-\citep{actualCausalityHalpern}. \citet{Beckers2015CombiningPC} weights alternative
-replacement values by how probable they are. And both aggregate over witness sets in
-restricted settings
-\citep{Beckers2015CombiningPC, actualCausalityHalpern}. No prior construction
-combines all three into a single estimator that scales to arbitrary variable domains.
-Every quantity entering the \Ourapproach definition is a standard
-interventional or counterfactual quantity; the estimands built from them, the
-expectations that give \Ourapproach its score, are already approximated automatically
-by causal probabilistic-programming systems such as ChiRho%
-\footnote{\url{https://basisresearch.github.io/chirho/explainable_sir.html}}
-so a supported PPL computes \Ourapproach for any expressible model without
-bespoke per-model derivation.
+Prior work anticipates pieces of \ourapproach's construction. Halpern's own account
+already averages over exogenous noise when computing probabilities of causation
+\citep{actualCausalityHalpern}. \citet{Beckers2015CombiningPC} weight alternative
+replacement values by how probable they are. Both aggregate over witness sets in
+restricted settings \citep{Beckers2015CombiningPC, actualCausalityHalpern}. And
+\citet{chocklerResponsibilityBlameStructuralModel2004} let the size of that set
+modulate the verdict: their degree of responsibility is $1/(k{+}1)$, where $k$ counts
+the variables that must be shifted off their actual values before the outcome depends
+counterfactually on the candidate. No prior construction combines all four into a
+single estimator that scales to arbitrary variable domains. \ourapproach keeps
+Chockler and Halpern's intuition that the size of the set doing the work should count,
+replacing their fixed reciprocal with the cardinality band of the variable selection
+distribution $\Gamma$, which the analyst sets (\cref{sec:causal_impact});
+\cref{sec:recovering-ac} treats this and the other actual-causality quantities in the
+same terms.
+Every quantity entering the \Ourapproach definition is a standard interventional or
+counterfactual quantity, so computing a score asks nothing of a modelling tool beyond
+what counterfactual reasoning already asks: a way to write down a structural model,
+intervene on it, and sample under the resulting counterfactual semantics. Any system
+providing those operations can evaluate \Ourapproach's expectations by Monte Carlo for
+any model it expresses, with no per-model derivation. We use ChiRho, a causal extension
+of the probabilistic programming language Pyro,\footnote{\url{https://basisresearch.github.io/chirho/explainable_sir.html}}
+though nothing in the construction depends on that choice.
 
-\ourapproach presumes access to a trained probabilistic causal model that supports
-sampling counterfactual outcomes, a stronger requirement than methods that
-work from observational data and a causal graph alone, such as Causal SHAP or the
-probability-of-necessity/sufficiency (PN/PS/PNS) bounds of
-\citet{muellerpearl2022causes}, which return \emph{intervals} on the probability of
-causation where \ourapproach, given a fully specified model, returns a full posterior
+That requirement is substantive. \ourapproach presumes access to a trained
+probabilistic causal model that supports sampling counterfactual outcomes, whereas
+Causal SHAP and the probability-of-necessity/sufficiency (PN/PS/PNS) bounds of
+\citet{muellerpearl2022causes} work from observational data and a causal graph alone.
+The outputs differ accordingly. Those bounds give \emph{intervals} on the probability
+of causation, and \ourapproach, given a fully specified model, gives a full posterior
 over its score, summarised as a point estimate via the mean.
 
-Within that requirement, however, we place no strong restrictions on the form
-of the model, distributions, or types of variables. Such models can comprise
-standard machine learning components such as neural network parametrized
-distributions or Gaussian processes; a feed-forward probabilistic program of
-this kind is still a structural causal model, just one whose structural
-equations happen to be parametrized by a neural network rather than specified
-by hand.
+Within that requirement, we place no strong restrictions on the form of the model, its
+distributions, or its variable types. Such a model can include standard machine
+learning components, neural-network-parametrized distributions or Gaussian processes
+among them. A feed-forward probabilistic program of this kind is still a structural
+causal model, one whose structural equations happen to be parametrized by a neural
+network rather than specified by hand.
 
 \citet{xia2022neural} show that such neural causal models, being universal
 approximators, are expressive enough to represent the same nonparametric
@@ -254,22 +276,23 @@ model. This expressiveness does not by itself resolve non-identification,
 though: many mechanisms can fit the same observed data equally well, and no
 amount of representational flexibility changes that.
 
-Instead, \ourapproach operates in a Bayesian setting: its score is the
-expectation of the counterfactual outcome under the posterior over mechanisms
-that the trained model induces. The earlier claim of no strong restrictions is
-about the model's functional form only; obtaining a posterior that reflects
-the data well is a separate, nontrivial problem for complex neural or
-Gaussian-process mechanisms, and we do not attempt to solve it here.
-
-When the causal graph and data cannot pin down a single mechanism,
-point-identification methods have no answer to give. \ourapproach's score
-works differently: it averages the counterfactual outcome over the full
-posterior the trained model induces, spanning both mechanisms and their
-parameters, without committing to a single specification first, much as
-Bayesian model averaging marginalizes over which of several candidate models
-generated the data. It therefore returns a score where point-identification
-methods would have nothing to report, provided the posterior itself is
-reasonable.
+Instead, \ourapproach operates in a Bayesian setting: its score averages the
+counterfactual outcome over the posterior the trained model induces, spanning both
+mechanisms and their parameters, much as Bayesian model averaging marginalizes over
+which of several candidate models generated the data.\footnote{\ourapproach, like
+actual causality, presupposes a causal model. Whether that model is identified from the
+available data, domain knowledge, or experiments is a prior question, and one this
+paper inherits rather than settles.} The earlier claim of no strong restrictions is
+about the model's functional form only. Obtaining a posterior that reflects the data
+well is a separate, nontrivial problem for complex neural or Gaussian-process
+mechanisms, and we do not attempt to solve it here.\footnote{Treating non-identification this way is a substantive position,
+and its merits have been debated at length in general \citep{poirier1998revising,
+gustafson2015partial, moon2012bayesian} and for causal inference specifically
+\citep{rubin1978bayesian, richardson2011transparent}. We adopt it here without
+defending it. A reader who declines it can still read the posterior spread of the score
+as a sensitivity analysis, reporting its range in place of its mean and recovering an
+interval of the kind partial-identification methods target \citep{manski2003partial,
+zhang2022partial}.}
 
 \paragraph{Paper structure.}
 The paper proceeds in five phases, laid out in Figure~\ref{fig:roadmap_inspirations},
@@ -294,7 +317,8 @@ overdetermination and undercutting (\cref{sub:synthetic}); it diverges from
 gradient-based Differential Causal Effect attribution where the local gradient
 misreads the counterfactual contrast (\cref{sec:DCE}); it stays tractable where
 exact actual-cause enumeration times out at $17$ variables, continuing to
-roughly $73$--$145$ variables above a $0.85$ correct-attribution rate
+roughly $73$--$145$ variables (where the tests time out after 60 minutes) and holding a $0.85$ correct-attribution rate as
+far as $89$
 (\cref{sec:ac_benchmark}); it delivers a graded comparison on a
 continuous-outcome dynamical SIR model, assigning lockdown roughly twice the
 responsibility of masking where but-for reasoning cannot separate them

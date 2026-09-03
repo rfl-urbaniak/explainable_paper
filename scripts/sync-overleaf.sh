@@ -2,7 +2,7 @@
 # Bidirectional sync between `main` and the Overleaf project.
 #
 #   scripts/sync-overleaf.sh push   # main's paper sources -> Overleaf (and mirror to GitHub)
-#   scripts/sync-overleaf.sh pull   # Overleaf edits        -> stage main.tex + sections/ onto main
+#   scripts/sync-overleaf.sh pull   # Overleaf edits        -> 3-way merge onto main.tex + sections/
 #   scripts/sync-overleaf.sh files  # print the paper-file whitelist and exit
 #
 # Topology:
@@ -100,23 +100,59 @@ case "${1:-}" in
 
   pull)
     cur="$(git rev-parse --abbrev-ref HEAD)"
-    # Guard: don't clobber uncommitted local edits to the files we overwrite.
-    if ! git diff --quiet HEAD -- main.tex sections 2>/dev/null; then
-      echo "!! Uncommitted changes to main.tex/sections would be overwritten." >&2
-      echo "!! Commit or stash them on '$cur' first." >&2
+    # Guard: don't clobber uncommitted local edits to the files we merge.
+    mapfile -t _wl < <(paper_files | sort -u)
+    if ! git diff --quiet HEAD -- "${_wl[@]}" 2>/dev/null; then
+      echo "!! Uncommitted changes to paper files would be overwritten; commit them on '$cur' first:" >&2
+      git --no-pager diff --name-only HEAD -- "${_wl[@]}" | sed 's/^/     /' >&2
       exit 1
     fi
+
     echo ">> Fetching Overleaf edits ($OL/$OL_BRANCH) ..."
-    git fetch "$OL" "$OL_BRANCH"
-    git update-ref "refs/heads/$GH_BRANCH" "$OL/$OL_BRANCH"
+    git fetch --quiet "$OL" "$OL_BRANCH"
+    theirs="$(git rev-parse "$OL/$OL_BRANCH")"
+
+    # The merge base is the last state we know both sides agreed on: our own
+    # bookkeeping ref, updated at the end of every push and pull.
+    base="$(git rev-parse -q --verify "refs/heads/$GH_BRANCH" || true)"
+    if [ -z "$base" ]; then
+      echo "!! No local '$GH_BRANCH' ref to merge against (first-ever sync?)." >&2
+      echo "!! Run: git branch $GH_BRANCH $OL/$OL_BRANCH   then retry." >&2
+      exit 1
+    fi
+
+    if [ "$(git rev-parse "$theirs^{tree}")" = "$(git rev-parse "$base^{tree}")" ]; then
+      echo ">> Overleaf already matches the last synced state. Nothing to pull."
+      exit 0
+    fi
+
+    echo ">> Merging Overleaf's edits onto '$cur' ..."
+    # A real 3-way merge. $GH_BRANCH and $cur are unrelated histories in
+    # git's DAG (the lean paper tree was never a commit on main), but
+    # --merge-base overrides ancestry with the last point the two sides are
+    # known to have agreed: only lines BOTH sides changed since then conflict,
+    # and anything only one side touched (e.g. new local prose, or an
+    # Overleaf-only edit) merges in cleanly, unlike a blind overwrite.
+    if result="$(git merge-tree --write-tree --merge-base="$base" HEAD "$theirs")"; then
+      tree="$result"
+    else
+      echo "!! Overleaf and your local edits touch the same lines in:" >&2
+      printf '%s\n' "$result" | tail -n +2 | sed 's/^/     /' >&2
+      echo "!! Nothing was changed. Compare 'git show HEAD:<path>' against" >&2
+      echo "!! 'git show $theirs:<path>' and resolve by hand." >&2
+      exit 1
+    fi
+
+    git update-ref "refs/heads/$GH_BRANCH" "$theirs"
     git push --force "$GH" "$GH_BRANCH"   # keep the GitHub mirror in step
-    echo ">> Staging prose from Overleaf onto '$cur' ..."
-    # Bring back every text source `push` sends up. Checking out only
-    # main.tex + sections/ silently stranded Overleaf's references.bib edits.
-    git checkout "$GH_BRANCH" -- main.tex sections
-    for f in references.bib neurips_2024.sty main.bbl; do
-      git cat-file -e "$GH_BRANCH:$f" 2>/dev/null && git checkout "$GH_BRANCH" -- "$f"
-    done
+
+    echo ">> Staging the merged paper sources onto '$cur' ..."
+    changed="$(git diff --name-only HEAD "$tree")"
+    if [ -n "$changed" ]; then
+      printf '%s\n' "$changed" | while IFS= read -r f; do
+        git checkout "$tree" -- "$f"
+      done
+    fi
     echo ">> Done. Review with: git diff --cached ; then commit on '$cur'."
     ;;
 

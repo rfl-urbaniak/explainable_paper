@@ -196,8 +196,7 @@ $\Delta_{\mathbf{C}}(\mathbf{s}^\star)$. We treat the two cases separately.
 $\Delta_{\mathbf{C}}(\{\mathbf{c}'\})>0$ by hypothesis, so the integral is at least
 $\Delta_{\mathbf{C}}(\{\mathbf{c}'\})>0$. \emph{Continuous case}: hypothesis~(i) gives
 continuity of the intervention map $\mathbf{c}'\mapsto Y$ at fixed $\mathbf{u}$;
-hypothesis~(ii) places $Y(\mathbf{c}')$ in the interior of $\neg\varphi$ --- directly
-if $\neg\varphi$ is open (every point of an open set is interior), and by the added
+hypothesis~(ii) places $Y(\mathbf{c}')$ in the interior of $\neg\varphi$, directly if $\neg\varphi$ is open (every point of an open set is interior), and by the added
 clause otherwise. Pulling back
 an open neighbourhood within $\neg\varphi$ yields an open neighbourhood of
 $\mathbf{c}'$ on which the indicator equals $1$, and this neighbourhood has positive
@@ -223,8 +222,7 @@ $\varphi=\{Y>y_0\}$ (for instance the SIR overshoot benchmark of
 clause of (ii): $\neg\varphi=\{Y\le y_0\}$ is closed rather than open, but its
 boundary is the single point $y_0$, which has measure zero under any continuous
 pushforward of $Y$; the surviving requirement is that the specific witnessing
-alternative satisfies $Y(\mathbf{c}')<y_0$ strictly rather than $Y(\mathbf{c}')=y_0$
-exactly --- generic under a continuous pushforward, but not automatic, so a witness
+alternative satisfies $Y(\mathbf{c}')<y_0$ strictly rather than $Y(\mathbf{c}')=y_0$ exactly, generic under a continuous pushforward, but not automatic, so a witness
 that lands exactly on the threshold needs a separate (measure-zero, hence
 non-generic) argument.
 (Literal openness of $\neg\varphi$ instead requires the strict inequality on the
@@ -267,7 +265,7 @@ context-sensitive-necessity clause of Definition~\ref{def:ac}.
 \end{proof}
 
 \medskip\noindent\textit{Remark (deterministic intermediates and joint support).}
-The hypothesis on $\mathbf{S}$ is what rules out the following obstruction.
+The hypothesis on $\mathbf{S}$ rules out the following obstruction.
 Suppose the suspect set were closed under the structural equations of $M$, e.g., both
 Sally's throw $S$ and the bottle's hit $H = f(S,\ldots)$ admitted as candidates. Then the
 joint assignment $(S{=}0, H{=}1)$ is structurally impossible, and any alternative-value
@@ -346,7 +344,7 @@ $\Gamma_w$ be uniform on $2^{\mathbf{W}}$ and let $\Gamma_s$ be strictly
 cardinality-decreasing, assume that $(M,\Delta)$ satisfies necessity dilution on
 $\mathbf{S}$, and assume $\Delta$ satisfies the positive-density hypothesis of
 Theorem~\ref{th:ac-exp} (together with hypotheses (i)--(ii) there, in the continuous
-case); this is what lets the proof below invoke Theorem~\ref{th:ac-exp} on
+case); this lets the proof below invoke Theorem~\ref{th:ac-exp} on
 $\mathbf{C}^\sharp$. Then $\mathbf{C}^\dagger$ is an actual cause of $\varphi$
 according to Definition~\ref{def:ac}.
 \end{theorem}
@@ -452,8 +450,7 @@ $\mathbf{T}^\dagger$ directly in the proof of Theorem~\ref{th:local_max_to_ac} a
 (Corollary~\ref{cor:marginalize}'s proof needs only the weaker same-$\mathbf{T}$
 special case, $N(\mathbf{C}^\sharp,\mathbf{T})\geq N(\mathbf{C}^\dagger,\mathbf{T})$
 for each shared $\mathbf{T}$, which the strong version implies). We write
-$N(\mathbf{C})$ for $N(\mathbf{C},\mathbf{T})$ where this does not depend on
-$\mathbf{T}$ at all --- i.e.\ pinning any admissible witness set at its factual
+$N(\mathbf{C})$ for $N(\mathbf{C},\mathbf{T})$ where this does not depend on $\mathbf{T}$ at all; i.e.\ pinning any admissible witness set at its factual
 values leaves the necessity integral for $\mathbf{C}$ unchanged, which is a
 structural property of $(M,\Delta,\mathbf{C})$ that should be checked case by case,
 not assumed from the notation. The condition requires that the $\Delta$-mass of alternatives that flip the outcome does not grow as the candidate cause expands. Three settings make it automatic, and satisfy the witness-independence just described. \emph{(i) Single-pivot models}: one variable $X^\star\in\mathbf{S}$

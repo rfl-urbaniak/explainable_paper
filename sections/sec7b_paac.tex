@@ -164,11 +164,11 @@ Under the spec above (computation in the companion notebook), the results are:
 \toprule
 Forensic posterior & Cause & $N$ & $S$ & $J$ & Pearl $P(\text{caused})$ \\
 \midrule
-$e_A$: $u=0$ (cyanide) & shooter   & $1/4$ & $11/12$ & $1/6$ & $0$ \\
+$e_A$: $u=0$ (cyanide) & shooter   & $1/4$ & $11/12$ & $5/24$ & $0$ \\
                        & poisoner  & $1/3$ & $1$     & $\mathbf{1/3}$ & $\mathbf{1}$ \\
 \addlinespace
 $e_B$: $u=1$ (dehydration) & shooter   & $1/3$ & $1$     & $\mathbf{1/3}$ & $\mathbf{1}$ \\
-                           & poisoner  & $1/4$ & $11/12$ & $1/6$ & $0$ \\
+                                                      & poisoner  & $1/4$ & $11/12$ & $5/24$ & $0$ \\
 \bottomrule
 \end{tabular}
 \caption{PCI and Pearl on the basic desert traveller, under the scenario's
@@ -180,6 +180,17 @@ $Y^n$ share both the noise realisation $u$ and the non-cause suspect's value,
 and are otherwise independent.}
 \label{tab:pci-basic-dt}
 \end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{docs/source/desert_traveler/dt_basic_pci_vs_pearl.png}
+\caption{Basic desert traveller. Left: Pearl's binary actual-cause verdict
+beside \ourapproach's joint score $J$, per scenario and cause. Right: the
+necessity and sufficiency components behind each $J$. Both methods name the
+same enemy in each scenario; \ourapproach also keeps the dormant enemy on the
+hook at $5/24$.}
+\label{fig:dt-basic}
+\end{figure}
 
 Reading off Table~\ref{tab:pci-basic-dt}:
 
@@ -197,8 +208,7 @@ cardinality-uniform average over the witness subsets (weights
 $\tfrac13,\tfrac16,\tfrac16,\tfrac13$ over $\emptyset,\{c\},\{d\},\{c,d\}$)
 brings the average down to $1/3$; the per-subset breakdown is in the companion notebook.
 
-\textbf{(3) The dormant cause is not at zero.} PCI assigns $1/6 \approx
-0.17$ to the dormant cause. This is not noise: in some witness configurations
+\textbf{(3) The dormant cause is not at zero.} PCI assigns $5/24 \approx 0.21$ to the dormant cause. This is not noise: in some witness configurations
 the dormant cause's removal does flip $Y$, because averaging marginalises the
 non-cause suspect and PCI does not artificially pin the model to ``this
 scenario'' beyond the noise realisation itself. Pearl's binary indicator
@@ -232,8 +242,7 @@ traveller only fixes the small-$n$ case, where the cost difference is
 negligible.
 
 So far we have two conceptual differences: PCI's graded reading and its Monte Carlo scaling.
-We have already seen that this helps recover the intuition introduced above: the shooter, in the
-scenario where poison is what killed the traveller, is less blameworthy than the poisoner but not
+We have already seen that this helps recover the intuition introduced above: the shooter, in the scenario where poison killed the traveller, is less blameworthy than the poisoner but not
 completely blameless. Now we turn to another example, exploiting the fact that actual causality
 lacks a sufficiency component, where a small change to the model makes Pearl's binary indicator
 structurally unable to track the responsibility patterns we think a responsibility attribution
@@ -342,11 +351,11 @@ enumeration matching the framework verifies them.
 \toprule
 Forensic posterior & Cause & $N$ & $S$ & $J$ & Pearl $P(\text{caused})$ \\
 \midrule
-$e_A$: $u=0, \xi=1$ (cyanide killed) & shooter   & $1/6$ & $23/24$ & $1/8$ & $0$ \\
+$e_A$: $u=0, \xi=1$ (cyanide killed) & shooter   & $1/6$ & $23/24$ & $7/48$ & $0$ \\
                                       & poisoner  & $5/24$ & $1$             & $\mathbf{5/24}$ & $\mathbf{1}$ \\
 \addlinespace
 $e_B$: $u=1$ (dehydration killed)    & shooter   & $1/2$           & $1$             & $\mathbf{1/2}$  & $\mathbf{1}$ \\
-                                      & poisoner  & $1/4$           & $3/4$ & $0$ & $0$ \\
+                                                                            & poisoner  & $1/4$           & $3/4$ & $1/8$ & $0$ \\
 \bottomrule
 \end{tabular}
 \caption{PCI and Pearl on the weak-poison desert traveller, under the
@@ -359,33 +368,51 @@ noise realisation and the non-cause suspect's value.}
 \label{tab:pci-weak-dt}
 \end{table}
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{docs/source/desert_traveler/dt_weak_pci_vs_pearl.png}
+\caption{Weak-poison variant, laid out as Figure~\ref{fig:dt-basic}. Pearl
+scores both operative enemies at $1$ and cannot separate the scenarios;
+\ourapproach separates them, ranking the shooter in Scenario~B ($1/2$) above
+the poisoner in Scenario~A ($5/24$).}
+\label{fig:dt-weak}
+\end{figure}
+
 The three intuitions are all captured by $J$.
 
 \textbf{(1) Adding noise lowers the noisy cause's responsibility.} The
 poisoner in Scenario~A drops from $J = 1/3$ in the basic version
 (Table~\ref{tab:pci-basic-dt}) to $J = 5/24$ in the weak version
-(Table~\ref{tab:pci-weak-dt}). The drop comes through the sufficiency
-factor: when we hold $P$ at its factual value, the witness mechanism averages
-over configurations where $v_C$ is not pinned and the cyanide step's $\xi$
-coin still acts. Even at $\xi = 1$ in the forensic posterior, the witness
-integration sees the fragility, and $J$ falls.
+(Table~\ref{tab:pci-weak-dt}). The drop is a $\Gamma$ re-weighting,
+not a loss of sufficiency: the poisoner's sufficiency factor is exactly $1$ in
+both versions. Adding the fatality coin adds $v_C$ to the witness pool, so the
+eight subsets of $\{c, v_C, d\}$ replace the four subsets of $\{c, d\}$, and the
+single configuration that scores $1$ for the poisoner now carries a twelfth of
+the averaging weight where it carried a sixth. The empty witness set still
+contributes $1/2$ at weight $1/4$, and $\tfrac14\cdot\tfrac12 + \tfrac1{12}\cdot 1
+= 5/24$.
 
 \textbf{(2) Within a scenario, the operative cause still wins.} In
-Scenario~A, $J_{\text{poisoner}} = 5/24 > J_{\text{shooter}} = 1/8$. Cyanide
-was the operative path, and PCI tracks that. In Scenario~B,
-$J_{\text{shooter}} = 1/2 > J_{\text{poisoner}} = 0$: at $u=1$ the structural
-equation for $d$ reduces to $d = X$ regardless of $P$, so no witness
-configuration or alternative value lets the poisoner affect the outcome. PCI
-reports this as an exact zero rather than a small residual.
+Scenario~A, $J_{\text{poisoner}} = 5/24 > J_{\text{shooter}} = 7/48$. Cyanide
+was the operative path, and PCI tracks that. In Scenario~B the margin is
+fourfold, $J_{\text{shooter}} = 1/2$ against $J_{\text{poisoner}} = 1/8$. At
+$u=1$ with $\xi=0$ the cyanide path is dead, so nothing the poisoner did could
+have killed this traveller, and his $1/8$ records no responsibility for the
+death. It is the residue of marginalising over the shooter's action, which
+credits the poisoner in those drawn worlds where the shooter did not act
+either. PCI grades him as dormant: above a variable with no path to the
+outcome, and well below the cause that did the work.
 
 \textbf{(3) Reliable beats unreliable, across scenarios.} The shooter in
-Scenario~B ($J = 1/2$) outranks the poisoner in Scenario~A ($J = 5/24$). The
-dehydration path is deterministic; conditional on $u=1$,
-holding $X$ at factual sustains $Y$ with probability $1$ regardless of the
-witness regime, so the shooter is a textbook responsible cause. The cyanide
-path is fragile; conditional on $u=0, \xi=1$, the sufficiency factor still
-sees the $\xi$ coin under unpinned witness regimes, so the poisoner cannot
-hit the same ceiling.
+Scenario~B ($J = 1/2$) outranks the poisoner in Scenario~A ($J = 5/24$). Neither ceiling
+differs: both operative causes reach $J = 1$ at their best witness
+configuration, so the coin does not lower what the poisoner can attain. What
+differs is how many configurations attain it. Conditional on $u=1$ the cyanide
+path is dead, so removing the shooter leaves nothing that can kill and four of
+the eight witness subsets score a full $1$. Conditional on $u=0,\xi=1$ the
+shooter is still standing with a working dehydration path, so removing the
+poisoner lets the shooter cover the death half the time, and only one subset
+reaches $1$.
 
 Pearl's $P(\text{caused})$ misses intuitions (1) and (3) for related reasons:
 (1) requires sensitivity to mechanism noise, which the AC indicator does not
@@ -402,8 +429,7 @@ saturates at $0$ or $1$.
 Def.~10.3.5 aggregates over one dimension: the noise $\mathbf{u}$, conditional on
 evidence $e$, for a claim $(X=x, Y=y)$ already fixed. PCI aggregates over four: the
 suspect set $\mathbf{C}$ and witness set $\mathbf{T}$ via $\Gamma$, the alternative
-value $\mathbf{c}'$ via $\Delta$, and the noise via $P_{\mathbf{U}}$. This is what
-supports per-feature comparison: the same PCI expectation, evaluated over varying
+value $\mathbf{c}'$ via $\Delta$, and the noise via $P_{\mathbf{U}}$. This supports per-feature comparison: the same PCI expectation, evaluated over varying
 $\mathbf{C}$ inside a fixed $\mathbf{S}$, returns the relative responsibility of each
 candidate cause. Def.~10.3.5 does not itself provide that comparison as a single expectation:
 obtaining it requires a separate evaluation per candidate cause, each inheriting
@@ -485,8 +511,7 @@ mediator subsets (picking the alternative $\mathbf{c}'$ existentially); \ourappr
 replaces those quantifiers with \emph{distributions} (a $\Gamma$-weighted expectation
 over which suspects and witnesses to activate, and an alternative-value distribution
 $\Delta$), both presented as user-facing knobs and approximated by Monte Carlo rather
-than enumerated. Third, \ourapproach integrates a \emph{continuous}
-necessity--sufficiency kernel rather than thresholding a binary actual-cause indicator.
+than enumerated. Third, \ourapproach integrates a \emph{continuous} necessity--sufficiency kernel where those accounts threshold a binary actual-cause indicator.
 \ourapproach is therefore not a third probabilistic-HP variant but a PN/PS-style
 necessity-and-sufficiency measure that \emph{contains} the witnessed-necessity test they
 probabilify as one regime: the actual-causality analogue of the contrast drawn just
@@ -524,21 +549,31 @@ Section~\ref{sec:causal_impact}'s discussion of SHAP and Causal SHAP.
 \citet{kawakammi_2024_poc_for_cont_and_vec} extend Tian and Pearl's binary PNS, PN, and
 PS to continuous and vector-valued treatments and outcomes, defining necessity and
 sufficiency via an order relation on the outcome space ($Y_{x_0} < y \le Y_{x_1}$ for a
-threshold $y$) rather than a fixed binary event. Under a monotonicity assumption on the
-structural mechanism, comonotonic in the latent noise, they recover point
-identification of PNS, PN, and PS from observational conditional distributions alone,
-with no need for a fitted causal model. That is a genuine extension to continuous
+threshold $y$) rather than a fixed binary event. Under exogeneity together with a monotonicity
+assumption, they identify PNS, PN, and PS nonparametrically from observational
+distributions alone, with no need for a fitted causal model. They offer several
+monotonicity variants and identify under one stated on the potential outcomes
+themselves. That is a genuine extension to continuous
 domains, but it inherits Tian and Pearl's population-level framing: their PNS asks how
 often a random individual's outcome crosses an externally chosen threshold under two
 treatment levels, not whether \emph{this} instance's already-realized outcome depended
 on \emph{this} instance's cause, which is the single-case reading of PN/PS
 \citep{pearl2022probabilities} that \ourapproach builds on. Like ATE and CATE, it also
 has no analogue of the witness mechanism, so it cannot hold mediators fixed at their
-factual values and register preemption. \ourapproach reaches continuous and
-vector-valued domains by a different route: no monotonicity assumption, no requirement
-of point identification, since it evaluates an expectation over whatever counterfactual
-distribution a fitted model induces, and a witness mechanism supplying the
-context-sensitivity this approach forfeits.
+factual values and register preemption. \Ourapproach reaches the same domains by a
+different route, and the difference starts in the definition. Definition~3.1 fixes a
+contrast pair $(x_0,x_1)$ and a threshold $y$, so a single inequality settles necessity
+and sufficiency. \Ourapproach puts an alternative-value distribution $\Delta$ where the
+fixed contrast was, and a user-chosen impact kernel $ci$ where the threshold was. One
+construction then yields a continuous necessity--sufficiency pair rather than a
+binarised event. Monotonicity drops out too: \ourapproach evaluates both counterfactual
+worlds inside a fitted model, which supplies the cross-world quantities by simulation
+and asks nothing of the observational distribution. The burden moves onto that model.
+\citeauthor{kawakammi_2024_poc_for_cont_and_vec} buy identification with restrictions on
+the true system; \ourapproach buys it by assuming the fitted model is that system, which
+for flexible structural equations such as neural networks is the harder warrant
+(\cref{sec:discussion}). The witness mechanism then supplies the context-sensitivity
+their population-level framing forfeits.
 
 \paragraph{FANS and LEWIS.}
 Two recent attribution methods also build on Pearl's probabilities of necessity and sufficiency, bringing them closer still to \ourapproach. FANS \citep{chenFANS2024} explains a
@@ -571,7 +606,7 @@ ball around the input cannot express and a population average smooths over. \our
 holds witness variables $\mathbf{W}$ fixed and averages over which variables serve as
 witnesses, as the OBCB and signal walkthroughs of \cref{sec:shap_examples} illustrate.
 
-Fourth, we compare against a distribution of alternatives rather than a single reference.
+Fourth, we compare against a distribution of alternatives.
 FANS measures change from one baseline input and LEWIS from one contrast value;
 \ourapproach{} averages over an alternative-value distribution $\Delta$, removing the
 dependence on a chosen reference at the cost of assuming more of the model. That cost is a
