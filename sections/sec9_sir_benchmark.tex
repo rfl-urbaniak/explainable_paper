@@ -43,17 +43,17 @@ with both policies, $0.84$ with lockdown only, and $0.81$ with mask only; the tw
 but-for probability alone at this sample budget (a $0.03$ gap on $100$
 predictive draws is well within Monte Carlo noise), which is exactly the
 symmetry \ourapproach is designed to break.
-The mechanism is the asymmetric joint efficiency: combining the two policies
-caps the transmission reduction at $0.95$, but neither policy alone reaches
-that cap, and mask's efficiency itself depends on whether lockdown is also
+The mechanism is the asymmetric joint efficiency: lockdown and mask together
+reach a transmission reduction of only $0.7$, well short of the model's $0.95$
+clamp, and mask's efficiency itself depends on whether lockdown is also
 active (falling from $0.45$ alone to $0.1$ under lockdown). But-for cannot
 disentangle this context dependence: it treats each policy as a binary cause
 and reports an aggregate effect, with no way to express that lockdown's
 causal contribution depends on whether masking is in force. Figure~\ref{fig:sir_trajectories}
-visualises the four interventional regimes: the trajectory bands collapse
-toward the unintervened baseline only under both policies, while either
-policy on its own leaves the infectious peak essentially intact, mirroring
-the near-equal but-for overshoot probabilities.
+visualises the four interventional regimes: slowing transmission delays the
+infectious peak and leaves more susceptibles unspent when it arrives, so all
+three intervention regimes show a similarly elevated overshoot relative to no
+intervention, mirroring the near-equal but-for overshoot probabilities.
 
 \begin{figure}[htbp]
 \centering
@@ -63,11 +63,10 @@ interventional regimes (no interventions, both policies, lockdown only, mask
 only). Left: posterior bands for susceptible (blue), infectious (red) and
 recovered (green) over time, with the lockdown enacted at $t=1$ and the mask
 mandate at $t=1.5$. Right: per-regime histograms of the overshoot, with the
-$24$-overshoot threshold marked. Either policy on its own leaves the
-infectious peak essentially intact; only the joint regime suppresses it
-appreciably, yet the lockdown-only and mask-only overshoot probabilities are
-near-indistinguishable: the asymmetric joint efficiency that
-\ourapproach disentangles.}
+$24$-overshoot threshold marked. Delaying the infectious peak raises the
+overshoot in every intervention regime, and the lockdown-only and mask-only
+overshoot probabilities are near-indistinguishable: the asymmetric joint
+efficiency that \ourapproach disentangles.}
 \label{fig:sir_trajectories}
 \end{figure}
 
@@ -129,14 +128,14 @@ factual (evidence the suspect was needed), while sufficiency keeps it close
 (evidence the suspect alone sustains the outcome). A cause therefore shows up as
 a cloud displaced toward smaller $y_{\mathrm{nec}}$ at fixed $y_{\mathrm{suff}}$ (the \emph{cause signature} on this geometry), whereas a non-cause hugs the
 diagonal. Reading the two panels this way, the lockdown cloud is clearly
-displaced below the diagonal toward smaller $y_{\mathrm{nec}}$, while the mask
+displaced above the diagonal toward smaller $y_{\mathrm{nec}}$, while the mask
 cloud sits closer to it: the visual form of the verdict the next paragraph
 quantifies.
 
 
 \medskip\noindent\textit{Single-world results.}
-\ourapproach assigns lockdown roughly $2.0\times$ the responsibility of
-mask:
+\ourapproach ranks lockdown well above mask, a gap well outside Monte Carlo
+noise:
 \begin{center}
 \small
 \begin{tabular}{lccccc}
@@ -154,13 +153,13 @@ Here $q = \Pr_\Gamma[X_k\in\mathbf{C}] = 0.754$ is the sub-probability mass of
 the suspect-containing regimes, so the reported score is the $q^2$-scaled
 expectation of Definition~\ref{def:causalimpact} rather than a renormalised
 conditional mean; the quarter of draws that leave the suspect out contribute
-zero and stay in the average. The gap is driven entirely by the necessity
+zero and stay in the average. The gap is driven mostly by the necessity
 term: removing lockdown moves the overshoot further from $y^\star$ than
-removing mask does ($8.276$ vs $7.536$ in mean absolute distance), while the
-sufficiency terms agree to within $0.1$. This is consistent with the but-for finding that either
+removing mask does ($8.276$ vs $7.536$ in mean absolute distance, $0.740$ of
+the $0.835$ total gap), while the sufficiency terms differ by only $0.095$. This is consistent with the but-for finding that either
 policy \emph{alone} is roughly equally bad. What distinguishes the suspects
 is that lockdown's removal \emph{under context} (with witnesses pinned to
-factual) pulls the world further from $y^\star$ than mask's removal does: the lockdown cloud's displacement below the diagonal toward smaller
+factual) pulls the world further from $y^\star$ than mask's removal does: the lockdown cloud's displacement above the diagonal toward smaller
 $y_{\mathrm{nec}}$ in Figure~\ref{fig:eval_sir}, against the mask cloud's
 near-diagonal position.
 
