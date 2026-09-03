@@ -190,6 +190,18 @@ A witness set records which variables stay at their factual values while
 blocked even under intervention, delivering the
 context-sensitivity that ATE and CATE lack.
 
+The witness mechanism also decides how multiple, simultaneously active
+candidates rank against each other. A variable that merely correlates with the
+one that did the work, or is downstream of it, can outscore it. Holding the
+right variables fixed as witnesses reverses that. Without witnesses,
+\ourapproach makes the same mistake SHAP does, ranking Alice's credit above
+her gender. With them, gender outranks credit, the correct order
+(Section~\ref{sec:obcb_shap}). Witnesses turn a $0.034$ margin between a
+mediator and its upstream cause into a $0.133$ one (Section~\ref{sec:signal}).
+And they let \ourapproach separate a reliable cause from an unreliable one
+across forensic scenarios in the desert-traveller example
+(Section~\ref{sub:weak-poison}).
+
 This move makes \ourapproach tractable, but it is also the source of its main risk. Existential search over witness sets forces AC's brute-force enumeration; an
 expectation admits Monte Carlo sampling from $\Gamma$ instead, at a cost: $\Gamma$-mass on witness sets that do not reveal a dependency can swamp a single witness set that does, or sampling can simply miss it if it is rare enough. In the worst case, rare dependencies can be as expensive to find with sampling as with enumeration (Section~\ref{sec:discussion}).
 
