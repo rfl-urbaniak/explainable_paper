@@ -23,6 +23,11 @@
 \usepackage{placeins}  % \FloatBarrier to keep figures inside their section
 \raggedbottom  % don't stretch under-full pages (section-opening figures leave slack)
 
+% xcolor loaded here, with options, before tikz: tikz/pgf load xcolor
+% internally with no options, and a later \usepackage[...]{xcolor} would
+% option-clash against that implicit load.
+\usepackage[dvipsnames,table]{xcolor}
+
 \usepackage{tikz}
 \usetikzlibrary{bayesnet}
 
@@ -88,7 +93,6 @@
 
 % # CODE SNIPPET STYLE (settings borrowed from Edward ICLR paper)
 \usepackage{listings}
-\usepackage[dvipsnames,table]{xcolor}
 
 \definecolor{strings}{rgb}{.624,.251,.259}
 \definecolor{keywords}{rgb}{.224,.451,.686}
@@ -145,7 +149,6 @@
 \renewcommand{\texttt}[1]{\lstinline[basicstyle=\fontsize{8pt}{8.25pt}\selectfont\ttfamily]{#1}}
 
 
-\usepackage{xcolor}   % for colors
 \newcommand{\CITE}{\colorbox{green!30}{\textbf{CITE}}}
 \newcommand{\TODO}{\colorbox{orange!30}{\textbf{TODO}}}
 \newcommand{\ourapproach}{PCI\xspace}
