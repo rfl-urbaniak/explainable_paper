@@ -1,7 +1,8 @@
 PCI Paper: Computational Notebooks
 =====================================
 
-Companion notebooks for the paper *Probabilistic Causal Impact (PCI)*.
+Companion notebooks for the paper *Probabilistic Causal Impact (PCI)*,
+available on arXiv at `arxiv.org/abs/2609.04177 <http://arxiv.org/abs/2609.04177>`_.
 Each notebook reproduces a specific chunk of the paper's quantitative content:
 it verifies the numbers, generates the figures, and stress-tests PCI
 against alternatives (PN/PS/PNS, marginal SHAP, causal SHAP, gradient-based

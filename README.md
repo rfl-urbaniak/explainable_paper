@@ -7,6 +7,7 @@ run on, and the companion notebooks that reproduce its results. Every push to
 see [Workflow](#workflow) if you plan to contribute.
 
 The documentation website is at <https://rfl-urbaniak.github.io/explainable_paper/>.
+The paper is on arXiv at <http://arxiv.org/abs/2609.04177>.
 
 
 ## Overall structure
@@ -14,6 +15,7 @@ The documentation website is at <https://rfl-urbaniak.github.io/explainable_pape
 | Object | Location |
 |---|---|
 | Code + notebooks + paper sources | GitHub: `rfl-urbaniak/explainable_paper`, branch `main` |
+| Paper (arXiv) | <http://arxiv.org/abs/2609.04177> |
 | Documentation website | <https://rfl-urbaniak.github.io/explainable_paper/> |
 | CI (tests, notebook smoke, docs deploy) | GitHub → Actions tab |
 
